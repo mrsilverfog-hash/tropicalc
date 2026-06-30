@@ -4,28 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Représente l'effet d'un objet tenu sur le calcul de dégâts. Chaque objet
- * peut modifier le contexte lorsqu'il est tenu par l'attaquant et/ou par le
- * défenseur. Couvre les objets les plus courants en stall compétitif ;
- * facilement extensible en ajoutant une entrée au registre ci-dessous.
+ * Représente l'effet d'un objet tenu sur le calcul de dégâts.
  */
 public interface ItemModifier {
 
-    /** Appelé quand cet objet est tenu par le Pokémon qui attaque. */
     default void appliquerCoteAttaquant(ModifierContext ctx) {
     }
 
-    /** Appelé quand cet objet est tenu par le Pokémon qui défend. */
     default void appliquerCoteDefenseur(ModifierContext ctx) {
     }
 
     Map<String, ItemModifier> REGISTRE = construireRegistre();
 
-    /**
-     * Renvoie le modificateur correspondant au nom français de l'objet,
-     * ou null si l'objet n'a aucun effet sur le calcul de dégâts (ex: Reste,
-     * Bottes Increvables) ou n'est pas encore implémenté.
-     */
     static ItemModifier pour(String nomObjet) {
         if (nomObjet == null) {
             return null;
@@ -36,8 +26,8 @@ public interface ItemModifier {
     private static Map<String, ItemModifier> construireRegistre() {
         Map<String, ItemModifier> m = new HashMap<>();
 
-        // Bâton Choix (Choice Band) : Attaque x1.5 sur capacités physiques uniquement
-        m.put("Bâton Choix", new ItemModifier() {
+        // Bandeau Choix (Choice Band) : Attaque x1.5 sur capacités physiques uniquement
+        m.put("Bandeau Choix", new ItemModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
@@ -64,22 +54,19 @@ public interface ItemModifier {
             }
         });
 
-        // Ceinture Brutale (Expert Belt) : dégâts x1.2 si le coup est super efficace.
-        // L'efficacité de type doit déjà avoir été calculée avant ce point ;
-        // DamageCalculator est responsable de ne déclencher cet objet que si
-        // l'efficacité totale est strictement supérieure à 1.0.
-        m.put("Ceinture Brutale", new ItemModifier() {
+        // Ceinture Pro (Expert Belt) : dégâts x1.2 si le coup est super efficace.
+        // Le multiplicateur réel est déclenché par DamageCalculator
+        // (voir appliquerModificateursConditionnels), car il a besoin de
+        // connaître le résultat du type chart.
+        m.put("Ceinture Pro", new ItemModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                // Le multiplicateur réel (x1.2) est appliqué directement par
-                // DamageCalculator après calcul de l'efficacité de type,
-                // car cet objet a besoin de connaître le résultat du type chart.
-                // On ne fait rien ici : voir DamageCalculator.appliquerObjetsConditionnels().
+                // Rien ici volontairement, voir DamageCalculator.
             }
         });
 
-        // Gilet Tactique (Assault Vest) : Défense Spéciale x1.5 pour le porteur
-        m.put("Gilet Tactique", new ItemModifier() {
+        // Veste de Combat (Assault Vest) : Défense Spéciale x1.5 pour le porteur
+        m.put("Veste de Combat", new ItemModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
@@ -90,8 +77,7 @@ public interface ItemModifier {
 
         // Évoluroc (Eviolite) : Défense et Défense Spéciale x1.5 pour le porteur.
         // Limitation actuelle : s'applique sans vérifier si le Pokémon est
-        // réellement non-totalement-évolué (l'information n'est pas encore
-        // modélisée dans Pokemon.java). À affiner plus tard si besoin.
+        // réellement non-totalement-évolué.
         m.put("Évoluroc", new ItemModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
