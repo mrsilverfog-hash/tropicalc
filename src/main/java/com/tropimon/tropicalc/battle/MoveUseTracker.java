@@ -1,5 +1,6 @@
 package com.tropimon.tropicalc.battle;
 
+import com.tropimon.tropicalc.TropiCalcClient;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
@@ -10,10 +11,9 @@ import net.minecraft.text.TranslatableTextContent;
  * BattleMessageHandlerMixin, qui intercepte les messages de combat de
  * Cobblemon en lecture seule avant qu'ils ne soient affichés.
  *
- * Limitation connue : ne distingue pas encore précisément quel Pokémon a
- * utilisé le coup (juste "un coup vient d'être utilisé très récemment").
- * En format Simple 1v1, l'ambiguïté reste faible mais pas nulle (dégâts de
- * fin de tour, brûlure, sable, etc. peuvent aussi faire varier les PV).
+ * DIAGNOSTIC TEMPORAIRE : log chaque clé de traduction de niveau racine
+ * reçue, pour vérifier nos hypothèses sur les noms de clés Cobblemon.
+ * À retirer une fois confirmé.
  */
 public final class MoveUseTracker {
 
@@ -27,37 +27,39 @@ public final class MoveUseTracker {
     private static volatile String dernierCoupShowdownId = null;
     private static volatile long dernierCoupTimestampMs = 0L;
 
-    /** Durée pendant laquelle un coup détecté reste "récent" et exploitable pour une observation. */
     private static final long FRAICHEUR_MS = 3000L;
 
-    /**
-     * Appelé par le Mixin pour chaque message de combat reçu. Ne fait rien
-     * si le message n'est pas un message "coup utilisé".
-     */
     public static void traiterMessage(Text message) {
         if (message == null) {
             return;
         }
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) {
+            TropiCalcClient.LOGGER.info("[TropiCalc-diag] Message reçu sans TranslatableTextContent : classe={}",
+                message.getContent().getClass().getName());
             return;
         }
         String cle = contenu.getKey();
+        TropiCalcClient.LOGGER.info("[TropiCalc-diag] Clé racine reçue : {}", cle);
+
         if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) {
             return;
         }
         for (Object arg : contenu.getArgs()) {
+            TropiCalcClient.LOGGER.info("[TropiCalc-diag] Argument du message coup : type={} valeur={}",
+                arg == null ? "null" : arg.getClass().getName(), arg);
             if (arg instanceof Text texteArg && texteArg.getContent() instanceof TranslatableTextContent sousContenu) {
                 String sousCle = sousContenu.getKey();
+                TropiCalcClient.LOGGER.info("[TropiCalc-diag] Sous-clé trouvée : {}", sousCle);
                 if (sousCle != null && sousCle.startsWith(CLE_PREFIXE_COUP)) {
                     dernierCoupShowdownId = sousCle.substring(CLE_PREFIXE_COUP.length());
                     dernierCoupTimestampMs = System.currentTimeMillis();
+                    TropiCalcClient.LOGGER.info("[TropiCalc-diag] Coup détecté avec succès : {}", dernierCoupShowdownId);
                     return;
                 }
             }
         }
     }
 
-    /** Renvoie l'identifiant Showdown du dernier coup utilisé récemment, ou null si trop ancien/inconnu. */
     public static String getDernierCoupRecent() {
         if (dernierCoupShowdownId == null) {
             return null;
