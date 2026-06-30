@@ -1,76 +1,193 @@
 package com.tropimon.tropicalc.battle;
 
-import com.tropimon.tropicalc.TropiCalcClient;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import com.cobblemon.mod.common.api.moves.MoveTemplate;
+import com.cobblemon.mod.common.api.moves.Moves;
+import com.cobblemon.mod.common.pokemon.Species;
+import com.tropimon.tropicalc.calc.Field;
+import com.tropimon.tropicalc.calc.Pokemon;
+import com.tropimon.tropicalc.calc.PokemonType;
+import com.tropimon.tropicalc.calc.ProfilAdversaire;
+import com.tropimon.tropicalc.calc.ShowdownIdMapper;
+import net.minecraft.client.MinecraftClient;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Détecte quel coup vient d'être utilisé en combat, en lisant directement
- * la clé de traduction du nom de capacité ("cobblemon.move.scaleshot")
- * plutôt que le texte français déjà traduit. Alimenté par
- * BattleMessageHandlerMixin, qui intercepte les messages de combat de
- * Cobblemon en lecture seule avant qu'ils ne soient affichés.
+ * Détecte automatiquement les coups utilisés en combat (via MoveUseTracker)
+ * et les dégâts qu'ils causent, pour resserrer le ProfilAdversaire courant.
  *
- * DIAGNOSTIC TEMPORAIRE : log chaque clé de traduction de niveau racine
- * reçue, pour vérifier nos hypothèses sur les noms de clés Cobblemon.
- * À retirer une fois confirmé.
+ * Architecture "pilotée par le coup" plutôt que par les PV : dès qu'un
+ * nouveau coup est détecté, on photographie les %PV des deux côtés, puis on
+ * revérifie un court instant après pour calculer la perte causée par CE
+ * coup précis. Le nom du dresseur propriétaire (transmis par Cobblemon dans
+ * le message structuré) permet de savoir avec certitude si c'est le joueur
+ * ou l'adversaire qui a attaqué, plutôt que de le déduire du sens de la
+ * baisse de PV (peu fiable en cas d'échanges rapprochés).
+ *
+ * À appeler une fois par frame (depuis l'overlay) via {@link #tick()}.
  */
-public final class MoveUseTracker {
+public final class ObservationCollector {
 
-    private MoveUseTracker() {
+    private ObservationCollector() {
     }
 
-    private static final String CLE_PREFIXE_COUP = "cobblemon.move.";
-    private static final String CLE_UTILISE_COUP = "cobblemon.battle.used_move";
-    private static final String CLE_UTILISE_COUP_SUR = "cobblemon.battle.used_move_on";
+    private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
 
-    private static volatile String dernierCoupShowdownId = null;
-    private static volatile long dernierCoupTimestampMs = 0L;
+    /** Délai après détection d'un coup avant de considérer les PV comme stabilisés. */
+    private static final long DELAI_APRES_COUP_MS = 900L;
 
-    private static final long FRAICHEUR_MS = 3000L;
+    private static final double TOLERANCE_POURCENT = 1.5;
 
-    public static void traiterMessage(Text message) {
-        if (message == null) {
+    private static MoveUseTracker.CoupDetecte coupEnAttente = null;
+    private static double pvJoueurAvant;
+    private static double pvAdversaireAvant;
+
+    public static void tick() {
+        if (!BattleStateTracker.estEnCombat()) {
+            reinitialiser();
             return;
         }
-        if (!(message.getContent() instanceof TranslatableTextContent contenu)) {
-            TropiCalcClient.LOGGER.info("[TropiCalc-diag] Message reçu sans TranslatableTextContent : classe={}",
-                message.getContent().getClass().getName());
-            return;
-        }
-        String cle = contenu.getKey();
-        TropiCalcClient.LOGGER.info("[TropiCalc-diag] Clé racine reçue : {}", cle);
 
-        if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) {
+        Pokemon joueur = BattleStateTracker.getJoueurActif();
+        Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+        if (joueur == null || adversaire == null) {
             return;
         }
-        for (Object arg : contenu.getArgs()) {
-            TropiCalcClient.LOGGER.info("[TropiCalc-diag] Argument du message coup : type={} valeur={}",
-                arg == null ? "null" : arg.getClass().getName(), arg);
-            if (arg instanceof Text texteArg && texteArg.getContent() instanceof TranslatableTextContent sousContenu) {
-                String sousCle = sousContenu.getKey();
-                TropiCalcClient.LOGGER.info("[TropiCalc-diag] Sous-clé trouvée : {}", sousCle);
-                if (sousCle != null && sousCle.startsWith(CLE_PREFIXE_COUP)) {
-                    dernierCoupShowdownId = sousCle.substring(CLE_PREFIXE_COUP.length());
-                    dernierCoupTimestampMs = System.currentTimeMillis();
-                    TropiCalcClient.LOGGER.info("[TropiCalc-diag] Coup détecté avec succès : {}", dernierCoupShowdownId);
-                    return;
-                }
+
+        double pvJoueur = joueur.getPourcentagePv();
+        double pvAdversaire = adversaire.getPourcentagePv();
+        long maintenant = System.currentTimeMillis();
+
+        MoveUseTracker.CoupDetecte coupActuel = MoveUseTracker.getDernierCoupRecent();
+
+        boolean nouveauCoup = coupActuel != null
+            && (coupEnAttente == null || coupActuel.timestampMs() != coupEnAttente.timestampMs());
+
+        if (nouveauCoup) {
+            if (coupEnAttente != null) {
+                finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
+            }
+            coupEnAttente = coupActuel;
+            pvJoueurAvant = pvJoueur;
+            pvAdversaireAvant = pvAdversaire;
+            return;
+        }
+
+        if (coupEnAttente != null && maintenant - coupEnAttente.timestampMs() >= DELAI_APRES_COUP_MS) {
+            finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
+            coupEnAttente = null;
+        }
+    }
+
+    private static void finaliser(MoveUseTracker.CoupDetecte coup, Pokemon adversaire, Pokemon joueur,
+                                   double pvJoueurApres, double pvAdversaireApres) {
+        MoveTemplate template = Moves.INSTANCE.getByName(coup.showdownId());
+        if (template == null) {
+            return;
+        }
+        com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
+        if (capacite == null || capacite.estCapaciteDeStatut()) {
+            return;
+        }
+
+        double perteJoueur = pvJoueurAvant - pvJoueurApres;
+        double perteAdversaire = pvAdversaireAvant - pvAdversaireApres;
+
+        Boolean adversaireEtaitAttaquant = determinerAttaquant(coup.proprietaire());
+
+        if (adversaireEtaitAttaquant == null) {
+            if (perteJoueur <= 0.5 && perteAdversaire <= 0.5) {
+                return;
+            }
+            adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
+        }
+
+        double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
+        if (perte < 0.5) {
+            return;
+        }
+
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] Observation finalisée : coup={} adversaireAttaquant={} perte={}",
+            coup.showdownId(), adversaireEtaitAttaquant, perte);
+
+        ProfilAdversaire profil = PROFILS.computeIfAbsent(adversaire.getEspece(), k -> {
+            Set<String> talentsReels = getTalentsReelsEspece(adversaire);
+            if (talentsReels == null) {
+                Set<String> tous = new HashSet<>();
+                tous.addAll(com.tropimon.tropicalc.calc.SetInferenceEngine.TALENTS_OFFENSIFS);
+                tous.addAll(com.tropimon.tropicalc.calc.SetInferenceEngine.TALENTS_DEFENSIFS);
+                talentsReels = tous;
+            }
+            return new ProfilAdversaire(talentsReels);
+        });
+
+        Field terrainNeutre = new Field();
+        double observeMin = Math.max(0, perte - TOLERANCE_POURCENT);
+        double observeMax = perte + TOLERANCE_POURCENT;
+
+        profil.enregistrerObservation(adversaireEtaitAttaquant, adversaire, joueur, capacite, terrainNeutre,
+            observeMin, observeMax);
+    }
+
+    private static Boolean determinerAttaquant(String proprietaire) {
+        if (proprietaire == null) {
+            return null;
+        }
+        var joueurMc = MinecraftClient.getInstance().player;
+        if (joueurMc == null) {
+            return null;
+        }
+        String nomJoueur = joueurMc.getGameProfile().getName();
+        boolean estLeJoueur = proprietaire.equalsIgnoreCase(nomJoueur);
+        return !estLeJoueur;
+    }
+
+    public static ProfilAdversaire getProfil(String espece) {
+        return PROFILS.get(espece);
+    }
+
+    public static void reinitialiser() {
+        PROFILS.clear();
+        coupEnAttente = null;
+    }
+
+    private static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
+        Species espece = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(adversaire.getEspece());
+        if (espece == null) {
+            return null;
+        }
+        Set<String> resultat = new HashSet<>();
+        for (var potentielle : espece.getAbilities()) {
+            String nomShowdown = potentielle.getTemplate().getName();
+            String nomFrancais = ShowdownIdMapper.talent(nomShowdown);
+            if (nomFrancais != null) {
+                resultat.add(nomFrancais);
             }
         }
+        return resultat;
     }
 
-    public static String getDernierCoupRecent() {
-        if (dernierCoupShowdownId == null) {
+    private static com.tropimon.tropicalc.calc.Move convertirCapacite(MoveTemplate template) {
+        PokemonType type = ShowdownIdMapper.type(template.getElementalType().getName());
+        if (type == null) {
             return null;
         }
-        if (System.currentTimeMillis() - dernierCoupTimestampMs > FRAICHEUR_MS) {
-            return null;
+        String categorieNom = template.getDamageCategory().getName();
+        com.tropimon.tropicalc.calc.Move.Categorie categorie;
+        if ("physical".equalsIgnoreCase(categorieNom)) {
+            categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        } else if ("special".equalsIgnoreCase(categorieNom)) {
+            categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
+        } else {
+            categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         }
-        return dernierCoupShowdownId;
-    }
 
-    public static void consommer() {
-        dernierCoupShowdownId = null;
+        return com.tropimon.tropicalc.calc.Move.builder(template.getName(), type, categorie)
+            .puissance((int) template.getPower())
+            .build();
     }
 }
