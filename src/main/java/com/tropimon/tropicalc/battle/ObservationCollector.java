@@ -36,11 +36,20 @@ public final class ObservationCollector {
         Pokemon joueur = BattleStateTracker.getJoueurActif();
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
         if (joueur == null || adversaire == null) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] tick() : joueur null={} adversaire null={}", joueur == null, adversaire == null);
             return;
         }
 
         double pvJoueur = joueur.getPourcentagePv();
         double pvAdversaire = adversaire.getPourcentagePv();
+
+        if (dernierPourcentageJoueur == null || dernierPourcentageJoueur != pvJoueur
+            || dernierPourcentageAdversaire == null || dernierPourcentageAdversaire != pvAdversaire) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] tick() valeurs : pvJoueur={} (PVmax={}) pvAdversaire={} (PVmax={})",
+                pvJoueur, joueur.getPvMax(), pvAdversaire, adversaire.getPvMax());
+        }
 
         if (dernierPourcentageAdversaire != null && pvAdversaire < dernierPourcentageAdversaire - 0.5) {
             double perte = dernierPourcentageAdversaire - pvAdversaire;
