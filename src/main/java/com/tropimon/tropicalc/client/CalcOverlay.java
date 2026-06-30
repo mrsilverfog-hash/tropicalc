@@ -12,15 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
-/**
- * Overlay affiché automatiquement pendant un combat Cobblemon (format Simple
- * uniquement), listant les dégâts estimés min/max de chaque capacité du
- * Pokémon actif du joueur contre le Pokémon actif adverse, ainsi qu'un
- * aperçu de ce que le moteur d'inférence a déduit sur l'adversaire jusqu'ici.
- *
- * Limitation actuelle : ne prend pas encore en compte la météo/terrain réels
- * du combat (Field neutre utilisé), ni les écrans (Protection/Mur Lumière).
- */
 public final class CalcOverlay implements HudRenderCallback {
 
     private static final int COULEUR_TEXTE = 0xFFFFFF;
@@ -80,8 +71,14 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        com.tropimon.tropicalc.calc.ProfilAdversaire profil =
-            com.tropimon.tropicalc.battle.ObservationCollector.getProfil(adversaire.getEspece());
+        com.tropimon.tropicalc.calc.ProfilAdversaire profil = null;
+        String especeAdversaire = com.tropimon.tropicalc.battle.ObservationCollector.getEspaceAdversaireCourant();
+        if (especeAdversaire == null && adversaire != null) {
+            especeAdversaire = adversaire.getEspece();
+        }
+        if (especeAdversaire != null) {
+            profil = com.tropimon.tropicalc.battle.ObservationCollector.getProfil(especeAdversaire);
+        }
         if (profil != null) {
             y += 4;
             context.drawText(client.textRenderer, Text.literal("Inférence (Atk) :"), x, y, COULEUR_TITRE, true);
