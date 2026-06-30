@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "tropicalc",
+  "version": "${version}",
+  "name": "TropiCalc",
+  "description": "Calculateur de dégâts automatique pour combats Cobblemon (Tropimon)",
+  "authors": [
+    "Maitre"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.tropimon.tropicalc.TropiCalcClient"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21"
+  }
+}
