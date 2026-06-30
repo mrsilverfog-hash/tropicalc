@@ -27,27 +27,27 @@ public final class BattleStateTracker {
         return CobblemonClient.INSTANCE.getBattle() != null;
     }
 
+    public static Pokemon getJoueurActifDepuisEquipe() {
+        com.cobblemon.mod.common.pokemon.Pokemon complet = getPokemonCompletJoueur();
+        if (complet == null) return null;
+        return convertirPokemonComplet(complet);
+    }
+
     public static Pokemon getJoueurActif() {
         ClientBattleActor acteur = getActeurJoueur();
-        if (acteur == null) {
-            return null;
-        }
+        if (acteur == null) return null;
         return premierActif(acteur);
     }
 
     public static Pokemon getAdversaireActif() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         ClientBattleActor acteurJoueur = getActeurJoueur();
-        if (battle == null || acteurJoueur == null) {
-            return null;
-        }
+        if (battle == null || acteurJoueur == null) return null;
         for (var side : battle.getSides()) {
             if (!side.getActors().contains(acteurJoueur)) {
                 for (ClientBattleActor acteur : side.getActors()) {
                     Pokemon p = premierActif(acteur);
-                    if (p != null) {
-                        return p;
-                    }
+                    if (p != null) return p;
                 }
             }
         }
@@ -56,51 +56,34 @@ public final class BattleStateTracker {
 
     public static com.cobblemon.mod.common.pokemon.Pokemon getPokemonCompletJoueur() {
         ClientBattleActor acteur = getActeurJoueur();
-        if (acteur == null || acteur.getActivePokemon().isEmpty()) {
-            return null;
-        }
+        if (acteur == null || acteur.getActivePokemon().isEmpty()) return null;
         ClientBattlePokemon actif = acteur.getActivePokemon().get(0).getBattlePokemon();
-        if (actif == null) {
-            return null;
-        }
+        if (actif == null) return null;
         UUID uuid = actif.getUuid();
         for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
-            if (p.getUuid().equals(uuid)) {
-                return p;
-            }
+            if (p.getUuid().equals(uuid)) return p;
         }
         return null;
     }
 
     private static ClientBattleActor getActeurJoueur() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
-        if (battle == null) {
-            return null;
-        }
+        if (battle == null) return null;
         var joueur = MinecraftClient.getInstance().player;
-        if (joueur == null) {
-            return null;
-        }
+        if (joueur == null) return null;
         UUID uuid = joueur.getUuid();
         for (var side : battle.getSides()) {
             for (ClientBattleActor acteur : side.getActors()) {
-                if (acteur.getUuid().equals(uuid)) {
-                    return acteur;
-                }
+                if (acteur.getUuid().equals(uuid)) return acteur;
             }
         }
         return null;
     }
 
     private static Pokemon premierActif(ClientBattleActor acteur) {
-        if (acteur.getActivePokemon().isEmpty()) {
-            return null;
-        }
-        ActiveClientBattlePokemon actif = acteur.getActivePokemon().get(0);
-        ClientBattlePokemon cbp = actif.getBattlePokemon();
-        if (cbp == null) {
-            return null;
-        }
+        if (acteur.getActivePokemon().isEmpty()) return null;
+        ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
+        if (cbp == null) return null;
         return convertir(cbp);
     }
 
@@ -110,8 +93,7 @@ public final class BattleStateTracker {
 
         PokemonType type1 = ShowdownIdMapper.type(espece.getPrimaryType().getName());
         PokemonType type2 = espece.getSecondaryType() != null
-            ? ShowdownIdMapper.type(espece.getSecondaryType().getName())
-            : null;
+            ? ShowdownIdMapper.type(espece.getSecondaryType().getName()) : null;
 
         Pokemon.Builder builder = Pokemon.builder(props.getSpecies(), cbp.getLevel(), type1, type2)
             .statBase(Stat.PV, statBase(espece, Stats.HP))
@@ -123,24 +105,17 @@ public final class BattleStateTracker {
             .nature(props.getNature() != null ? ShowdownIdMapper.nature(props.getNature()) : Nature.HARDI);
 
         if (props.getAbility() != null) {
-            String talentFr = ShowdownIdMapper.talent(props.getAbility());
-            if (talentFr != null) {
-                builder.talent(talentFr);
-            }
+            String t = ShowdownIdMapper.talent(props.getAbility());
+            if (t != null) builder.talent(t);
         }
         if (props.getHeldItem() != null) {
-            String objetFr = ShowdownIdMapper.objet(props.getHeldItem());
-            if (objetFr != null) {
-                builder.objet(objetFr);
-            }
+            String o = ShowdownIdMapper.objet(props.getHeldItem());
+            if (o != null) builder.objet(o);
         }
         if (props.getTeraType() != null) {
             PokemonType tera = ShowdownIdMapper.type(props.getTeraType());
-            if (tera != null) {
-                builder.teraType(tera);
-            }
+            if (tera != null) builder.teraType(tera);
         }
-
         if (props.getIvs() != null) {
             builder.iv(Stat.PV, props.getIvs().getOrDefault(Stats.HP));
             builder.iv(Stat.ATTAQUE, props.getIvs().getOrDefault(Stats.ATTACK));
@@ -160,15 +135,10 @@ public final class BattleStateTracker {
 
         Pokemon pokemon = builder.build();
 
-        // PV actuels :
-        // - isHpFlat = true (nos propres Pokémon / alliés) : hpValue est une valeur absolue (ex: 317).
-        // - isHpFlat = false (adversaire) : hpValue est déjà une fraction entre 0.0 et 1.0
-        //   (currentHealth / maxHealth côté serveur). PAS à diviser par maxHp.
         if (cbp.isHpFlat()) {
             pokemon.setPvActuels(Math.round(cbp.getHpValue()));
         } else {
-            float fraction = cbp.getHpValue(); // déjà une fraction 0-1
-            pokemon.setPvActuels(Math.round(fraction * pokemon.getPvMax()));
+            pokemon.setPvActuels(Math.round(cbp.getHpValue() * pokemon.getPvMax()));
         }
 
         PersistentStatus statut = cbp.getStatus();
@@ -195,6 +165,66 @@ public final class BattleStateTracker {
             if (spa != null) pokemon.setStage(Stat.ATTAQUE_SPE, spa);
             if (spd != null) pokemon.setStage(Stat.DEFENSE_SPE, spd);
             if (spe != null) pokemon.setStage(Stat.VITESSE, spe);
+        }
+
+        return pokemon;
+    }
+
+    private static Pokemon convertirPokemonComplet(com.cobblemon.mod.common.pokemon.Pokemon p) {
+        Species espece = p.getSpecies();
+
+        PokemonType type1 = ShowdownIdMapper.type(espece.getPrimaryType().getName());
+        PokemonType type2 = espece.getSecondaryType() != null
+            ? ShowdownIdMapper.type(espece.getSecondaryType().getName()) : null;
+
+        Pokemon.Builder builder = Pokemon.builder(espece.showdownId(), p.getLevel(), type1, type2)
+            .statBase(Stat.PV, statBase(espece, Stats.HP))
+            .statBase(Stat.ATTAQUE, statBase(espece, Stats.ATTACK))
+            .statBase(Stat.DEFENSE, statBase(espece, Stats.DEFENCE))
+            .statBase(Stat.ATTAQUE_SPE, statBase(espece, Stats.SPECIAL_ATTACK))
+            .statBase(Stat.DEFENSE_SPE, statBase(espece, Stats.SPECIAL_DEFENCE))
+            .statBase(Stat.VITESSE, statBase(espece, Stats.SPEED));
+
+        builder.iv(Stat.PV, p.getIvs().getOrDefault(Stats.HP));
+        builder.iv(Stat.ATTAQUE, p.getIvs().getOrDefault(Stats.ATTACK));
+        builder.iv(Stat.DEFENSE, p.getIvs().getOrDefault(Stats.DEFENCE));
+        builder.iv(Stat.ATTAQUE_SPE, p.getIvs().getOrDefault(Stats.SPECIAL_ATTACK));
+        builder.iv(Stat.DEFENSE_SPE, p.getIvs().getOrDefault(Stats.SPECIAL_DEFENCE));
+        builder.iv(Stat.VITESSE, p.getIvs().getOrDefault(Stats.SPEED));
+
+        builder.ev(Stat.PV, p.getEvs().getOrDefault(Stats.HP));
+        builder.ev(Stat.ATTAQUE, p.getEvs().getOrDefault(Stats.ATTACK));
+        builder.ev(Stat.DEFENSE, p.getEvs().getOrDefault(Stats.DEFENCE));
+        builder.ev(Stat.ATTAQUE_SPE, p.getEvs().getOrDefault(Stats.SPECIAL_ATTACK));
+        builder.ev(Stat.DEFENSE_SPE, p.getEvs().getOrDefault(Stats.SPECIAL_DEFENCE));
+        builder.ev(Stat.VITESSE, p.getEvs().getOrDefault(Stats.SPEED));
+
+        builder.nature(ShowdownIdMapper.nature(p.getNature().getName().getPath()));
+
+        String talentFr = ShowdownIdMapper.talent(p.getAbility().getName());
+        if (talentFr != null) builder.talent(talentFr);
+
+        if (!p.heldItem().isEmpty()) {
+            var itemKey = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                .getKey(p.heldItem().getItem());
+            if (itemKey != null) {
+                String objetFr = ShowdownIdMapper.objet(itemKey.getPath());
+                if (objetFr != null) builder.objet(objetFr);
+            }
+        }
+
+        Pokemon pokemon = builder.build();
+        pokemon.setPvActuels(p.getCurrentHealth());
+
+        if (p.getStatus() != null) {
+            switch (p.getStatus().getStatus().getShowdownName()) {
+                case "brn" -> pokemon.setStatut(Pokemon.Statut.BRULURE);
+                case "par" -> pokemon.setStatut(Pokemon.Statut.PARALYSIE);
+                case "psn" -> pokemon.setStatut(Pokemon.Statut.POISON);
+                case "tox" -> pokemon.setStatut(Pokemon.Statut.POISON_GRAVE);
+                case "slp" -> pokemon.setStatut(Pokemon.Statut.SOMMEIL);
+                case "frz" -> pokemon.setStatut(Pokemon.Statut.GEL);
+            }
         }
 
         return pokemon;
