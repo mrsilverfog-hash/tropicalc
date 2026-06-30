@@ -15,7 +15,9 @@
       "com.tropimon.tropicalc.TropiCalcClient"
     ]
   },
-  "mixins": [],
+  "mixins": [
+    "tropicalc.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.9",
     "minecraft": "~1.21.1",
