@@ -22,10 +22,8 @@ import java.util.Set;
  * Architecture "pilotée par le coup" plutôt que par les PV : dès qu'un
  * nouveau coup est détecté, on photographie les %PV des deux côtés, puis on
  * revérifie un court instant après pour calculer la perte causée par CE
- * coup précis. Le nom du dresseur propriétaire (transmis par Cobblemon dans
- * le message structuré) permet de savoir avec certitude si c'est le joueur
- * ou l'adversaire qui a attaqué, plutôt que de le déduire du sens de la
- * baisse de PV (peu fiable en cas d'échanges rapprochés).
+ * coup précis. Le nom du dresseur propriétaire permet de savoir avec
+ * certitude si c'est le joueur ou l'adversaire qui a attaqué.
  *
  * À appeler une fois par frame (depuis l'overlay) via {@link #tick()}.
  */
@@ -36,9 +34,7 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
 
-    /** Délai après détection d'un coup avant de considérer les PV comme stabilisés. */
     private static final long DELAI_APRES_COUP_MS = 900L;
-
     private static final double TOLERANCE_POURCENT = 1.5;
 
     private static MoveUseTracker.CoupDetecte coupEnAttente = null;
@@ -73,10 +69,15 @@ public final class ObservationCollector {
             coupEnAttente = coupActuel;
             pvJoueurAvant = pvJoueur;
             pvAdversaireAvant = pvAdversaire;
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] Nouveau coup capturé : {} pvJoueurAvant={} pvAdversaireAvant={}",
+                coupActuel.showdownId(), pvJoueurAvant, pvAdversaireAvant);
             return;
         }
 
         if (coupEnAttente != null && maintenant - coupEnAttente.timestampMs() >= DELAI_APRES_COUP_MS) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] Délai écoulé, finalisation de : {}", coupEnAttente.showdownId());
             finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
             coupEnAttente = null;
         }
@@ -86,20 +87,30 @@ public final class ObservationCollector {
                                    double pvJoueurApres, double pvAdversaireApres) {
         MoveTemplate template = Moves.INSTANCE.getByName(coup.showdownId());
         if (template == null) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] finaliser : template introuvable pour {}", coup.showdownId());
             return;
         }
         com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
         if (capacite == null || capacite.estCapaciteDeStatut()) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] finaliser : capacite null ou statut pour {}", coup.showdownId());
             return;
         }
 
         double perteJoueur = pvJoueurAvant - pvJoueurApres;
         double perteAdversaire = pvAdversaireAvant - pvAdversaireApres;
 
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] finaliser : pvJoueurAvant={} pvJoueurApres={} pvAdvAvant={} pvAdvApres={} proprietaire={}",
+            pvJoueurAvant, pvJoueurApres, pvAdversaireAvant, pvAdversaireApres, coup.proprietaire());
+
         Boolean adversaireEtaitAttaquant = determinerAttaquant(coup.proprietaire());
 
         if (adversaireEtaitAttaquant == null) {
             if (perteJoueur <= 0.5 && perteAdversaire <= 0.5) {
+                com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                    "[TropiCalc-diag] finaliser : aucune perte significative, abandon");
                 return;
             }
             adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
@@ -107,6 +118,8 @@ public final class ObservationCollector {
 
         double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
         if (perte < 0.5) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] finaliser : perte trop faible ({}), abandon", perte);
             return;
         }
 
