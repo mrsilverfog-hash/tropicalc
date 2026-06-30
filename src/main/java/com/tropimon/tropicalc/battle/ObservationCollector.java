@@ -8,6 +8,7 @@ import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ProfilAdversaire;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
+import net.minecraft.client.MinecraftClient;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,17 +16,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Détecte automatiquement les baisses de PV en combat (côté joueur ou côté
- * adverse) et, si un coup a été identifié récemment par MoveUseTracker, les
- * transforme en observations pour resserrer le ProfilAdversaire courant.
+ * Détecte automatiquement les coups utilisés en combat (via MoveUseTracker)
+ * et les dégâts qu'ils causent, pour resserrer le ProfilAdversaire courant.
+ *
+ * Architecture "pilotée par le coup" plutôt que par les PV : dès qu'un
+ * nouveau coup est détecté, on photographie les %PV des deux côtés, puis on
+ * revérifie un court instant après pour calculer la perte causée par CE
+ * coup précis. Le nom du dresseur propriétaire (transmis par Cobblemon dans
+ * le message structuré) permet de savoir avec certitude si c'est le joueur
+ * ou l'adversaire qui a attaqué, plutôt que de le déduire du sens de la
+ * baisse de PV (peu fiable en cas d'échanges rapprochés).
  *
  * À appeler une fois par frame (depuis l'overlay) via {@link #tick()}.
- *
- * La barre de PV de Cobblemon s'anime progressivement vers sa valeur finale
- * (plusieurs micro-changements en l'espace d'une seconde environ). Pour ne
- * générer qu'UNE SEULE observation propre par coup plutôt qu'une dizaine de
- * micro-observations bruitées, on attend que la valeur lue soit stable
- * pendant DEBOUNCE_MS avant de la considérer comme "définitive".
  */
 public final class ObservationCollector {
 
@@ -34,17 +36,14 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
 
-    private static final long DEBOUNCE_MS = 400;
-
-    private static Double valeurEnAttenteJoueur = null;
-    private static long dernierChangementJoueurMs = 0L;
-    private static Double dernierePourcentageStableJoueur = null;
-
-    private static Double valeurEnAttenteAdversaire = null;
-    private static long dernierChangementAdversaireMs = 0L;
-    private static Double dernierePourcentageStableAdversaire = null;
+    /** Délai après détection d'un coup avant de considérer les PV comme stabilisés. */
+    private static final long DELAI_APRES_COUP_MS = 900L;
 
     private static final double TOLERANCE_POURCENT = 1.5;
+
+    private static MoveUseTracker.CoupDetecte coupEnAttente = null;
+    private static double pvJoueurAvant;
+    private static double pvAdversaireAvant;
 
     public static void tick() {
         if (!BattleStateTracker.estEnCombat()) {
@@ -58,63 +57,62 @@ public final class ObservationCollector {
             return;
         }
 
-        long maintenant = System.currentTimeMillis();
         double pvJoueur = joueur.getPourcentagePv();
         double pvAdversaire = adversaire.getPourcentagePv();
+        long maintenant = System.currentTimeMillis();
 
-        // --- Côté joueur ---
-        if (valeurEnAttenteJoueur == null || valeurEnAttenteJoueur != pvJoueur) {
-            valeurEnAttenteJoueur = pvJoueur;
-            dernierChangementJoueurMs = maintenant;
-        } else if (maintenant - dernierChangementJoueurMs >= DEBOUNCE_MS) {
-            if (dernierePourcentageStableJoueur != null && pvJoueur < dernierePourcentageStableJoueur - 0.5) {
-                double perte = dernierePourcentageStableJoueur - pvJoueur;
-                com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                    "[TropiCalc-diag] Baisse PV joueur (stabilisée) : {} -> {} (perte {})",
-                    dernierePourcentageStableJoueur, pvJoueur, perte);
-                traiterObservation(true, adversaire, joueur, perte);
+        MoveUseTracker.CoupDetecte coupActuel = MoveUseTracker.getDernierCoupRecent();
+
+        boolean nouveauCoup = coupActuel != null
+            && (coupEnAttente == null || coupActuel.timestampMs() != coupEnAttente.timestampMs());
+
+        if (nouveauCoup) {
+            if (coupEnAttente != null) {
+                finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
             }
-            dernierePourcentageStableJoueur = pvJoueur;
+            coupEnAttente = coupActuel;
+            pvJoueurAvant = pvJoueur;
+            pvAdversaireAvant = pvAdversaire;
+            return;
         }
 
-        // --- Côté adversaire ---
-        if (valeurEnAttenteAdversaire == null || valeurEnAttenteAdversaire != pvAdversaire) {
-            valeurEnAttenteAdversaire = pvAdversaire;
-            dernierChangementAdversaireMs = maintenant;
-        } else if (maintenant - dernierChangementAdversaireMs >= DEBOUNCE_MS) {
-            if (dernierePourcentageStableAdversaire != null && pvAdversaire < dernierePourcentageStableAdversaire - 0.5) {
-                double perte = dernierePourcentageStableAdversaire - pvAdversaire;
-                com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                    "[TropiCalc-diag] Baisse PV adversaire (stabilisée) : {} -> {} (perte {})",
-                    dernierePourcentageStableAdversaire, pvAdversaire, perte);
-                traiterObservation(false, adversaire, joueur, perte);
-            }
-            dernierePourcentageStableAdversaire = pvAdversaire;
+        if (coupEnAttente != null && maintenant - coupEnAttente.timestampMs() >= DELAI_APRES_COUP_MS) {
+            finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
+            coupEnAttente = null;
         }
     }
 
-    private static void traiterObservation(boolean adversaireEtaitAttaquant, Pokemon adversaire, Pokemon joueur,
-                                            double pourcentagePerdu) {
-        String coupId = MoveUseTracker.getDernierCoupRecent();
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] traiterObservation : coupId={}", coupId);
-        if (coupId == null) {
-            return;
-        }
-
-        MoveTemplate template = Moves.INSTANCE.getByName(coupId);
+    private static void finaliser(MoveUseTracker.CoupDetecte coup, Pokemon adversaire, Pokemon joueur,
+                                   double pvJoueurApres, double pvAdversaireApres) {
+        MoveTemplate template = Moves.INSTANCE.getByName(coup.showdownId());
         if (template == null) {
             return;
         }
-
         com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
         if (capacite == null || capacite.estCapaciteDeStatut()) {
             return;
         }
 
-        MoveUseTracker.consommer();
+        double perteJoueur = pvJoueurAvant - pvJoueurApres;
+        double perteAdversaire = pvAdversaireAvant - pvAdversaireApres;
+
+        Boolean adversaireEtaitAttaquant = determinerAttaquant(coup.proprietaire());
+
+        if (adversaireEtaitAttaquant == null) {
+            if (perteJoueur <= 0.5 && perteAdversaire <= 0.5) {
+                return;
+            }
+            adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
+        }
+
+        double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
+        if (perte < 0.5) {
+            return;
+        }
+
         com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] Observation enregistrée pour espèce={} coup={}", adversaire.getEspece(), coupId);
+            "[TropiCalc-diag] Observation finalisée : coup={} adversaireAttaquant={} perte={}",
+            coup.showdownId(), adversaireEtaitAttaquant, perte);
 
         ProfilAdversaire profil = PROFILS.computeIfAbsent(adversaire.getEspece(), k -> {
             Set<String> talentsReels = getTalentsReelsEspece(adversaire);
@@ -128,11 +126,24 @@ public final class ObservationCollector {
         });
 
         Field terrainNeutre = new Field();
-        double observeMin = Math.max(0, pourcentagePerdu - TOLERANCE_POURCENT);
-        double observeMax = pourcentagePerdu + TOLERANCE_POURCENT;
+        double observeMin = Math.max(0, perte - TOLERANCE_POURCENT);
+        double observeMax = perte + TOLERANCE_POURCENT;
 
         profil.enregistrerObservation(adversaireEtaitAttaquant, adversaire, joueur, capacite, terrainNeutre,
             observeMin, observeMax);
+    }
+
+    private static Boolean determinerAttaquant(String proprietaire) {
+        if (proprietaire == null) {
+            return null;
+        }
+        var joueurMc = MinecraftClient.getInstance().player;
+        if (joueurMc == null) {
+            return null;
+        }
+        String nomJoueur = joueurMc.getGameProfile().getName();
+        boolean estLeJoueur = proprietaire.equalsIgnoreCase(nomJoueur);
+        return !estLeJoueur;
     }
 
     public static ProfilAdversaire getProfil(String espece) {
@@ -141,10 +152,7 @@ public final class ObservationCollector {
 
     public static void reinitialiser() {
         PROFILS.clear();
-        valeurEnAttenteJoueur = null;
-        dernierePourcentageStableJoueur = null;
-        valeurEnAttenteAdversaire = null;
-        dernierePourcentageStableAdversaire = null;
+        coupEnAttente = null;
     }
 
     private static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
