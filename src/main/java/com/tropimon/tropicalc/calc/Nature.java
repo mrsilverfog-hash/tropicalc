@@ -2,9 +2,6 @@ package com.tropimon.tropicalc.calc;
 
 /**
  * Les 25 natures officielles (noms français vérifiés sur Poképédia).
- * Chaque nature augmente une stat de 10% et en diminue une autre de 10%,
- * sauf les 5 natures neutres (Hardi, Docile, Sérieux, Pudique, Bizarre)
- * qui n'ont aucun effet.
  */
 public enum Nature {
     HARDI(null, null),
@@ -53,10 +50,6 @@ public enum Nature {
         return statAugmentee == null;
     }
 
-    /**
-     * Renvoie le multiplicateur (0.9 / 1.0 / 1.1) appliqué par cette nature
-     * sur une statistique donnée. Utilisé directement dans le calcul de stat.
-     */
     public double multiplicateur(Stat stat) {
         if (stat == statAugmentee) {
             return 1.1;
