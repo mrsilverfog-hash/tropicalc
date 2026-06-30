@@ -15,11 +15,11 @@ import net.minecraft.text.Text;
 /**
  * Overlay affiché automatiquement pendant un combat Cobblemon (format Simple
  * uniquement), listant les dégâts estimés min/max de chaque capacité du
- * Pokémon actif du joueur contre le Pokémon actif adverse.
+ * Pokémon actif du joueur contre le Pokémon actif adverse, ainsi qu'un
+ * aperçu de ce que le moteur d'inférence a déduit sur l'adversaire jusqu'ici.
  *
  * Limitation actuelle : ne prend pas encore en compte la météo/terrain réels
  * du combat (Field neutre utilisé), ni les écrans (Protection/Mur Lumière).
- * Ce sera ajouté une fois la synchronisation de l'état du terrain branchée.
  */
 public final class CalcOverlay implements HudRenderCallback {
 
@@ -40,6 +40,8 @@ public final class CalcOverlay implements HudRenderCallback {
         if (adversaire == null || joueur == null || monComplet == null) {
             return;
         }
+
+        com.tropimon.tropicalc.battle.ObservationCollector.tick();
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
@@ -76,6 +78,19 @@ public final class CalcOverlay implements HudRenderCallback {
 
             context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
             y += hauteurLigne;
+        }
+
+        com.tropimon.tropicalc.calc.ProfilAdversaire profil =
+            com.tropimon.tropicalc.battle.ObservationCollector.getProfil(adversaire.getEspece());
+        if (profil != null) {
+            y += 4;
+            context.drawText(client.textRenderer, Text.literal("Inférence (Atk) :"), x, y, COULEUR_TITRE, true);
+            y += hauteurLigne;
+            String ligneAtk = String.format("EV %d-%d", profil.attaque.evMin, profil.attaque.evMax);
+            context.drawText(client.textRenderer, Text.literal(ligneAtk), x, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+            String ligneObjets = "Objets : " + profil.attaque.objetsPossibles;
+            context.drawText(client.textRenderer, Text.literal(ligneObjets), x, y, COULEUR_TEXTE, true);
         }
     }
 
