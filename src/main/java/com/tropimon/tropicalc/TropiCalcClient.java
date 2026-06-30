@@ -1,6 +1,8 @@
 package com.tropimon.tropicalc;
 
+import com.tropimon.tropicalc.client.CalcOverlay;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ public class TropiCalcClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        HudRenderCallback.EVENT.register(new CalcOverlay());
         LOGGER.info("TropiCalc chargé - moteur de calcul de dégâts (format Simple uniquement)");
     }
 }
