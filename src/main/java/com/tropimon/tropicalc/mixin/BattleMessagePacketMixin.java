@@ -2,7 +2,7 @@ package com.tropimon.tropicalc.mixin;
 
 import com.cobblemon.mod.common.net.messages.client.battle.BattleMessagePacket;
 import com.tropimon.tropicalc.battle.MoveUseTracker;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BattleMessagePacketMixin {
 
     @Inject(method = "decode", at = @At("RETURN"))
-    private void tropicalc$onDecode(RegistryFriendlyByteBuf buffer, CallbackInfoReturnable<BattleMessagePacket> cir) {
+    private void tropicalc$onDecode(RegistryByteBuf buffer, CallbackInfoReturnable<BattleMessagePacket> cir) {
         try {
             BattleMessagePacket packet = cir.getReturnValue();
             if (packet == null) {
