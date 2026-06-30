@@ -7,10 +7,6 @@ import net.minecraft.text.TranslatableTextContent;
  * Détecte les événements de combat structurés (coups utilisés, nouveaux tours)
  * depuis les paquets réseau de Cobblemon (via BattleMessagePacketMixin),
  * en lisant les clés de traduction brutes plutôt que le texte traduit.
- *
- * Notifie ObservationCollector à chaque frontière de tour et à chaque coup
- * détecté, pour que ce dernier puisse construire des observations propres
- * sans se soucier du timing réseau.
  */
 public final class MoveUseTracker {
 
@@ -66,8 +62,6 @@ public final class MoveUseTracker {
         }
 
         if (coupId != null) {
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] Coup détecté : {} (propriétaire={})", coupId, proprietaire);
             ObservationCollector.signalerCoupUtilise(new CoupDetecte(coupId, proprietaire));
         }
     }
