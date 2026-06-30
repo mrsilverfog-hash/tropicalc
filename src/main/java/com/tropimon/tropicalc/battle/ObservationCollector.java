@@ -15,109 +15,93 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Construit des observations de dégâts en se basant sur les frontières de
+ * tour (signal "cobblemon.battle.turn") plutôt que sur le timing des
+ * paquets HP. Approche beaucoup plus robuste car les HP de fin de tour N
+ * sont entièrement appliqués quand le signal "tour N+1" arrive.
+ */
 public final class ObservationCollector {
 
     private ObservationCollector() {
     }
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
-
-    private static final long DELAI_APRES_COUP_MS = 900L;
     private static final double TOLERANCE_POURCENT = 1.5;
 
-    private static MoveUseTracker.CoupDetecte coupEnAttente = null;
-    private static double pvJoueurAvant;
-    private static double pvAdversaireAvant;
+    private static double pvJoueurDebutTour = -1;
+    private static double pvAdversaireDebutTour = -1;
+    private static MoveUseTracker.CoupDetecte coupDuTour = null;
+    private static String espaceAdversaireDuTour = null;
 
-    public static void tick() {
-        if (!BattleStateTracker.estEnCombat()) {
-            reinitialiser();
-            return;
-        }
-
+    public static synchronized void signalerNouveauTour() {
         Pokemon joueur = BattleStateTracker.getJoueurActif();
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+
         if (joueur == null || adversaire == null) {
             return;
         }
 
-        double pvJoueur = joueur.getPourcentagePv();
-        double pvAdversaire = adversaire.getPourcentagePv();
-        long maintenant = System.currentTimeMillis();
+        double pvJoueurMaintenant = joueur.getPourcentagePv();
+        double pvAdversaireMaintenant = adversaire.getPourcentagePv();
 
-        MoveUseTracker.CoupDetecte coupActuel = MoveUseTracker.getDernierCoupRecent();
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] Nouveau tour — pvJoueur={} pvAdv={} coupDuTour={}",
+            pvJoueurMaintenant, pvAdversaireMaintenant,
+            coupDuTour != null ? coupDuTour.showdownId() : "null");
 
-        boolean nouveauCoup = coupActuel != null
-            && (coupEnAttente == null || coupActuel.timestampMs() != coupEnAttente.timestampMs());
+        if (coupDuTour != null && pvJoueurDebutTour >= 0 && pvAdversaireDebutTour >= 0) {
+            double perteJoueur = pvJoueurDebutTour - pvJoueurMaintenant;
+            double perteAdversaire = pvAdversaireDebutTour - pvAdversaireMaintenant;
 
-        if (nouveauCoup) {
-            if (coupEnAttente != null) {
-                finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] Observation tour : perteJoueur={} perteAdv={} proprietaire={}",
+                perteJoueur, perteAdversaire, coupDuTour.proprietaire());
+
+            Boolean adversaireEtaitAttaquant = determinerAttaquant(coupDuTour.proprietaire());
+            if (adversaireEtaitAttaquant == null) {
+                adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
             }
-            // On consomme immédiatement pour éviter de re-détecter le même coup
-            // comme "nouveau" à chaque frame si la finalisation ne génère pas
-            // d'observation (perte trop faible, coup raté, etc.)
-            MoveUseTracker.consommer();
-            coupEnAttente = coupActuel;
-            pvJoueurAvant = pvJoueur;
-            pvAdversaireAvant = pvAdversaire;
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] Nouveau coup capturé : {} pvJoueurAvant={} pvAdversaireAvant={}",
-                coupActuel.showdownId(), pvJoueurAvant, pvAdversaireAvant);
-            return;
+
+            double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
+
+            if (perte >= 0.5) {
+                enregistrerObservation(adversaireEtaitAttaquant, perte, adversaire, joueur);
+            } else {
+                com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                    "[TropiCalc-diag] Perte trop faible ({}), abandon", perte);
+            }
         }
 
-        if (coupEnAttente != null && maintenant - coupEnAttente.timestampMs() >= DELAI_APRES_COUP_MS) {
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] Délai écoulé, finalisation de : {}", coupEnAttente.showdownId());
-            finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
-            coupEnAttente = null;
-        }
+        pvJoueurDebutTour = pvJoueurMaintenant;
+        pvAdversaireDebutTour = pvAdversaireMaintenant;
+        espaceAdversaireDuTour = adversaire.getEspece();
+        coupDuTour = null;
     }
 
-    private static void finaliser(MoveUseTracker.CoupDetecte coup, Pokemon adversaire, Pokemon joueur,
-                                   double pvJoueurApres, double pvAdversaireApres) {
-        MoveTemplate template = Moves.INSTANCE.getByName(coup.showdownId());
+    public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
+        coupDuTour = coup;
+    }
+
+    private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
+                                                Pokemon adversaire, Pokemon joueur) {
+        if (coupDuTour == null) {
+            return;
+        }
+        MoveTemplate template = Moves.INSTANCE.getByName(coupDuTour.showdownId());
         if (template == null) {
             com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] finaliser : template introuvable pour {}", coup.showdownId());
+                "[TropiCalc-diag] template introuvable pour {}", coupDuTour.showdownId());
             return;
         }
         com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
         if (capacite == null || capacite.estCapaciteDeStatut()) {
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] finaliser : capacite null ou statut pour {}", coup.showdownId());
-            return;
-        }
-
-        double perteJoueur = pvJoueurAvant - pvJoueurApres;
-        double perteAdversaire = pvAdversaireAvant - pvAdversaireApres;
-
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] finaliser : pvJoueurAvant={} pvJoueurApres={} pvAdvAvant={} pvAdvApres={} proprietaire={}",
-            pvJoueurAvant, pvJoueurApres, pvAdversaireAvant, pvAdversaireApres, coup.proprietaire());
-
-        Boolean adversaireEtaitAttaquant = determinerAttaquant(coup.proprietaire());
-
-        if (adversaireEtaitAttaquant == null) {
-            if (perteJoueur <= 0.5 && perteAdversaire <= 0.5) {
-                com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                    "[TropiCalc-diag] finaliser : aucune perte significative, abandon");
-                return;
-            }
-            adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
-        }
-
-        double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
-        if (perte < 0.5) {
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] finaliser : perte trop faible ({}), abandon", perte);
             return;
         }
 
         com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
             "[TropiCalc-diag] Observation finalisée : coup={} adversaireAttaquant={} perte={}",
-            coup.showdownId(), adversaireEtaitAttaquant, perte);
+            coupDuTour.showdownId(), adversaireEtaitAttaquant, perte);
 
         ProfilAdversaire profil = PROFILS.computeIfAbsent(adversaire.getEspece(), k -> {
             Set<String> talentsReels = getTalentsReelsEspece(adversaire);
@@ -138,6 +122,12 @@ public final class ObservationCollector {
             observeMin, observeMax);
     }
 
+    public static void tick() {
+        if (!BattleStateTracker.estEnCombat()) {
+            reinitialiser();
+        }
+    }
+
     private static Boolean determinerAttaquant(String proprietaire) {
         if (proprietaire == null) {
             return null;
@@ -147,17 +137,23 @@ public final class ObservationCollector {
             return null;
         }
         String nomJoueur = joueurMc.getGameProfile().getName();
-        boolean estLeJoueur = proprietaire.equalsIgnoreCase(nomJoueur);
-        return !estLeJoueur;
+        return !proprietaire.equalsIgnoreCase(nomJoueur);
     }
 
     public static ProfilAdversaire getProfil(String espece) {
         return PROFILS.get(espece);
     }
 
+    public static String getEspaceAdversaireCourant() {
+        return espaceAdversaireDuTour;
+    }
+
     public static void reinitialiser() {
         PROFILS.clear();
-        coupEnAttente = null;
+        pvJoueurDebutTour = -1;
+        pvAdversaireDebutTour = -1;
+        coupDuTour = null;
+        espaceAdversaireDuTour = null;
     }
 
     private static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
