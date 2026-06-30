@@ -67,6 +67,28 @@ public final class BattleStateTracker {
         return null;
     }
 
+    /**
+     * Renvoie le Pokémon complet (avec moveset réel) du joueur correspondant
+     * au Pokémon actif en combat, ou null si indisponible.
+     */
+    public static com.cobblemon.mod.common.pokemon.Pokemon getPokemonCompletJoueur() {
+        ClientBattleActor acteur = getActeurJoueur();
+        if (acteur == null || acteur.getActivePokemon().isEmpty()) {
+            return null;
+        }
+        ClientBattlePokemon actif = acteur.getActivePokemon().get(0).getBattlePokemon();
+        if (actif == null) {
+            return null;
+        }
+        UUID uuid = actif.getUuid();
+        for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
+            if (p.getUuid().equals(uuid)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     private static ClientBattleActor getActeurJoueur() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         if (battle == null) {
