@@ -1,20 +1,7 @@
 package com.tropimon.tropicalc.calc;
 
-/**
- * Moteur de calcul de dégâts Gen 9, format Simple uniquement.
- * Assemble PokemonType, Nature, Stat, Move, Pokemon, Field, ItemModifier
- * et AbilityModifier pour produire une fourchette de dégâts sur 16 rolls
- * (85% à 100%), comme le fait Pokémon Showdown / Showdex.
- *
- * Limitations connues (à affiner plus tard si besoin) :
- * - Pas de gestion de Sniper (ratio crit modifié) : crit fixé à x1.5.
- * - Pas de gestion des capacités à puissance variable (Lance-Soleil, Catapulte...).
- * - Pas de gestion de Façade qui annule la pénalité de brûlure.
- * - Évoluroc s'applique sans vérifier le stade d'évolution du Pokémon.
- */
 public class DamageCalculator {
 
-    /** Résultat complet d'un calcul de dégâts sur les 16 rolls possibles (85%-100%). */
     public static class Resultat {
         public final int[] degatsParRoll;
         public final int degatsMin;
@@ -50,29 +37,16 @@ public class DamageCalculator {
             this.koPossible = degatsMax >= pvActuelsDefenseur;
         }
 
-        public static Resultat immunise() {
-            return new Resultat(new int[0], 0, 0, true, 0.0);
-        }
-
-        public static Resultat sansDegats() {
-            return new Resultat(new int[0], 0, 0, false, 1.0);
-        }
+        public static Resultat immunise() { return new Resultat(new int[0], 0, 0, true, 0.0); }
+        public static Resultat sansDegats() { return new Resultat(new int[0], 0, 0, false, 1.0); }
 
         private static Resultat depuis(int[] degats, Pokemon defenseur, double efficacite) {
             return new Resultat(degats, defenseur.getPvMax(), defenseur.getPvActuels(), false, efficacite);
         }
     }
 
-    private DamageCalculator() {
-    }
+    private DamageCalculator() {}
 
-    /**
-     * Calcule les dégâts d'une capacité de attaquant vers defenseur.
-     *
-     * @param ecransDefenseur les écrans actifs côté défenseur (Protection,
-     *                        Mur Lumière, Brume Aurore), ou null si aucun.
-     * @param critique        si vrai, calcule un coup critique.
-     */
     public static Resultat calculer(Pokemon attaquant, Pokemon defenseur, Move capacite,
                                      Field terrain, Field.Ecrans ecransDefenseur, boolean critique) {
 
@@ -83,31 +57,19 @@ public class DamageCalculator {
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
 
         AbilityModifier talentAttaquant = AbilityModifier.pour(attaquant.getTalent());
-        if (talentAttaquant != null) {
-            talentAttaquant.appliquerCoteAttaquant(ctx);
-        }
+        if (talentAttaquant != null) talentAttaquant.appliquerCoteAttaquant(ctx);
         ItemModifier objetAttaquant = ItemModifier.pour(attaquant.getObjet());
-        if (objetAttaquant != null) {
-            objetAttaquant.appliquerCoteAttaquant(ctx);
-        }
+        if (objetAttaquant != null) objetAttaquant.appliquerCoteAttaquant(ctx);
 
         AbilityModifier talentDefenseur = AbilityModifier.pour(defenseur.getTalent());
-        if (talentDefenseur != null) {
-            talentDefenseur.appliquerCoteDefenseur(ctx);
-        }
+        if (talentDefenseur != null) talentDefenseur.appliquerCoteDefenseur(ctx);
         ItemModifier objetDefenseur = ItemModifier.pour(defenseur.getObjet());
-        if (objetDefenseur != null) {
-            objetDefenseur.appliquerCoteDefenseur(ctx);
-        }
+        if (objetDefenseur != null) objetDefenseur.appliquerCoteDefenseur(ctx);
 
-        if (ctx.immuniteType) {
-            return Resultat.immunise();
-        }
+        if (ctx.immuniteType) return Resultat.immunise();
 
         double efficacite = calculerEfficaciteType(capacite, defenseur);
-        if (efficacite == 0.0) {
-            return Resultat.immunise();
-        }
+        if (efficacite == 0.0) return Resultat.immunise();
 
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
 
@@ -160,14 +122,10 @@ public class DamageCalculator {
         return capacite.getType().efficaciteContre(t1, t2);
     }
 
-    /**
-     * Applique les effets qui ont besoin de connaître l'efficacité de type
-     * avant de se déclencher (Ceinture Brutale, Filtre/Solide Roc, Verres Teintés).
-     */
     private static void appliquerModificateursConditionnels(ModifierContext ctx, double efficacite,
                                                               Pokemon attaquant, Pokemon defenseur) {
         if (efficacite > 1.0) {
-            if ("Ceinture Brutale".equals(attaquant.getObjet())) {
+            if ("Ceinture Pro".equals(attaquant.getObjet())) {
                 ctx.multiplicateurDegatsFinal *= 1.2;
             }
             String talentDef = defenseur.getTalent();
@@ -229,16 +187,10 @@ public class DamageCalculator {
     }
 
     private static double appliquerStage(int statBase, int stage) {
-        if (stage >= 0) {
-            return statBase * (2.0 + stage) / 2.0;
-        }
+        if (stage >= 0) return statBase * (2.0 + stage) / 2.0;
         return statBase * 2.0 / (2.0 - stage);
     }
 
-    /**
-     * Calcule le multiplicateur STAB en tenant compte de la Téracristallisation
-     * et de l'Adaptabilité (talent qui augmente le STAB).
-     */
     private static double calculerSTAB(Pokemon attaquant, Move capacite, ModifierContext ctx) {
         PokemonType typeCapacite = capacite.getType();
         boolean typeOriginal = attaquant.possedeType(typeCapacite);
@@ -246,28 +198,19 @@ public class DamageCalculator {
         if (attaquant.isTeracristallise()) {
             PokemonType tera = attaquant.getTeraType();
             if (tera != null && typeCapacite == tera) {
-                boolean correspondAuTypeOrigine = typeOriginal;
-                if (correspondAuTypeOrigine) {
-                    return ctx.stabAugmente ? 2.25 : 2.0;
-                }
+                if (typeOriginal) return ctx.stabAugmente ? 2.25 : 2.0;
                 return ctx.stabAugmente ? 2.0 : 1.5;
             }
-            if (typeOriginal) {
-                return ctx.stabAugmente ? 2.0 : 1.5;
-            }
+            if (typeOriginal) return ctx.stabAugmente ? 2.0 : 1.5;
             return 1.0;
         }
 
-        if (typeOriginal) {
-            return ctx.stabAugmente ? 2.0 : 1.5;
-        }
+        if (typeOriginal) return ctx.stabAugmente ? 2.0 : 1.5;
         return 1.0;
     }
 
     private static boolean estAuSol(Pokemon p) {
-        if (p.possedeType(PokemonType.VOL)) {
-            return false;
-        }
+        if (p.possedeType(PokemonType.VOL)) return false;
         return !"Lévitation".equals(p.getTalent());
     }
 }
