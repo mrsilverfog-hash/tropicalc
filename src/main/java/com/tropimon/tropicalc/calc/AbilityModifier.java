@@ -4,18 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Représente l'effet d'un talent sur le calcul de dégâts. Couvre les
- * talents les plus pertinents en stall/compétitif. Noms français vérifiés
- * (Poképédia / sources officielles). Liste volontairement non-exhaustive
- * (297 talents existent au total) ; facilement extensible via le registre.
+ * Représente l'effet d'un talent sur le calcul de dégâts.
  */
 public interface AbilityModifier {
 
-    /** Appelé quand ce talent appartient au Pokémon qui attaque. */
     default void appliquerCoteAttaquant(ModifierContext ctx) {
     }
 
-    /** Appelé quand ce talent appartient au Pokémon qui défend. */
     default void appliquerCoteDefenseur(ModifierContext ctx) {
     }
 
@@ -31,21 +26,12 @@ public interface AbilityModifier {
     private static Map<String, AbilityModifier> construireRegistre() {
         Map<String, AbilityModifier> m = new HashMap<>();
 
-        // --- Immunités de type ---
-
         m.put("Lévitation", immuniteContre(PokemonType.SOL));
         m.put("Absorb'Eau", immuniteContre(PokemonType.EAU));
         m.put("Absorb'Volt", immuniteContre(PokemonType.ELECTRIK));
         m.put("Lavabo", immuniteContre(PokemonType.EAU));
-
-        // Torche (Flash Fire) : immunise au Feu. Le boost de 1.5x sur les
-        // capacités Feu suivantes du porteur n'est pas géré ici (nécessite
-        // un état persistant entre tours, hors scope du calcul instantané).
         m.put("Torche", immuniteContre(PokemonType.FEU));
 
-        // --- Réduction de dégâts subis ---
-
-        // Isograisse (Thick Fat) : divise par deux les dégâts des capacités Feu et Glace
         m.put("Isograisse", new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
@@ -56,19 +42,15 @@ public interface AbilityModifier {
             }
         });
 
-        // Filtre / Solide Roc : réduit de 25% les dégâts d'un coup super efficace.
-        // Le déclenchement réel (vérifier efficacité > 1.0) est fait par
-        // DamageCalculator après calcul du type chart.
         AbilityModifier reductionSuperEfficace = new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                // Voir DamageCalculator.appliquerTalentsConditionnels()
+                // Déclenchement réel géré par DamageCalculator.
             }
         };
         m.put("Filtre", reductionSuperEfficace);
         m.put("Solide Roc", reductionSuperEfficace);
 
-        // Multi-écailles / Spectro-Bouclier : dégâts x0.5 si le défenseur est à 100% PV
         AbilityModifier demiDegatsPleinePv = new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
@@ -80,10 +62,6 @@ public interface AbilityModifier {
         m.put("Multi-écailles", demiDegatsPleinePv);
         m.put("Spectro-Bouclier", demiDegatsPleinePv);
 
-        // --- Ignorer les stages de combat ---
-
-        // Lucidité (Unaware) : côté attaquant, ignore les stages de Défense
-        // du défenseur ; côté défenseur, ignore les stages d'Attaque de l'attaquant.
         m.put("Lucidité", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -96,9 +74,6 @@ public interface AbilityModifier {
             }
         });
 
-        // --- Modificateurs offensifs ---
-
-        // Adaptabilité (Adaptability) : le STAB passe de x1.5 à x2.0
         m.put("Adaptabilité", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -106,8 +81,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Cran (Guts) : Attaque x1.5 si le porteur est statué, et ignore la
-        // pénalité de brûlure sur les capacités physiques
         m.put("Cran", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -118,7 +91,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Adrénaline (Hustle) : Attaque x1.5 sur capacités physiques
         m.put("Adrénaline", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -128,7 +100,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Technicien (Technician) : x1.5 si la puissance de base est <= 60
         m.put("Technicien", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -138,7 +109,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Poing de Fer (Iron Fist) : x1.2 sur les capacités de poing
         m.put("Poing de Fer", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -148,7 +118,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Mâchoire Brute (Strong Jaw) : x1.5 sur les capacités de morsure
         m.put("Mâchoire Brute", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -158,7 +127,6 @@ public interface AbilityModifier {
             }
         });
 
-        // Force Sable (Sand Force) : x1.3 sur Roche/Sol/Acier pendant une tempête de sable
         m.put("Force Sable", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -171,12 +139,10 @@ public interface AbilityModifier {
             }
         });
 
-        // Verres Teintés (Tinted Lens) : double les dégâts d'un coup "pas très efficace".
-        // Le déclenchement réel est fait par DamageCalculator après le type chart.
         m.put("Verres Teintés", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                // Voir DamageCalculator.appliquerTalentsConditionnels()
+                // Déclenchement réel géré par DamageCalculator.
             }
         });
 
