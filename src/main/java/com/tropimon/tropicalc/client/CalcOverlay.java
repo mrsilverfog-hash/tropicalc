@@ -1,7 +1,9 @@
 package com.tropimon.tropicalc.client;
 
 import com.cobblemon.mod.common.api.moves.Move;
+import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.tropimon.tropicalc.battle.BattleStateTracker;
+import com.tropimon.tropicalc.battle.ObservationCollector;
 import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
 import com.tropimon.tropicalc.calc.Pokemon;
@@ -12,11 +14,21 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
+import java.util.List;
+
+/**
+ * Overlay affiché automatiquement pendant un combat Cobblemon (format Simple).
+ * Affiche :
+ * 1. Les dégâts estimés de tes propres capacités contre l'adversaire
+ * 2. Les dégâts potentiels des coups adverses révélés contre toi
+ * 3. La plage EV/objets inférés pour l'adversaire
+ */
 public final class CalcOverlay implements HudRenderCallback {
 
     private static final int COULEUR_TEXTE = 0xFFFFFF;
     private static final int COULEUR_KO = 0xFF5555;
     private static final int COULEUR_TITRE = 0xFFD700;
+    private static final int COULEUR_DANGER = 0xFF8800;
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -32,82 +44,117 @@ public final class CalcOverlay implements HudRenderCallback {
             return;
         }
 
-        com.tropimon.tropicalc.battle.ObservationCollector.tick();
+        ObservationCollector.tick();
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
         int y = 170;
         int hauteurLigne = client.textRenderer.fontHeight + 2;
 
+        // --- Section 1 : mes capacités → dégâts sur l'adversaire ---
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
 
         Field field = new Field();
 
         for (Move coup : monComplet.getMoveSet()) {
-            if (coup == null) {
-                continue;
-            }
+            if (coup == null) continue;
             com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
-            if (capacite == null || capacite.estCapaciteDeStatut()) {
-                continue;
-            }
+            if (capacite == null || capacite.estCapaciteDeStatut()) continue;
 
-            DamageCalculator.Resultat resultat = DamageCalculator.calculer(joueur, adversaire, capacite, field, null, false);
-            String nomAffiche = coup.getDisplayName().getString();
+            DamageCalculator.Resultat r = DamageCalculator.calculer(joueur, adversaire, capacite, field, null, false);
+            String nom = coup.getDisplayName().getString();
 
             String ligne;
             int couleur = COULEUR_TEXTE;
-            if (resultat.immunise) {
-                ligne = nomAffiche + " : immunisé";
+            if (r.immunise) {
+                ligne = nom + " : immunisé";
             } else {
-                ligne = String.format("%s : %.0f%% - %.0f%%", nomAffiche, resultat.pourcentageMin, resultat.pourcentageMax);
-                if (resultat.koPossible) {
-                    couleur = COULEUR_KO;
-                }
+                ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
+                if (r.koGaranti) couleur = COULEUR_KO;
+                else if (r.koPossible) couleur = 0xFFAA00;
             }
 
             context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
             y += hauteurLigne;
         }
 
-        com.tropimon.tropicalc.calc.ProfilAdversaire profil = null;
-        String especeAdversaire = com.tropimon.tropicalc.battle.ObservationCollector.getEspaceAdversaireCourant();
-        if (especeAdversaire == null && adversaire != null) {
-            especeAdversaire = adversaire.getEspece();
+        // --- Section 2 : coups adverses révélés → dégâts sur moi ---
+        String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
+        if (especeAdv == null) especeAdv = adversaire.getEspece();
+
+        List<MoveTemplate> coupsAdv = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
+        if (!coupsAdv.isEmpty()) {
+            y += 4;
+            context.drawText(client.textRenderer,
+                Text.literal("Attaques adverses :"), x, y, COULEUR_DANGER, true);
+            y += hauteurLigne;
+
+            Pokemon adversaireEstime = ObservationCollector.construireAdversaireEstime(adversaire);
+
+            for (MoveTemplate template : coupsAdv) {
+                com.tropimon.tropicalc.calc.Move capaciteAdv = convertirTemplate(template);
+                if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) continue;
+
+                DamageCalculator.Resultat r = DamageCalculator.calculer(
+                    adversaireEstime, joueur, capaciteAdv, field, null, false);
+                String nom = template.getDisplayName().getString();
+
+                String ligne;
+                int couleur = COULEUR_TEXTE;
+                if (r.immunise) {
+                    ligne = nom + " : immunisé";
+                } else {
+                    ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
+                    if (r.koGaranti) couleur = COULEUR_KO;
+                    else if (r.koPossible) couleur = 0xFFAA00;
+                }
+
+                context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+                y += hauteurLigne;
+            }
         }
-        if (especeAdversaire != null) {
-            profil = com.tropimon.tropicalc.battle.ObservationCollector.getProfil(especeAdversaire);
-        }
+
+        // --- Section 3 : inférence du set adverse ---
+        com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
         if (profil != null) {
             y += 4;
-            context.drawText(client.textRenderer, Text.literal("Inférence (Atk) :"), x, y, COULEUR_TITRE, true);
+            context.drawText(client.textRenderer,
+                Text.literal("Inférence (Atk) :"), x, y, COULEUR_TITRE, true);
             y += hauteurLigne;
-            String ligneAtk = String.format("EV %d-%d", profil.attaque.evMin, profil.attaque.evMax);
-            context.drawText(client.textRenderer, Text.literal(ligneAtk), x, y, COULEUR_TEXTE, true);
+            context.drawText(client.textRenderer,
+                Text.literal(String.format("EV %d-%d", profil.attaque.evMin, profil.attaque.evMax)),
+                x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
-            String ligneObjets = "Objets : " + profil.attaque.objetsPossibles;
-            context.drawText(client.textRenderer, Text.literal(ligneObjets), x, y, COULEUR_TEXTE, true);
+            context.drawText(client.textRenderer,
+                Text.literal("Objets : " + profil.attaque.objetsPossibles),
+                x, y, COULEUR_TEXTE, true);
         }
     }
 
     private com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {
         PokemonType type = ShowdownIdMapper.type(coup.getType().getName());
-        if (type == null) {
-            return null;
-        }
-        String categorieNom = coup.getDamageCategory().getName();
+        if (type == null) return null;
+        String cat = coup.getDamageCategory().getName();
         com.tropimon.tropicalc.calc.Move.Categorie categorie;
-        if ("physical".equalsIgnoreCase(categorieNom)) {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
-        } else if ("special".equalsIgnoreCase(categorieNom)) {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
-        } else {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
-        }
-
+        if ("physical".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        else if ("special".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
+        else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         return com.tropimon.tropicalc.calc.Move.builder(coup.getName(), type, categorie)
             .puissance((int) coup.getPower())
+            .build();
+    }
+
+    private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
+        PokemonType type = ShowdownIdMapper.type(template.getElementalType().getName());
+        if (type == null) return null;
+        String cat = template.getDamageCategory().getName();
+        com.tropimon.tropicalc.calc.Move.Categorie categorie;
+        if ("physical".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        else if ("special".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
+        else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
+        return com.tropimon.tropicalc.calc.Move.builder(template.getName(), type, categorie)
+            .puissance((int) template.getPower())
             .build();
     }
 }
