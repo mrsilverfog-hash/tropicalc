@@ -4,12 +4,13 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
 /**
- * Détecte quel coup vient d'être utilisé en combat, et par qui (via le nom
- * du dresseur propriétaire), en lisant directement les clés de traduction
- * structurées plutôt que le texte français déjà traduit. Alimenté par
- * BattleMessagePacketMixin, qui intercepte le décodage réseau du paquet,
- * en amont de tout gestionnaire d'affichage (donc indépendant des mods
- * qui remplacent l'UI de combat).
+ * Détecte les événements de combat structurés (coups utilisés, nouveaux tours)
+ * depuis les paquets réseau de Cobblemon (via BattleMessagePacketMixin),
+ * en lisant les clés de traduction brutes plutôt que le texte traduit.
+ *
+ * Notifie ObservationCollector à chaque frontière de tour et à chaque coup
+ * détecté, pour que ce dernier puisse construire des observations propres
+ * sans se soucier du timing réseau.
  */
 public final class MoveUseTracker {
 
@@ -20,14 +21,10 @@ public final class MoveUseTracker {
     private static final String CLE_UTILISE_COUP = "cobblemon.battle.used_move";
     private static final String CLE_UTILISE_COUP_SUR = "cobblemon.battle.used_move_on";
     private static final String CLE_PROPRIETAIRE = "cobblemon.battle.owned_pokemon";
+    private static final String CLE_NOUVEAU_TOUR = "cobblemon.battle.turn";
 
-    /** Représente un coup détecté : son identifiant Showdown et le nom du dresseur propriétaire (peut être null si Pokémon sauvage). */
-    public record CoupDetecte(String showdownId, String proprietaire, long timestampMs) {
+    public record CoupDetecte(String showdownId, String proprietaire) {
     }
-
-    private static volatile CoupDetecte dernierCoup = null;
-
-    private static final long FRAICHEUR_MS = 5000L;
 
     public static void traiterMessage(Text message) {
         if (message == null) {
@@ -37,6 +34,12 @@ public final class MoveUseTracker {
             return;
         }
         String cle = contenu.getKey();
+
+        if (CLE_NOUVEAU_TOUR.equals(cle)) {
+            ObservationCollector.signalerNouveauTour();
+            return;
+        }
+
         if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) {
             return;
         }
@@ -63,25 +66,9 @@ public final class MoveUseTracker {
         }
 
         if (coupId != null) {
-            dernierCoup = new CoupDetecte(coupId, proprietaire, System.currentTimeMillis());
             com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
                 "[TropiCalc-diag] Coup détecté : {} (propriétaire={})", coupId, proprietaire);
+            ObservationCollector.signalerCoupUtilise(new CoupDetecte(coupId, proprietaire));
         }
-    }
-
-    /** Renvoie le dernier coup détecté s'il est encore "frais", sinon null. Ne le consomme pas. */
-    public static CoupDetecte getDernierCoupRecent() {
-        CoupDetecte c = dernierCoup;
-        if (c == null) {
-            return null;
-        }
-        if (System.currentTimeMillis() - c.timestampMs() > FRAICHEUR_MS) {
-            return null;
-        }
-        return c;
-    }
-
-    public static void consommer() {
-        dernierCoup = null;
     }
 }
