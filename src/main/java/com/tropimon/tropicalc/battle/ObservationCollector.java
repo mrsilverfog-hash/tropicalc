@@ -9,6 +9,7 @@ import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ProfilAdversaire;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
+import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.calc.Stat;
 import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.minecraft.client.MinecraftClient;
@@ -23,9 +24,8 @@ import java.util.Set;
 
 /**
  * Construit des observations de dégâts en se basant sur les frontières de
- * tour (signal "cobblemon.battle.turn") plutôt que sur le timing des
- * paquets HP. Mémorise aussi les coups révélés par l'adversaire pour
- * permettre d'afficher les dégâts potentiels que le joueur peut subir.
+ * tour (signal "cobblemon.battle.turn"). Les profils adverses sont initialisés
+ * avec les données Smogon Gen 9 OU si disponibles.
  */
 public final class ObservationCollector {
 
@@ -42,11 +42,10 @@ public final class ObservationCollector {
     private static String espaceAdversaireDuTour = null;
 
     public static synchronized void signalerNouveauTour() {
-        Pokemon joueur = BattleStateTracker.getJoueurActif();
+        Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
+        if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
-        if (joueur == null || adversaire == null) {
-            return;
-        }
+        if (joueur == null || adversaire == null) return;
 
         double pvJoueurMaintenant = joueur.getPourcentagePv();
         double pvAdversaireMaintenant = adversaire.getPourcentagePv();
@@ -100,13 +99,8 @@ public final class ObservationCollector {
 
         ProfilAdversaire profil = PROFILS.computeIfAbsent(adversaire.getEspece(), k -> {
             Set<String> talentsReels = getTalentsReelsEspece(adversaire);
-            if (talentsReels == null) {
-                Set<String> tous = new HashSet<>();
-                tous.addAll(com.tropimon.tropicalc.calc.SetInferenceEngine.TALENTS_OFFENSIFS);
-                tous.addAll(com.tropimon.tropicalc.calc.SetInferenceEngine.TALENTS_DEFENSIFS);
-                talentsReels = tous;
-            }
-            return new ProfilAdversaire(talentsReels);
+            SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(adversaire.getEspece());
+            return new ProfilAdversaire(talentsReels, smogon);
         });
 
         Field terrainNeutre = new Field();
@@ -116,17 +110,12 @@ public final class ObservationCollector {
             observeMin, observeMax);
     }
 
-    /**
-     * Construit un Pokémon adversaire de "meilleure estimation" à partir du profil
-     * inféré : EVs max de la plage, nature boostée si possible (pire cas pour le joueur).
-     */
     public static Pokemon construireAdversaireEstime(Pokemon adversaireBase) {
         String espece = adversaireBase.getEspece();
         ProfilAdversaire profil = PROFILS.get(espece);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
-
         for (Stat s : Stat.values()) {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
@@ -145,8 +134,22 @@ public final class ObservationCollector {
             if (talentEstime == null) talentEstime = extraireTalentUnique(profil.attaqueSpe);
             if (talentEstime != null) b.talent(talentEstime);
         } else {
-            b.ev(Stat.ATTAQUE, 252).ev(Stat.ATTAQUE_SPE, 252);
-            b.nature(Nature.HARDI);
+            SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
+            if (smogon != null && !smogon.topSpreads().isEmpty()) {
+                SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
+                b.ev(Stat.ATTAQUE, top.atkEv()).ev(Stat.ATTAQUE_SPE, top.spaEv());
+                b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
+                if (!smogon.topItemsShowdownId().isEmpty()) {
+                    String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+                    if (fr != null) b.objet(fr);
+                }
+                if (!smogon.topAbilitiesShowdownId().isEmpty()) {
+                    String fr = ShowdownIdMapper.talent(smogon.topAbilitiesShowdownId().get(0));
+                    if (fr != null) b.talent(fr);
+                }
+            } else {
+                b.ev(Stat.ATTAQUE, 252).ev(Stat.ATTAQUE_SPE, 252).nature(Nature.HARDI);
+            }
         }
 
         return b.build();
@@ -168,28 +171,26 @@ public final class ObservationCollector {
     }
 
     private static String extraireObjetUnique(StatHypothesis hyp) {
-        Set<String> sansAucun = new HashSet<>(hyp.objetsPossibles);
-        sansAucun.remove(StatHypothesis.AUCUN);
-        if (sansAucun.size() == 1) return sansAucun.iterator().next();
-        return null;
+        Set<String> s = new HashSet<>(hyp.objetsPossibles);
+        s.remove(StatHypothesis.AUCUN);
+        return s.size() == 1 ? s.iterator().next() : null;
     }
 
     private static String extraireTalentUnique(StatHypothesis hyp) {
-        Set<String> sansAucun = new HashSet<>(hyp.talentsPossibles);
-        sansAucun.remove(StatHypothesis.AUCUN);
-        if (sansAucun.size() == 1) return sansAucun.iterator().next();
-        return null;
+        Set<String> s = new HashSet<>(hyp.talentsPossibles);
+        s.remove(StatHypothesis.AUCUN);
+        return s.size() == 1 ? s.iterator().next() : null;
     }
 
     public static List<MoveTemplate> getCoupsAdversaireReveles(String espece) {
         LinkedHashSet<String> ids = COUPS_ADVERSAIRE.get(espece);
         if (ids == null) return List.of();
-        List<MoveTemplate> resultat = new ArrayList<>();
+        List<MoveTemplate> r = new ArrayList<>();
         for (String id : ids) {
             MoveTemplate t = Moves.INSTANCE.getByName(id);
-            if (t != null) resultat.add(t);
+            if (t != null) r.add(t);
         }
-        return resultat;
+        return r;
     }
 
     public static void tick() {
@@ -200,8 +201,7 @@ public final class ObservationCollector {
         if (proprietaire == null) return null;
         var joueurMc = MinecraftClient.getInstance().player;
         if (joueurMc == null) return null;
-        String nomJoueur = joueurMc.getGameProfile().getName();
-        return !proprietaire.equalsIgnoreCase(nomJoueur);
+        return !proprietaire.equalsIgnoreCase(joueurMc.getGameProfile().getName());
     }
 
     public static ProfilAdversaire getProfil(String espece) { return PROFILS.get(espece); }
@@ -219,26 +219,22 @@ public final class ObservationCollector {
     private static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
         Species espece = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(adversaire.getEspece());
         if (espece == null) return null;
-        Set<String> resultat = new HashSet<>();
-        for (var potentielle : espece.getAbilities()) {
-            String nomFrancais = ShowdownIdMapper.talent(potentielle.getTemplate().getName());
-            if (nomFrancais != null) resultat.add(nomFrancais);
+        Set<String> r = new HashSet<>();
+        for (var p : espece.getAbilities()) {
+            String fr = ShowdownIdMapper.talent(p.getTemplate().getName());
+            if (fr != null) r.add(fr);
         }
-        return resultat;
+        return r;
     }
 
     private static com.tropimon.tropicalc.calc.Move convertirCapacite(MoveTemplate template) {
         PokemonType type = ShowdownIdMapper.type(template.getElementalType().getName());
         if (type == null) return null;
-        String categorieNom = template.getDamageCategory().getName();
+        String cat = template.getDamageCategory().getName();
         com.tropimon.tropicalc.calc.Move.Categorie categorie;
-        if ("physical".equalsIgnoreCase(categorieNom)) {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
-        } else if ("special".equalsIgnoreCase(categorieNom)) {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
-        } else {
-            categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
-        }
+        if ("physical".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        else if ("special".equalsIgnoreCase(cat)) categorie = com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE;
+        else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         return com.tropimon.tropicalc.calc.Move.builder(template.getName(), type, categorie)
             .puissance((int) template.getPower())
             .build();
