@@ -43,7 +43,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
-        int y = 8;
+        int y = 170;
         int hauteurLigne = client.textRenderer.fontHeight + 2;
 
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
@@ -61,13 +61,14 @@ public final class CalcOverlay implements HudRenderCallback {
             }
 
             DamageCalculator.Resultat resultat = DamageCalculator.calculer(joueur, adversaire, capacite, field, null, false);
+            String nomAffiche = coup.getDisplayName().getString();
 
             String ligne;
             int couleur = COULEUR_TEXTE;
             if (resultat.immunise) {
-                ligne = coup.getName() + " : immunisé";
+                ligne = nomAffiche + " : immunisé";
             } else {
-                ligne = String.format("%s : %.0f%% - %.0f%%", coup.getName(), resultat.pourcentageMin, resultat.pourcentageMax);
+                ligne = String.format("%s : %.0f%% - %.0f%%", nomAffiche, resultat.pourcentageMin, resultat.pourcentageMax);
                 if (resultat.koPossible) {
                     couleur = COULEUR_KO;
                 }
