@@ -12,13 +12,16 @@ base {
 
 repositories {
     mavenCentral()
-    maven {
-        name = "LightDream (Cobblemon)"
-        url = "https://repository.lightdream.dev/repository/maven-releases/"
-    }
-    maven {
-        name = "LightDream Snapshots (Cobblemon)"
-        url = "https://repository.lightdream.dev/repository/maven-snapshots/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
     }
 }
 
@@ -29,7 +32,9 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
-    modImplementation "com.cobblemon:fabric:${project.cobblemon_version}"
+    // Cobblemon via le Maven de Modrinth : maven.modrinth:<id-projet>:<id-version>
+    // MdwFAVRL = Cobblemon, kF7CvxTo = version 1.7.3 ~ Fabric ~ 1.21.1
+    modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
 }
 
 processResources {
