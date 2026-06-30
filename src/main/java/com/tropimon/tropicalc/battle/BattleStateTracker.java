@@ -18,17 +18,6 @@ import net.minecraft.client.MinecraftClient;
 
 import java.util.UUID;
 
-/**
- * Lit l'état du combat Cobblemon en cours côté client et le convertit vers
- * nos objets de calcul (calc.Pokemon). Format Simple uniquement : on ne lit
- * que le premier Pokémon actif de chaque côté.
- *
- * Limitation connue : pour le Pokémon adverse, Cobblemon ne connaît pas
- * réellement ses IV/EV/nature/objet tant qu'ils n'ont pas été révélés en
- * combat (comme sur Pokémon Showdown). En attendant le moteur d'inférence
- * de sets (étape suivante du projet), on utilise des valeurs par défaut
- * neutres (31 IV, 0 EV, nature Hardi) pour l'adversaire.
- */
 public final class BattleStateTracker {
 
     private BattleStateTracker() {
@@ -38,7 +27,6 @@ public final class BattleStateTracker {
         return CobblemonClient.INSTANCE.getBattle() != null;
     }
 
-    /** Renvoie le Pokémon actif du joueur, ou null si hors combat / pas de Pokémon envoyé. */
     public static Pokemon getJoueurActif() {
         ClientBattleActor acteur = getActeurJoueur();
         if (acteur == null) {
@@ -47,7 +35,6 @@ public final class BattleStateTracker {
         return premierActif(acteur);
     }
 
-    /** Renvoie le Pokémon actif adverse, ou null si hors combat / pas de Pokémon envoyé. */
     public static Pokemon getAdversaireActif() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         ClientBattleActor acteurJoueur = getActeurJoueur();
@@ -67,10 +54,6 @@ public final class BattleStateTracker {
         return null;
     }
 
-    /**
-     * Renvoie le Pokémon complet (avec moveset réel) du joueur correspondant
-     * au Pokémon actif en combat, ou null si indisponible.
-     */
     public static com.cobblemon.mod.common.pokemon.Pokemon getPokemonCompletJoueur() {
         ClientBattleActor acteur = getActeurJoueur();
         if (acteur == null || acteur.getActivePokemon().isEmpty()) {
@@ -177,13 +160,14 @@ public final class BattleStateTracker {
 
         Pokemon pokemon = builder.build();
 
-        // PV actuels : si isHpFlat, hpValue est une valeur absolue (notre propre camp).
-        // Sinon (Pokémon adverse), hpValue/maxHp est une fraction (0.0-1.0) du %PV
-        // affiché, qu'on reprojette sur nos PV max calculés.
+        // PV actuels :
+        // - isHpFlat = true (nos propres Pokémon / alliés) : hpValue est une valeur absolue (ex: 317).
+        // - isHpFlat = false (adversaire) : hpValue est déjà une fraction entre 0.0 et 1.0
+        //   (currentHealth / maxHealth côté serveur). PAS à diviser par maxHp.
         if (cbp.isHpFlat()) {
             pokemon.setPvActuels(Math.round(cbp.getHpValue()));
-        } else if (cbp.getMaxHp() > 0) {
-            float fraction = cbp.getHpValue() / cbp.getMaxHp();
+        } else {
+            float fraction = cbp.getHpValue(); // déjà une fraction 0-1
             pokemon.setPvActuels(Math.round(fraction * pokemon.getPvMax()));
         }
 
