@@ -17,11 +17,8 @@ import net.minecraft.text.Text;
 import java.util.List;
 
 /**
- * Overlay affiché automatiquement pendant un combat Cobblemon (format Simple).
- * Affiche :
- * 1. Les dégâts estimés de tes propres capacités contre l'adversaire
- * 2. Les dégâts potentiels des coups adverses révélés contre toi
- * 3. La plage EV/objets inférés pour l'adversaire
+ * Overlay TropiCalc. Utilise les vraies stats du joueur (depuis l'équipe)
+ * et les données Smogon pour estimer les stats adverses.
  */
 public final class CalcOverlay implements HudRenderCallback {
 
@@ -38,7 +35,8 @@ public final class CalcOverlay implements HudRenderCallback {
 
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
         com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueur();
-        Pokemon joueur = BattleStateTracker.getJoueurActif();
+        Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
+        if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
 
         if (adversaire == null || joueur == null || monComplet == null) {
             return;
