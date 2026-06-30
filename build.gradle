@@ -12,6 +12,14 @@ base {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "LightDream (Cobblemon)"
+        url = "https://repository.lightdream.dev/repository/maven-releases/"
+    }
+    maven {
+        name = "LightDream Snapshots (Cobblemon)"
+        url = "https://repository.lightdream.dev/repository/maven-snapshots/"
+    }
 }
 
 dependencies {
@@ -19,6 +27,9 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+    modImplementation "com.cobblemon:fabric:${project.cobblemon_version}"
 }
 
 processResources {
