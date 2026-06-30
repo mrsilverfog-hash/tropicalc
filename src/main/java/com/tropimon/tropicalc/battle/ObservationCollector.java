@@ -15,18 +15,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Détecte automatiquement les coups utilisés en combat (via MoveUseTracker)
- * et les dégâts qu'ils causent, pour resserrer le ProfilAdversaire courant.
- *
- * Architecture "pilotée par le coup" plutôt que par les PV : dès qu'un
- * nouveau coup est détecté, on photographie les %PV des deux côtés, puis on
- * revérifie un court instant après pour calculer la perte causée par CE
- * coup précis. Le nom du dresseur propriétaire permet de savoir avec
- * certitude si c'est le joueur ou l'adversaire qui a attaqué.
- *
- * À appeler une fois par frame (depuis l'overlay) via {@link #tick()}.
- */
 public final class ObservationCollector {
 
     private ObservationCollector() {
@@ -66,6 +54,10 @@ public final class ObservationCollector {
             if (coupEnAttente != null) {
                 finaliser(coupEnAttente, adversaire, joueur, pvJoueur, pvAdversaire);
             }
+            // On consomme immédiatement pour éviter de re-détecter le même coup
+            // comme "nouveau" à chaque frame si la finalisation ne génère pas
+            // d'observation (perte trop faible, coup raté, etc.)
+            MoveUseTracker.consommer();
             coupEnAttente = coupActuel;
             pvJoueurAvant = pvJoueur;
             pvAdversaireAvant = pvAdversaire;
