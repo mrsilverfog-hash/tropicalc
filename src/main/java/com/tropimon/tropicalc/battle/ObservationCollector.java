@@ -58,14 +58,16 @@ public final class ObservationCollector {
             }
 
             Boolean adversaireEtaitAttaquant = determinerAttaquant(coupDuTour.proprietaire());
-            if (adversaireEtaitAttaquant == null) {
-                adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
-            }
 
-            if (adversaireEtaitAttaquant) {
+            // N'ajoute aux coups adverses que si on est certain (proprietaire connu)
+            if (Boolean.TRUE.equals(adversaireEtaitAttaquant)) {
                 COUPS_ADVERSAIRE
                     .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
                     .add(coupDuTour.showdownId());
+            }
+
+            if (adversaireEtaitAttaquant == null) {
+                adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
             }
 
             double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
