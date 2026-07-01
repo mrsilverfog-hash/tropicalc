@@ -3,9 +3,6 @@ package com.tropimon.tropicalc.calc;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Représente l'effet d'un talent sur le calcul de dégâts.
- */
 public interface AbilityModifier {
 
     default void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -45,7 +42,6 @@ public interface AbilityModifier {
         AbilityModifier reductionSuperEfficace = new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                // Déclenchement réel géré par DamageCalculator.
             }
         };
         m.put("Filtre", reductionSuperEfficace);
@@ -78,6 +74,21 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 ctx.stabAugmente = true;
+            }
+        });
+
+        // Télécharge (Download) : boost Atk si Déf adverse < DéfSpé, sinon boost AtkSpé
+        m.put("Télécharge", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                int defAdverse = ctx.defenseur.getStatCalculee(Stat.DEFENSE);
+                int defSpeAdverse = ctx.defenseur.getStatCalculee(Stat.DEFENSE_SPE);
+                boolean boostAtk = defAdverse < defSpeAdverse;
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE && boostAtk) {
+                    ctx.multiplicateurAttaque *= 1.5;
+                } else if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE && !boostAtk) {
+                    ctx.multiplicateurAttaque *= 1.5;
+                }
             }
         });
 
@@ -142,7 +153,6 @@ public interface AbilityModifier {
         m.put("Verres Teintés", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                // Déclenchement réel géré par DamageCalculator.
             }
         });
 
