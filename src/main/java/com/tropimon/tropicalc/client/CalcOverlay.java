@@ -16,10 +16,6 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-/**
- * Overlay TropiCalc. Utilise les vraies stats du joueur (depuis l'équipe)
- * et les données Smogon pour estimer les stats adverses.
- */
 public final class CalcOverlay implements HudRenderCallback {
 
     private static final int COULEUR_TEXTE = 0xFFFFFF;
@@ -33,16 +29,19 @@ public final class CalcOverlay implements HudRenderCallback {
             return;
         }
 
-        Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+        Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
         com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueur();
         Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
         if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
 
-        if (adversaire == null || joueur == null || monComplet == null) {
+        if (adversaireBase == null || joueur == null || monComplet == null) {
             return;
         }
 
         ObservationCollector.tick();
+
+        // Utilise le spread Smogon pour l'adversaire
+        Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
@@ -79,7 +78,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
         // --- Section 2 : coups adverses révélés → dégâts sur moi ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
-        if (especeAdv == null) especeAdv = adversaire.getEspece();
+        if (especeAdv == null) especeAdv = adversaireBase.getEspece();
 
         List<MoveTemplate> coupsAdv = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
         if (!coupsAdv.isEmpty()) {
@@ -88,7 +87,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 Text.literal("Attaques adverses :"), x, y, COULEUR_DANGER, true);
             y += hauteurLigne;
 
-            Pokemon adversaireEstime = ObservationCollector.construireAdversaireEstime(adversaire);
+            Pokemon adversaireEstime = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
             for (MoveTemplate template : coupsAdv) {
                 com.tropimon.tropicalc.calc.Move capaciteAdv = convertirTemplate(template);
