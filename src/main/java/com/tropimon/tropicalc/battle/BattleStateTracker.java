@@ -216,6 +216,12 @@ public final class BattleStateTracker {
         Pokemon pokemon = builder.build();
         pokemon.setPvActuels(p.getCurrentHealth());
 
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] PokemonComplet: espece={} level={} pvMax={} pvActuels={} atkEV={} atkIV={} nature={}",
+            espece.showdownId(), p.getLevel(), pokemon.getPvMax(), p.getCurrentHealth(),
+            p.getEvs().getOrDefault(Stats.ATTACK), p.getIvs().getOrDefault(Stats.ATTACK),
+            p.getNature().getName().getPath());
+
         if (p.getStatus() != null) {
             switch (p.getStatus().getStatus().getShowdownName()) {
                 case "brn" -> pokemon.setStatut(Pokemon.Statut.BRULURE);
