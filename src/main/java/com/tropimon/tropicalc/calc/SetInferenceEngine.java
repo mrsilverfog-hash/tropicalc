@@ -34,7 +34,8 @@ public final class SetInferenceEngine {
 
     /** Objets pertinents quand on infère une stat DÉFENSIVE (Défense ou Déf. Spé.). */
     public static final Set<String> OBJETS_DEFENSIFS = Set.of(
-        "Veste de Combat", "Évoluroc", "Orbe Vie", "Grosse Bottes", "Reste"
+        "Veste de Combat", "Évoluroc", "Orbe Vie", "Grosse Bottes", "Restes",
+        "Boue Noire", "Baie Sitrus", "Baie Agava", "Baie Iapapa", "Baie Wiki", "Baie Mago"
     );
 
     /** Talents pertinents quand on infère une stat DÉFENSIVE. */
