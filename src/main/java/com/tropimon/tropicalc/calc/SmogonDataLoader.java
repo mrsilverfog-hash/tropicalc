@@ -12,11 +12,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.*;
 
-/**
- * Charge les stats d'utilisation Smogon Gen 9 OU en arrière-plan au démarrage
- * du mod. Fournit pour chaque Pokémon les spreads, items et talents les plus
- * joués, utilisés pour initialiser les hypothèses d'inférence adverse.
- */
 public final class SmogonDataLoader {
 
     private SmogonDataLoader() {
@@ -38,6 +33,8 @@ public final class SmogonDataLoader {
     private static volatile boolean erreur = false;
 
     private static final String[] URLS_ESSAI = {
+        "https://www.smogon.com/stats/2025-05/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-04/gen9ou-0.json",
         "https://www.smogon.com/stats/2025-03/gen9ou-0.json",
         "https://www.smogon.com/stats/2025-02/gen9ou-0.json",
         "https://www.smogon.com/stats/2025-01/gen9ou-0.json",
@@ -50,15 +47,20 @@ public final class SmogonDataLoader {
                 try {
                     TropiCalcClient.LOGGER.info("[TropiCalc] Chargement sets Smogon : {}", url);
                     HttpClient client = HttpClient.newBuilder()
-                        .connectTimeout(Duration.ofSeconds(10))
+                        .connectTimeout(Duration.ofSeconds(15))
                         .build();
                     HttpRequest req = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .timeout(Duration.ofSeconds(20))
+                        .timeout(Duration.ofSeconds(30))
+                        .header("User-Agent", "TropiCalc/1.0 Cobblemon-Fabric-Mod")
+                        .header("Accept", "application/json")
                         .GET()
                         .build();
                     HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-                    if (resp.statusCode() != 200) continue;
+                    if (resp.statusCode() != 200) {
+                        TropiCalcClient.LOGGER.warn("[TropiCalc] HTTP {} pour {}", resp.statusCode(), url);
+                        continue;
+                    }
                     parser(resp.body());
                     charge = true;
                     TropiCalcClient.LOGGER.info("[TropiCalc] Sets Smogon chargés : {} Pokémon", DONNEES.size());
