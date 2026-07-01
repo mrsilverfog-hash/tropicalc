@@ -33,12 +33,10 @@ public final class SmogonDataLoader {
     private static volatile boolean erreur = false;
 
     private static final String[] URLS_ESSAI = {
-        "https://www.smogon.com/stats/2025-05/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-04/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-03/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-02/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-01/gen9ou-0.json",
-        "https://www.smogon.com/stats/2024-12/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-12/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-11/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-10/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-09/chaos/gen9ou-0.json",
     };
 
     public static void charger() {
