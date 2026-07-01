@@ -92,17 +92,18 @@ public final class BattleStateTracker {
         Species espece = cbp.getSpecies();
         PokemonProperties props = cbp.getProperties();
 
-        PokemonType type1 = ShowdownIdMapper.type(espece.getPrimaryType().getName());
-        PokemonType type2 = espece.getSecondaryType() != null
-            ? ShowdownIdMapper.type(espece.getSecondaryType().getName()) : null;
+        var forme = espece.getForm(props.getAspects());
+        PokemonType type1 = ShowdownIdMapper.type(forme.getPrimaryType().getName());
+        PokemonType type2 = forme.getSecondaryType() != null
+            ? ShowdownIdMapper.type(forme.getSecondaryType().getName()) : null;
 
         Pokemon.Builder builder = Pokemon.builder(props.getSpecies(), cbp.getLevel(), type1, type2)
-            .statBase(Stat.PV, statBase(espece, Stats.HP))
-            .statBase(Stat.ATTAQUE, statBase(espece, Stats.ATTACK))
-            .statBase(Stat.DEFENSE, statBase(espece, Stats.DEFENCE))
-            .statBase(Stat.ATTAQUE_SPE, statBase(espece, Stats.SPECIAL_ATTACK))
-            .statBase(Stat.DEFENSE_SPE, statBase(espece, Stats.SPECIAL_DEFENCE))
-            .statBase(Stat.VITESSE, statBase(espece, Stats.SPEED))
+            .statBase(Stat.PV, statBase(forme, Stats.HP))
+            .statBase(Stat.ATTAQUE, statBase(forme, Stats.ATTACK))
+            .statBase(Stat.DEFENSE, statBase(forme, Stats.DEFENCE))
+            .statBase(Stat.ATTAQUE_SPE, statBase(forme, Stats.SPECIAL_ATTACK))
+            .statBase(Stat.DEFENSE_SPE, statBase(forme, Stats.SPECIAL_DEFENCE))
+            .statBase(Stat.VITESSE, statBase(forme, Stats.SPEED))
             .nature(props.getNature() != null ? ShowdownIdMapper.nature(props.getNature()) : Nature.HARDI);
 
         if (props.getAbility() != null) {
@@ -174,17 +175,18 @@ public final class BattleStateTracker {
     private static Pokemon convertirPokemonComplet(com.cobblemon.mod.common.pokemon.Pokemon p) {
         Species espece = p.getSpecies();
 
-        PokemonType type1 = ShowdownIdMapper.type(espece.getPrimaryType().getName());
-        PokemonType type2 = espece.getSecondaryType() != null
-            ? ShowdownIdMapper.type(espece.getSecondaryType().getName()) : null;
+        var forme = espece.getForm(p.getAspects());
+        PokemonType type1 = ShowdownIdMapper.type(forme.getPrimaryType().getName());
+        PokemonType type2 = forme.getSecondaryType() != null
+            ? ShowdownIdMapper.type(forme.getSecondaryType().getName()) : null;
 
         Pokemon.Builder builder = Pokemon.builder(espece.showdownId(), p.getLevel(), type1, type2)
-            .statBase(Stat.PV, statBase(espece, Stats.HP))
-            .statBase(Stat.ATTAQUE, statBase(espece, Stats.ATTACK))
-            .statBase(Stat.DEFENSE, statBase(espece, Stats.DEFENCE))
-            .statBase(Stat.ATTAQUE_SPE, statBase(espece, Stats.SPECIAL_ATTACK))
-            .statBase(Stat.DEFENSE_SPE, statBase(espece, Stats.SPECIAL_DEFENCE))
-            .statBase(Stat.VITESSE, statBase(espece, Stats.SPEED));
+            .statBase(Stat.PV, statBase(forme, Stats.HP))
+            .statBase(Stat.ATTAQUE, statBase(forme, Stats.ATTACK))
+            .statBase(Stat.DEFENSE, statBase(forme, Stats.DEFENCE))
+            .statBase(Stat.ATTAQUE_SPE, statBase(forme, Stats.SPECIAL_ATTACK))
+            .statBase(Stat.DEFENSE_SPE, statBase(forme, Stats.SPECIAL_DEFENCE))
+            .statBase(Stat.VITESSE, statBase(forme, Stats.SPEED));
 
         builder.iv(Stat.PV, p.getIvs().getOrDefault(Stats.HP));
         builder.iv(Stat.ATTAQUE, p.getIvs().getOrDefault(Stats.ATTACK));
@@ -230,8 +232,8 @@ public final class BattleStateTracker {
         return pokemon;
     }
 
-    private static int statBase(Species espece, Stats stat) {
-        Integer valeur = espece.getBaseStats().get(stat);
+    private static int statBase(com.cobblemon.mod.common.pokemon.FormData forme, Stats stat) {
+        Integer valeur = forme.getBaseStats().get(stat);
         return valeur != null ? valeur : 0;
     }
 }
