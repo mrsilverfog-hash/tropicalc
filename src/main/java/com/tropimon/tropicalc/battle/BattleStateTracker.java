@@ -205,7 +205,8 @@ public final class BattleStateTracker {
         builder.ev(Stat.DEFENSE_SPE, p.getEvs().getOrDefault(Stats.SPECIAL_DEFENCE));
         builder.ev(Stat.VITESSE, p.getEvs().getOrDefault(Stats.SPEED));
 
-        builder.nature(ShowdownIdMapper.nature(p.getNature().getName().getPath()));
+        // Utilise getEffectiveNature() pour tenir compte des Menthes
+        builder.nature(ShowdownIdMapper.nature(p.getEffectiveNature().getName().getPath()));
 
         String talentFr = ShowdownIdMapper.talent(p.getAbility().getName());
         if (talentFr != null) builder.talent(talentFr);
@@ -222,10 +223,10 @@ public final class BattleStateTracker {
         pokemon.setPvActuels(p.getCurrentHealth());
 
         com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] PokemonComplet: espece={} level={} pvMax={} pvActuels={} atkEV={} atkIV={} nature={}",
-            espece.showdownId(), p.getLevel(), pokemon.getPvMax(), p.getCurrentHealth(),
+            "[TropiCalc-diag] PokemonComplet: espece={} pvMax={} atkEV={} atkIV={} nature={} talent={} objet={}",
+            espece.showdownId(), pokemon.getPvMax(),
             p.getEvs().getOrDefault(Stats.ATTACK), p.getIvs().getOrDefault(Stats.ATTACK),
-            p.getNature().getName().getPath());
+            p.getEffectiveNature().getName().getPath(), p.getAbility().getName(), pokemon.getTalent());
 
         if (p.getStatus() != null) {
             switch (p.getStatus().getStatus().getShowdownName()) {
