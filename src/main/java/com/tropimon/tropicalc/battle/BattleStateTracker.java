@@ -85,7 +85,12 @@ public final class BattleStateTracker {
         if (acteur.getActivePokemon().isEmpty()) return null;
         ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
         if (cbp == null) return null;
-        return convertir(cbp);
+        Pokemon p = convertir(cbp);
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] convertir: espece={} pvMax={} pvActuels={} isFlat={} hpValue={} maxHp={}",
+            cbp.getSpecies().showdownId(), p.getPvMax(), p.getPvActuels(),
+            cbp.isHpFlat(), cbp.getHpValue(), cbp.getMaxHp());
+        return p;
     }
 
     private static Pokemon convertir(ClientBattlePokemon cbp) {
