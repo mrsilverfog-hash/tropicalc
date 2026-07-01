@@ -15,6 +15,7 @@ import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
 import com.tropimon.tropicalc.calc.Stat;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.Registries;
 
 import java.util.UUID;
 
@@ -205,10 +206,9 @@ public final class BattleStateTracker {
         if (talentFr != null) builder.talent(talentFr);
 
         if (!p.heldItem().isEmpty()) {
-            var itemKey = net.minecraft.core.registries.BuiltInRegistries.ITEM
-                .getKey(p.heldItem().getItem());
-            if (itemKey != null) {
-                String objetFr = ShowdownIdMapper.objet(itemKey.getPath());
+            var itemId = Registries.ITEM.getId(p.heldItem().getItem());
+            if (itemId != null) {
+                String objetFr = ShowdownIdMapper.objet(itemId.getPath());
                 if (objetFr != null) builder.objet(objetFr);
             }
         }
