@@ -116,7 +116,6 @@ public final class ObservationCollector {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
 
-        // Base : top spread Smogon
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
             b.ev(Stat.PV, top.hpEv());
@@ -136,7 +135,6 @@ public final class ObservationCollector {
             }
         }
 
-        // Affiner avec l'inférence uniquement si on a au moins 3 observations
         if (profil != null && profil.getNbObservations() >= 3) {
             appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
             appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
