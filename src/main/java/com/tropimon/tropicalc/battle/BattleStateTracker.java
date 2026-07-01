@@ -92,7 +92,7 @@ public final class BattleStateTracker {
         Species espece = cbp.getSpecies();
         PokemonProperties props = cbp.getProperties();
 
-        var forme = espece.getForm(props.getAspects());
+        var forme = espece.getForm(cbp.getState().getCurrentAspects());
         PokemonType type1 = ShowdownIdMapper.type(forme.getPrimaryType().getName());
         PokemonType type2 = forme.getSecondaryType() != null
             ? ShowdownIdMapper.type(forme.getSecondaryType().getName()) : null;
