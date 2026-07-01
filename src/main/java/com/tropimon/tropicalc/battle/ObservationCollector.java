@@ -116,6 +116,7 @@ public final class ObservationCollector {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
 
+        // Base : top spread Smogon
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
             b.ev(Stat.PV, top.hpEv());
@@ -125,7 +126,6 @@ public final class ObservationCollector {
             b.ev(Stat.DEFENSE_SPE, top.spdEv());
             b.ev(Stat.VITESSE, top.speEv());
             b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
-
             if (!smogon.topItemsShowdownId().isEmpty()) {
                 String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
                 if (fr != null) b.objet(fr);
@@ -136,7 +136,8 @@ public final class ObservationCollector {
             }
         }
 
-        if (profil != null) {
+        // Affiner avec l'inférence uniquement si on a au moins 3 observations
+        if (profil != null && profil.getNbObservations() >= 3) {
             appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
             appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
             appliquerHypothese(b, Stat.DEFENSE, profil.defense);
@@ -144,6 +145,8 @@ public final class ObservationCollector {
 
             String objetEstime = extraireObjetUnique(profil.attaque);
             if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
+            if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
+            if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
             if (objetEstime != null) b.objet(objetEstime);
 
             String talentEstime = extraireTalentUnique(profil.attaque);
