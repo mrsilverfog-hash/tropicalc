@@ -94,10 +94,43 @@ public final class ShowdownIdMapper {
         // Objets : identifiant Showdown -> clé française utilisée dans ItemModifier
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
+        OBJETS.put("choicescarf", "Écharpe Choix");
         OBJETS.put("lifeorb", "Orbe Vie");
         OBJETS.put("expertbelt", "Ceinture Pro");
         OBJETS.put("assaultvest", "Veste de Combat");
         OBJETS.put("eviolite", "Évoluroc");
+        OBJETS.put("heavydutyboots", "Grosse Bottes");
+        OBJETS.put("leftovers", "Restes");
+        OBJETS.put("rockyhelmet", "Casque Clou");
+        OBJETS.put("blacksludge", "Boue Noire");
+        OBJETS.put("flameorb", "Orbe Flamme");
+        OBJETS.put("toxicorb", "Orbe Toxik");
+        OBJETS.put("focussash", "Ceinture Focus");
+        OBJETS.put("sitrusberry", "Baie Sitrus");
+        OBJETS.put("aguavberry", "Baie Agava");
+        OBJETS.put("iapapaberry", "Baie Iapapa");
+        OBJETS.put("wikiberry", "Baie Wiki");
+        OBJETS.put("magoberry", "Baie Mago");
+        OBJETS.put("airballoon", "Ballon");
+        OBJETS.put("muscleband", "Bandeau Muscles");
+        OBJETS.put("wiseglasses", "Lunettes Savantes");
+        OBJETS.put("lightclay", "Argile Pouvoir");
+        OBJETS.put("heatrock", "Roche Chaude");
+        OBJETS.put("damprock", "Roche Humide");
+        OBJETS.put("smoothrock", "Roche Lisse");
+        OBJETS.put("icyrock", "Roche Glacée");
+        OBJETS.put("powerherb", "Herbe Puissance");
+        OBJETS.put("shellbell", "Grelot Coquille");
+        OBJETS.put("lum", "Baie Lum");
+        OBJETS.put("lumberry", "Baie Lum");
+        OBJETS.put("salacberry", "Baie Salac");
+        OBJETS.put("petayaberry", "Baie Petaya");
+        OBJETS.put("lansat", "Baie Lansat");
+        OBJETS.put("boosterenergy", "Énergie Turbo");
+        OBJETS.put("clearamulet", "Amulette Claire");
+        OBJETS.put("covertcloak", "Cape Secrète");
+        OBJETS.put("mirrorherb", "Herbe Miroir");
+        OBJETS.put("punchingglove", "Gant Boxe");
     }
 
     /** Nettoie un identifiant Showdown (espaces, tirets, apostrophes retirés, en minuscules). */
