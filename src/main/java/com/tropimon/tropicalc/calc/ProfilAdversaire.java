@@ -6,19 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Regroupe les hypothèses sur les 4 stats inférables d'un Pokémon adverse.
- * Peut être initialisé soit depuis les données Smogon (point de départ
- * pertinent) soit en mode générique (tout est possible).
- */
 public class ProfilAdversaire {
 
     public final StatHypothesis attaque;
     public final StatHypothesis attaqueSpe;
     public final StatHypothesis defense;
     public final StatHypothesis defenseSpe;
+    private int nbObservations = 0;
 
-    /** Constructeur générique : part de "tout est possible". */
+    public int getNbObservations() { return nbObservations; }
+
     public ProfilAdversaire(Set<String> talentsReelsEspece) {
         Set<String> talentsOff = intersection(SetInferenceEngine.TALENTS_OFFENSIFS, talentsReelsEspece);
         Set<String> talentsDef = intersection(SetInferenceEngine.TALENTS_DEFENSIFS, talentsReelsEspece);
@@ -28,10 +25,6 @@ public class ProfilAdversaire {
         this.defenseSpe = new StatHypothesis(SetInferenceEngine.OBJETS_DEFENSIFS, talentsDef);
     }
 
-    /**
-     * Constructeur avec priors Smogon : part des spreads/items/talents les plus
-     * joués en Gen 9 OU.
-     */
     public ProfilAdversaire(Set<String> talentsReelsEspece, SmogonDataLoader.SmogonPokemonData smogon) {
         if (smogon == null || smogon.topSpreads().isEmpty()) {
             Set<String> talentsOff = intersection(SetInferenceEngine.TALENTS_OFFENSIFS, talentsReelsEspece);
@@ -134,6 +127,7 @@ public class ProfilAdversaire {
         if (hypothese == null) return;
         SetInferenceEngine.narrow(hypothese, statCible, adversaireEtaitAttaquant, adversairePartiel, nous,
             capacite, terrain, pourcentageObserveMin, pourcentageObserveMax);
+        nbObservations++;
     }
 
     private static Set<String> intersection(Set<String> a, Set<String> b) {
