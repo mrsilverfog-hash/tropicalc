@@ -3,16 +3,6 @@ package com.tropimon.tropicalc.calc;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Convertit les identifiants Showdown (anglais, minuscules, sans espaces)
- * utilisés en interne par Cobblemon vers les clés françaises attendues par
- * TropiCalc (PokemonType, Nature, et les noms d'objets/talents utilisés
- * dans ItemModifier / AbilityModifier).
- *
- * Volontairement limité aux talents et objets déjà implémentés dans le
- * moteur de calcul : à enrichir au fur et à mesure qu'on ajoute des entrées
- * à ItemModifier.REGISTRE / AbilityModifier.REGISTRE.
- */
 public final class ShowdownIdMapper {
 
     private ShowdownIdMapper() {
@@ -70,7 +60,6 @@ public final class ShowdownIdMapper {
         NATURES.put("careful", Nature.PRUDENT);
         NATURES.put("quirky", Nature.BIZARRE);
 
-        // Talents : identifiant Showdown -> clé française utilisée dans AbilityModifier
         TALENTS.put("levitate", "Lévitation");
         TALENTS.put("waterabsorb", "Absorb'Eau");
         TALENTS.put("voltabsorb", "Absorb'Volt");
@@ -90,8 +79,43 @@ public final class ShowdownIdMapper {
         TALENTS.put("strongjaw", "Mâchoire Brute");
         TALENTS.put("sandforce", "Force Sable");
         TALENTS.put("tintedlens", "Verres Teintés");
+        TALENTS.put("download", "Télécharge");
+        TALENTS.put("regenerator", "Régé-Force");
+        TALENTS.put("intimidate", "Intimidation");
+        TALENTS.put("speedboost", "Turbo");
+        TALENTS.put("drizzle", "Pluie");
+        TALENTS.put("drought", "Sécheresse");
+        TALENTS.put("sandstream", "Sable Crachin");
+        TALENTS.put("snowwarning", "Alerte Neige");
+        TALENTS.put("protosynthesis", "Proto-Synthèse");
+        TALENTS.put("quarkdrive", "Moteur Quark");
+        TALENTS.put("magicguard", "Garde Magik");
+        TALENTS.put("naturalcure", "Médic Nature");
+        TALENTS.put("serenegrace", "Grâce Sereine");
+        TALENTS.put("trace", "Calque");
+        TALENTS.put("analytic", "Analytique");
+        TALENTS.put("trickster", "Imposteur");
+        TALENTS.put("imposter", "Imposteur");
+        TALENTS.put("prankster", "Lunatique");
+        TALENTS.put("unburden", "Allège");
+        TALENTS.put("rockhead", "Tête de Roc");
+        TALENTS.put("sheerforce", "Grand Chelem");
+        TALENTS.put("roughskin", "Peau Dure");
+        TALENTS.put("ironbarbs", "Pic Acier");
+        TALENTS.put("flamebody", "Corps Ardent");
+        TALENTS.put("static", "Statik");
+        TALENTS.put("poisonpoint", "Point Poison");
+        TALENTS.put("effectspore", "Pose Spore");
+        TALENTS.put("pressure", "Pression");
+        TALENTS.put("moldbreaker", "Brise Moule");
+        TALENTS.put("turboblaze", "Turboblaze");
+        TALENTS.put("teravolt", "Téravolt");
+        TALENTS.put("supremeoverlord", "Seigneur Suprême");
+        TALENTS.put("vesselofruin", "Vase de Ruine");
+        TALENTS.put("swordofruin", "Épée de Ruine");
+        TALENTS.put("beadsofruin", "Perles de Ruine");
+        TALENTS.put("tabletsofruin", "Tablettes de Ruine");
 
-        // Objets : identifiant Showdown -> clé française utilisée dans ItemModifier
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
         OBJETS.put("choicescarf", "Écharpe Choix");
@@ -119,13 +143,10 @@ public final class ShowdownIdMapper {
         OBJETS.put("damprock", "Roche Humide");
         OBJETS.put("smoothrock", "Roche Lisse");
         OBJETS.put("icyrock", "Roche Glacée");
-        OBJETS.put("powerherb", "Herbe Puissance");
         OBJETS.put("shellbell", "Grelot Coquille");
-        OBJETS.put("lum", "Baie Lum");
         OBJETS.put("lumberry", "Baie Lum");
         OBJETS.put("salacberry", "Baie Salac");
         OBJETS.put("petayaberry", "Baie Petaya");
-        OBJETS.put("lansat", "Baie Lansat");
         OBJETS.put("boosterenergy", "Énergie Turbo");
         OBJETS.put("clearamulet", "Amulette Claire");
         OBJETS.put("covertcloak", "Cape Secrète");
@@ -133,11 +154,8 @@ public final class ShowdownIdMapper {
         OBJETS.put("punchingglove", "Gant Boxe");
     }
 
-    /** Nettoie un identifiant Showdown (espaces, tirets, apostrophes retirés, en minuscules). */
     private static String normaliser(String id) {
-        if (id == null) {
-            return null;
-        }
+        if (id == null) return null;
         return id.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 
@@ -150,12 +168,10 @@ public final class ShowdownIdMapper {
         return n != null ? n : Nature.HARDI;
     }
 
-    /** Renvoie le nom français du talent, ou null si pas (encore) géré par AbilityModifier. */
     public static String talent(String showdownId) {
         return TALENTS.get(normaliser(showdownId));
     }
 
-    /** Renvoie le nom français de l'objet, ou null si pas (encore) géré par ItemModifier. */
     public static String objet(String showdownId) {
         return OBJETS.get(normaliser(showdownId));
     }
