@@ -22,11 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Construit des observations de dégâts en se basant sur les frontières de
- * tour (signal "cobblemon.battle.turn"). Les profils adverses sont initialisés
- * avec les données Smogon Gen 9 OU si disponibles.
- */
 public final class ObservationCollector {
 
     private ObservationCollector() {
@@ -113,11 +108,32 @@ public final class ObservationCollector {
     public static Pokemon construireAdversaireEstime(Pokemon adversaireBase) {
         String espece = adversaireBase.getEspece();
         ProfilAdversaire profil = PROFILS.get(espece);
+        SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
         for (Stat s : Stat.values()) {
             b.statBase(s, adversaireBase.getStatBase(s));
+        }
+
+        if (smogon != null && !smogon.topSpreads().isEmpty()) {
+            SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
+            b.ev(Stat.PV, top.hpEv());
+            b.ev(Stat.ATTAQUE, top.atkEv());
+            b.ev(Stat.DEFENSE, top.defEv());
+            b.ev(Stat.ATTAQUE_SPE, top.spaEv());
+            b.ev(Stat.DEFENSE_SPE, top.spdEv());
+            b.ev(Stat.VITESSE, top.speEv());
+            b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
+
+            if (!smogon.topItemsShowdownId().isEmpty()) {
+                String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+                if (fr != null) b.objet(fr);
+            }
+            if (!smogon.topAbilitiesShowdownId().isEmpty()) {
+                String fr = ShowdownIdMapper.talent(smogon.topAbilitiesShowdownId().get(0));
+                if (fr != null) b.talent(fr);
+            }
         }
 
         if (profil != null) {
@@ -133,26 +149,11 @@ public final class ObservationCollector {
             String talentEstime = extraireTalentUnique(profil.attaque);
             if (talentEstime == null) talentEstime = extraireTalentUnique(profil.attaqueSpe);
             if (talentEstime != null) b.talent(talentEstime);
-        } else {
-            SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
-            if (smogon != null && !smogon.topSpreads().isEmpty()) {
-                SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
-                b.ev(Stat.ATTAQUE, top.atkEv()).ev(Stat.ATTAQUE_SPE, top.spaEv());
-                b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
-                if (!smogon.topItemsShowdownId().isEmpty()) {
-                    String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
-                    if (fr != null) b.objet(fr);
-                }
-                if (!smogon.topAbilitiesShowdownId().isEmpty()) {
-                    String fr = ShowdownIdMapper.talent(smogon.topAbilitiesShowdownId().get(0));
-                    if (fr != null) b.talent(fr);
-                }
-            } else {
-                b.ev(Stat.ATTAQUE, 252).ev(Stat.ATTAQUE_SPE, 252).nature(Nature.HARDI);
-            }
         }
 
-        return b.build();
+        Pokemon p = b.build();
+        p.setPvActuels(p.getPvMax());
+        return p;
     }
 
     private static void appliquerHypothese(Pokemon.Builder b, Stat stat, StatHypothesis hyp) {
