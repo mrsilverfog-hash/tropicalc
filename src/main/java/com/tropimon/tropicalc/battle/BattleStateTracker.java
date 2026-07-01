@@ -85,12 +85,7 @@ public final class BattleStateTracker {
         if (acteur.getActivePokemon().isEmpty()) return null;
         ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
         if (cbp == null) return null;
-        Pokemon p = convertir(cbp);
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] convertir: espece={} pvMax={} pvActuels={} isFlat={} hpValue={} maxHp={}",
-            cbp.getSpecies().showdownId(), p.getPvMax(), p.getPvActuels(),
-            cbp.isHpFlat(), cbp.getHpValue(), cbp.getMaxHp());
-        return p;
+        return convertir(cbp);
     }
 
     private static Pokemon convertir(ClientBattlePokemon cbp) {
@@ -210,22 +205,16 @@ public final class BattleStateTracker {
         String talentFr = ShowdownIdMapper.talent(p.getAbility().getName());
         if (talentFr != null) builder.talent(talentFr);
 
-        String itemPath = p.heldItem().isEmpty() ? null
-            : Registries.ITEM.getId(p.heldItem().getItem()).getPath();
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[TropiCalc-diag] itemPath={}", itemPath);
-        if (itemPath != null) {
-            String objetFr = ShowdownIdMapper.objet(itemPath);
-            if (objetFr != null) builder.objet(objetFr);
+        if (!p.heldItem().isEmpty()) {
+            var itemId = Registries.ITEM.getId(p.heldItem().getItem());
+            if (itemId != null) {
+                String objetFr = ShowdownIdMapper.objet(itemId.getPath());
+                if (objetFr != null) builder.objet(objetFr);
+            }
         }
 
         Pokemon pokemon = builder.build();
         pokemon.setPvActuels(p.getCurrentHealth());
-
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] PokemonComplet: espece={} pvMax={} atkEV={} atkIV={} nature={} talent={} objet={}",
-            espece.showdownId(), pokemon.getPvMax(),
-            p.getEvs().getOrDefault(Stats.ATTACK), p.getIvs().getOrDefault(Stats.ATTACK),
-            p.getEffectiveNature().getName().getPath(), p.getAbility().getName(), pokemon.getObjet());
 
         if (p.getStatus() != null) {
             switch (p.getStatus().getStatus().getShowdownName()) {
