@@ -62,12 +62,6 @@ public final class ObservationCollector {
                 adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
             }
 
-            if (adversaireEtaitAttaquant) {
-                COUPS_ADVERSAIRE
-                    .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
-                    .add(coupDuTour.showdownId());
-            }
-
             double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
             if (perte >= 0.5) {
                 enregistrerObservation(adversaireEtaitAttaquant, perte, adversaire, joueur);
@@ -82,6 +76,20 @@ public final class ObservationCollector {
 
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
         coupDuTour = coup;
+
+        // Ajouter immédiatement si c'est un coup adverse confirmé
+        Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
+        if (Boolean.TRUE.equals(estAdversaire)) {
+            Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            if (adversaire != null) {
+                MoveTemplate tmpl = Moves.INSTANCE.getByName(coup.showdownId());
+                if (tmpl != null && tmpl.getPower() > 0) {
+                    COUPS_ADVERSAIRE
+                        .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
+                        .add(coup.showdownId());
+                }
+            }
+        }
     }
 
     private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
