@@ -9,6 +9,7 @@ import com.tropimon.tropicalc.calc.Field;
 import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
+import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -99,25 +100,29 @@ public final class CalcOverlay implements HudRenderCallback {
             }
         }
 
+        SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
         com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
-        if (profil != null) {
+
+        if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
-            context.drawText(client.textRenderer, Text.literal("Inférence :"), x, y, COULEUR_TITRE, true);
-            y += hauteurLigne;
-
-            StatHypothesis hypAtk = profil.attaque.nombreObservations >= profil.attaqueSpe.nombreObservations
-                ? profil.attaque : profil.attaqueSpe;
-            StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
-                ? profil.defense : profil.defenseSpe;
-
-            context.drawText(client.textRenderer,
-                Text.literal(String.format("Atk EV %d-%d | Def EV %d-%d",
-                    hypAtk.evMin, hypAtk.evMax, hypDef.evMin, hypDef.evMax)),
-                x, y, COULEUR_TEXTE, true);
+            SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
+            context.drawText(client.textRenderer, Text.literal("Set estimé :"), x, y, COULEUR_TITRE, true);
             y += hauteurLigne;
             context.drawText(client.textRenderer,
-                Text.literal("Objets : " + hypAtk.objetsPossibles),
+                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
+                    top.hpEv(), top.defEv(), top.spdEv(), top.natureShowdownId())),
                 x, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+
+            if (profil != null && profil.getNbObservations() >= 3) {
+                StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
+                    ? profil.defense : profil.defenseSpe;
+                context.drawText(client.textRenderer,
+                    Text.literal(String.format("Inférence Def EV %d-%d | Objets : %s",
+                        hypDef.evMin, hypDef.evMax, hypDef.objetsPossibles)),
+                    x, y, COULEUR_TEXTE, true);
+                y += hauteurLigne;
+            }
         }
     }
 
