@@ -205,18 +205,17 @@ public final class BattleStateTracker {
         builder.ev(Stat.DEFENSE_SPE, p.getEvs().getOrDefault(Stats.SPECIAL_DEFENCE));
         builder.ev(Stat.VITESSE, p.getEvs().getOrDefault(Stats.SPEED));
 
-        // Utilise getEffectiveNature() pour tenir compte des Menthes
         builder.nature(ShowdownIdMapper.nature(p.getEffectiveNature().getName().getPath()));
 
         String talentFr = ShowdownIdMapper.talent(p.getAbility().getName());
         if (talentFr != null) builder.talent(talentFr);
 
-        if (!p.heldItem().isEmpty()) {
-            var itemId = Registries.ITEM.getId(p.heldItem().getItem());
-            if (itemId != null) {
-                String objetFr = ShowdownIdMapper.objet(itemId.getPath());
-                if (objetFr != null) builder.objet(objetFr);
-            }
+        String itemPath = p.heldItem().isEmpty() ? null
+            : Registries.ITEM.getId(p.heldItem().getItem()).getPath();
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[TropiCalc-diag] itemPath={}", itemPath);
+        if (itemPath != null) {
+            String objetFr = ShowdownIdMapper.objet(itemPath);
+            if (objetFr != null) builder.objet(objetFr);
         }
 
         Pokemon pokemon = builder.build();
@@ -226,7 +225,7 @@ public final class BattleStateTracker {
             "[TropiCalc-diag] PokemonComplet: espece={} pvMax={} atkEV={} atkIV={} nature={} talent={} objet={}",
             espece.showdownId(), pokemon.getPvMax(),
             p.getEvs().getOrDefault(Stats.ATTACK), p.getIvs().getOrDefault(Stats.ATTACK),
-            p.getEffectiveNature().getName().getPath(), p.getAbility().getName(), pokemon.getTalent());
+            p.getEffectiveNature().getName().getPath(), p.getAbility().getName(), pokemon.getObjet());
 
         if (p.getStatus() != null) {
             switch (p.getStatus().getStatus().getShowdownName()) {
