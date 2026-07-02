@@ -169,6 +169,11 @@ public final class BattleStateTracker {
             if (spe != null) pokemon.setStage(Stat.VITESSE, spe);
         }
 
+        if (cbp.getStatChanges() != null && !cbp.getStatChanges().isEmpty()) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] statChanges: {}", cbp.getStatChanges());
+        }
+
         return pokemon;
     }
 
