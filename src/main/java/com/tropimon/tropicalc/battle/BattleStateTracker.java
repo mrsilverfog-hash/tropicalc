@@ -17,6 +17,7 @@ import com.tropimon.tropicalc.calc.Stat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.registry.Registries;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class BattleStateTracker {
@@ -65,6 +66,18 @@ public final class BattleStateTracker {
             if (p.getUuid().equals(uuid)) return p;
         }
         return null;
+    }
+
+    /** Renvoie la liste des Pokémon de l'équipe du joueur (pour l'aperçu de switch). */
+    public static List<com.cobblemon.mod.common.pokemon.Pokemon> getEquipeJoueur() {
+        ClientBattleActor acteur = getActeurJoueur();
+        if (acteur == null) return null;
+        return acteur.getPokemon();
+    }
+
+    /** Convertit un membre de l'équipe en calc.Pokemon (vraies stats). */
+    public static Pokemon convertirMembre(com.cobblemon.mod.common.pokemon.Pokemon p) {
+        return convertirPokemonComplet(p);
     }
 
     private static ClientBattleActor getActeurJoueur() {
@@ -167,11 +180,6 @@ public final class BattleStateTracker {
             if (spa != null) pokemon.setStage(Stat.ATTAQUE_SPE, spa);
             if (spd != null) pokemon.setStage(Stat.DEFENSE_SPE, spd);
             if (spe != null) pokemon.setStage(Stat.VITESSE, spe);
-        }
-
-        if (cbp.getStatChanges() != null && !cbp.getStatChanges().isEmpty()) {
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[TropiCalc-diag] statChanges: {}", cbp.getStatChanges());
         }
 
         return pokemon;
