@@ -33,7 +33,6 @@ public final class ObservationCollector {
 
     private static double pvJoueurDebutTour = -1;
     private static double pvAdversaireDebutTour = -1;
-    // Coups séparés par camp
     private static MoveUseTracker.CoupDetecte coupJoueurDuTour = null;
     private static MoveUseTracker.CoupDetecte coupAdversaireDuTour = null;
     private static String espaceAdversaireDuTour = null;
@@ -60,18 +59,12 @@ public final class ObservationCollector {
                 return;
             }
 
-            // Traiter le coup adverse
+            // Traiter le coup adverse pour l'inférence (seulement si dégâts)
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
-                MoveTemplate tmpl = Moves.INSTANCE.getByName(coupAdversaireDuTour.showdownId());
-                if (tmpl != null && tmpl.getPower() > 0) {
-                    COUPS_ADVERSAIRE
-                        .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
-                        .add(coupAdversaireDuTour.showdownId());
-                }
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
 
-            // Traiter le coup du joueur
+            // Traiter le coup du joueur pour l'inférence (seulement si dégâts)
             if (coupJoueurDuTour != null && perteAdversaire >= 0.5) {
                 enregistrerObservation(false, perteAdversaire, adversaire, joueur, coupJoueurDuTour);
             }
@@ -88,10 +81,14 @@ public final class ObservationCollector {
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
         if (Boolean.TRUE.equals(estAdversaire)) {
             coupAdversaireDuTour = coup;
-        } else if (Boolean.FALSE.equals(estAdversaire)) {
-            coupJoueurDuTour = coup;
+            // Ajouter immédiatement aux coups adverses (proprietaire confirmé)
+            Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            if (adversaire != null) {
+                COUPS_ADVERSAIRE
+                    .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
+                    .add(coup.showdownId());
+            }
         } else {
-            // proprietaire null : on ne sait pas, on ignore pour la détection des coups adverses
             coupJoueurDuTour = coup;
         }
     }
