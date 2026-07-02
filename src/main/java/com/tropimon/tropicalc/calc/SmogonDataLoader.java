@@ -24,7 +24,8 @@ public final class SmogonDataLoader {
     public record SmogonPokemonData(
         List<String> topItemsShowdownId,
         List<String> topAbilitiesShowdownId,
-        List<ParsedSpread> topSpreads
+        List<ParsedSpread> topSpreads,
+        List<String> topMovesShowdownId
     ) {
     }
 
@@ -33,10 +34,12 @@ public final class SmogonDataLoader {
     private static volatile boolean erreur = false;
 
     private static final String[] URLS_ESSAI = {
-        "https://www.smogon.com/stats/2025-12/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-11/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-10/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-09/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-05/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-04/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-03/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-02/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-01/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2024-12/chaos/gen9ou-0.json",
     };
 
     public static void charger() {
@@ -68,7 +71,7 @@ public final class SmogonDataLoader {
                 }
             }
             erreur = true;
-            TropiCalcClient.LOGGER.warn("[TropiCalc] Impossible de charger les sets Smogon, inférence sans priors.");
+            TropiCalcClient.LOGGER.warn("[TropiCalc] Impossible de charger les sets Smogon.");
         }, "TropiCalc-SmogonLoader");
         t.setDaemon(true);
         t.start();
@@ -84,7 +87,8 @@ public final class SmogonDataLoader {
             List<String> topItems = extraireTop(pkData.getAsJsonObject("Items"), 5);
             List<String> topAbilities = extraireTop(pkData.getAsJsonObject("Abilities"), 5);
             List<ParsedSpread> topSpreads = extraireSpreads(pkData.getAsJsonObject("Spreads"), 5);
-            DONNEES.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads));
+            List<String> topMoves = extraireTop(pkData.getAsJsonObject("Moves"), 5);
+            DONNEES.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves));
         }
     }
 
