@@ -29,7 +29,7 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
-    private static final double TOLERANCE_POURCENT = 1.5;
+    private static final double TOLERANCE_POURCENT = 3.0;
 
     private static double pvJoueurDebutTour = -1;
     private static double pvAdversaireDebutTour = -1;
