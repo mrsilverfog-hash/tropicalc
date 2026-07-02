@@ -2,6 +2,7 @@ package com.tropimon.tropicalc.client;
 
 import com.cobblemon.mod.common.api.moves.Move;
 import com.cobblemon.mod.common.api.moves.MoveTemplate;
+import com.cobblemon.mod.common.api.moves.Moves;
 import com.tropimon.tropicalc.battle.BattleStateTracker;
 import com.tropimon.tropicalc.battle.ObservationCollector;
 import com.tropimon.tropicalc.calc.DamageCalculator;
@@ -16,6 +17,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public final class CalcOverlay implements HudRenderCallback {
@@ -24,6 +27,7 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_KO = 0xFF5555;
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
+    private static final int COULEUR_REVELE = 0x55FF55;
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -46,6 +50,7 @@ public final class CalcOverlay implements HudRenderCallback {
         int hauteurLigne = client.textRenderer.fontHeight + 2;
         Field field = new Field();
 
+        // --- Section 1 : mes capacités ---
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
 
@@ -69,31 +74,50 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
+        // --- Section 2 : capacités adverses (Smogon top 5 + révélées) ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
         if (especeAdv == null) especeAdv = adversaireBase.getEspece();
 
-        List<MoveTemplate> coupsAdv = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
-        if (!coupsAdv.isEmpty()) {
+        SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
+        List<MoveTemplate> coupsReveles = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
+
+        // Construire la liste affichée : révélés en premier, puis top Smogon non révélés
+        LinkedHashSet<String> reveleIds = new LinkedHashSet<>();
+        for (MoveTemplate t : coupsReveles) reveleIds.add(t.getName());
+
+        List<MoveTemplate> aAfficher = new ArrayList<>(coupsReveles);
+        if (smogon != null) {
+            for (String moveId : smogon.topMovesShowdownId()) {
+                if (!reveleIds.contains(moveId)) {
+                    MoveTemplate t = Moves.INSTANCE.getByName(moveId);
+                    if (t != null) aAfficher.add(t);
+                }
+            }
+        }
+
+        if (!aAfficher.isEmpty()) {
             y += 4;
-            context.drawText(client.textRenderer, Text.literal("Attaques adverses :"), x, y, COULEUR_DANGER, true);
+            context.drawText(client.textRenderer, Text.literal("Capacités adverses :"), x, y, COULEUR_DANGER, true);
             y += hauteurLigne;
 
-            for (MoveTemplate template : coupsAdv) {
+            for (MoveTemplate template : aAfficher) {
+                boolean estRevele = reveleIds.contains(template.getName());
                 com.tropimon.tropicalc.calc.Move capaciteAdv = convertirTemplate(template);
                 String nom = template.getDisplayName().getString();
                 String ligne;
-                int couleur = COULEUR_TEXTE;
+                int couleur = estRevele ? COULEUR_REVELE : COULEUR_TEXTE;
 
                 if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) {
-                    ligne = nom + " : statut";
+                    ligne = (estRevele ? "✓ " : "") + nom + " : statut";
                 } else {
                     DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, null, false);
                     if (r.immunise) {
-                        ligne = nom + " : immunisé";
+                        ligne = (estRevele ? "✓ " : "") + nom + " : immunisé";
                     } else {
-                        ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
+                        ligne = String.format("%s%s : %.0f%% - %.0f%%",
+                            estRevele ? "✓ " : "", nom, r.pourcentageMin, r.pourcentageMax);
                         if (r.koGaranti) couleur = COULEUR_KO;
-                        else if (r.koPossible) couleur = 0xFFAA00;
+                        else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
                     }
                 }
                 context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
@@ -101,9 +125,7 @@ public final class CalcOverlay implements HudRenderCallback {
             }
         }
 
-        SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
-        com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
-
+        // --- Section 3 : set estimé ---
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
@@ -115,6 +137,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
 
+            com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
             if (profil != null && profil.getNbObservations() >= 3) {
                 StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
                     ? profil.defense : profil.defenseSpe;
