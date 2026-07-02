@@ -74,6 +74,10 @@ public class DamageCalculator {
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
 
         Stat statOffensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
+        // Body Press utilise la Défense de l'attaquant
+        if ("bodypress".equals(capacite.getNom())) {
+            statOffensive = Stat.DEFENSE;
+        }
         Stat statDefensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.DEFENSE : Stat.DEFENSE_SPE;
 
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
