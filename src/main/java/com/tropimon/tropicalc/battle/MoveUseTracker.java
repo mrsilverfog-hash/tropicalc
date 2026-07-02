@@ -19,6 +19,10 @@ public final class MoveUseTracker {
 
     public static void traiterMessage(Text message) {
         if (message == null) return;
+
+        // Tracker les boosts/débuffs
+        BoostTracker.traiterMessage(message);
+
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
 
@@ -29,37 +33,28 @@ public final class MoveUseTracker {
 
         if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) return;
 
-        boolean estSur = CLE_UTILISE_COUP_SUR.equals(cle);
-
         String proprietaire = null;
         String coupId = null;
-        String premierProprietaire = null;
-        String deuxiemeProprietaire = null;
-        int indexProprietaire = 0;
 
         for (Object arg : contenu.getArgs()) {
             if (!(arg instanceof Text texteArg) || !(texteArg.getContent() instanceof TranslatableTextContent sousContenu)) continue;
             String sousCle = sousContenu.getKey();
             if (sousCle == null) continue;
             if (sousCle.startsWith(CLE_PREFIXE_COUP)) {
-                coupId = sousCle.substring(CLE_PREFIXE_COUP.length());
+                if (coupId == null) {
+                    coupId = sousCle.substring(CLE_PREFIXE_COUP.length());
+                }
             } else if (CLE_PROPRIETAIRE.equals(sousCle)) {
-                Object[] sousArgs = sousContenu.getArgs();
-                if (sousArgs.length > 0 && sousArgs[0] instanceof String nom) {
-                    if (indexProprietaire == 0) premierProprietaire = nom;
-                    else deuxiemeProprietaire = nom;
-                    indexProprietaire++;
+                if (proprietaire == null) {
+                    Object[] sousArgs = sousContenu.getArgs();
+                    if (sousArgs.length > 0 && sousArgs[0] instanceof String nom) {
+                        proprietaire = nom;
+                    }
                 }
             }
         }
 
         if (coupId != null) {
-            // Pour "used_move_on": "Pokémon de X utilise Y sur Pokémon de Z"
-            // premierProprietaire = attaquant, deuxiemeProprietaire = cible
-            // Pour "used_move": "Pokémon de X utilise Y"
-            // premierProprietaire = attaquant
-            proprietaire = premierProprietaire;
-
             ObservationCollector.signalerCoupUtilise(new CoupDetecte(coupId, proprietaire));
         }
     }
