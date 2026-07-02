@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.api.moves.Move;
 import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.api.moves.Moves;
 import com.tropimon.tropicalc.battle.BattleStateTracker;
+import com.tropimon.tropicalc.battle.BoostTracker;
 import com.tropimon.tropicalc.battle.ObservationCollector;
 import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
@@ -11,6 +12,7 @@ import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
 import com.tropimon.tropicalc.calc.SmogonDataLoader;
+import com.tropimon.tropicalc.calc.Stat;
 import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -44,6 +46,16 @@ public final class CalcOverlay implements HudRenderCallback {
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
+        // Appliquer les boosts trackés en live (Mur de Fer, danses, Intimidation, etc.)
+        for (Stat s : Stat.values()) {
+            if (s != Stat.PV) {
+                int stageAdv = BoostTracker.getStageAdversaire(s);
+                if (stageAdv != 0) adversaire.setStage(s, stageAdv);
+                int stageJoueur = BoostTracker.getStageJoueur(s);
+                if (stageJoueur != 0) joueur.setStage(s, stageJoueur);
+            }
+        }
+
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
         int y = 170;
@@ -74,14 +86,13 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Section 2 : capacités adverses (Smogon top 5 + révélées) ---
+        // --- Section 2 : capacités adverses (révélées + top Smogon) ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
         if (especeAdv == null) especeAdv = adversaireBase.getEspece();
 
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
         List<MoveTemplate> coupsReveles = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
 
-        // Construire la liste affichée : révélés en premier, puis top Smogon non révélés
         LinkedHashSet<String> reveleIds = new LinkedHashSet<>();
         for (MoveTemplate t : coupsReveles) reveleIds.add(t.getName());
 
