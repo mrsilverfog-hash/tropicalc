@@ -29,6 +29,8 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
+    // Espèces dont l'objet a été retiré (Knock Off, etc.)
+    private static final Set<String> OBJETS_RETIRES = new HashSet<>();
     private static final double TOLERANCE_POURCENT = 3.0;
 
     private static double pvJoueurDebutTour = -1;
@@ -59,12 +61,15 @@ public final class ObservationCollector {
                 return;
             }
 
-            // Traiter le coup adverse pour l'inférence (seulement si dégâts)
+            // Knock Off réussi → l'adversaire perd son objet
+            if (coupJoueurDuTour != null && "knockoff".equals(coupJoueurDuTour.showdownId())
+                    && perteAdversaire >= 0.5) {
+                OBJETS_RETIRES.add(adversaire.getEspece());
+            }
+
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
-
-            // Traiter le coup du joueur pour l'inférence (seulement si dégâts)
             if (coupJoueurDuTour != null && perteAdversaire >= 0.5) {
                 enregistrerObservation(false, perteAdversaire, adversaire, joueur, coupJoueurDuTour);
             }
@@ -81,7 +86,6 @@ public final class ObservationCollector {
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
         if (Boolean.TRUE.equals(estAdversaire)) {
             coupAdversaireDuTour = coup;
-            // Ajouter immédiatement aux coups adverses (proprietaire confirmé)
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
                 COUPS_ADVERSAIRE
@@ -118,6 +122,7 @@ public final class ObservationCollector {
         String espece = adversaireBase.getEspece();
         ProfilAdversaire profil = PROFILS.get(espece);
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
+        boolean objetRetire = OBJETS_RETIRES.contains(espece);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
@@ -134,7 +139,7 @@ public final class ObservationCollector {
             b.ev(Stat.DEFENSE_SPE, top.spdEv());
             b.ev(Stat.VITESSE, top.speEv());
             b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
-            if (!smogon.topItemsShowdownId().isEmpty()) {
+            if (!objetRetire && !smogon.topItemsShowdownId().isEmpty()) {
                 String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
                 if (fr != null) b.objet(fr);
             }
@@ -150,19 +155,34 @@ public final class ObservationCollector {
             appliquerHypothese(b, Stat.DEFENSE, profil.defense);
             appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
 
-            String objetEstime = extraireObjetUnique(profil.attaque);
-            if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
-            if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
-            if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
-            if (objetEstime != null) b.objet(objetEstime);
+            if (!objetRetire) {
+                String objetEstime = extraireObjetUnique(profil.attaque);
+                if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
+                if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
+                if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
+                if (objetEstime != null) b.objet(objetEstime);
+            }
 
             String talentEstime = extraireTalentUnique(profil.attaque);
             if (talentEstime == null) talentEstime = extraireTalentUnique(profil.attaqueSpe);
             if (talentEstime != null) b.talent(talentEstime);
         }
 
+        if (objetRetire) {
+            b.objet(null);
+        }
+
         Pokemon p = b.build();
-        p.setPvActuels(p.getPvMax());
+        p.setPvActuels(adversaireBase.getPvActuels() > 0 ? adversaireBase.getPvActuels() : p.getPvMax());
+        p.setStatut(adversaireBase.getStatut());
+
+        // Reporter les stages de boost réels de l'adversaire (Mur de Fer, Plénitude, etc.)
+        for (Stat s : Stat.values()) {
+            if (s != Stat.PV) {
+                p.setStage(s, adversaireBase.getStage(s));
+            }
+        }
+
         return p;
     }
 
@@ -221,6 +241,7 @@ public final class ObservationCollector {
     public static void reinitialiser() {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
+        OBJETS_RETIRES.clear();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
         coupJoueurDuTour = null;
