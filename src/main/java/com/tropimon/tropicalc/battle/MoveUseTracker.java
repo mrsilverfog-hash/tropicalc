@@ -3,11 +3,6 @@ package com.tropimon.tropicalc.battle;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
-/**
- * Détecte les événements de combat structurés (coups utilisés, nouveaux tours)
- * depuis les paquets réseau de Cobblemon (via BattleMessagePacketMixin),
- * en lisant les clés de traduction brutes plutôt que le texte traduit.
- */
 public final class MoveUseTracker {
 
     private MoveUseTracker() {
@@ -23,12 +18,8 @@ public final class MoveUseTracker {
     }
 
     public static void traiterMessage(Text message) {
-        if (message == null) {
-            return;
-        }
-        if (!(message.getContent() instanceof TranslatableTextContent contenu)) {
-            return;
-        }
+        if (message == null) return;
+        if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
 
         if (CLE_NOUVEAU_TOUR.equals(cle)) {
@@ -36,21 +27,15 @@ public final class MoveUseTracker {
             return;
         }
 
-        if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) {
-            return;
-        }
+        if (!CLE_UTILISE_COUP.equals(cle) && !CLE_UTILISE_COUP_SUR.equals(cle)) return;
 
         String proprietaire = null;
         String coupId = null;
 
         for (Object arg : contenu.getArgs()) {
-            if (!(arg instanceof Text texteArg) || !(texteArg.getContent() instanceof TranslatableTextContent sousContenu)) {
-                continue;
-            }
+            if (!(arg instanceof Text texteArg) || !(texteArg.getContent() instanceof TranslatableTextContent sousContenu)) continue;
             String sousCle = sousContenu.getKey();
-            if (sousCle == null) {
-                continue;
-            }
+            if (sousCle == null) continue;
             if (sousCle.startsWith(CLE_PREFIXE_COUP)) {
                 coupId = sousCle.substring(CLE_PREFIXE_COUP.length());
             } else if (CLE_PROPRIETAIRE.equals(sousCle)) {
@@ -62,6 +47,12 @@ public final class MoveUseTracker {
         }
 
         if (coupId != null) {
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+                "[TropiCalc-diag] Coup: {} proprietaire='{}' joueur='{}'",
+                coupId, proprietaire,
+                net.minecraft.client.MinecraftClient.getInstance().player != null
+                    ? net.minecraft.client.MinecraftClient.getInstance().player.getGameProfile().getName()
+                    : "null");
             ObservationCollector.signalerCoupUtilise(new CoupDetecte(coupId, proprietaire));
         }
     }
