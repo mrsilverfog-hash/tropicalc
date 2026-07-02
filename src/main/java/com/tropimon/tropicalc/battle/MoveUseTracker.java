@@ -20,8 +20,8 @@ public final class MoveUseTracker {
     public static void traiterMessage(Text message) {
         if (message == null) return;
 
-        // Tracker les boosts/débuffs
         BoostTracker.traiterMessage(message);
+        FieldTracker.traiterMessage(message);
 
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
