@@ -62,6 +62,16 @@ public final class ObservationCollector {
                 adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
             }
 
+            // Ajouter aux coups adverses à la fin du tour avec confirmation par dégâts
+            if (adversaireEtaitAttaquant && perteJoueur >= 0.5) {
+                MoveTemplate tmpl = Moves.INSTANCE.getByName(coupDuTour.showdownId());
+                if (tmpl != null && tmpl.getPower() > 0) {
+                    COUPS_ADVERSAIRE
+                        .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
+                        .add(coupDuTour.showdownId());
+                }
+            }
+
             double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
             if (perte >= 0.5) {
                 enregistrerObservation(adversaireEtaitAttaquant, perte, adversaire, joueur);
@@ -77,7 +87,7 @@ public final class ObservationCollector {
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
         coupDuTour = coup;
 
-        // Ajouter immédiatement si c'est un coup adverse confirmé
+        // Ajouter immédiatement uniquement si le propriétaire est confirmé non-joueur
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
         if (Boolean.TRUE.equals(estAdversaire)) {
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
