@@ -79,8 +79,14 @@ public class DamageCalculator {
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
 
+        // Knock Off : x1.5 puissance si le défenseur a un objet
+        int puissance = capacite.getPuissanceDeBase();
+        if ("knockoff".equals(capacite.getNom()) && defenseur.getObjet() != null) {
+            puissance = (int)(puissance * 1.5);
+        }
+
         int niveauTerme = (2 * attaquant.getNiveau()) / 5 + 2;
-        long base = ((long) niveauTerme * capacite.getPuissanceDeBase() * statA) / Math.max(1, statD);
+        long base = ((long) niveauTerme * puissance * statA) / Math.max(1, statD);
         base = base / 50 + 2;
 
         double stab = calculerSTAB(attaquant, capacite, ctx);
