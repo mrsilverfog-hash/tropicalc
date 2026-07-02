@@ -33,7 +33,9 @@ public final class ObservationCollector {
 
     private static double pvJoueurDebutTour = -1;
     private static double pvAdversaireDebutTour = -1;
-    private static MoveUseTracker.CoupDetecte coupDuTour = null;
+    // Coups séparés par camp
+    private static MoveUseTracker.CoupDetecte coupJoueurDuTour = null;
+    private static MoveUseTracker.CoupDetecte coupAdversaireDuTour = null;
     private static String espaceAdversaireDuTour = null;
 
     public static synchronized void signalerNouveauTour() {
@@ -45,7 +47,7 @@ public final class ObservationCollector {
         double pvJoueurMaintenant = joueur.getPourcentagePv();
         double pvAdversaireMaintenant = adversaire.getPourcentagePv();
 
-        if (coupDuTour != null && pvJoueurDebutTour >= 0 && pvAdversaireDebutTour >= 0) {
+        if (pvJoueurDebutTour >= 0 && pvAdversaireDebutTour >= 0) {
             double perteJoueur = pvJoueurDebutTour - pvJoueurMaintenant;
             double perteAdversaire = pvAdversaireDebutTour - pvAdversaireMaintenant;
 
@@ -53,59 +55,51 @@ public final class ObservationCollector {
                 pvJoueurDebutTour = pvJoueurMaintenant;
                 pvAdversaireDebutTour = pvAdversaireMaintenant;
                 espaceAdversaireDuTour = adversaire.getEspece();
-                coupDuTour = null;
+                coupJoueurDuTour = null;
+                coupAdversaireDuTour = null;
                 return;
             }
 
-            Boolean adversaireEtaitAttaquant = determinerAttaquant(coupDuTour.proprietaire());
-            if (adversaireEtaitAttaquant == null) {
-                adversaireEtaitAttaquant = perteJoueur > perteAdversaire;
-            }
-
-            // Ajouter aux coups adverses à la fin du tour avec confirmation par dégâts
-            if (adversaireEtaitAttaquant && perteJoueur >= 0.5) {
-                MoveTemplate tmpl = Moves.INSTANCE.getByName(coupDuTour.showdownId());
+            // Traiter le coup adverse
+            if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
+                MoveTemplate tmpl = Moves.INSTANCE.getByName(coupAdversaireDuTour.showdownId());
                 if (tmpl != null && tmpl.getPower() > 0) {
                     COUPS_ADVERSAIRE
                         .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
-                        .add(coupDuTour.showdownId());
+                        .add(coupAdversaireDuTour.showdownId());
                 }
+                enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
 
-            double perte = adversaireEtaitAttaquant ? perteJoueur : perteAdversaire;
-            if (perte >= 0.5) {
-                enregistrerObservation(adversaireEtaitAttaquant, perte, adversaire, joueur);
+            // Traiter le coup du joueur
+            if (coupJoueurDuTour != null && perteAdversaire >= 0.5) {
+                enregistrerObservation(false, perteAdversaire, adversaire, joueur, coupJoueurDuTour);
             }
         }
 
         pvJoueurDebutTour = pvJoueurMaintenant;
         pvAdversaireDebutTour = pvAdversaireMaintenant;
         espaceAdversaireDuTour = adversaire.getEspece();
-        coupDuTour = null;
+        coupJoueurDuTour = null;
+        coupAdversaireDuTour = null;
     }
 
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
-        coupDuTour = coup;
-
-        // Ajouter immédiatement uniquement si le propriétaire est confirmé non-joueur
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
         if (Boolean.TRUE.equals(estAdversaire)) {
-            Pokemon adversaire = BattleStateTracker.getAdversaireActif();
-            if (adversaire != null) {
-                MoveTemplate tmpl = Moves.INSTANCE.getByName(coup.showdownId());
-                if (tmpl != null && tmpl.getPower() > 0) {
-                    COUPS_ADVERSAIRE
-                        .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
-                        .add(coup.showdownId());
-                }
-            }
+            coupAdversaireDuTour = coup;
+        } else if (Boolean.FALSE.equals(estAdversaire)) {
+            coupJoueurDuTour = coup;
+        } else {
+            // proprietaire null : on ne sait pas, on ignore pour la détection des coups adverses
+            coupJoueurDuTour = coup;
         }
     }
 
     private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
-                                                Pokemon adversaire, Pokemon joueur) {
-        if (coupDuTour == null) return;
-        MoveTemplate template = Moves.INSTANCE.getByName(coupDuTour.showdownId());
+                                                Pokemon adversaire, Pokemon joueur,
+                                                MoveUseTracker.CoupDetecte coup) {
+        MoveTemplate template = Moves.INSTANCE.getByName(coup.showdownId());
         if (template == null) return;
         com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
         if (capacite == null || capacite.estCapaciteDeStatut()) return;
@@ -232,7 +226,8 @@ public final class ObservationCollector {
         COUPS_ADVERSAIRE.clear();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
-        coupDuTour = null;
+        coupJoueurDuTour = null;
+        coupAdversaireDuTour = null;
         espaceAdversaireDuTour = null;
     }
 
