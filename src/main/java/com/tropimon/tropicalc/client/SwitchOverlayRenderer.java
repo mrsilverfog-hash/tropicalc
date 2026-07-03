@@ -8,6 +8,7 @@ import com.tropimon.tropicalc.battle.BattleStateTracker;
 import com.tropimon.tropicalc.battle.BoostTracker;
 import com.tropimon.tropicalc.battle.FieldTracker;
 import com.tropimon.tropicalc.battle.ObservationCollector;
+import com.tropimon.tropicalc.battle.TypeTracker;
 import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
 import com.tropimon.tropicalc.calc.Pokemon;
@@ -64,6 +65,9 @@ public final class SwitchOverlayRenderer {
                 if (stageAdv != 0) adversaire.setStage(s, stageAdv);
             }
         }
+
+        // Types adverses modifiés en combat (le candidat entre avec ses types normaux)
+        TypeTracker.appliquer(candidat, adversaire);
 
         Field field = FieldTracker.construireField();
         MinecraftClient client = MinecraftClient.getInstance();
