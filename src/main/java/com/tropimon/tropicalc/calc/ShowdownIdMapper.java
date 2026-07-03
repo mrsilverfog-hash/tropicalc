@@ -115,6 +115,8 @@ public final class ShowdownIdMapper {
         TALENTS.put("swordofruin", "Épée de Ruine");
         TALENTS.put("beadsofruin", "Perles de Ruine");
         TALENTS.put("tabletsofruin", "Tablettes de Ruine");
+        TALENTS.put("disguise", "Déguisement");
+        TALENTS.put("skilllink", "Multi-Coups");
 
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
