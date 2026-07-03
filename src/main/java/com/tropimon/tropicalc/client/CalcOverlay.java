@@ -31,6 +31,8 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
+    private static final int COULEUR_VITESSE_OK = 0x55FF55;
+    private static final int COULEUR_VITESSE_KO = 0xFF5555;
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -85,6 +87,16 @@ public final class CalcOverlay implements HudRenderCallback {
             context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
             y += hauteurLigne;
         }
+
+        // --- Vitesses ---
+        int vitJoueur = calculerVitesseEffective(joueur);
+        int vitAdversaire = calculerVitesseEffective(adversaire);
+        boolean plusRapide = vitJoueur > vitAdversaire;
+        String texteVitesse = String.format("Vitesse : %d vs ~%d %s",
+            vitJoueur, vitAdversaire, plusRapide ? "✔" : "✘");
+        context.drawText(client.textRenderer, Text.literal(texteVitesse), x, y,
+            plusRapide ? COULEUR_VITESSE_OK : COULEUR_VITESSE_KO, true);
+        y += hauteurLigne;
 
         // --- Section 2 : capacités adverses ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
@@ -143,8 +155,8 @@ public final class CalcOverlay implements HudRenderCallback {
             context.drawText(client.textRenderer, Text.literal("Set estimé :"), x, y, COULEUR_TITRE, true);
             y += hauteurLigne;
             context.drawText(client.textRenderer,
-                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
-                    top.hpEv(), top.defEv(), top.spdEv(), top.natureShowdownId())),
+                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | Vit %d | %s",
+                    top.hpEv(), top.defEv(), top.spdEv(), top.speEv(), top.natureShowdownId())),
                 x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
 
@@ -160,7 +172,7 @@ public final class CalcOverlay implements HudRenderCallback {
             }
         }
 
-        // --- Section 4 : aperçu de switch (dégâts subis par chaque Pokémon de l'équipe) ---
+        // --- Section 4 : aperçu de switch ---
         List<MoveTemplate> coupsRevelesOffensifs = new ArrayList<>();
         for (MoveTemplate t : coupsReveles) {
             com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
@@ -201,6 +213,22 @@ public final class CalcOverlay implements HudRenderCallback {
                 }
             }
         }
+    }
+
+    /** Vitesse effective : stat calculée + stages + paralysie + Écharpe Choix. */
+    private int calculerVitesseEffective(Pokemon p) {
+        double vitesse = p.getStatCalculee(Stat.VITESSE);
+        int stage = p.getStage(Stat.VITESSE);
+        if (stage >= 0) vitesse = vitesse * (2.0 + stage) / 2.0;
+        else vitesse = vitesse * 2.0 / (2.0 - stage);
+
+        if ("Écharpe Choix".equals(p.getObjet())) {
+            vitesse *= 1.5;
+        }
+        if (p.getStatut() == Pokemon.Statut.PARALYSIE) {
+            vitesse *= 0.5;
+        }
+        return (int) Math.floor(vitesse);
     }
 
     private com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {
