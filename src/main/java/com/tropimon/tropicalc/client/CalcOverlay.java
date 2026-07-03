@@ -64,7 +64,6 @@ public final class CalcOverlay implements HudRenderCallback {
         int hauteurLigne = client.textRenderer.fontHeight + 2;
         Field field = FieldTracker.construireField();
 
-        // --- Section 1 : mes capacités ---
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
 
@@ -88,7 +87,6 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Vitesses ---
         int vitJoueur = calculerVitesseEffective(joueur);
         int vitAdversaire = calculerVitesseEffective(adversaire);
         boolean plusRapide = vitJoueur > vitAdversaire;
@@ -98,7 +96,6 @@ public final class CalcOverlay implements HudRenderCallback {
             plusRapide ? COULEUR_VITESSE_OK : COULEUR_VITESSE_KO, true);
         y += hauteurLigne;
 
-        // --- Section 2 : capacités adverses ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
         if (especeAdv == null) especeAdv = adversaireBase.getEspece();
 
@@ -148,7 +145,6 @@ public final class CalcOverlay implements HudRenderCallback {
             }
         }
 
-        // --- Section 3 : set estimé ---
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
@@ -168,54 +164,10 @@ public final class CalcOverlay implements HudRenderCallback {
                     Text.literal(String.format("Inférence Def EV %d-%d | Objets : %s",
                         hypDef.evMin, hypDef.evMax, hypDef.objetsPossibles)),
                     x, y, COULEUR_TEXTE, true);
-                y += hauteurLigne;
-            }
-        }
-
-        // --- Section 4 : aperçu de switch ---
-        List<MoveTemplate> coupsRevelesOffensifs = new ArrayList<>();
-        for (MoveTemplate t : coupsReveles) {
-            com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
-            if (m != null && !m.estCapaciteDeStatut()) coupsRevelesOffensifs.add(t);
-        }
-
-        if (!coupsRevelesOffensifs.isEmpty()) {
-            List<com.cobblemon.mod.common.pokemon.Pokemon> equipe = BattleStateTracker.getEquipeJoueur();
-            if (equipe != null && equipe.size() > 1) {
-                y += 4;
-                context.drawText(client.textRenderer, Text.literal("Si je change :"), x, y, COULEUR_TITRE, true);
-                y += hauteurLigne;
-
-                for (com.cobblemon.mod.common.pokemon.Pokemon membre : equipe) {
-                    if (membre == null || membre.getCurrentHealth() <= 0) continue;
-                    if (membre.getUuid().equals(monComplet.getUuid())) continue;
-
-                    Pokemon membreCalc = BattleStateTracker.convertirMembre(membre);
-                    if (membreCalc == null) continue;
-
-                    double pireDegats = 0;
-                    String pireCoup = "";
-                    for (MoveTemplate t : coupsRevelesOffensifs) {
-                        com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
-                        if (m == null) continue;
-                        DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, membreCalc, m, field, null, false);
-                        if (r.pourcentageMax > pireDegats) {
-                            pireDegats = r.pourcentageMax;
-                            pireCoup = t.getDisplayName().getString();
-                        }
-                    }
-
-                    String nomMembre = membre.getSpecies().getTranslatedName().getString();
-                    String ligne = String.format("%s : max %.0f%% (%s)", nomMembre, pireDegats, pireCoup);
-                    int couleur = pireDegats >= 100 ? COULEUR_KO : (pireDegats >= 50 ? 0xFFAA00 : COULEUR_TEXTE);
-                    context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
-                    y += hauteurLigne;
-                }
             }
         }
     }
 
-    /** Vitesse effective : stat calculée + stages + paralysie + Écharpe Choix. */
     private int calculerVitesseEffective(Pokemon p) {
         double vitesse = p.getStatCalculee(Stat.VITESSE);
         int stage = p.getStage(Stat.VITESSE);
