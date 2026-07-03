@@ -34,12 +34,12 @@ public final class SmogonDataLoader {
     private static volatile boolean erreur = false;
 
     private static final String[] URLS_ESSAI = {
-        "https://www.smogon.com/stats/2025-05/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-04/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-03/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-02/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-01/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2024-12/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-12/chaos/gen9nationaldex-0.json",
+        "https://www.smogon.com/stats/2025-11/chaos/gen9nationaldex-0.json",
+        "https://www.smogon.com/stats/2025-10/chaos/gen9nationaldex-0.json",
+        "https://www.smogon.com/stats/2025-09/chaos/gen9nationaldex-0.json",
+        "https://www.smogon.com/stats/2025-12/chaos/gen9ou-0.json",
+        "https://www.smogon.com/stats/2025-11/chaos/gen9ou-0.json",
     };
 
     public static void charger() {
@@ -52,7 +52,7 @@ public final class SmogonDataLoader {
                         .build();
                     HttpRequest req = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .timeout(Duration.ofSeconds(30))
+                        .timeout(Duration.ofSeconds(60))
                         .header("User-Agent", "TropiCalc/1.0 Cobblemon-Fabric-Mod")
                         .header("Accept", "application/json")
                         .GET()
@@ -64,7 +64,7 @@ public final class SmogonDataLoader {
                     }
                     parser(resp.body());
                     charge = true;
-                    TropiCalcClient.LOGGER.info("[TropiCalc] Sets Smogon chargés : {} Pokémon", DONNEES.size());
+                    TropiCalcClient.LOGGER.info("[TropiCalc] Sets Smogon chargés : {} Pokémon ({})", DONNEES.size(), url);
                     return;
                 } catch (Exception e) {
                     TropiCalcClient.LOGGER.warn("[TropiCalc] Échec chargement {} : {}", url, e.getMessage());
@@ -81,8 +81,9 @@ public final class SmogonDataLoader {
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         JsonObject data = root.getAsJsonObject("data");
         if (data == null) return;
+        DONNEES.clear();
         for (Map.Entry<String, JsonElement> entree : data.entrySet()) {
-            String nomPokemon = entree.getKey().toLowerCase().replaceAll("[^a-z0-9]", "");
+            String nomPokemon = normaliser(entree.getKey());
             JsonObject pkData = entree.getValue().getAsJsonObject();
             List<String> topItems = extraireTop(pkData.getAsJsonObject("Items"), 5);
             List<String> topAbilities = extraireTop(pkData.getAsJsonObject("Abilities"), 5);
