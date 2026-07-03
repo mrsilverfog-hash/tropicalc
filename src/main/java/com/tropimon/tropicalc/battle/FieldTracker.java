@@ -12,12 +12,21 @@ public final class FieldTracker {
     private static Field.Meteo meteoActive = Field.Meteo.AUCUNE;
     private static Field.TypeTerrain terrainActif = Field.TypeTerrain.AUCUN;
 
+    // Écrans par camp
+    private static boolean reflectJoueur = false;
+    private static boolean lightScreenJoueur = false;
+    private static boolean auroraVeilJoueur = false;
+    private static boolean reflectAdversaire = false;
+    private static boolean lightScreenAdversaire = false;
+    private static boolean auroraVeilAdversaire = false;
+
     public static void traiterMessage(Text message) {
         if (message == null) return;
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        // Météo
         if (cle.startsWith("cobblemon.battle.weather.")) {
             String reste = cle.substring("cobblemon.battle.weather.".length());
             String[] parties = reste.split("\\.");
@@ -41,6 +50,32 @@ public final class FieldTracker {
             return;
         }
 
+        // Écrans : cobblemon.battle.sidestart.<ally|opponent>.<reflect|lightscreen|auroraveil>
+        if (cle.startsWith("cobblemon.battle.sidestart.") || cle.startsWith("cobblemon.battle.sideend.")) {
+            boolean debut = cle.startsWith("cobblemon.battle.sidestart.");
+            String reste = cle.substring(debut
+                ? "cobblemon.battle.sidestart.".length()
+                : "cobblemon.battle.sideend.".length());
+            String[] parties = reste.split("\\.");
+            if (parties.length != 2) return;
+            boolean allie = "ally".equals(parties[0]);
+            String effet = parties[1];
+
+            switch (effet) {
+                case "reflect" -> {
+                    if (allie) reflectJoueur = debut; else reflectAdversaire = debut;
+                }
+                case "lightscreen" -> {
+                    if (allie) lightScreenJoueur = debut; else lightScreenAdversaire = debut;
+                }
+                case "auroraveil" -> {
+                    if (allie) auroraVeilJoueur = debut; else auroraVeilAdversaire = debut;
+                }
+            }
+            return;
+        }
+
+        // Terrains
         if (cle.contains("electricterrain")) {
             terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.ELECTRIQUE;
         } else if (cle.contains("grassyterrain")) {
@@ -56,11 +91,23 @@ public final class FieldTracker {
         Field f = new Field();
         f.setMeteo(meteoActive);
         f.setTerrain(terrainActif);
+        f.getEcransJoueur().setProtection(reflectJoueur);
+        f.getEcransJoueur().setMurLumiere(lightScreenJoueur);
+        f.getEcransJoueur().setBrumeAurore(auroraVeilJoueur);
+        f.getEcransAdversaire().setProtection(reflectAdversaire);
+        f.getEcransAdversaire().setMurLumiere(lightScreenAdversaire);
+        f.getEcransAdversaire().setBrumeAurore(auroraVeilAdversaire);
         return f;
     }
 
     public static void reinitialiser() {
         meteoActive = Field.Meteo.AUCUNE;
         terrainActif = Field.TypeTerrain.AUCUN;
+        reflectJoueur = false;
+        lightScreenJoueur = false;
+        auroraVeilJoueur = false;
+        reflectAdversaire = false;
+        lightScreenAdversaire = false;
+        auroraVeilAdversaire = false;
     }
 }
