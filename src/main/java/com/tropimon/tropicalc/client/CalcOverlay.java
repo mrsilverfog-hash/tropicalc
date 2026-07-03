@@ -171,48 +171,6 @@ public final class CalcOverlay implements HudRenderCallback {
                 y += hauteurLigne;
             }
         }
-
-        // --- Section 4 : aperçu de switch (pire coup adverse par membre) ---
-        List<MoveTemplate> coupsRevelesOffensifs = new ArrayList<>();
-        for (MoveTemplate t : coupsReveles) {
-            com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
-            if (m != null && !m.estCapaciteDeStatut()) coupsRevelesOffensifs.add(t);
-        }
-
-        if (!coupsRevelesOffensifs.isEmpty()) {
-            List<com.cobblemon.mod.common.pokemon.Pokemon> equipe = BattleStateTracker.getEquipeJoueur();
-            if (equipe != null && equipe.size() > 1) {
-                y += 4;
-                context.drawText(client.textRenderer, Text.literal("Si je change :"), x, y, COULEUR_TITRE, true);
-                y += hauteurLigne;
-
-                for (com.cobblemon.mod.common.pokemon.Pokemon membre : equipe) {
-                    if (membre == null || membre.getCurrentHealth() <= 0) continue;
-                    if (membre.getUuid().equals(monComplet.getUuid())) continue;
-
-                    Pokemon membreCalc = BattleStateTracker.convertirMembre(membre);
-                    if (membreCalc == null) continue;
-
-                    double pireDegats = 0;
-                    String pireCoup = "";
-                    for (MoveTemplate t : coupsRevelesOffensifs) {
-                        com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
-                        if (m == null) continue;
-                        DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, membreCalc, m, field, field.getEcransJoueur(), false);
-                        if (r.pourcentageMax > pireDegats) {
-                            pireDegats = r.pourcentageMax;
-                            pireCoup = t.getDisplayName().getString();
-                        }
-                    }
-
-                    String nomMembre = membre.getSpecies().getTranslatedName().getString();
-                    String ligne = String.format("%s : max %.0f%% (%s)", nomMembre, pireDegats, pireCoup);
-                    int couleur = pireDegats >= 100 ? COULEUR_KO : (pireDegats >= 50 ? 0xFFAA00 : COULEUR_TEXTE);
-                    context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
-                    y += hauteurLigne;
-                }
-            }
-        }
     }
 
     private static int vitesseEffective(Pokemon p) {
