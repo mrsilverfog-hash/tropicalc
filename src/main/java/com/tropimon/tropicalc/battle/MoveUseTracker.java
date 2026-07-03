@@ -22,6 +22,7 @@ public final class MoveUseTracker {
 
         BoostTracker.traiterMessage(message);
         FieldTracker.traiterMessage(message);
+        TypeTracker.traiterMessage(message);
 
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
