@@ -11,8 +11,8 @@ public final class FieldTracker {
 
     private static Field.Meteo meteoActive = Field.Meteo.AUCUNE;
     private static Field.TypeTerrain terrainActif = Field.TypeTerrain.AUCUN;
+    private static boolean distorsion = false;
 
-    // Écrans par camp
     private static boolean reflectJoueur = false;
     private static boolean lightScreenJoueur = false;
     private static boolean auroraVeilJoueur = false;
@@ -25,6 +25,16 @@ public final class FieldTracker {
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
         if (cle == null) return;
+
+        // Distorsion (Trick Room)
+        if (cle.equals("cobblemon.battle.fieldstart.trickroom")) {
+            distorsion = true;
+            return;
+        }
+        if (cle.equals("cobblemon.battle.fieldend.trickroom")) {
+            distorsion = false;
+            return;
+        }
 
         // Météo
         if (cle.startsWith("cobblemon.battle.weather.")) {
@@ -50,7 +60,7 @@ public final class FieldTracker {
             return;
         }
 
-        // Écrans : cobblemon.battle.sidestart.<ally|opponent>.<reflect|lightscreen|auroraveil>
+        // Écrans
         if (cle.startsWith("cobblemon.battle.sidestart.") || cle.startsWith("cobblemon.battle.sideend.")) {
             boolean debut = cle.startsWith("cobblemon.battle.sidestart.");
             String reste = cle.substring(debut
@@ -100,9 +110,14 @@ public final class FieldTracker {
         return f;
     }
 
+    public static boolean isDistorsion() {
+        return distorsion;
+    }
+
     public static void reinitialiser() {
         meteoActive = Field.Meteo.AUCUNE;
         terrainActif = Field.TypeTerrain.AUCUN;
+        distorsion = false;
         reflectJoueur = false;
         lightScreenJoueur = false;
         auroraVeilJoueur = false;
