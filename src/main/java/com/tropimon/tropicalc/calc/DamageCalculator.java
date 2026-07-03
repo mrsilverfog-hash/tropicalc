@@ -5,12 +5,13 @@ import java.util.Map;
 
 public class DamageCalculator {
 
-    // Capacités multi-coups : {min hits, max hits} — puissance Cobblemon = puissance PAR coup
+    // Capacités multi-coups : {min hits, max hits} — puissance = puissance PAR coup
     private static final Map<String, int[]> MULTI_HIT = new HashMap<>();
-    // Capacités à puissance croissante : puissance totale fixe
+    // Capacités à puissance croissante par coup : puissance totale fixe
     private static final Map<String, Integer> PUISSANCE_TOTALE = new HashMap<>();
 
     static {
+        // 2 coups fixes
         MULTI_HIT.put("doublehit", new int[]{2, 2});
         MULTI_HIT.put("dualwingbeat", new int[]{2, 2});      // Double Volée
         MULTI_HIT.put("twineedle", new int[]{2, 2});
@@ -19,6 +20,10 @@ public class DamageCalculator {
         MULTI_HIT.put("geargrind", new int[]{2, 2});
         MULTI_HIT.put("dragondarts", new int[]{2, 2});
         MULTI_HIT.put("tachyoncutter", new int[]{2, 2});
+        MULTI_HIT.put("doubleironbash", new int[]{2, 2});
+        MULTI_HIT.put("dualchop", new int[]{2, 2});
+
+        // 2-5 coups
         MULTI_HIT.put("scaleshot", new int[]{2, 5});          // Rafale Écaille
         MULTI_HIT.put("bulletseed", new int[]{2, 5});
         MULTI_HIT.put("rockblast", new int[]{2, 5});
@@ -31,13 +36,25 @@ public class DamageCalculator {
         MULTI_HIT.put("spikecannon", new int[]{2, 5});
         MULTI_HIT.put("barrage", new int[]{2, 5});
         MULTI_HIT.put("cometpunch", new int[]{2, 5});
-        MULTI_HIT.put("watershuriken", new int[]{2, 5});
-        MULTI_HIT.put("surgingstrikes", new int[]{3, 3});
+        MULTI_HIT.put("doubleslap", new int[]{2, 5});
+        MULTI_HIT.put("bonerush", new int[]{2, 5});
+        MULTI_HIT.put("watershuriken", new int[]{2, 5});      // Sheauriken
+        MULTI_HIT.put("rocksmash", new int[]{1, 1});
+
+        // 3 coups fixes
+        MULTI_HIT.put("surgingstrikes", new int[]{3, 3});     // Torrent de Coups (toujours crit)
         MULTI_HIT.put("tripledive", new int[]{3, 3});
+        MULTI_HIT.put("waterspout", new int[]{1, 1});
+
+        // 6-10 coups
         MULTI_HIT.put("populationbomb", new int[]{6, 10});    // Prolifération
 
-        PUISSANCE_TOTALE.put("tripleaxel", 120);   // 20+40+60
-        PUISSANCE_TOTALE.put("triplekick", 60);    // 10+20+30
+        // 10 coups fixes
+        MULTI_HIT.put("beatup", new int[]{1, 6});
+
+        // Puissance croissante par coup (total si tous les coups touchent)
+        PUISSANCE_TOTALE.put("tripleaxel", 120);   // Triple Axel : 20+40+60
+        PUISSANCE_TOTALE.put("triplekick", 60);    // Triple Pied : 10+20+30
     }
 
     public static class Resultat {
@@ -109,8 +126,7 @@ public class DamageCalculator {
         double efficacite = calculerEfficaciteType(capacite, defenseur);
         if (efficacite == 0.0) return Resultat.immunise();
 
-        // Déguisement (Mimiqui) : le premier coup est annulé, Mimiqui perd 1/8 de ses PV max.
-        // Approximation : si Mimiqui est à PV pleins, on affiche ~12.5% (le 1/8 perdu).
+        // Déguisement (Mimiqui) : le premier coup est annulé, Mimiqui perd 1/8 de ses PV max
         if ("Déguisement".equals(defenseur.getTalent())
                 && defenseur.getPvActuels() >= defenseur.getPvMax()) {
             int huitieme = Math.max(1, defenseur.getPvMax() / 8);
@@ -131,7 +147,6 @@ public class DamageCalculator {
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
 
-        // Puissance effective
         int puissance = capacite.getPuissanceDeBase();
         Integer puissanceTotale = PUISSANCE_TOTALE.get(capacite.getNom());
         if (puissanceTotale != null) {
@@ -152,7 +167,8 @@ public class DamageCalculator {
         double ecrans = (!critique && ecransDefenseur != null)
             ? ecransDefenseur.multiplicateur(capacite.getCategorie())
             : 1.0;
-        double critMult = critique || "surgingstrikes".equals(capacite.getNom()) ? 1.5 : 1.0;
+        // Torrent de Coups : coups toujours critiques
+        double critMult = (critique || "surgingstrikes".equals(capacite.getNom())) ? 1.5 : 1.0;
 
         int[] degatsUnCoup = new int[16];
         for (int i = 0; i < 16; i++) {
@@ -169,12 +185,12 @@ public class DamageCalculator {
             degatsUnCoup[i] = (int) Math.max(1, d);
         }
 
-        // Multi-coups : multiplier par le nombre de coups (interpolé entre min et max hits)
+        // Multi-coups : multiplier par le nombre de coups
         int[] hits = MULTI_HIT.get(capacite.getNom());
-        if (hits != null) {
+        if (hits != null && hits[1] > 1) {
             int minHits = hits[0];
             int maxHits = hits[1];
-            // Multi-Coups (Skill Link) : toujours le max de coups
+            // Multi-Coups (Skill Link) : toujours le max
             if ("Multi-Coups".equals(attaquant.getTalent())) {
                 minHits = maxHits;
             }
