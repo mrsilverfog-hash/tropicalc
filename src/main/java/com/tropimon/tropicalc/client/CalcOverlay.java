@@ -67,14 +67,17 @@ public final class CalcOverlay implements HudRenderCallback {
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
 
-        // Vitesses effectives
+        // Vitesses effectives (Distorsion inverse la priorité)
         int vitJoueur = vitesseEffective(joueur);
         int vitAdversaire = vitesseEffective(adversaire);
-        String fleche = vitJoueur > vitAdversaire ? ">" : (vitJoueur < vitAdversaire ? "<" : "=");
-        int couleurVitesse = vitJoueur > vitAdversaire ? COULEUR_REVELE
-            : (vitJoueur < vitAdversaire ? COULEUR_KO : COULEUR_TEXTE);
+        boolean distorsion = FieldTracker.isDistorsion();
+        boolean joueurPremier = distorsion ? vitJoueur < vitAdversaire : vitJoueur > vitAdversaire;
+        boolean egalite = vitJoueur == vitAdversaire;
+        String fleche = egalite ? "=" : (joueurPremier ? ">" : "<");
+        int couleurVitesse = egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
+        String suffixe = distorsion ? " [Distorsion]" : "";
         context.drawText(client.textRenderer,
-            Text.literal(String.format("Vitesse : %d %s %d", vitJoueur, fleche, vitAdversaire)),
+            Text.literal(String.format("Vitesse : %d %s %d%s", vitJoueur, fleche, vitAdversaire, suffixe)),
             x, y, couleurVitesse, true);
         y += hauteurLigne;
 
