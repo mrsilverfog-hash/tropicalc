@@ -244,6 +244,7 @@ public final class ObservationCollector {
         OBJETS_RETIRES.clear();
         BoostTracker.reinitialiser();
         FieldTracker.reinitialiser();
+        TypeTracker.reinitialiser();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
         coupJoueurDuTour = null;
