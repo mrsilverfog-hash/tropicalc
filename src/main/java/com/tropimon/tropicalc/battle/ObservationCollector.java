@@ -60,7 +60,6 @@ public final class ObservationCollector {
                 return;
             }
 
-            // Knock Off réussi → l'adversaire perd son objet
             if (coupJoueurDuTour != null && "knockoff".equals(coupJoueurDuTour.showdownId())
                     && perteAdversaire >= 0.5) {
                 OBJETS_RETIRES.add(adversaire.getEspece());
@@ -173,22 +172,16 @@ public final class ObservationCollector {
 
         Pokemon p = b.build();
 
-        // Reporter les PV réels de l'adversaire (fraction appliquée aux PV max estimés)
         double fractionPv = adversaireBase.getPvMax() > 0
             ? (double) adversaireBase.getPvActuels() / adversaireBase.getPvMax() : 1.0;
         p.setPvActuels((int) Math.round(fractionPv * p.getPvMax()));
         p.setStatut(adversaireBase.getStatut());
 
-        // Reporter les stages de boost
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
                 p.setStage(s, adversaireBase.getStage(s));
             }
         }
-
-        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-            "[TropiCalc-diag] AdvEstime: espece={} talent={} objet={} pv={}/{}",
-            espece, p.getTalent(), p.getObjet(), p.getPvActuels(), p.getPvMax());
 
         return p;
     }
