@@ -1,61 +1,6 @@
 package com.tropimon.tropicalc.calc;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DamageCalculator {
-
-    // Capacités multi-coups : {min hits, max hits} — puissance = puissance PAR coup
-    private static final Map<String, int[]> MULTI_HIT = new HashMap<>();
-    // Capacités à puissance croissante par coup : puissance totale fixe
-    private static final Map<String, Integer> PUISSANCE_TOTALE = new HashMap<>();
-
-    static {
-        // 2 coups fixes
-        MULTI_HIT.put("doublehit", new int[]{2, 2});
-        MULTI_HIT.put("dualwingbeat", new int[]{2, 2});      // Double Volée
-        MULTI_HIT.put("twineedle", new int[]{2, 2});
-        MULTI_HIT.put("doublekick", new int[]{2, 2});
-        MULTI_HIT.put("bonemerang", new int[]{2, 2});
-        MULTI_HIT.put("geargrind", new int[]{2, 2});
-        MULTI_HIT.put("dragondarts", new int[]{2, 2});
-        MULTI_HIT.put("tachyoncutter", new int[]{2, 2});
-        MULTI_HIT.put("doubleironbash", new int[]{2, 2});
-        MULTI_HIT.put("dualchop", new int[]{2, 2});
-
-        // 2-5 coups
-        MULTI_HIT.put("scaleshot", new int[]{2, 5});          // Rafale Écaille
-        MULTI_HIT.put("bulletseed", new int[]{2, 5});
-        MULTI_HIT.put("rockblast", new int[]{2, 5});
-        MULTI_HIT.put("iciclespear", new int[]{2, 5});
-        MULTI_HIT.put("pinmissile", new int[]{2, 5});
-        MULTI_HIT.put("tailslap", new int[]{2, 5});
-        MULTI_HIT.put("armthrust", new int[]{2, 5});
-        MULTI_HIT.put("furyattack", new int[]{2, 5});
-        MULTI_HIT.put("furyswipes", new int[]{2, 5});
-        MULTI_HIT.put("spikecannon", new int[]{2, 5});
-        MULTI_HIT.put("barrage", new int[]{2, 5});
-        MULTI_HIT.put("cometpunch", new int[]{2, 5});
-        MULTI_HIT.put("doubleslap", new int[]{2, 5});
-        MULTI_HIT.put("bonerush", new int[]{2, 5});
-        MULTI_HIT.put("watershuriken", new int[]{2, 5});      // Sheauriken
-        MULTI_HIT.put("rocksmash", new int[]{1, 1});
-
-        // 3 coups fixes
-        MULTI_HIT.put("surgingstrikes", new int[]{3, 3});     // Torrent de Coups (toujours crit)
-        MULTI_HIT.put("tripledive", new int[]{3, 3});
-        MULTI_HIT.put("waterspout", new int[]{1, 1});
-
-        // 6-10 coups
-        MULTI_HIT.put("populationbomb", new int[]{6, 10});    // Prolifération
-
-        // 10 coups fixes
-        MULTI_HIT.put("beatup", new int[]{1, 6});
-
-        // Puissance croissante par coup (total si tous les coups touchent)
-        PUISSANCE_TOTALE.put("tripleaxel", 120);   // Triple Axel : 20+40+60
-        PUISSANCE_TOTALE.put("triplekick", 60);    // Triple Pied : 10+20+30
-    }
 
     public static class Resultat {
         public final int[] degatsParRoll;
@@ -126,15 +71,6 @@ public class DamageCalculator {
         double efficacite = calculerEfficaciteType(capacite, defenseur);
         if (efficacite == 0.0) return Resultat.immunise();
 
-        // Déguisement (Mimiqui) : le premier coup est annulé, Mimiqui perd 1/8 de ses PV max
-        if ("Déguisement".equals(defenseur.getTalent())
-                && defenseur.getPvActuels() >= defenseur.getPvMax()) {
-            int huitieme = Math.max(1, defenseur.getPvMax() / 8);
-            int[] fixe = new int[16];
-            for (int i = 0; i < 16; i++) fixe[i] = huitieme;
-            return Resultat.depuis(fixe, defenseur, efficacite);
-        }
-
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
 
         Stat statOffensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
@@ -147,12 +83,8 @@ public class DamageCalculator {
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
 
-        int puissance = capacite.getPuissanceDeBase();
-        Integer puissanceTotale = PUISSANCE_TOTALE.get(capacite.getNom());
-        if (puissanceTotale != null) {
-            puissance = puissanceTotale;
-        }
         // Knock Off : x1.5 puissance si le défenseur a un objet
+        int puissance = capacite.getPuissanceDeBase();
         if ("knockoff".equals(capacite.getNom()) && defenseur.getObjet() != null) {
             puissance = (int)(puissance * 1.5);
         }
@@ -167,10 +99,9 @@ public class DamageCalculator {
         double ecrans = (!critique && ecransDefenseur != null)
             ? ecransDefenseur.multiplicateur(capacite.getCategorie())
             : 1.0;
-        // Torrent de Coups : coups toujours critiques
-        double critMult = (critique || "surgingstrikes".equals(capacite.getNom())) ? 1.5 : 1.0;
+        double critMult = critique ? 1.5 : 1.0;
 
-        int[] degatsUnCoup = new int[16];
+        int[] degats = new int[16];
         for (int i = 0; i < 16; i++) {
             double alea = (85 + i) / 100.0;
             long d = base;
@@ -182,27 +113,10 @@ public class DamageCalculator {
             d = appliquerEtFloor(d, ecrans);
             d = appliquerEtFloor(d, champTerrain);
             d = appliquerEtFloor(d, ctx.multiplicateurDegatsFinal);
-            degatsUnCoup[i] = (int) Math.max(1, d);
+            degats[i] = (int) Math.max(1, d);
         }
 
-        // Multi-coups : multiplier par le nombre de coups
-        int[] hits = MULTI_HIT.get(capacite.getNom());
-        if (hits != null && hits[1] > 1) {
-            int minHits = hits[0];
-            int maxHits = hits[1];
-            // Multi-Coups (Skill Link) : toujours le max
-            if ("Multi-Coups".equals(attaquant.getTalent())) {
-                minHits = maxHits;
-            }
-            int[] degatsMulti = new int[16];
-            for (int i = 0; i < 16; i++) {
-                int nbHits = minHits + (i * (maxHits - minHits)) / 15;
-                degatsMulti[i] = degatsUnCoup[i] * nbHits;
-            }
-            return Resultat.depuis(degatsMulti, defenseur, efficacite);
-        }
-
-        return Resultat.depuis(degatsUnCoup, defenseur, efficacite);
+        return Resultat.depuis(degats, defenseur, efficacite);
     }
 
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
@@ -289,7 +203,12 @@ public class DamageCalculator {
 
     private static double calculerSTAB(Pokemon attaquant, Move capacite, ModifierContext ctx) {
         PokemonType typeCapacite = capacite.getType();
-        boolean typeOriginal = attaquant.possedeType(typeCapacite);
+
+        // Protéen / Libéro : l'attaquant prend le type de son attaque → STAB garanti
+        String talent = attaquant.getTalent();
+        boolean proteen = "Protéen".equals(talent) || "Libéro".equals(talent);
+
+        boolean typeOriginal = attaquant.possedeType(typeCapacite) || proteen;
 
         if (attaquant.isTeracristallise()) {
             PokemonType tera = attaquant.getTeraType();
