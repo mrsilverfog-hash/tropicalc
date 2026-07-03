@@ -29,7 +29,6 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
-    // Espèces dont l'objet a été retiré (Knock Off, etc.)
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
     private static final double TOLERANCE_POURCENT = 3.0;
 
@@ -173,15 +172,23 @@ public final class ObservationCollector {
         }
 
         Pokemon p = b.build();
-        p.setPvActuels(adversaireBase.getPvActuels() > 0 ? adversaireBase.getPvActuels() : p.getPvMax());
+
+        // Reporter les PV réels de l'adversaire (fraction appliquée aux PV max estimés)
+        double fractionPv = adversaireBase.getPvMax() > 0
+            ? (double) adversaireBase.getPvActuels() / adversaireBase.getPvMax() : 1.0;
+        p.setPvActuels((int) Math.round(fractionPv * p.getPvMax()));
         p.setStatut(adversaireBase.getStatut());
 
-        // Reporter les stages de boost réels de l'adversaire (Mur de Fer, Plénitude, etc.)
+        // Reporter les stages de boost
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
                 p.setStage(s, adversaireBase.getStage(s));
             }
         }
+
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
+            "[TropiCalc-diag] AdvEstime: espece={} talent={} objet={} pv={}/{}",
+            espece, p.getTalent(), p.getObjet(), p.getPvActuels(), p.getPvMax());
 
         return p;
     }
@@ -242,6 +249,8 @@ public final class ObservationCollector {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         OBJETS_RETIRES.clear();
+        BoostTracker.reinitialiser();
+        FieldTracker.reinitialiser();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
         coupJoueurDuTour = null;
