@@ -31,8 +31,6 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
-    private static final int COULEUR_VITESSE_OK = 0x55FF55;
-    private static final int COULEUR_VITESSE_KO = 0xFF5555;
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -49,6 +47,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
+        // Boosts live des deux camps
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
                 int stageAdv = BoostTracker.getStageAdversaire(s);
@@ -64,15 +63,27 @@ public final class CalcOverlay implements HudRenderCallback {
         int hauteurLigne = client.textRenderer.fontHeight + 2;
         Field field = FieldTracker.construireField();
 
+        // --- Section 1 : mes capacités ---
         context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
+
+        // Vitesses effectives
+        int vitJoueur = vitesseEffective(joueur);
+        int vitAdversaire = vitesseEffective(adversaire);
+        String fleche = vitJoueur > vitAdversaire ? ">" : (vitJoueur < vitAdversaire ? "<" : "=");
+        int couleurVitesse = vitJoueur > vitAdversaire ? COULEUR_REVELE
+            : (vitJoueur < vitAdversaire ? COULEUR_KO : COULEUR_TEXTE);
+        context.drawText(client.textRenderer,
+            Text.literal(String.format("Vitesse : %d %s %d", vitJoueur, fleche, vitAdversaire)),
+            x, y, couleurVitesse, true);
+        y += hauteurLigne;
 
         for (Move coup : monComplet.getMoveSet()) {
             if (coup == null) continue;
             com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
             if (capacite == null || capacite.estCapaciteDeStatut()) continue;
 
-            DamageCalculator.Resultat r = DamageCalculator.calculer(joueur, adversaire, capacite, field, null, false);
+            DamageCalculator.Resultat r = DamageCalculator.calculer(joueur, adversaire, capacite, field, field.getEcransAdversaire(), false);
             String nom = coup.getDisplayName().getString();
             String ligne;
             int couleur = COULEUR_TEXTE;
@@ -87,15 +98,7 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        int vitJoueur = calculerVitesseEffective(joueur);
-        int vitAdversaire = calculerVitesseEffective(adversaire);
-        boolean plusRapide = vitJoueur > vitAdversaire;
-        String texteVitesse = String.format("Vitesse : %d vs ~%d %s",
-            vitJoueur, vitAdversaire, plusRapide ? "✔" : "✘");
-        context.drawText(client.textRenderer, Text.literal(texteVitesse), x, y,
-            plusRapide ? COULEUR_VITESSE_OK : COULEUR_VITESSE_KO, true);
-        y += hauteurLigne;
-
+        // --- Section 2 : capacités adverses (révélées + top Smogon) ---
         String especeAdv = ObservationCollector.getEspaceAdversaireCourant();
         if (especeAdv == null) especeAdv = adversaireBase.getEspece();
 
@@ -130,7 +133,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) {
                     ligne = (estRevele ? "✓ " : "") + nom + " : statut";
                 } else {
-                    DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, null, false);
+                    DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, field.getEcransJoueur(), false);
                     if (r.immunise) {
                         ligne = (estRevele ? "✓ " : "") + nom + " : immunisé";
                     } else {
@@ -145,14 +148,15 @@ public final class CalcOverlay implements HudRenderCallback {
             }
         }
 
+        // --- Section 3 : set estimé ---
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
             context.drawText(client.textRenderer, Text.literal("Set estimé :"), x, y, COULEUR_TITRE, true);
             y += hauteurLigne;
             context.drawText(client.textRenderer,
-                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | Vit %d | %s",
-                    top.hpEv(), top.defEv(), top.spdEv(), top.speEv(), top.natureShowdownId())),
+                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
+                    top.hpEv(), top.defEv(), top.spdEv(), top.natureShowdownId())),
                 x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
 
@@ -164,23 +168,61 @@ public final class CalcOverlay implements HudRenderCallback {
                     Text.literal(String.format("Inférence Def EV %d-%d | Objets : %s",
                         hypDef.evMin, hypDef.evMax, hypDef.objetsPossibles)),
                     x, y, COULEUR_TEXTE, true);
+                y += hauteurLigne;
+            }
+        }
+
+        // --- Section 4 : aperçu de switch (pire coup adverse par membre) ---
+        List<MoveTemplate> coupsRevelesOffensifs = new ArrayList<>();
+        for (MoveTemplate t : coupsReveles) {
+            com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
+            if (m != null && !m.estCapaciteDeStatut()) coupsRevelesOffensifs.add(t);
+        }
+
+        if (!coupsRevelesOffensifs.isEmpty()) {
+            List<com.cobblemon.mod.common.pokemon.Pokemon> equipe = BattleStateTracker.getEquipeJoueur();
+            if (equipe != null && equipe.size() > 1) {
+                y += 4;
+                context.drawText(client.textRenderer, Text.literal("Si je change :"), x, y, COULEUR_TITRE, true);
+                y += hauteurLigne;
+
+                for (com.cobblemon.mod.common.pokemon.Pokemon membre : equipe) {
+                    if (membre == null || membre.getCurrentHealth() <= 0) continue;
+                    if (membre.getUuid().equals(monComplet.getUuid())) continue;
+
+                    Pokemon membreCalc = BattleStateTracker.convertirMembre(membre);
+                    if (membreCalc == null) continue;
+
+                    double pireDegats = 0;
+                    String pireCoup = "";
+                    for (MoveTemplate t : coupsRevelesOffensifs) {
+                        com.tropimon.tropicalc.calc.Move m = convertirTemplate(t);
+                        if (m == null) continue;
+                        DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, membreCalc, m, field, field.getEcransJoueur(), false);
+                        if (r.pourcentageMax > pireDegats) {
+                            pireDegats = r.pourcentageMax;
+                            pireCoup = t.getDisplayName().getString();
+                        }
+                    }
+
+                    String nomMembre = membre.getSpecies().getTranslatedName().getString();
+                    String ligne = String.format("%s : max %.0f%% (%s)", nomMembre, pireDegats, pireCoup);
+                    int couleur = pireDegats >= 100 ? COULEUR_KO : (pireDegats >= 50 ? 0xFFAA00 : COULEUR_TEXTE);
+                    context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+                    y += hauteurLigne;
+                }
             }
         }
     }
 
-    private int calculerVitesseEffective(Pokemon p) {
-        double vitesse = p.getStatCalculee(Stat.VITESSE);
+    private static int vitesseEffective(Pokemon p) {
+        double v = p.getStatCalculee(Stat.VITESSE);
         int stage = p.getStage(Stat.VITESSE);
-        if (stage >= 0) vitesse = vitesse * (2.0 + stage) / 2.0;
-        else vitesse = vitesse * 2.0 / (2.0 - stage);
-
-        if ("Écharpe Choix".equals(p.getObjet())) {
-            vitesse *= 1.5;
-        }
-        if (p.getStatut() == Pokemon.Statut.PARALYSIE) {
-            vitesse *= 0.5;
-        }
-        return (int) Math.floor(vitesse);
+        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
+        else v = v * 2.0 / (2.0 - stage);
+        if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
+        if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        return (int) Math.floor(v);
     }
 
     private com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {
