@@ -94,7 +94,6 @@ public final class ShowdownIdMapper {
         TALENTS.put("serenegrace", "Grâce Sereine");
         TALENTS.put("trace", "Calque");
         TALENTS.put("analytic", "Analytique");
-        TALENTS.put("trickster", "Imposteur");
         TALENTS.put("imposter", "Imposteur");
         TALENTS.put("prankster", "Lunatique");
         TALENTS.put("unburden", "Allège");
@@ -115,8 +114,9 @@ public final class ShowdownIdMapper {
         TALENTS.put("swordofruin", "Épée de Ruine");
         TALENTS.put("beadsofruin", "Perles de Ruine");
         TALENTS.put("tabletsofruin", "Tablettes de Ruine");
-        TALENTS.put("disguise", "Déguisement");
-        TALENTS.put("skilllink", "Multi-Coups");
+        TALENTS.put("protean", "Protéen");
+        TALENTS.put("libero", "Libéro");
+        TALENTS.put("disguise", "Fantômasque");
 
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
