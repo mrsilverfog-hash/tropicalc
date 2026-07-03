@@ -72,13 +72,16 @@ public final class SwitchOverlayRenderer {
         List<String> lignes = new ArrayList<>();
         List<Integer> couleurs = new ArrayList<>();
 
-        // Vitesses
+        // Vitesses (Distorsion inverse la priorité)
         int vitCandidat = vitesseEffective(candidat, false);
         int vitAdversaire = vitesseEffective(adversaire, true);
-        String fleche = vitCandidat > vitAdversaire ? ">" : (vitCandidat < vitAdversaire ? "<" : "=");
-        lignes.add(String.format("Vitesse : %d %s %d", vitCandidat, fleche, vitAdversaire));
-        couleurs.add(vitCandidat > vitAdversaire ? COULEUR_REVELE
-            : (vitCandidat < vitAdversaire ? COULEUR_KO : COULEUR_TEXTE));
+        boolean distorsion = FieldTracker.isDistorsion();
+        boolean candidatPremier = distorsion ? vitCandidat < vitAdversaire : vitCandidat > vitAdversaire;
+        boolean egalite = vitCandidat == vitAdversaire;
+        String fleche = egalite ? "=" : (candidatPremier ? ">" : "<");
+        String suffixe = distorsion ? " [Distorsion]" : "";
+        lignes.add(String.format("Vitesse : %d %s %d%s", vitCandidat, fleche, vitAdversaire, suffixe));
+        couleurs.add(egalite ? COULEUR_TEXTE : (candidatPremier ? COULEUR_REVELE : COULEUR_KO));
 
         // Ses attaques
         lignes.add("Ses attaques :");
