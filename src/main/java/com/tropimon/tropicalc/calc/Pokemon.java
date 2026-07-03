@@ -14,6 +14,11 @@ public class Pokemon {
     private final PokemonType type1;
     private final PokemonType type2;
 
+    // Types modifiés en combat (Détrempage, Protéen, Libéro, Halloween...)
+    private PokemonType typeOverride1 = null;
+    private PokemonType typeOverride2 = null;
+    private boolean typesModifies = false;
+
     private final Map<Stat, Integer> statsBase = new EnumMap<>(Stat.class);
     private final Map<Stat, Integer> ivs = new EnumMap<>(Stat.class);
     private final Map<Stat, Integer> evs = new EnumMap<>(Stat.class);
@@ -54,21 +59,31 @@ public class Pokemon {
 
     public String getEspece() { return espece; }
     public int getNiveau() { return niveau; }
-    public PokemonType getType1() { return type1; }
-    public PokemonType getType2() { return type2; }
+
+    public PokemonType getType1() { return typesModifies ? typeOverride1 : type1; }
+    public PokemonType getType2() { return typesModifies ? typeOverride2 : type2; }
+
+    /** Remplace les types en combat (Détrempage, Protéen, Libéro). */
+    public void setTypesOverride(PokemonType t1, PokemonType t2) {
+        this.typeOverride1 = t1;
+        this.typeOverride2 = t2;
+        this.typesModifies = true;
+    }
+
+    public boolean isTypesModifies() { return typesModifies; }
 
     public boolean possedeType(PokemonType type) {
-        return type1 == type || type2 == type;
+        return getType1() == type || getType2() == type;
     }
 
     public PokemonType getTypeDefenseurEffectif1() {
         if (teracristallise && teraType != null) return teraType;
-        return type1;
+        return getType1();
     }
 
     public PokemonType getTypeDefenseurEffectif2() {
         if (teracristallise && teraType != null) return null;
-        return type2;
+        return getType2();
     }
 
     public int getStatBase(Stat stat) { return statsBase.getOrDefault(stat, 0); }
