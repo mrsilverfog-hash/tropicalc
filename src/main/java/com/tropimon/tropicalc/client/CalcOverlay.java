@@ -7,6 +7,7 @@ import com.tropimon.tropicalc.battle.BattleStateTracker;
 import com.tropimon.tropicalc.battle.BoostTracker;
 import com.tropimon.tropicalc.battle.FieldTracker;
 import com.tropimon.tropicalc.battle.ObservationCollector;
+import com.tropimon.tropicalc.battle.TypeTracker;
 import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
 import com.tropimon.tropicalc.calc.Pokemon;
@@ -56,6 +57,9 @@ public final class CalcOverlay implements HudRenderCallback {
                 if (stageJoueur != 0) joueur.setStage(s, stageJoueur);
             }
         }
+
+        // Types modifiés en combat (Détrempage, Protéen, Libéro)
+        TypeTracker.appliquer(joueur, adversaire);
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
