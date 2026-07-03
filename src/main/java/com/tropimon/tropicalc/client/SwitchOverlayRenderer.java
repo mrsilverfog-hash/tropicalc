@@ -23,14 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/**
- * Panneau affiché au survol d'un Pokémon dans le menu de switch :
- * - dégâts de ses 4 capacités sur l'adversaire actif (boosts adverses + météo inclus)
- * - dégâts des 5 coups adverses probables/révélés contre lui
- * - comparaison de vitesse
- * Les boosts du joueur ne s'appliquent pas (reset au switch) ; seuls
- * les boosts de l'adversaire restent actifs.
- */
 public final class SwitchOverlayRenderer {
 
     private static final int COULEUR_TEXTE = 0xFFFFFF;
@@ -65,7 +57,7 @@ public final class SwitchOverlayRenderer {
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
-        // Seuls les boosts adverses s'appliquent : le Pokémon qui rentre n'a aucun boost
+        // Seuls les boosts adverses restent actifs après un switch
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
                 int stageAdv = BoostTracker.getStageAdversaire(s);
@@ -77,7 +69,6 @@ public final class SwitchOverlayRenderer {
         MinecraftClient client = MinecraftClient.getInstance();
         int hauteurLigne = client.textRenderer.fontHeight + 2;
 
-        // --- Préparer les lignes ---
         List<String> lignes = new ArrayList<>();
         List<Integer> couleurs = new ArrayList<>();
 
@@ -89,7 +80,7 @@ public final class SwitchOverlayRenderer {
         couleurs.add(vitCandidat > vitAdversaire ? COULEUR_REVELE
             : (vitCandidat < vitAdversaire ? COULEUR_KO : COULEUR_TEXTE));
 
-        // Mes dégâts
+        // Ses attaques
         lignes.add("Ses attaques :");
         couleurs.add(COULEUR_TITRE);
         for (Move coup : membre.getMoveSet()) {
@@ -97,7 +88,7 @@ public final class SwitchOverlayRenderer {
             com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
             if (capacite == null || capacite.estCapaciteDeStatut()) continue;
 
-            DamageCalculator.Resultat r = DamageCalculator.calculer(candidat, adversaire, capacite, field, null, false);
+            DamageCalculator.Resultat r = DamageCalculator.calculer(candidat, adversaire, capacite, field, field.getEcransAdversaire(), false);
             String nom = coup.getDisplayName().getString();
             if (r.immunise) {
                 lignes.add(nom + " : immunisé");
@@ -108,7 +99,7 @@ public final class SwitchOverlayRenderer {
             }
         }
 
-        // Dégâts adverses contre lui
+        // Ce qu'il subit
         String especeAdv = adversaireBase.getEspece();
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
         List<MoveTemplate> coupsReveles = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
@@ -139,7 +130,7 @@ public final class SwitchOverlayRenderer {
                     lignes.add(prefixe + nom + " : statut");
                     couleurs.add(estRevele ? COULEUR_REVELE : COULEUR_TEXTE);
                 } else {
-                    DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, candidat, capaciteAdv, field, null, false);
+                    DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, candidat, capaciteAdv, field, field.getEcransJoueur(), false);
                     if (r.immunise) {
                         lignes.add(prefixe + nom + " : immunisé");
                         couleurs.add(estRevele ? COULEUR_REVELE : COULEUR_TEXTE);
@@ -152,7 +143,7 @@ public final class SwitchOverlayRenderer {
             }
         }
 
-        // --- Dimensions et position du panneau ---
+        // Dimensions / position
         int largeurMax = 0;
         for (String l : lignes) {
             largeurMax = Math.max(largeurMax, client.textRenderer.getWidth(l));
@@ -169,7 +160,6 @@ public final class SwitchOverlayRenderer {
         if (py + hauteur > hauteurEcran) py = hauteurEcran - hauteur - 4;
         if (py < 4) py = 4;
 
-        // --- Dessin au-dessus de tout ---
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 400);
 
@@ -186,7 +176,6 @@ public final class SwitchOverlayRenderer {
         context.getMatrices().pop();
     }
 
-    /** Vitesse effective : stat calculée + stages (adversaire uniquement) + paralysie + Écharpe Choix. */
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {
         double v = p.getStatCalculee(Stat.VITESSE);
         if (appliquerStages) {
