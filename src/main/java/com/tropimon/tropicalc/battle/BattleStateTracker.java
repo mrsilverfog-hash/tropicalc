@@ -117,7 +117,7 @@ public final class BattleStateTracker {
             .statBase(Stat.ATTAQUE_SPE, statBase(forme, Stats.SPECIAL_ATTACK))
             .statBase(Stat.DEFENSE_SPE, statBase(forme, Stats.SPECIAL_DEFENCE))
             .statBase(Stat.VITESSE, statBase(forme, Stats.SPEED))
-            .poids(espece.getWeight())
+            .poids(forme.getWeight())
             .nature(props.getNature() != null ? ShowdownIdMapper.nature(props.getNature()) : Nature.HARDI);
 
         if (props.getAbility() != null) {
@@ -201,7 +201,7 @@ public final class BattleStateTracker {
             .statBase(Stat.ATTAQUE_SPE, statBase(forme, Stats.SPECIAL_ATTACK))
             .statBase(Stat.DEFENSE_SPE, statBase(forme, Stats.SPECIAL_DEFENCE))
             .statBase(Stat.VITESSE, statBase(forme, Stats.SPEED))
-            .poids(espece.getWeight());
+            .poids(forme.getWeight());
 
         builder.iv(Stat.PV, p.getIvs().getOrDefault(Stats.HP));
         builder.iv(Stat.ATTAQUE, p.getIvs().getOrDefault(Stats.ATTACK));

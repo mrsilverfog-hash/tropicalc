@@ -54,6 +54,9 @@ public class DamageCalculator {
             return Resultat.sansDegats();
         }
 
+        // Ball'Météo : change de type et double de puissance selon la météo
+        capacite = capaciteEffective(capacite, terrain);
+
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
 
         AbilityModifier talentAttaquant = AbilityModifier.pour(attaquant.getTalent());
@@ -123,6 +126,24 @@ public class DamageCalculator {
 
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
         return (long) Math.floor(valeur * multiplicateur);
+    }
+
+    /**
+     * Transforme la capacité si son type dépend du contexte.
+     * Ball'Météo : Feu/Eau/Roche/Glace et puissance 100 selon la météo.
+     */
+    private static Move capaciteEffective(Move capacite, Field terrain) {
+        if (!"weatherball".equals(capacite.getNom())) return capacite;
+        PokemonType nouveauType = switch (terrain.getMeteo()) {
+            case SOLEIL, SOLEIL_INTENSE -> PokemonType.FEU;
+            case PLUIE, PLUIE_INTENSE -> PokemonType.EAU;
+            case SABLE -> PokemonType.ROCHE;
+            case NEIGE -> PokemonType.GLACE;
+            default -> null;
+        };
+        if (nouveauType == null) return capacite;
+        return Move.builder("weatherball", nouveauType, capacite.getCategorie())
+            .puissance(100).build();
     }
 
     /**
@@ -197,6 +218,42 @@ public class DamageCalculator {
                     else if (ratio >= 2) puissance = 60;
                     else puissance = 40;
                 }
+            }
+            case "return", "frustration" -> {
+                // Retour / Frustration : bonheur inconnu, on suppose la puissance max
+                puissance = 102;
+            }
+            case "hiddenpower" -> {
+                // Puissance Cachée : 60 fixe depuis la 6G (type non déductible des IVs adverses)
+                puissance = 60;
+            }
+            case "acrobatics" -> {
+                // Acrobatie : x2 si l'attaquant n'a pas d'objet
+                if (attaquant.getObjet() == null) puissance *= 2;
+            }
+            case "storedpower", "powertrip" -> {
+                // Force Ajoutée / Total Contrôle : 20 + 20 par boost positif de l'attaquant
+                int boosts = 0;
+                for (Stat s : Stat.values()) {
+                    if (s != Stat.PV) boosts += Math.max(0, attaquant.getStage(s));
+                }
+                puissance = 20 + 20 * boosts;
+            }
+            case "flail", "reversal" -> {
+                // Fléau / Contre : paliers selon les PV restants de l'attaquant
+                int pvMax = Math.max(1, attaquant.getPvMax());
+                int p = (48 * attaquant.getPvActuels()) / pvMax;
+                if (p >= 33) puissance = 20;
+                else if (p >= 17) puissance = 40;
+                else if (p >= 10) puissance = 80;
+                else if (p >= 5) puissance = 100;
+                else if (p >= 2) puissance = 150;
+                else puissance = 200;
+            }
+            case "eruption", "waterspout", "dragonenergy" -> {
+                // Éruption / Giclédo / Draco-Énergie : 150 x PV restants / PV max
+                int pvMax = Math.max(1, attaquant.getPvMax());
+                puissance = Math.max(1, (150 * attaquant.getPvActuels()) / pvMax);
             }
             default -> { /* puissance de base inchangée */ }
         }
