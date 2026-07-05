@@ -73,7 +73,8 @@ public final class CalcOverlay implements HudRenderCallback {
 
         // Vitesses effectives (Distorsion inverse la priorité)
         int vitJoueur = vitesseEffective(joueur);
-        int vitAdversaire = vitesseEffective(adversaire);
+        int vitAdversaire = Math.max(vitesseEffective(adversaire),
+            ObservationCollector.getVitesseMinObservee(adversaireBase.getEspece()));
         boolean distorsion = FieldTracker.isDistorsion();
         boolean joueurPremier = distorsion ? vitJoueur < vitAdversaire : vitJoueur > vitAdversaire;
         boolean egalite = vitJoueur == vitAdversaire;
