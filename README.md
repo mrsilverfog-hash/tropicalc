@@ -16,3 +16,5 @@ Ce projet compile entièrement via GitHub Actions (onglet **Actions** → artefa
 ## Statut
 
 🚧 En développement — étape actuelle : squelette du mod + moteur de calcul de base.
+
+<!-- Test push direct par Claude - 2026-07-05 08:39 UTC -->
