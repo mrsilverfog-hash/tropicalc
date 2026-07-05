@@ -30,12 +30,25 @@ public final class ObservationCollector {
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
+    // Vitesse minimale observée par espèce (déduite de l'ordre d'action)
+    private static final Map<String, Integer> VITESSES_MIN_OBSERVEES = new HashMap<>();
     private static final double TOLERANCE_POURCENT = 3.0;
+
+    // Coups à priorité augmentée : l'ordre d'action ne reflète pas la vitesse
+    private static final Set<String> COUPS_PRIORITAIRES = Set.of(
+        "quickattack", "extremespeed", "aquajet", "bulletpunch", "machpunch",
+        "iceshard", "shadowsneak", "suckerpunch", "accelerock", "vacuumwave",
+        "jetpunch", "grassyglide", "firstimpression", "fakeout", "feint",
+        "raging bolt", "thunderclap", "upperhand", "protect", "detect",
+        "banefulbunker", "silktrap", "burningbulwark", "spikyshield", "kingsshield",
+        "obstruct", "endure", "trickroom"
+    );
 
     private static double pvJoueurDebutTour = -1;
     private static double pvAdversaireDebutTour = -1;
     private static MoveUseTracker.CoupDetecte coupJoueurDuTour = null;
     private static MoveUseTracker.CoupDetecte coupAdversaireDuTour = null;
+    private static Boolean adversaireAAgiEnPremier = null;
     private static String espaceAdversaireDuTour = null;
 
     public static synchronized void signalerNouveauTour() {
@@ -57,12 +70,23 @@ public final class ObservationCollector {
                 espaceAdversaireDuTour = adversaire.getEspece();
                 coupJoueurDuTour = null;
                 coupAdversaireDuTour = null;
+                adversaireAAgiEnPremier = null;
                 return;
             }
 
             if (coupJoueurDuTour != null && "knockoff".equals(coupJoueurDuTour.showdownId())
                     && perteAdversaire >= 0.5) {
                 OBJETS_RETIRES.add(adversaire.getEspece());
+            }
+
+            // Inférence de vitesse : l'adversaire a agi en premier avec des coups non prioritaires
+            if (Boolean.TRUE.equals(adversaireAAgiEnPremier)
+                    && coupJoueurDuTour != null && coupAdversaireDuTour != null
+                    && !COUPS_PRIORITAIRES.contains(coupJoueurDuTour.showdownId())
+                    && !COUPS_PRIORITAIRES.contains(coupAdversaireDuTour.showdownId())
+                    && !FieldTracker.isDistorsion()) {
+                int vitesseJoueur = vitesseEffectiveJoueur(joueur);
+                VITESSES_MIN_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur + 1, Math::max);
             }
 
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
@@ -78,10 +102,17 @@ public final class ObservationCollector {
         espaceAdversaireDuTour = adversaire.getEspece();
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
+        adversaireAAgiEnPremier = null;
     }
 
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
+
+        // Premier coup du tour = camp qui agit en premier
+        if (adversaireAAgiEnPremier == null && estAdversaire != null) {
+            adversaireAAgiEnPremier = estAdversaire;
+        }
+
         if (Boolean.TRUE.equals(estAdversaire)) {
             coupAdversaireDuTour = coup;
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
@@ -93,6 +124,21 @@ public final class ObservationCollector {
         } else {
             coupJoueurDuTour = coup;
         }
+    }
+
+    private static int vitesseEffectiveJoueur(Pokemon joueur) {
+        double v = joueur.getStatCalculee(Stat.VITESSE);
+        int stage = BoostTracker.getStageJoueur(Stat.VITESSE);
+        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
+        else v = v * 2.0 / (2.0 - stage);
+        if ("Écharpe Choix".equals(joueur.getObjet())) v *= 1.5;
+        if (joueur.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        return (int) Math.floor(v);
+    }
+
+    /** Vitesse minimale observée pour une espèce adverse (0 si aucune observation). */
+    public static int getVitesseMinObservee(String espece) {
+        return VITESSES_MIN_OBSERVEES.getOrDefault(espece, 0);
     }
 
     private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
@@ -242,13 +288,14 @@ public final class ObservationCollector {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         OBJETS_RETIRES.clear();
+        VITESSES_MIN_OBSERVEES.clear();
         BoostTracker.reinitialiser();
         FieldTracker.reinitialiser();
-        TypeTracker.reinitialiser();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
+        adversaireAAgiEnPremier = null;
         espaceAdversaireDuTour = null;
     }
 
