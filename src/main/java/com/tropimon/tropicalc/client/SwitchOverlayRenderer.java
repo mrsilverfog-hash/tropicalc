@@ -78,7 +78,8 @@ public final class SwitchOverlayRenderer {
 
         // Vitesses (Distorsion inverse la priorité)
         int vitCandidat = vitesseEffective(candidat, false);
-        int vitAdversaire = vitesseEffective(adversaire, true);
+        int vitAdversaire = Math.max(vitesseEffective(adversaire, true),
+            ObservationCollector.getVitesseMinObservee(adversaireBase.getEspece()));
         boolean distorsion = FieldTracker.isDistorsion();
         boolean candidatPremier = distorsion ? vitCandidat < vitAdversaire : vitCandidat > vitAdversaire;
         boolean egalite = vitCandidat == vitAdversaire;
