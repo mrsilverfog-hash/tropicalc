@@ -170,6 +170,7 @@ public final class ObservationCollector {
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
+        b.poids(adversaireBase.getPoidsHg());
         for (Stat s : Stat.values()) {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
