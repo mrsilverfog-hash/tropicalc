@@ -21,6 +21,27 @@ public final class BoostTracker {
     private static final Map<Stat, Integer> STAGES_JOUEUR = new EnumMap<>(Stat.class);
     private static final Map<Stat, Integer> STAGES_ADVERSAIRE = new EnumMap<>(Stat.class);
 
+    // Espèce active au moment où les stages ont été enregistrés :
+    // si le Pokémon actif change (switch), les stages ne lui appartiennent plus
+    private static String especeJoueurStages = null;
+    private static String especeAdversaireStages = null;
+
+    /**
+     * À appeler à chaque frame avec les espèces actives des deux camps.
+     * Purge les stages d'un camp si son Pokémon actif a changé depuis
+     * le dernier boost enregistré (les stages ne survivent pas au switch).
+     */
+    public static void verifierActifs(String especeJoueur, String especeAdversaire) {
+        if (especeJoueurStages != null && especeJoueur != null
+            && !especeJoueurStages.equals(especeJoueur)) {
+            reinitialiserJoueur();
+        }
+        if (especeAdversaireStages != null && especeAdversaire != null
+            && !especeAdversaireStages.equals(especeAdversaire)) {
+            reinitialiserAdversaire();
+        }
+    }
+
     public static void traiterMessage(Text message) {
         if (message == null) return;
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
@@ -80,6 +101,16 @@ public final class BoostTracker {
         int actuel = cible.getOrDefault(stat, 0);
         int nouveau = Math.max(-6, Math.min(6, actuel + delta));
         cible.put(stat, nouveau);
+
+        // Mémorise à quel Pokémon actif ces stages appartiennent
+        if (joueur) {
+            var actif = BattleStateTracker.getJoueurActifDepuisEquipe();
+            if (actif == null) actif = BattleStateTracker.getJoueurActif();
+            if (actif != null) especeJoueurStages = actif.getEspece();
+        } else {
+            var actif = BattleStateTracker.getAdversaireActif();
+            if (actif != null) especeAdversaireStages = actif.getEspece();
+        }
     }
 
     public static int getStageJoueur(Stat stat) {
@@ -93,10 +124,12 @@ public final class BoostTracker {
     /** À appeler quand le Pokémon du camp correspondant change (switch). */
     public static void reinitialiserJoueur() {
         STAGES_JOUEUR.clear();
+        especeJoueurStages = null;
     }
 
     public static void reinitialiserAdversaire() {
         STAGES_ADVERSAIRE.clear();
+        especeAdversaireStages = null;
     }
 
     public static void reinitialiser() {
