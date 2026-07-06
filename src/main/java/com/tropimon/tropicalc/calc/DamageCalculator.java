@@ -1,5 +1,7 @@
 package com.tropimon.tropicalc.calc;
 
+import java.util.Map;
+
 public class DamageCalculator {
 
     public static class Resultat {
@@ -121,7 +123,73 @@ public class DamageCalculator {
             degats[i] = (int) Math.max(1, d);
         }
 
+        // Multi-coups : total = dégâts par coup x nombre de coups
+        // (interpolation coupsMin -> coupsMax du roll min au roll max)
+        int[] coups = coupsEffectifs(capacite, attaquant);
+        if (coups[1] > 1) {
+            for (int i = 0; i < 16; i++) {
+                double c = coups[0] + (coups[1] - coups[0]) * (i / 15.0);
+                degats[i] = (int) Math.round(degats[i] * c);
+            }
+        }
+
         return Resultat.depuis(degats, defenseur, efficacite);
+    }
+
+    // Capacités multi-coups (id showdown -> {coups min, coups max})
+    private static final Map<String, int[]> MULTI_COUPS = Map.ofEntries(
+        // 2 coups fixes
+        Map.entry("doublekick", new int[]{2, 2}),
+        Map.entry("bonemerang", new int[]{2, 2}),
+        Map.entry("doublehit", new int[]{2, 2}),
+        Map.entry("dualwingbeat", new int[]{2, 2}),
+        Map.entry("dragondarts", new int[]{2, 2}),
+        Map.entry("geargrind", new int[]{2, 2}),
+        Map.entry("twineedle", new int[]{2, 2}),
+        Map.entry("dualchop", new int[]{2, 2}),
+        Map.entry("twinbeam", new int[]{2, 2}),
+        Map.entry("tachyoncutter", new int[]{2, 2}),
+        // 3 coups fixes
+        Map.entry("surgingstrikes", new int[]{3, 3}),
+        Map.entry("tripledive", new int[]{3, 3}),
+        // 2 à 5 coups
+        Map.entry("bulletseed", new int[]{2, 5}),
+        Map.entry("rockblast", new int[]{2, 5}),
+        Map.entry("iciclespear", new int[]{2, 5}),
+        Map.entry("pinmissile", new int[]{2, 5}),
+        Map.entry("tailslap", new int[]{2, 5}),
+        Map.entry("scaleshot", new int[]{2, 5}),
+        Map.entry("furyswipes", new int[]{2, 5}),
+        Map.entry("doubleslap", new int[]{2, 5}),
+        Map.entry("furyattack", new int[]{2, 5}),
+        Map.entry("spikecannon", new int[]{2, 5}),
+        Map.entry("barrage", new int[]{2, 5}),
+        Map.entry("cometpunch", new int[]{2, 5}),
+        Map.entry("armthrust", new int[]{2, 5}),
+        Map.entry("bonerush", new int[]{2, 5}),
+        Map.entry("watershuriken", new int[]{2, 5}),
+        // 10 coups
+        Map.entry("populationbomb", new int[]{10, 10})
+    );
+
+    /**
+     * Nombre de coups effectifs {min, max}.
+     * Multi-Coups (Skill Link) : toujours le max.
+     * Dé Pipé (Loaded Dice) : 4 à 5 coups pour les capacités 2-5.
+     */
+    private static int[] coupsEffectifs(Move capacite, Pokemon attaquant) {
+        int[] base = MULTI_COUPS.get(capacite.getNom());
+        if (base == null) return new int[]{1, 1};
+        int min = base[0];
+        int max = base[1];
+        if (min != max) {
+            if ("Multi-Coups".equals(attaquant.getTalent())) {
+                min = max;
+            } else if ("Dé Pipé".equals(attaquant.getObjet())) {
+                min = Math.max(min, max - 1);
+            }
+        }
+        return new int[]{min, max};
     }
 
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
@@ -249,6 +317,14 @@ public class DamageCalculator {
                 else if (p >= 5) puissance = 100;
                 else if (p >= 2) puissance = 150;
                 else puissance = 200;
+            }
+            case "triplekick" -> {
+                // Triple Pied : 10+20+30, affiché comme total
+                puissance = 60;
+            }
+            case "tripleaxel" -> {
+                // Triple Axel : 20+40+60, affiché comme total
+                puissance = 120;
             }
             case "eruption", "waterspout", "dragonenergy" -> {
                 // Éruption / Giclédo / Draco-Énergie : 150 x PV restants / PV max
