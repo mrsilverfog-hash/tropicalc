@@ -27,6 +27,9 @@ public class Pokemon {
     private final String talent;
     private final String objet;
 
+    // Poids en hectogrammes (données species Cobblemon). 0 = inconnu.
+    private final double poidsHg;
+
     private final PokemonType teraType;
     private boolean teracristallise;
     private boolean mega;
@@ -47,6 +50,7 @@ public class Pokemon {
         this.nature = b.nature;
         this.talent = b.talent;
         this.objet = b.objet;
+        this.poidsHg = b.poidsHg;
         this.teraType = b.teraType;
         this.teracristallise = b.teracristallise;
         this.mega = b.mega;
@@ -140,6 +144,9 @@ public class Pokemon {
     public void setStatut(Statut statut) { this.statut = statut; }
     public String getTalent() { return talent; }
     public String getObjet() { return objet; }
+
+    /** Poids en hectogrammes (0 = inconnu). */
+    public double getPoidsHg() { return poidsHg; }
     public PokemonType getTeraType() { return teraType; }
     public boolean isTeracristallise() { return teracristallise; }
     public void setTeracristallise(boolean v) { this.teracristallise = v; }
@@ -163,6 +170,7 @@ public class Pokemon {
 
         private String talent;
         private String objet;
+        private double poidsHg = 0;
         private PokemonType teraType;
         private boolean teracristallise = false;
         private boolean mega = false;
@@ -184,6 +192,7 @@ public class Pokemon {
         public Builder nature(Nature n) { this.nature = n; return this; }
         public Builder talent(String t) { this.talent = t; return this; }
         public Builder objet(String o) { this.objet = o; return this; }
+        public Builder poids(double hg) { this.poidsHg = hg; return this; }
         public Builder teraType(PokemonType t) { this.teraType = t; return this; }
         public Builder teracristallise(boolean v) { this.teracristallise = v; return this; }
         public Builder mega(boolean v) { this.mega = v; return this; }
