@@ -35,6 +35,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
+        // Doit tourner AUSSI hors combat : c'est là que le reset entre combats s'exécute
+        ObservationCollector.tick();
+
         if (!BattleStateTracker.estEnCombat()) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
@@ -44,9 +47,10 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (adversaireBase == null || joueur == null || monComplet == null) return;
 
-        ObservationCollector.tick();
-
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
+
+        // Purge les stages si le Pokémon actif d'un camp a changé (switch)
+        BoostTracker.verifierActifs(joueur.getEspece(), adversaireBase.getEspece());
 
         // Boosts live des deux camps
         for (Stat s : Stat.values()) {
