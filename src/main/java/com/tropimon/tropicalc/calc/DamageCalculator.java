@@ -50,12 +50,9 @@ public class DamageCalculator {
     public static Resultat calculer(Pokemon attaquant, Pokemon defenseur, Move capacite,
                                      Field terrain, Field.Ecrans ecransDefenseur, boolean critique) {
 
-        if (capacite.estCapaciteDeStatut()) {
+        if (capacite.estCapaciteDeStatut() || capacite.getPuissanceDeBase() <= 0) {
             return Resultat.sansDegats();
         }
-
-        // Ball'Météo : change de type et double de puissance selon la météo
-        capacite = capaciteEffective(capacite, terrain);
 
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
 
@@ -76,14 +73,6 @@ public class DamageCalculator {
 
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
 
-        // Puissance effective : gère Sabotage, Gyroball, Boule Élek, Châtiment,
-        // Façade, Balayage, Nœud Herbe, Tacle Lourd, Tacle Feu.
-        // Doit être calculée AVANT les stats : Façade pose ignorerPenaliteBrulure.
-        int puissance = puissanceEffective(capacite, attaquant, defenseur, ctx);
-        if (puissance <= 0) {
-            return Resultat.sansDegats();
-        }
-
         Stat statOffensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
         // Body Press utilise la Défense de l'attaquant
         if ("bodypress".equals(capacite.getNom())) {
@@ -93,6 +82,12 @@ public class DamageCalculator {
 
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
+
+        // Knock Off : x1.5 puissance si le défenseur a un objet
+        int puissance = capacite.getPuissanceDeBase();
+        if ("knockoff".equals(capacite.getNom()) && defenseur.getObjet() != null) {
+            puissance = (int)(puissance * 1.5);
+        }
 
         int niveauTerme = (2 * attaquant.getNiveau()) / 5 + 2;
         long base = ((long) niveauTerme * puissance * statA) / Math.max(1, statD);
@@ -126,160 +121,6 @@ public class DamageCalculator {
 
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
         return (long) Math.floor(valeur * multiplicateur);
-    }
-
-    /**
-     * Transforme la capacité si son type dépend du contexte.
-     * Ball'Météo : Feu/Eau/Roche/Glace et puissance 100 selon la météo.
-     */
-    private static Move capaciteEffective(Move capacite, Field terrain) {
-        if (!"weatherball".equals(capacite.getNom())) return capacite;
-        PokemonType nouveauType = switch (terrain.getMeteo()) {
-            case SOLEIL, SOLEIL_INTENSE -> PokemonType.FEU;
-            case PLUIE, PLUIE_INTENSE -> PokemonType.EAU;
-            case SABLE -> PokemonType.ROCHE;
-            case NEIGE -> PokemonType.GLACE;
-            default -> null;
-        };
-        if (nouveauType == null) return capacite;
-        return Move.builder("weatherball", nouveauType, capacite.getCategorie())
-            .puissance(100).build();
-    }
-
-    /**
-     * Puissance effective des capacités à puissance variable.
-     * Les capacités variables ont une puissance de base de 0 dans les données
-     * Showdown : sans ce calcul, elles affichaient zéro dégât.
-     */
-    private static int puissanceEffective(Move capacite, Pokemon attaquant, Pokemon defenseur,
-                                           ModifierContext ctx) {
-        int puissance = capacite.getPuissanceDeBase();
-        String nom = capacite.getNom();
-        if (nom == null) return puissance;
-
-        switch (nom) {
-            case "knockoff" -> {
-                // Sabotage : x1.5 si le défenseur tient un objet
-                if (defenseur.getObjet() != null) puissance = (int) (puissance * 1.5);
-            }
-            case "facade" -> {
-                // Façade : x2 si brûlure, poison ou paralysie ; ignore la pénalité de brûlure
-                Pokemon.Statut s = attaquant.getStatut();
-                if (s == Pokemon.Statut.BRULURE || s == Pokemon.Statut.POISON
-                    || s == Pokemon.Statut.POISON_GRAVE || s == Pokemon.Statut.PARALYSIE) {
-                    puissance *= 2;
-                    ctx.ignorerPenaliteBrulure = true;
-                }
-            }
-            case "hex" -> {
-                // Châtiment : x2 si le défenseur a un statut
-                if (defenseur.getStatut() != Pokemon.Statut.AUCUN) puissance *= 2;
-            }
-            case "gyroball" -> {
-                // Gyroball : 25 x Vit. défenseur / Vit. attaquant + 1, max 150
-                double vitAtt = Math.max(1, vitesseEffective(attaquant));
-                double vitDef = vitesseEffective(defenseur);
-                puissance = (int) Math.min(150, Math.floor(25.0 * vitDef / vitAtt) + 1);
-                puissance = Math.max(1, puissance);
-            }
-            case "electroball" -> {
-                // Boule Élek : paliers selon le ratio Vit. attaquant / Vit. défenseur
-                double vitAtt = vitesseEffective(attaquant);
-                double vitDef = Math.max(1, vitesseEffective(defenseur));
-                double ratio = vitAtt / vitDef;
-                if (ratio >= 4) puissance = 150;
-                else if (ratio >= 3) puissance = 120;
-                else if (ratio >= 2) puissance = 80;
-                else if (ratio >= 1) puissance = 60;
-                else puissance = 40;
-            }
-            case "lowkick", "grassknot" -> {
-                // Balayage / Nœud Herbe : paliers selon le poids du défenseur (hg)
-                double poids = poidsEffectif(defenseur);
-                if (poids <= 0) puissance = 60; // poids inconnu : valeur médiane
-                else if (poids >= 2000) puissance = 120;
-                else if (poids >= 1000) puissance = 100;
-                else if (poids >= 500) puissance = 80;
-                else if (poids >= 250) puissance = 60;
-                else if (poids >= 100) puissance = 40;
-                else puissance = 20;
-            }
-            case "heavyslam", "heatcrash" -> {
-                // Tacle Lourd / Tacle Feu : paliers selon le ratio de poids attaquant/défenseur
-                double poidsAtt = poidsEffectif(attaquant);
-                double poidsDef = poidsEffectif(defenseur);
-                if (poidsAtt <= 0 || poidsDef <= 0) {
-                    puissance = 80; // poids inconnu : valeur médiane
-                } else {
-                    double ratio = poidsAtt / poidsDef;
-                    if (ratio >= 5) puissance = 120;
-                    else if (ratio >= 4) puissance = 100;
-                    else if (ratio >= 3) puissance = 80;
-                    else if (ratio >= 2) puissance = 60;
-                    else puissance = 40;
-                }
-            }
-            case "return", "frustration" -> {
-                // Retour / Frustration : bonheur inconnu, on suppose la puissance max
-                puissance = 102;
-            }
-            case "hiddenpower" -> {
-                // Puissance Cachée : 60 fixe depuis la 6G (type non déductible des IVs adverses)
-                puissance = 60;
-            }
-            case "acrobatics" -> {
-                // Acrobatie : x2 si l'attaquant n'a pas d'objet
-                if (attaquant.getObjet() == null) puissance *= 2;
-            }
-            case "storedpower", "powertrip" -> {
-                // Force Ajoutée / Total Contrôle : 20 + 20 par boost positif de l'attaquant
-                int boosts = 0;
-                for (Stat s : Stat.values()) {
-                    if (s != Stat.PV) boosts += Math.max(0, attaquant.getStage(s));
-                }
-                puissance = 20 + 20 * boosts;
-            }
-            case "flail", "reversal" -> {
-                // Fléau / Contre : paliers selon les PV restants de l'attaquant
-                int pvMax = Math.max(1, attaquant.getPvMax());
-                int p = (48 * attaquant.getPvActuels()) / pvMax;
-                if (p >= 33) puissance = 20;
-                else if (p >= 17) puissance = 40;
-                else if (p >= 10) puissance = 80;
-                else if (p >= 5) puissance = 100;
-                else if (p >= 2) puissance = 150;
-                else puissance = 200;
-            }
-            case "eruption", "waterspout", "dragonenergy" -> {
-                // Éruption / Giclédo / Draco-Énergie : 150 x PV restants / PV max
-                int pvMax = Math.max(1, attaquant.getPvMax());
-                puissance = Math.max(1, (150 * attaquant.getPvActuels()) / pvMax);
-            }
-            default -> { /* puissance de base inchangée */ }
-        }
-        return puissance;
-    }
-
-    /** Vitesse en combat : stages, Écharpe Choix, paralysie. */
-    private static double vitesseEffective(Pokemon p) {
-        double v = p.getStatCalculee(Stat.VITESSE);
-        int stage = p.getStage(Stat.VITESSE);
-        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
-        else v = v * 2.0 / (2.0 - stage);
-        if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
-        if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
-        return Math.floor(v);
-    }
-
-    /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierre Allégée. */
-    private static double poidsEffectif(Pokemon p) {
-        double poids = p.getPoidsHg();
-        if (poids <= 0) return 0;
-        String talent = p.getTalent();
-        if ("Heavy Metal".equals(talent)) poids *= 2.0;
-        if ("Light Metal".equals(talent)) poids *= 0.5;
-        if ("Pierre Allégée".equals(p.getObjet())) poids *= 0.5;
-        return Math.max(1, poids);
     }
 
     private static double calculerEfficaciteType(Move capacite, Pokemon defenseur) {
