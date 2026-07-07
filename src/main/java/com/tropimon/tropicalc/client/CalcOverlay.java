@@ -185,7 +185,10 @@ public final class CalcOverlay implements HudRenderCallback {
 
         // --- Projection des dégâts résiduels adverses (cœur du stall) ---
         boolean objetSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
-        ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo(), objetSur);
+        ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo(), objetSur,
+            ObservationCollector.getCompteurToxikProchainAdversaire(),
+            ObservationCollector.isAdversaireSalaison(),
+            ObservationCollector.isAdversaireVampigraine());
         if (proj != null) {
             y += 4;
             String ligneProj;
@@ -204,6 +207,33 @@ public final class CalcOverlay implements HudRenderCallback {
                 couleurProj = objetSur ? 0xFFAA00 : COULEUR_TEXTE;
             }
             context.drawText(client.textRenderer, Text.literal(ligneProj), x, y, couleurProj, true);
+            y += hauteurLigne;
+        }
+
+        // --- Projection résiduelle du joueur : anticiper sa propre mort ---
+        // L'objet et le statut du joueur sont réels, jamais estimés
+        ResidualProjector.Projection projJoueur = ResidualProjector.projeter(joueur, field.getMeteo(), true,
+            ObservationCollector.getCompteurToxikProchainJoueur(),
+            ObservationCollector.isJoueurSalaison(),
+            ObservationCollector.isJoueurVampigraine());
+        if (projJoueur != null) {
+            if (proj == null) y += 4;
+            String ligneToi;
+            int couleurToi;
+            if (projJoueur.netPremierTourPct() > 0) {
+                ligneToi = projJoueur.toursAvantKO() > 0
+                    ? String.format("Résiduel toi : -%.0f%%/t (%s) → KO ~%d tours",
+                        projJoueur.netPremierTourPct(), projJoueur.detail(), projJoueur.toursAvantKO())
+                    : String.format("Résiduel toi : -%.0f%%/t (%s)",
+                        projJoueur.netPremierTourPct(), projJoueur.detail());
+                couleurToi = projJoueur.toursAvantKO() > 0 && projJoueur.toursAvantKO() <= 2
+                    ? COULEUR_KO : 0xFFAA00;
+            } else {
+                ligneToi = String.format("Résiduel toi : +%.0f%%/t (%s)",
+                    -projJoueur.netPremierTourPct(), projJoueur.detail());
+                couleurToi = COULEUR_REVELE;
+            }
+            context.drawText(client.textRenderer, Text.literal(ligneToi), x, y, couleurToi, true);
             y += hauteurLigne;
         }
 

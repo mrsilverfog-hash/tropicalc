@@ -76,11 +76,26 @@ public final class ObservationCollector {
         double pvJoueurMaintenant = joueur.getPourcentagePv();
         double pvAdversaireMaintenant = adversaire.getPourcentagePv();
 
-        // La Vampigraine ne survit pas au switch du joueur
+        // La Vampigraine et la Salaison ne survivent pas au switch du joueur
         if (especeJoueurSuivie != null && !especeJoueurSuivie.equals(joueur.getEspece())) {
             joueurVampigraine = false;
+            joueurSalaison = false;
+            compteurToxikJoueur = 0;
         }
         especeJoueurSuivie = joueur.getEspece();
+
+        // Idem côté adverse (espaceAdversaireDuTour contient encore l'espèce du tour passé)
+        if (espaceAdversaireDuTour != null && !espaceAdversaireDuTour.equals(adversaire.getEspece())) {
+            adversaireVampigraine = false;
+            adversaireSalaison = false;
+            compteurToxikAdversaire = 0;
+        }
+
+        // Compteurs Toxik : +1 par tour passé empoisonné gravement (reset au switch/soin)
+        if (joueur.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikJoueur++;
+        else compteurToxikJoueur = 0;
+        if (adversaire.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikAdversaire++;
+        else compteurToxikAdversaire = 0;
 
         if (pvJoueurDebutTour >= 0 && pvAdversaireDebutTour >= 0) {
             double perteJoueur = pvJoueurDebutTour - pvJoueurMaintenant;
@@ -179,6 +194,9 @@ public final class ObservationCollector {
             if ("leechseed".equals(coup.showdownId())) {
                 joueurVampigraine = true;
             }
+            if ("saltcure".equals(coup.showdownId())) {
+                joueurSalaison = true;
+            }
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
                 COUPS_ADVERSAIRE
@@ -201,6 +219,12 @@ public final class ObservationCollector {
             }
         } else {
             coupJoueurDuTour = coup;
+            if ("leechseed".equals(coup.showdownId())) {
+                adversaireVampigraine = true;
+            }
+            if ("saltcure".equals(coup.showdownId())) {
+                adversaireSalaison = true;
+            }
         }
     }
 
@@ -463,6 +487,21 @@ public final class ObservationCollector {
     private static boolean joueurVampigraine = false;
     private static String especeJoueurSuivie = null;
 
+    // Volatils et compteurs pour la projection résiduelle des deux camps
+    private static boolean joueurSalaison = false;
+    private static boolean adversaireSalaison = false;
+    private static boolean adversaireVampigraine = false;
+    private static int compteurToxikJoueur = 0;
+    private static int compteurToxikAdversaire = 0;
+
+    public static boolean isJoueurSalaison() { return joueurSalaison; }
+    public static boolean isJoueurVampigraine() { return joueurVampigraine; }
+    public static boolean isAdversaireSalaison() { return adversaireSalaison; }
+    public static boolean isAdversaireVampigraine() { return adversaireVampigraine; }
+    /** Multiplicateur Toxik du PROCHAIN tour pour le joueur (1 si pas encore subi). */
+    public static int getCompteurToxikProchainJoueur() { return compteurToxikJoueur + 1; }
+    public static int getCompteurToxikProchainAdversaire() { return compteurToxikAdversaire + 1; }
+
     /** L'adversaire n'a pas attaqué ce tour (aucun coup, ou un coup de statut). */
     private static boolean adversaireNAPasAttaque() {
         if (coupAdversaireDuTour == null) return true;
@@ -487,6 +526,11 @@ public final class ObservationCollector {
         TALENTS_CHIP_CONFIRMES.clear();
         coupAdversaireTourPrecedent = null;
         joueurVampigraine = false;
+        joueurSalaison = false;
+        adversaireVampigraine = false;
+        adversaireSalaison = false;
+        compteurToxikJoueur = 0;
+        compteurToxikAdversaire = 0;
         especeJoueurSuivie = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();

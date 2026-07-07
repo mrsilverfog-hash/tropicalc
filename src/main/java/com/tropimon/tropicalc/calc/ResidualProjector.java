@@ -23,12 +23,20 @@ public final class ResidualProjector {
         return projeter(p, meteo, true);
     }
 
-    /**
-     * @param objetSur vrai si l'objet du Pokémon est un fait observé ;
-     *                 faux si c'est une estimation (les sources liées à
-     *                 l'objet sont alors suffixées de "?")
-     */
     public static Projection projeter(Pokemon p, Field.Meteo meteo, boolean objetSur) {
+        return projeter(p, meteo, objetSur, 1, false, false);
+    }
+
+    /**
+     * @param objetSur             vrai si l'objet du Pokémon est un fait observé
+     * @param compteurToxikProchain multiplicateur Toxik du prochain tour (1 si le
+     *                              poison vient d'être posé, n+1 après n tours subis)
+     * @param salaison             sous Salaison (1/8, 1/4 pour les types Eau/Acier)
+     * @param vampigraine          sous Vampigraine (1/8 par tour)
+     */
+    public static Projection projeter(Pokemon p, Field.Meteo meteo, boolean objetSur,
+                                      int compteurToxikProchain, boolean salaison,
+                                      boolean vampigraine) {
         String talent = p.getTalent();
         String objet = p.getObjet();
         boolean gardeMagik = "Garde Magik".equals(talent);
@@ -62,8 +70,21 @@ public final class ResidualProjector {
             } else if (gardeMagik) {
                 toxik = false;
             } else {
-                ajouter(detail, "Toxik");
+                ajouter(detail, compteurToxikProchain > 1
+                    ? "Toxik(" + compteurToxikProchain + ")" : "Toxik");
             }
+        }
+
+        if (salaison && !gardeMagik) {
+            boolean vulnerable = p.getType1() == PokemonType.EAU || p.getType2() == PokemonType.EAU
+                || p.getType1() == PokemonType.ACIER || p.getType2() == PokemonType.ACIER;
+            constant += vulnerable ? 4 : 2;
+            ajouter(detail, "Salaison");
+        }
+
+        if (vampigraine && !gardeMagik) {
+            constant += 2;
+            ajouter(detail, "Vampigraine");
         }
 
         if (meteo == Field.Meteo.SABLE && !gardeMagik && !immuniseSable(p)) {
@@ -104,7 +125,7 @@ public final class ResidualProjector {
         double netPremierTour = 0;
 
         for (int tour = 1; tour <= 30; tour++) {
-            int seiziemes = constant + (toxik ? tour : 0);
+            int seiziemes = constant + (toxik ? (compteurToxikProchain + tour - 1) : 0);
             double delta = (pvMax * seiziemes) / 16.0;
             if (tour == 1) netPremierTour = (100.0 * seiziemes) / 16.0;
             pv -= delta;
