@@ -76,6 +76,12 @@ public final class ObservationCollector {
         double pvJoueurMaintenant = joueur.getPourcentagePv();
         double pvAdversaireMaintenant = adversaire.getPourcentagePv();
 
+        // La Vampigraine ne survit pas au switch du joueur
+        if (especeJoueurSuivie != null && !especeJoueurSuivie.equals(joueur.getEspece())) {
+            joueurVampigraine = false;
+        }
+        especeJoueurSuivie = joueur.getEspece();
+
         if (pvJoueurDebutTour >= 0 && pvAdversaireDebutTour >= 0) {
             double perteJoueur = pvJoueurDebutTour - pvJoueurMaintenant;
             double perteAdversaire = pvAdversaireDebutTour - pvAdversaireMaintenant;
@@ -107,6 +113,24 @@ public final class ObservationCollector {
             if (coupJoueurDuTour != null && "knockoff".equals(coupJoueurDuTour.showdownId())
                     && perteAdversaire >= 0.5) {
                 OBJETS_RETIRES.add(adversaire.getEspece());
+            }
+
+            // Détection Casque Brut : tour "propre" où le joueur attaque au contact,
+            // l'adversaire ne l'attaque pas, et le joueur perd des PV quand même.
+            // 12.5% = Épine de Fer/Peau Dure seule | ~17% = Casque Brut | ~29% = les deux
+            if (coupJoueurDuTour != null
+                    && com.tropimon.tropicalc.calc.ContactMoves.estContact(coupJoueurDuTour.showdownId())
+                    && perteAdversaire >= 0.5
+                    && perteJoueur >= 14.0 && perteJoueur <= 33.0
+                    && !(perteJoueur > 20.0 && perteJoueur < 25.0)
+                    && adversaireNAPasAttaque()
+                    && joueur.getStatut() == Pokemon.Statut.AUCUN
+                    && !joueurVampigraine
+                    && !"Orbe Vie".equals(joueur.getObjet())
+                    && !OBJETS_RETIRES.contains(adversaire.getEspece())
+                    && (FieldTracker.construireField().getMeteo() != Field.Meteo.SABLE
+                        || immuniseSableSimple(joueur))) {
+                OBJETS_CONFIRMES.put(adversaire.getEspece(), "Casque Brut");
             }
 
             // Inférence de vitesse : l'adversaire a agi en premier avec des coups non prioritaires
@@ -148,6 +172,9 @@ public final class ObservationCollector {
 
         if (Boolean.TRUE.equals(estAdversaire)) {
             coupAdversaireDuTour = coup;
+            if ("leechseed".equals(coup.showdownId())) {
+                joueurVampigraine = true;
+            }
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
                 COUPS_ADVERSAIRE
@@ -364,12 +391,34 @@ public final class ObservationCollector {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
     }
 
+    // Vampigraine posée sur le Pokémon actif du joueur (fausse la détection de chip)
+    private static boolean joueurVampigraine = false;
+    private static String especeJoueurSuivie = null;
+
+    /** L'adversaire n'a pas attaqué ce tour (aucun coup, ou un coup de statut). */
+    private static boolean adversaireNAPasAttaque() {
+        if (coupAdversaireDuTour == null) return true;
+        MoveTemplate t = Moves.INSTANCE.getByName(coupAdversaireDuTour.showdownId());
+        return t != null && "status".equalsIgnoreCase(String.valueOf(t.getDamageCategory().getName()));
+    }
+
+    private static boolean immuniseSableSimple(Pokemon p) {
+        return p.getType1() == com.tropimon.tropicalc.calc.PokemonType.ROCHE
+            || p.getType1() == com.tropimon.tropicalc.calc.PokemonType.SOL
+            || p.getType1() == com.tropimon.tropicalc.calc.PokemonType.ACIER
+            || p.getType2() == com.tropimon.tropicalc.calc.PokemonType.ROCHE
+            || p.getType2() == com.tropimon.tropicalc.calc.PokemonType.SOL
+            || p.getType2() == com.tropimon.tropicalc.calc.PokemonType.ACIER;
+    }
+
     public static void reinitialiser() {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();
         OBJETS_CONFIRMES.clear();
         coupAdversaireTourPrecedent = null;
+        joueurVampigraine = false;
+        especeJoueurSuivie = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
         BoostTracker.reinitialiser();

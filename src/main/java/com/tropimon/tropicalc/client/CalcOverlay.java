@@ -91,6 +91,12 @@ public final class CalcOverlay implements HudRenderCallback {
             x, y, couleurVitesse, true);
         y += hauteurLigne;
 
+        // Recul par contact : Casque Brut (~17%) + Épine de Fer / Peau Dure (12.5%)
+        boolean objetAdvSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
+        String talentAdv = adversaire.getTalent();
+        boolean epines = "Épine de Fer".equals(talentAdv) || "Peau Dure".equals(talentAdv);
+        boolean casqueBrut = "Casque Brut".equals(adversaire.getObjet());
+
         for (Move coup : monComplet.getMoveSet()) {
             if (coup == null) continue;
             com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
@@ -104,6 +110,12 @@ public final class CalcOverlay implements HudRenderCallback {
                 ligne = nom + " : immunisé";
             } else {
                 ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
+                if ((casqueBrut || epines)
+                        && com.tropimon.tropicalc.calc.ContactMoves.estContact(capacite.getNom())) {
+                    double recul = (epines ? 100.0 / 8 : 0) + (casqueBrut ? 100.0 / 6 : 0);
+                    ligne += String.format(" | -%.0f%% toi%s", recul,
+                        casqueBrut && !objetAdvSur ? "?" : "");
+                }
                 if (r.koGaranti) couleur = COULEUR_KO;
                 else if (r.koPossible) couleur = 0xFFAA00;
             }
