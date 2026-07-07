@@ -124,11 +124,14 @@ public final class ObservationCollector {
                     .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
                     .add(coup.showdownId());
 
-                // Comptage des PP : Pression (talent du joueur) double la consommation
+                // Comptage des PP : Pression (talent du joueur) ajoute 1 PP,
+                // mais seulement si la capacité CIBLE le Pokémon qui a Pression
+                // (Abri, Soin, Vœu, Piège de Roc etc. ne sont pas affectés)
                 int cout = 1;
                 Pokemon joueurActif = BattleStateTracker.getJoueurActifDepuisEquipe();
                 if (joueurActif == null) joueurActif = BattleStateTracker.getJoueurActif();
-                if (joueurActif != null && "Pression".equals(joueurActif.getTalent())) {
+                if (joueurActif != null && "Pression".equals(joueurActif.getTalent())
+                    && cibleLAdversaire(coup.showdownId())) {
                     cout = 2;
                 }
                 PP_UTILISES
@@ -303,6 +306,21 @@ public final class ObservationCollector {
     public static int getPpUtilises(String espece, String moveId) {
         Map<String, Integer> m = PP_UTILISES.get(espece);
         return m == null ? 0 : m.getOrDefault(moveId, 0);
+    }
+
+    /**
+     * Vrai si la capacité cible un Pokémon adverse (condition d'application de Pression).
+     * Faux pour les cibles soi-même, alliés, côté de terrain, ou terrain entier.
+     */
+    private static boolean cibleLAdversaire(String moveId) {
+        MoveTemplate t = Moves.INSTANCE.getByName(moveId);
+        if (t == null) return true; // inconnue : on suppose offensive
+        String cible = String.valueOf(t.getTarget()).toLowerCase();
+        if (cible.equals("all")) return false;          // météo, Champ Psychique...
+        if (cible.contains("self")) return false;       // Abri, Soin, Danse Lames...
+        if (cible.contains("ally") || cible.contains("allies")) return false;
+        if (cible.contains("side")) return false;       // Piège de Roc, Picots, écrans...
+        return true;
     }
 
     public static void reinitialiser() {
