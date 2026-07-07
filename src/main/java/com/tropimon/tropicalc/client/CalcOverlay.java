@@ -94,7 +94,8 @@ public final class CalcOverlay implements HudRenderCallback {
         // Recul par contact : Casque Brut (~17%) + Épine de Fer / Peau Dure (12.5%)
         boolean objetAdvSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
         String talentAdv = adversaire.getTalent();
-        boolean epines = "Épine de Fer".equals(talentAdv) || "Peau Dure".equals(talentAdv);
+        boolean epines = "Épine de Fer".equals(talentAdv) || "Pic Acier".equals(talentAdv)
+            || "Peau Dure".equals(talentAdv);
         boolean casqueBrut = "Casque Brut".equals(adversaire.getObjet());
 
         for (Move coup : monComplet.getMoveSet()) {
