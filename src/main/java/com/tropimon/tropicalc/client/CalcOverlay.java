@@ -170,7 +170,8 @@ public final class CalcOverlay implements HudRenderCallback {
         }
 
         // --- Projection des dégâts résiduels adverses (cœur du stall) ---
-        ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo());
+        boolean objetSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
+        ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo(), objetSur);
         if (proj != null) {
             y += 4;
             String ligneProj;
@@ -183,9 +184,10 @@ public final class CalcOverlay implements HudRenderCallback {
                         proj.netPremierTourPct(), proj.detail());
                 couleurProj = COULEUR_REVELE;
             } else {
-                ligneProj = String.format("Résiduel : +%.0f%%/t (%s) : régénère",
-                    -proj.netPremierTourPct(), proj.detail());
-                couleurProj = 0xFFAA00;
+                ligneProj = String.format("Résiduel : +%.0f%%/t (%s)%s",
+                    -proj.netPremierTourPct(), proj.detail(),
+                    objetSur ? " : régénère" : "");
+                couleurProj = objetSur ? 0xFFAA00 : COULEUR_TEXTE;
             }
             context.drawText(client.textRenderer, Text.literal(ligneProj), x, y, couleurProj, true);
             y += hauteurLigne;

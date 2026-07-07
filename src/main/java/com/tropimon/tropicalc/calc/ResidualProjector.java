@@ -20,10 +20,20 @@ public final class ResidualProjector {
 
     /** Retourne null si aucun effet résiduel n'est actif. */
     public static Projection projeter(Pokemon p, Field.Meteo meteo) {
+        return projeter(p, meteo, true);
+    }
+
+    /**
+     * @param objetSur vrai si l'objet du Pokémon est un fait observé ;
+     *                 faux si c'est une estimation (les sources liées à
+     *                 l'objet sont alors suffixées de "?")
+     */
+    public static Projection projeter(Pokemon p, Field.Meteo meteo, boolean objetSur) {
         String talent = p.getTalent();
         String objet = p.getObjet();
         boolean gardeMagik = "Garde Magik".equals(talent);
         boolean soinPoison = "Soin Poison".equals(talent);
+        String marqueObjet = objetSur ? "" : "?";
 
         StringBuilder detail = new StringBuilder();
 
@@ -63,15 +73,15 @@ public final class ResidualProjector {
 
         if ("Restes".equals(objet)) {
             constant -= 1;
-            ajouter(detail, "-Restes");
+            ajouter(detail, "-Restes" + marqueObjet);
         } else if ("Boue Noire".equals(objet)) {
             boolean typePoison = p.getType1() == PokemonType.POISON || p.getType2() == PokemonType.POISON;
             if (typePoison) {
                 constant -= 1;
-                ajouter(detail, "-Boue Noire");
+                ajouter(detail, "-Boue Noire" + marqueObjet);
             } else if (!gardeMagik) {
                 constant += 2;
-                ajouter(detail, "Boue Noire");
+                ajouter(detail, "Boue Noire" + marqueObjet);
             }
         }
 

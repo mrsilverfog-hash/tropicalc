@@ -33,6 +33,19 @@ public final class ObservationCollector {
     // PP consommés par l'adversaire : espèce -> (id capacité -> PP utilisés)
     private static final Map<String, Map<String, Integer>> PP_UTILISES = new HashMap<>();
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
+
+    // Objets confirmés par observation (ex: soin de fin de tour ~1/16 => Restes)
+    private static final Map<String, String> OBJETS_CONFIRMES = new HashMap<>();
+    private static String coupAdversaireTourPrecedent = null;
+
+    // Capacités qui soignent leur utilisateur : excluent la confirmation de Restes
+    private static final Set<String> COUPS_SOIN_OU_DRAIN = Set.of(
+        "recover", "roost", "softboiled", "slackoff", "milkdrink", "moonlight",
+        "morningsun", "synthesis", "shoreup", "rest", "wish", "healorder",
+        "strengthsap", "junglehealing", "lifedew", "floralhealing",
+        "absorb", "megadrain", "gigadrain", "leechlife", "drainpunch",
+        "hornleech", "drainingkiss", "paraboliccharge", "oblivionwing",
+        "dreameater", "bitterblade", "leechseed", "painsplit");
     // Vitesse minimale observée par espèce (déduite de l'ordre d'action)
     private static final Map<String, Integer> VITESSES_MIN_OBSERVEES = new HashMap<>();
     private static final double TOLERANCE_POURCENT = 3.0;
@@ -68,6 +81,20 @@ public final class ObservationCollector {
             double perteAdversaire = pvAdversaireDebutTour - pvAdversaireMaintenant;
 
             if (perteAdversaire < -5.0 || perteJoueur < -5.0) {
+                // Soin adverse de ~1/16 sans switch ni capacité de soin : Restes confirmés
+                // (Vampigraine/Vœu soignent 1/8+ et le tour d'après pour Vœu : exclus)
+                if (perteAdversaire <= -5.0 && perteAdversaire >= -8.0
+                        && adversaire.getEspece().equals(espaceAdversaireDuTour)
+                        && !OBJETS_RETIRES.contains(adversaire.getEspece())
+                        && (coupAdversaireDuTour == null
+                            || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
+                        && !"wish".equals(coupAdversaireTourPrecedent)
+                        && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
+                    OBJETS_CONFIRMES.put(adversaire.getEspece(), "Restes");
+                }
+                if (coupAdversaireDuTour != null) {
+                    coupAdversaireTourPrecedent = coupAdversaireDuTour.showdownId();
+                }
                 pvJoueurDebutTour = pvJoueurMaintenant;
                 pvAdversaireDebutTour = pvAdversaireMaintenant;
                 espaceAdversaireDuTour = adversaire.getEspece();
@@ -103,6 +130,9 @@ public final class ObservationCollector {
         pvJoueurDebutTour = pvJoueurMaintenant;
         pvAdversaireDebutTour = pvAdversaireMaintenant;
         espaceAdversaireDuTour = adversaire.getEspece();
+        if (coupAdversaireDuTour != null) {
+            coupAdversaireTourPrecedent = coupAdversaireDuTour.showdownId();
+        }
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
         adversaireAAgiEnPremier = null;
@@ -192,6 +222,8 @@ public final class ObservationCollector {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
 
+        String objetConfirme = OBJETS_CONFIRMES.get(espece);
+
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
             b.ev(Stat.PV, top.hpEv());
@@ -201,7 +233,7 @@ public final class ObservationCollector {
             b.ev(Stat.DEFENSE_SPE, top.spdEv());
             b.ev(Stat.VITESSE, top.speEv());
             b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
-            if (!objetRetire && !smogon.topItemsShowdownId().isEmpty()) {
+            if (!objetRetire && objetConfirme == null && !smogon.topItemsShowdownId().isEmpty()) {
                 String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
                 if (fr != null) b.objet(fr);
             }
@@ -217,7 +249,7 @@ public final class ObservationCollector {
             appliquerHypothese(b, Stat.DEFENSE, profil.defense);
             appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
 
-            if (!objetRetire) {
+            if (!objetRetire && objetConfirme == null) {
                 String objetEstime = extraireObjetUnique(profil.attaque);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
@@ -228,6 +260,10 @@ public final class ObservationCollector {
             String talentEstime = extraireTalentUnique(profil.attaque);
             if (talentEstime == null) talentEstime = extraireTalentUnique(profil.attaqueSpe);
             if (talentEstime != null) b.talent(talentEstime);
+        }
+
+        if (objetConfirme != null && !objetRetire) {
+            b.objet(objetConfirme);
         }
 
         if (objetRetire) {
@@ -323,10 +359,17 @@ public final class ObservationCollector {
         return true;
     }
 
+    /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */
+    public static boolean estObjetConfirme(String espece) {
+        return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
+    }
+
     public static void reinitialiser() {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();
+        OBJETS_CONFIRMES.clear();
+        coupAdversaireTourPrecedent = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
         BoostTracker.reinitialiser();
