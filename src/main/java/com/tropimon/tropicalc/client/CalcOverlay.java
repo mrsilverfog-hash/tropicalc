@@ -95,7 +95,8 @@ public final class CalcOverlay implements HudRenderCallback {
         boolean objetAdvSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
         String talentAdv = adversaire.getTalent();
         boolean epines = "Épine de Fer".equals(talentAdv) || "Pic Acier".equals(talentAdv)
-            || "Peau Dure".equals(talentAdv);
+            || "Peau Dure".equals(talentAdv)
+            || ObservationCollector.aChipTalentConfirme(adversaireBase.getEspece());
         boolean casqueBrut = "Casque Brut".equals(adversaire.getObjet());
 
         for (Move coup : monComplet.getMoveSet()) {

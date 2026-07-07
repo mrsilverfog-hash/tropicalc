@@ -131,6 +131,10 @@ public final class ObservationCollector {
                     && (FieldTracker.construireField().getMeteo() != Field.Meteo.SABLE
                         || immuniseSableSimple(joueur))) {
                 OBJETS_CONFIRMES.put(adversaire.getEspece(), "Casque Brut");
+                // 25-33% = Casque Brut + Épine de Fer/Peau Dure : le talent aussi est un fait
+                if (perteJoueur >= 25.0) {
+                    TALENTS_CHIP_CONFIRMES.add(adversaire.getEspece());
+                }
             }
 
             // Inférence de vitesse : l'adversaire a agi en premier avec des coups non prioritaires
@@ -286,7 +290,13 @@ public final class ObservationCollector {
 
             String talentEstime = extraireTalentUnique(profil.attaque);
             if (talentEstime == null) talentEstime = extraireTalentUnique(profil.attaqueSpe);
-            if (talentEstime != null) b.talent(talentEstime);
+            // N'écrase le talent Smogon que si le talent inféré modifie réellement
+            // les dégâts : l'inférence ne peut rien conclure sur les talents neutres
+            // (ex: Épine de Fer écrasé par Anticipation = régression pure)
+            if (talentEstime != null
+                    && com.tropimon.tropicalc.calc.AbilityModifier.pour(talentEstime) != null) {
+                b.talent(talentEstime);
+            }
         }
 
         if (objetConfirme != null && !objetRetire) {
@@ -351,8 +361,58 @@ public final class ObservationCollector {
         return r;
     }
 
+    // Plancher de PV adverses depuis le dernier point bas (détection de soin intra-tour)
+    private static String especePlancherAdv = null;
+    private static double pvPlancherAdv = -1;
+
     public static void tick() {
-        if (!BattleStateTracker.estEnCombat()) reinitialiser();
+        if (!BattleStateTracker.estEnCombat()) {
+            reinitialiser();
+            return;
+        }
+
+        // Détection Restes : les PV adverses remontent de ~1/16 depuis leur point bas.
+        // Contrairement au delta net par tour, ceci voit le soin même si le joueur
+        // a infligé des dégâts le même tour.
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        if (adv == null) return;
+        double pvNow = adv.getPourcentagePv();
+
+        if (!adv.getEspece().equals(especePlancherAdv)) {
+            especePlancherAdv = adv.getEspece();
+            pvPlancherAdv = pvNow;
+            return;
+        }
+        if (pvNow < pvPlancherAdv) {
+            pvPlancherAdv = pvNow;
+            return;
+        }
+
+        double remontee = pvNow - pvPlancherAdv;
+        if (remontee >= 4.5 && remontee <= 8.0
+                && !OBJETS_RETIRES.contains(adv.getEspece())
+                && (coupAdversaireDuTour == null
+                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
+                && !"wish".equals(coupAdversaireTourPrecedent)
+                && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
+            OBJETS_CONFIRMES.put(adv.getEspece(), "Restes");
+            pvPlancherAdv = pvNow;
+        } else if (remontee >= 1.5 && pvNow >= 99.5
+                && adv.getStatut() == Pokemon.Statut.AUCUN
+                && !OBJETS_RETIRES.contains(adv.getEspece())
+                && (coupAdversaireDuTour == null
+                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
+                && !"wish".equals(coupAdversaireTourPrecedent)
+                && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
+            // Soin plafonné par les PV max (ex: Restes à 97% ne rendent que 3%) :
+            // une petite remontée qui termine pile à 100% sans capacité de soin
+            // ne s'explique que par un objet de soin passif
+            OBJETS_CONFIRMES.put(adv.getEspece(), "Restes");
+            pvPlancherAdv = pvNow;
+        } else if (remontee > 8.0) {
+            // Gros soin (Vœu, Soin, drain...) : repartir de ce niveau
+            pvPlancherAdv = pvNow;
+        }
     }
 
     private static Boolean determinerAttaquant(String proprietaire) {
@@ -391,6 +451,14 @@ public final class ObservationCollector {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
     }
 
+    // Espèces dont le talent à chip de contact (Épine de Fer / Peau Dure) est observé
+    private static final Set<String> TALENTS_CHIP_CONFIRMES = new HashSet<>();
+
+    /** Vrai si un talent type Épine de Fer / Peau Dure a été observé sur cette espèce. */
+    public static boolean aChipTalentConfirme(String espece) {
+        return TALENTS_CHIP_CONFIRMES.contains(espece);
+    }
+
     // Vampigraine posée sur le Pokémon actif du joueur (fausse la détection de chip)
     private static boolean joueurVampigraine = false;
     private static String especeJoueurSuivie = null;
@@ -416,6 +484,7 @@ public final class ObservationCollector {
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();
         OBJETS_CONFIRMES.clear();
+        TALENTS_CHIP_CONFIRMES.clear();
         coupAdversaireTourPrecedent = null;
         joueurVampigraine = false;
         especeJoueurSuivie = null;
