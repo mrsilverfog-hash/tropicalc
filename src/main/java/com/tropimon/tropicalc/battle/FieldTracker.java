@@ -20,6 +20,16 @@ public final class FieldTracker {
     private static boolean lightScreenAdversaire = false;
     private static boolean auroraVeilAdversaire = false;
 
+    // Pièges d'entrée (côté joueur = posés par l'adversaire, subis par le joueur)
+    private static boolean stealthRockJoueur = false;
+    private static boolean stealthRockAdversaire = false;
+    private static int spikesJoueur = 0;          // 0 à 3 couches
+    private static int spikesAdversaire = 0;
+    private static int toxicSpikesJoueur = 0;     // 0 à 2 couches
+    private static int toxicSpikesAdversaire = 0;
+    private static boolean stickyWebJoueur = false;
+    private static boolean stickyWebAdversaire = false;
+
     public static void traiterMessage(Text message) {
         if (message == null) return;
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
@@ -81,6 +91,20 @@ public final class FieldTracker {
                 case "auroraveil" -> {
                     if (allie) auroraVeilJoueur = debut; else auroraVeilAdversaire = debut;
                 }
+                case "stealthrock" -> {
+                    if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
+                }
+                case "spikes" -> {
+                    if (allie) spikesJoueur = debut ? Math.min(3, spikesJoueur + 1) : 0;
+                    else spikesAdversaire = debut ? Math.min(3, spikesAdversaire + 1) : 0;
+                }
+                case "toxicspikes" -> {
+                    if (allie) toxicSpikesJoueur = debut ? Math.min(2, toxicSpikesJoueur + 1) : 0;
+                    else toxicSpikesAdversaire = debut ? Math.min(2, toxicSpikesAdversaire + 1) : 0;
+                }
+                case "stickyweb" -> {
+                    if (allie) stickyWebJoueur = debut; else stickyWebAdversaire = debut;
+                }
             }
             return;
         }
@@ -114,6 +138,11 @@ public final class FieldTracker {
         return distorsion;
     }
 
+    public static boolean isStealthRockJoueur() { return stealthRockJoueur; }
+    public static int getSpikesJoueur() { return spikesJoueur; }
+    public static int getToxicSpikesJoueur() { return toxicSpikesJoueur; }
+    public static boolean isStickyWebJoueur() { return stickyWebJoueur; }
+
     public static void reinitialiser() {
         meteoActive = Field.Meteo.AUCUNE;
         terrainActif = Field.TypeTerrain.AUCUN;
@@ -124,5 +153,13 @@ public final class FieldTracker {
         reflectAdversaire = false;
         lightScreenAdversaire = false;
         auroraVeilAdversaire = false;
+        stealthRockJoueur = false;
+        stealthRockAdversaire = false;
+        spikesJoueur = 0;
+        spikesAdversaire = 0;
+        toxicSpikesJoueur = 0;
+        toxicSpikesAdversaire = 0;
+        stickyWebJoueur = false;
+        stickyWebAdversaire = false;
     }
 }

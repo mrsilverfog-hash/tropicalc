@@ -88,6 +88,24 @@ public final class SwitchOverlayRenderer {
         lignes.add(String.format("Vitesse : %d %s %d%s", vitCandidat, fleche, vitAdversaire, suffixe));
         couleurs.add(egalite ? COULEUR_TEXTE : (candidatPremier ? COULEUR_REVELE : COULEUR_KO));
 
+        // Pièges d'entrée : PV à l'arrivée
+        double degatsPieges = degatsEntreePct(candidat);
+        boolean toile = FieldTracker.isStickyWebJoueur() && estAuSol(candidat);
+        if (degatsPieges > 0 || toile) {
+            double pvActuelsPct = 100.0 * candidat.getPvActuels() / Math.max(1, candidat.getPvMax());
+            double pvApres = Math.max(0, pvActuelsPct - degatsPieges);
+            StringBuilder lignePieges = new StringBuilder();
+            if (degatsPieges > 0) {
+                lignePieges.append(String.format("Pièges : -%.0f%% → entre à %.0f%% PV", degatsPieges, pvApres));
+            }
+            if (toile) {
+                if (lignePieges.length() > 0) lignePieges.append(" | ");
+                lignePieges.append("Toile : -1 Vit");
+            }
+            lignes.add(lignePieges.toString());
+            couleurs.add(pvApres <= 0 ? COULEUR_KO : (degatsPieges >= 25 ? 0xFFAA00 : COULEUR_TEXTE));
+        }
+
         // Ses attaques
         lignes.add("Ses attaques :");
         couleurs.add(COULEUR_TITRE);
@@ -182,6 +200,39 @@ public final class SwitchOverlayRenderer {
         }
 
         context.getMatrices().pop();
+    }
+
+    /** Dégâts de pièges d'entrée en % des PV max pour ce candidat. */
+    private static double degatsEntreePct(Pokemon candidat) {
+        if ("Grosses Bottes".equals(candidat.getObjet())) return 0;
+        if ("Garde Magik".equals(candidat.getTalent())) return 0;
+
+        double total = 0;
+
+        if (FieldTracker.isStealthRockJoueur()) {
+            double eff = com.tropimon.tropicalc.calc.PokemonType.ROCHE
+                .efficaciteContre(candidat.getType1(), candidat.getType2());
+            total += 12.5 * eff;
+        }
+
+        int couches = FieldTracker.getSpikesJoueur();
+        if (couches > 0 && estAuSol(candidat)) {
+            total += switch (couches) {
+                case 1 -> 12.5;
+                case 2 -> 100.0 / 6.0;
+                default -> 25.0;
+            };
+        }
+
+        return total;
+    }
+
+    /** Vrai si le candidat touche le sol (sensible à Picots et Toile Gluante). */
+    private static boolean estAuSol(Pokemon candidat) {
+        if (candidat.getType1() == com.tropimon.tropicalc.calc.PokemonType.VOL
+            || candidat.getType2() == com.tropimon.tropicalc.calc.PokemonType.VOL) return false;
+        if ("Lévitation".equals(candidat.getTalent())) return false;
+        return !"Ballon".equals(candidat.getObjet());
     }
 
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {

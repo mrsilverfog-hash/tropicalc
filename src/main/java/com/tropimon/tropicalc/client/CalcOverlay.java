@@ -12,6 +12,7 @@ import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
 import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
+import com.tropimon.tropicalc.calc.ResidualProjector;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
 import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.calc.Stat;
@@ -166,6 +167,28 @@ public final class CalcOverlay implements HudRenderCallback {
                 context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
                 y += hauteurLigne;
             }
+        }
+
+        // --- Projection des dégâts résiduels adverses (cœur du stall) ---
+        ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo());
+        if (proj != null) {
+            y += 4;
+            String ligneProj;
+            int couleurProj;
+            if (proj.netPremierTourPct() > 0) {
+                ligneProj = proj.toursAvantKO() > 0
+                    ? String.format("Résiduel : -%.0f%%/t (%s) → KO ~%d tours",
+                        proj.netPremierTourPct(), proj.detail(), proj.toursAvantKO())
+                    : String.format("Résiduel : -%.0f%%/t (%s)",
+                        proj.netPremierTourPct(), proj.detail());
+                couleurProj = COULEUR_REVELE;
+            } else {
+                ligneProj = String.format("Résiduel : +%.0f%%/t (%s) : régénère",
+                    -proj.netPremierTourPct(), proj.detail());
+                couleurProj = 0xFFAA00;
+            }
+            context.drawText(client.textRenderer, Text.literal(ligneProj), x, y, couleurProj, true);
+            y += hauteurLigne;
         }
 
         // --- Section 3 : set estimé ---
