@@ -76,6 +76,14 @@ public class DamageCalculator {
         double efficacite = calculerEfficaciteType(capacite, defenseur);
         if (efficacite == 0.0) return Resultat.immunise();
 
+        // Dégâts fixes : ignorent stats, boosts, STAB et efficacité (sauf immunité)
+        Integer fixes = degatsFixes(capacite, attaquant);
+        if (fixes != null) {
+            int[] d = new int[16];
+            java.util.Arrays.fill(d, Math.max(1, fixes));
+            return Resultat.depuis(d, defenseur, efficacite);
+        }
+
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
 
         // Puissance effective : gère Sabotage, Gyroball, Boule Élek, Châtiment,
@@ -92,9 +100,30 @@ public class DamageCalculator {
             statOffensive = Stat.DEFENSE;
         }
         Stat statDefensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        // Choc Psy / Frappe Psy / Lame Ointe : capacités spéciales frappant la Défense physique
+        // (contourne aussi le boost Déf. Spé. des types Roche sous tempête de sable)
+        String nomCapacite = capacite.getNom();
+        if ("psyshock".equals(nomCapacite) || "psystrike".equals(nomCapacite)
+            || "secretsword".equals(nomCapacite)) {
+            statDefensive = Stat.DEFENSE;
+        }
 
         int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
+
+        // Tricherie : utilise l'Attaque du DÉFENSEUR (avec ses stages, sans son objet
+        // ni son talent), mais la brûlure de l'attaquant s'applique quand même
+        if ("foulplay".equals(nomCapacite)) {
+            int atk = defenseur.getStatCalculee(Stat.ATTAQUE);
+            int stage = defenseur.getStage(Stat.ATTAQUE);
+            if (critique && stage < 0) stage = 0;
+            double mult = stage >= 0 ? (2.0 + stage) / 2.0 : 2.0 / (2.0 - stage);
+            atk = (int) (atk * mult);
+            if (attaquant.getStatut() == Pokemon.Statut.BRULURE && !ctx.ignorerPenaliteBrulure) {
+                atk = (int) (atk * 0.5);
+            }
+            statA = atk;
+        }
 
         int niveauTerme = (2 * attaquant.getNiveau()) / 5 + 2;
         long base = ((long) niveauTerme * puissance * statA) / Math.max(1, statD);
@@ -194,6 +223,24 @@ public class DamageCalculator {
 
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
         return (long) Math.floor(valeur * multiplicateur);
+    }
+
+    /**
+     * Capacités à dégâts fixes. Retourne null si la capacité n'en est pas une.
+     * Riposte et Voile Miroir dépendent des dégâts reçus (imprévisibles), donc exclus.
+     */
+    private static Integer degatsFixes(Move capacite, Pokemon attaquant) {
+        String nom = capacite.getNom();
+        if (nom == null) return null;
+        return switch (nom) {
+            // Frappe Atlas / Ombre Nocturne : dégâts = niveau de l'attaquant
+            case "seismictoss", "nightshade" -> attaquant.getNiveau();
+            case "sonicboom" -> 20;
+            case "dragonrage" -> 40;
+            // Requiem Final : dégâts = PV actuels de l'attaquant (qui se met KO)
+            case "finalgambit" -> attaquant.getPvActuels();
+            default -> null;
+        };
     }
 
     /**
