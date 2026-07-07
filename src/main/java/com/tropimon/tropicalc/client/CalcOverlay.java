@@ -142,15 +142,23 @@ public final class CalcOverlay implements HudRenderCallback {
                 String ligne;
                 int couleur = estRevele ? COULEUR_REVELE : COULEUR_TEXTE;
 
+                // PP restants (max compétitif = base x1.6 avec PP Max)
+                String suffixePp = "";
+                if (estRevele) {
+                    int max = (int) Math.floor(template.getPp() * 1.6);
+                    int restants = Math.max(0, max - ObservationCollector.getPpUtilises(especeAdv, template.getName()));
+                    suffixePp = String.format(" | PP %d/%d", restants, max);
+                }
+
                 if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) {
-                    ligne = (estRevele ? "✓ " : "") + nom + " : statut";
+                    ligne = (estRevele ? "✓ " : "") + nom + " : statut" + suffixePp;
                 } else {
                     DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, field.getEcransJoueur(), false);
                     if (r.immunise) {
-                        ligne = (estRevele ? "✓ " : "") + nom + " : immunisé";
+                        ligne = (estRevele ? "✓ " : "") + nom + " : immunisé" + suffixePp;
                     } else {
-                        ligne = String.format("%s%s : %.0f%% - %.0f%%",
-                            estRevele ? "✓ " : "", nom, r.pourcentageMin, r.pourcentageMax);
+                        ligne = String.format("%s%s : %.0f%% - %.0f%%%s",
+                            estRevele ? "✓ " : "", nom, r.pourcentageMin, r.pourcentageMax, suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
                     }

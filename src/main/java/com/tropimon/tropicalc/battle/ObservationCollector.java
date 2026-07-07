@@ -29,6 +29,9 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
+
+    // PP consommés par l'adversaire : espèce -> (id capacité -> PP utilisés)
+    private static final Map<String, Map<String, Integer>> PP_UTILISES = new HashMap<>();
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
     // Vitesse minimale observée par espèce (déduite de l'ordre d'action)
     private static final Map<String, Integer> VITESSES_MIN_OBSERVEES = new HashMap<>();
@@ -120,6 +123,17 @@ public final class ObservationCollector {
                 COUPS_ADVERSAIRE
                     .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
                     .add(coup.showdownId());
+
+                // Comptage des PP : Pression (talent du joueur) double la consommation
+                int cout = 1;
+                Pokemon joueurActif = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (joueurActif == null) joueurActif = BattleStateTracker.getJoueurActif();
+                if (joueurActif != null && "Pression".equals(joueurActif.getTalent())) {
+                    cout = 2;
+                }
+                PP_UTILISES
+                    .computeIfAbsent(adversaire.getEspece(), k -> new HashMap<>())
+                    .merge(coup.showdownId(), cout, Integer::sum);
             }
         } else {
             coupJoueurDuTour = coup;
@@ -285,9 +299,16 @@ public final class ObservationCollector {
     public static ProfilAdversaire getProfil(String espece) { return PROFILS.get(espece); }
     public static String getEspaceAdversaireCourant() { return espaceAdversaireDuTour; }
 
+    /** PP consommés par cette espèce adverse sur cette capacité (0 si jamais vue). */
+    public static int getPpUtilises(String espece, String moveId) {
+        Map<String, Integer> m = PP_UTILISES.get(espece);
+        return m == null ? 0 : m.getOrDefault(moveId, 0);
+    }
+
     public static void reinitialiser() {
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
+        PP_UTILISES.clear();
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
         BoostTracker.reinitialiser();
