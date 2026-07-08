@@ -89,6 +89,17 @@ public final class ObservationCollector {
             adversaireVampigraine = false;
             adversaireSalaison = false;
             compteurToxikAdversaire = 0;
+            coupVerrouAdversaire = null;   // le verrou Choix tombe au switch
+            compteurAbrisAdversaire = 0;
+        }
+
+        // Abris consécutifs de l'adversaire (le 2e n'a que ~33% de réussite)
+        if (coupAdversaireDuTour != null) {
+            if (COUPS_PROTECTION.contains(coupAdversaireDuTour.showdownId())) {
+                compteurAbrisAdversaire++;
+            } else {
+                compteurAbrisAdversaire = 0;
+            }
         }
 
         FieldTracker.nouveauTour();
@@ -199,6 +210,10 @@ public final class ObservationCollector {
             if ("saltcure".equals(coup.showdownId())) {
                 joueurSalaison = true;
             }
+            if (coup.proprietaire() != null) {
+                nomAdversaireCourant = coup.proprietaire();
+            }
+            coupVerrouAdversaire = coup.showdownId();
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
                 COUPS_ADVERSAIRE
@@ -279,6 +294,18 @@ public final class ObservationCollector {
             b.statBase(s, adversaireBase.getStatBase(s));
         }
 
+        // Scouting inter-combats : pré-remplir les faits des combats passés
+        ScoutingStore.Faits scout = ScoutingStore.get(nomAdversaireCourant, espece);
+        if (scout != null && !ESPECES_SCOUT_FUSIONNEES.contains(espece)) {
+            ESPECES_SCOUT_FUSIONNEES.add(espece);
+            if (!scout.capacites.isEmpty()) {
+                COUPS_ADVERSAIRE
+                    .computeIfAbsent(espece, k -> new LinkedHashSet<>())
+                    .addAll(scout.capacites);
+            }
+            if (scout.chipTalent) TALENTS_CHIP_CONFIRMES.add(espece);
+        }
+
         String objetConfirme = OBJETS_CONFIRMES.get(espece);
 
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
@@ -323,6 +350,13 @@ public final class ObservationCollector {
                     && com.tropimon.tropicalc.calc.AbilityModifier.pour(talentEstime) != null) {
                 b.talent(talentEstime);
             }
+        }
+
+        // Objet/talent des combats passés : meilleure estimation que Smogon,
+        // mais le "?" reste (le set a pu changer depuis)
+        if (scout != null) {
+            if (scout.objet != null && objetConfirme == null && !objetRetire) b.objet(scout.objet);
+            if (scout.talent != null) b.talent(scout.talent);
         }
 
         if (objetConfirme != null && !objetRetire) {
@@ -515,6 +549,19 @@ public final class ObservationCollector {
     private static boolean joueurVampigraine = false;
     private static String especeJoueurSuivie = null;
 
+    // Scouting inter-combats et états stratégiques
+    private static String nomAdversaireCourant = null;
+    private static String coupVerrouAdversaire = null;   // dernier coup depuis son entrée
+    private static int compteurAbrisAdversaire = 0;      // Abris consécutifs
+    private static final Set<String> ESPECES_SCOUT_FUSIONNEES = new HashSet<>();
+    private static final Set<String> COUPS_PROTECTION = Set.of(
+        "protect", "detect", "banefulbunker", "spikyshield", "silktrap",
+        "burningbulwark", "kingsshield", "obstruct", "maxguard");
+
+    public static String getNomAdversaireCourant() { return nomAdversaireCourant; }
+    public static String getCoupVerrouAdversaire() { return coupVerrouAdversaire; }
+    public static int getCompteurAbrisAdversaire() { return compteurAbrisAdversaire; }
+
     // Volatils et compteurs pour la projection résiduelle des deux camps
     private static boolean joueurSalaison = false;
     private static boolean adversaireSalaison = false;
@@ -547,6 +594,25 @@ public final class ObservationCollector {
     }
 
     public static void reinitialiser() {
+        // Persister les faits du combat avant de tout effacer
+        if (nomAdversaireCourant != null) {
+            Set<String> especes = new HashSet<>();
+            especes.addAll(OBJETS_CONFIRMES.keySet());
+            especes.addAll(TALENTS_CONFIRMES.keySet());
+            especes.addAll(TALENTS_CHIP_CONFIRMES);
+            especes.addAll(COUPS_ADVERSAIRE.keySet());
+            for (String esp : especes) {
+                ScoutingStore.enregistrer(nomAdversaireCourant, esp,
+                    OBJETS_CONFIRMES.get(esp),
+                    TALENTS_CONFIRMES.get(esp),
+                    TALENTS_CHIP_CONFIRMES.contains(esp),
+                    COUPS_ADVERSAIRE.get(esp));
+            }
+            nomAdversaireCourant = null;
+        }
+        coupVerrouAdversaire = null;
+        compteurAbrisAdversaire = 0;
+        ESPECES_SCOUT_FUSIONNEES.clear();
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();

@@ -155,6 +155,31 @@ public final class CalcOverlay implements HudRenderCallback {
             context.drawText(client.textRenderer, Text.literal("Capacités adverses :"), x, y, COULEUR_DANGER, true);
             y += hauteurLigne;
 
+            // Verrou Choix : objet Choix + un coup déjà utilisé depuis son entrée
+            String objetAdv = adversaire.getObjet();
+            String verrou = ObservationCollector.getCoupVerrouAdversaire();
+            if (objetAdv != null && objetAdv.contains("Choix") && verrou != null) {
+                MoveTemplate tv = Moves.INSTANCE.getByName(verrou);
+                String nomVerrou = tv != null ? tv.getDisplayName().getString() : verrou;
+                boolean sur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
+                context.drawText(client.textRenderer,
+                    Text.literal(String.format("Verrou Choix%s : %s", sur ? "" : "?", nomVerrou)),
+                    x, y, 0xFFAA00, true);
+                y += hauteurLigne;
+            }
+
+            // Abris consécutifs : le suivant a 1/3^n de chances de réussir
+            int abris = ObservationCollector.getCompteurAbrisAdversaire();
+            if (abris >= 1) {
+                double chance = 100.0 / Math.pow(3, abris);
+                context.drawText(client.textRenderer,
+                    Text.literal(String.format("Abri x%d → prochain ~%.0f%%", abris, chance)),
+                    x, y, COULEUR_TEXTE, true);
+                y += hauteurLigne;
+            }
+            y -= hauteurLigne;
+            y += hauteurLigne;
+
             for (MoveTemplate template : aAfficher) {
                 boolean estRevele = reveleIds.contains(template.getName());
                 com.tropimon.tropicalc.calc.Move capaciteAdv = convertirTemplate(template);
