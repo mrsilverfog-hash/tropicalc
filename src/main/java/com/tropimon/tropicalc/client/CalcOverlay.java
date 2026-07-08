@@ -117,7 +117,8 @@ public final class CalcOverlay implements HudRenderCallback {
                 ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
                 if ((casqueBrut || epines)
                         && com.tropimon.tropicalc.calc.ContactMoves.estContact(capacite.getNom())) {
-                    double recul = (epines ? 100.0 / 8 : 0) + (casqueBrut ? 100.0 / 6 : 0);
+                    int coups = DamageCalculator.nombreDeCoupsMax(capacite, joueur);
+                    double recul = ((epines ? 100.0 / 8 : 0) + (casqueBrut ? 100.0 / 6 : 0)) * coups;
                     ligne += String.format(" | -%.0f%% toi%s", recul,
                         casqueBrut && !objetAdvSur ? "?" : "");
                 }
@@ -170,7 +171,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
             // Abris consécutifs : le suivant a 1/3^n de chances de réussir
             int abris = ObservationCollector.getCompteurAbrisAdversaire();
-            if (abris >= 1) {
+            if (false && abris >= 1) {
                 double chance = 100.0 / Math.pow(3, abris);
                 context.drawText(client.textRenderer,
                     Text.literal(String.format("Abri x%d → prochain ~%.0f%%", abris, chance)),

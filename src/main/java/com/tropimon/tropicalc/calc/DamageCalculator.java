@@ -221,6 +221,11 @@ public class DamageCalculator {
         return new int[]{min, max};
     }
 
+    /** Nombre maximal de coups d'une capacité (1 si mono-coup). Pour le recul par contact. */
+    public static int nombreDeCoupsMax(Move capacite, Pokemon attaquant) {
+        return coupsEffectifs(capacite, attaquant)[1];
+    }
+
     private static long appliquerEtFloor(long valeur, double multiplicateur) {
         return (long) Math.floor(valeur * multiplicateur);
     }
