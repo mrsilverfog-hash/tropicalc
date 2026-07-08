@@ -91,6 +91,8 @@ public final class ObservationCollector {
             compteurToxikAdversaire = 0;
         }
 
+        FieldTracker.nouveauTour();
+
         // Compteurs Toxik : +1 par tour passé empoisonné gravement (reset au switch/soin)
         if (joueur.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikJoueur++;
         else compteurToxikJoueur = 0;
@@ -327,6 +329,11 @@ public final class ObservationCollector {
             b.objet(objetConfirme);
         }
 
+        String talentConfirme = TALENTS_CONFIRMES.get(espece);
+        if (talentConfirme != null) {
+            b.talent(talentConfirme);
+        }
+
         if (objetRetire) {
             b.objet(null);
         }
@@ -414,6 +421,8 @@ public final class ObservationCollector {
 
         double remontee = pvNow - pvPlancherAdv;
         if (remontee >= 4.5 && remontee <= 8.0
+                && adv.getStatut() != Pokemon.Statut.POISON
+                && adv.getStatut() != Pokemon.Statut.POISON_GRAVE
                 && !OBJETS_RETIRES.contains(adv.getEspece())
                 && (coupAdversaireDuTour == null
                     || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
@@ -432,6 +441,18 @@ public final class ObservationCollector {
             // une petite remontée qui termine pile à 100% sans capacité de soin
             // ne s'explique que par un objet de soin passif
             OBJETS_CONFIRMES.put(adv.getEspece(), "Restes");
+            pvPlancherAdv = pvNow;
+        } else if (remontee >= 10.5 && remontee <= 14.0
+                && (adv.getStatut() == Pokemon.Statut.POISON
+                    || adv.getStatut() == Pokemon.Statut.POISON_GRAVE)
+                && !joueurVampigraine
+                && (coupAdversaireDuTour == null
+                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
+                && !"wish".equals(coupAdversaireTourPrecedent)
+                && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
+            // Un Pokémon EMPOISONNÉ qui gagne ~1/8 par tour : signature de Soin Poison
+            // (le poison aurait dû lui retirer des PV, il en gagne 12.5%)
+            TALENTS_CONFIRMES.put(adv.getEspece(), "Soin Poison");
             pvPlancherAdv = pvNow;
         } else if (remontee > 8.0) {
             // Gros soin (Vœu, Soin, drain...) : repartir de ce niveau
@@ -477,6 +498,13 @@ public final class ObservationCollector {
 
     // Espèces dont le talent à chip de contact (Épine de Fer / Peau Dure) est observé
     private static final Set<String> TALENTS_CHIP_CONFIRMES = new HashSet<>();
+
+    // Talents confirmés par observation (ex: Soin Poison vu en action)
+    private static final Map<String, String> TALENTS_CONFIRMES = new HashMap<>();
+
+    public static String getTalentConfirme(String espece) {
+        return TALENTS_CONFIRMES.get(espece);
+    }
 
     /** Vrai si un talent type Épine de Fer / Peau Dure a été observé sur cette espèce. */
     public static boolean aChipTalentConfirme(String espece) {
@@ -524,6 +552,7 @@ public final class ObservationCollector {
         PP_UTILISES.clear();
         OBJETS_CONFIRMES.clear();
         TALENTS_CHIP_CONFIRMES.clear();
+        TALENTS_CONFIRMES.clear();
         coupAdversaireTourPrecedent = null;
         joueurVampigraine = false;
         joueurSalaison = false;

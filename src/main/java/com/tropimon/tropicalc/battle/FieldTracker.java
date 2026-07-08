@@ -56,8 +56,9 @@ public final class FieldTracker {
 
             if ("end".equals(action)) {
                 meteoActive = Field.Meteo.AUCUNE;
+                toursMeteoRestants = 0;
             } else if ("start".equals(action) || "upkeep".equals(action)) {
-                meteoActive = switch (type) {
+                Field.Meteo nouvelle = switch (type) {
                     case "raindance" -> Field.Meteo.PLUIE;
                     case "sunnyday" -> Field.Meteo.SOLEIL;
                     case "sandstorm" -> Field.Meteo.SABLE;
@@ -66,6 +67,12 @@ public final class FieldTracker {
                     case "desolateland" -> Field.Meteo.SOLEIL_INTENSE;
                     default -> meteoActive;
                 };
+                // 5 tours au déclenchement (8 avec Roche Lisse, non détectable :
+                // on affiche l'hypothèse basse). Les upkeep ne réarment pas.
+                if ("start".equals(action) && nouvelle != meteoActive) {
+                    toursMeteoRestants = 5;
+                }
+                meteoActive = nouvelle;
             }
             return;
         }
@@ -83,13 +90,13 @@ public final class FieldTracker {
 
             switch (effet) {
                 case "reflect" -> {
-                    if (allie) reflectJoueur = debut; else reflectAdversaire = debut;
+                    if (allie) reflectJoueur = debut; else { reflectAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
                 }
                 case "lightscreen" -> {
-                    if (allie) lightScreenJoueur = debut; else lightScreenAdversaire = debut;
+                    if (allie) lightScreenJoueur = debut; else { lightScreenAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
                 }
                 case "auroraveil" -> {
-                    if (allie) auroraVeilJoueur = debut; else auroraVeilAdversaire = debut;
+                    if (allie) auroraVeilJoueur = debut; else { auroraVeilAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
                 }
                 case "stealthrock" -> {
                     if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
@@ -143,6 +150,23 @@ public final class FieldTracker {
     public static int getToxicSpikesJoueur() { return toxicSpikesJoueur; }
     public static boolean isStickyWebJoueur() { return stickyWebJoueur; }
 
+    // Durées restantes (hypothèse basse : 5 tours, sans Roche Lisse/Lumargile)
+    private static int toursMeteoRestants = 0;
+    private static int toursEcransAdversaireRestants = 0;
+
+    public static int getToursMeteoRestants() { return toursMeteoRestants; }
+    public static int getToursEcransAdversaireRestants() { return toursEcransAdversaireRestants; }
+
+    public static boolean adversaireAUnEcran() {
+        return reflectAdversaire || lightScreenAdversaire || auroraVeilAdversaire;
+    }
+
+    /** À appeler une fois par tour : décrémente les durées. */
+    public static void nouveauTour() {
+        if (toursMeteoRestants > 0) toursMeteoRestants--;
+        if (toursEcransAdversaireRestants > 0) toursEcransAdversaireRestants--;
+    }
+
     public static void reinitialiser() {
         meteoActive = Field.Meteo.AUCUNE;
         terrainActif = Field.TypeTerrain.AUCUN;
@@ -161,5 +185,7 @@ public final class FieldTracker {
         toxicSpikesAdversaire = 0;
         stickyWebJoueur = false;
         stickyWebAdversaire = false;
+        toursMeteoRestants = 0;
+        toursEcransAdversaireRestants = 0;
     }
 }
