@@ -34,9 +34,6 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
 
-    private static double pireAttaquePct = 0;
-    private static String pireAttaqueNom = null;
-
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
         // Doit tourner AUSSI hors combat : c'est là que le reset entre combats s'exécute
@@ -151,8 +148,6 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (!aAfficher.isEmpty()) {
             y += 4;
-            pireAttaquePct = 0;
-            pireAttaqueNom = null;
             context.drawText(client.textRenderer, Text.literal("Capacités adverses :"), x, y, COULEUR_DANGER, true);
             y += hauteurLigne;
 
@@ -203,10 +198,6 @@ public final class CalcOverlay implements HudRenderCallback {
                     if (r.immunise) {
                         ligne = (estRevele ? "✓ " : "") + nom + " : immunisé" + suffixePp;
                     } else {
-                        if (r.pourcentageMax > pireAttaquePct) {
-                            pireAttaquePct = r.pourcentageMax;
-                            pireAttaqueNom = nom;
-                        }
                         ligne = String.format("%s%s : %.0f%% - %.0f%%%s",
                             estRevele ? "✓ " : "", nom, r.pourcentageMin, r.pourcentageMax, suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
@@ -269,23 +260,6 @@ public final class CalcOverlay implements HudRenderCallback {
                 couleurToi = COULEUR_REVELE;
             }
             context.drawText(client.textRenderer, Text.literal(ligneToi), x, y, couleurToi, true);
-            y += hauteurLigne;
-        }
-
-        // --- Pire cas ce tour : la plus grosse attaque adverse + ton résiduel ---
-        double residuelToiPct = projJoueur != null && projJoueur.netPremierTourPct() > 0
-            ? projJoueur.netPremierTourPct() : 0;
-        if (pireAttaquePct > 0 || residuelToiPct > 0) {
-            double pire = pireAttaquePct + residuelToiPct;
-            double pvRestants = joueur.getPourcentagePv() - pire;
-            String sources = pireAttaqueNom != null
-                ? (residuelToiPct > 0 ? pireAttaqueNom + " + résiduel" : pireAttaqueNom)
-                : "résiduel";
-            String lignePire = pvRestants <= 0
-                ? String.format("Pire cas : -%.0f%% (%s) → KO possible !", pire, sources)
-                : String.format("Pire cas : -%.0f%% (%s) → survis à ~%.0f%%", pire, sources, pvRestants);
-            context.drawText(client.textRenderer, Text.literal(lignePire), x, y,
-                pvRestants <= 0 ? COULEUR_KO : (pvRestants <= 15 ? 0xFFAA00 : COULEUR_TEXTE), true);
             y += hauteurLigne;
         }
 
