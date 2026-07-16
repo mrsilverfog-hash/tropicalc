@@ -304,13 +304,8 @@ public final class CalcOverlay implements HudRenderCallback {
     }
 
     private static int vitesseEffective(Pokemon p) {
-        double v = p.getStatCalculee(Stat.VITESSE);
-        int stage = p.getStage(Stat.VITESSE);
-        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
-        else v = v * 2.0 / (2.0 - stage);
-        if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
-        if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
-        return (int) Math.floor(v);
+        return (int) DamageCalculator.vitesseEnCombat(p,
+            FieldTracker.construireField().getMeteo());
     }
 
     private com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {

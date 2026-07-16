@@ -236,14 +236,27 @@ public final class SwitchOverlayRenderer {
     }
 
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {
-        double v = p.getStatCalculee(Stat.VITESSE);
         if (appliquerStages) {
-            int stage = p.getStage(Stat.VITESSE);
-            if (stage >= 0) v = v * (2.0 + stage) / 2.0;
-            else v = v * 2.0 / (2.0 - stage);
+            return (int) DamageCalculator.vitesseEnCombat(p,
+                FieldTracker.construireField().getMeteo());
         }
-        if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
-        if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        // Sans stages (candidat qui rentre) : vitesse de base + objet + statut + météo
+        Pokemon copie = p;
+        double v = copie.getStatCalculee(Stat.VITESSE);
+        if ("Écharpe Choix".equals(copie.getObjet())) v *= 1.5;
+        String talent = copie.getTalent();
+        var meteo = FieldTracker.construireField().getMeteo();
+        boolean soleil = meteo == com.tropimon.tropicalc.calc.Field.Meteo.SOLEIL
+            || meteo == com.tropimon.tropicalc.calc.Field.Meteo.SOLEIL_INTENSE;
+        boolean pluie = meteo == com.tropimon.tropicalc.calc.Field.Meteo.PLUIE
+            || meteo == com.tropimon.tropicalc.calc.Field.Meteo.PLUIE_INTENSE;
+        if (("Chlorophylle".equals(talent) && soleil)
+            || ("Glissade".equals(talent) && pluie)
+            || ("Baigne Sable".equals(talent) && meteo == com.tropimon.tropicalc.calc.Field.Meteo.SABLE)
+            || ("Chasse-Neige".equals(talent) && meteo == com.tropimon.tropicalc.calc.Field.Meteo.NEIGE)) {
+            v *= 2.0;
+        }
+        if (copie.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
         return (int) Math.floor(v);
     }
 

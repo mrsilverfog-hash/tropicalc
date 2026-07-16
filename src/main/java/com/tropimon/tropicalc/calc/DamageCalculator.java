@@ -89,7 +89,7 @@ public class DamageCalculator {
         // Puissance effective : gère Sabotage, Gyroball, Boule Élek, Châtiment,
         // Façade, Balayage, Nœud Herbe, Tacle Lourd, Tacle Feu.
         // Doit être calculée AVANT les stats : Façade pose ignorerPenaliteBrulure.
-        int puissance = puissanceEffective(capacite, attaquant, defenseur, ctx);
+        int puissance = puissanceEffective(capacite, attaquant, defenseur, ctx, terrain.getMeteo());
         if (puissance <= 0) {
             return Resultat.sansDegats();
         }
@@ -272,7 +272,7 @@ public class DamageCalculator {
      * Showdown : sans ce calcul, elles affichaient zéro dégât.
      */
     private static int puissanceEffective(Move capacite, Pokemon attaquant, Pokemon defenseur,
-                                           ModifierContext ctx) {
+                                           ModifierContext ctx, Field.Meteo meteo) {
         int puissance = capacite.getPuissanceDeBase();
         String nom = capacite.getNom();
         if (nom == null) return puissance;
@@ -297,15 +297,15 @@ public class DamageCalculator {
             }
             case "gyroball" -> {
                 // Gyroball : 25 x Vit. défenseur / Vit. attaquant + 1, max 150
-                double vitAtt = Math.max(1, vitesseEffective(attaquant));
-                double vitDef = vitesseEffective(defenseur);
+                double vitAtt = Math.max(1, vitesseEnCombat(attaquant, meteo));
+                double vitDef = vitesseEnCombat(defenseur, meteo);
                 puissance = (int) Math.min(150, Math.floor(25.0 * vitDef / vitAtt) + 1);
                 puissance = Math.max(1, puissance);
             }
             case "electroball" -> {
                 // Boule Élek : paliers selon le ratio Vit. attaquant / Vit. défenseur
-                double vitAtt = vitesseEffective(attaquant);
-                double vitDef = Math.max(1, vitesseEffective(defenseur));
+                double vitAtt = vitesseEnCombat(attaquant, meteo);
+                double vitDef = Math.max(1, vitesseEnCombat(defenseur, meteo));
                 double ratio = vitAtt / vitDef;
                 if (ratio >= 4) puissance = 150;
                 else if (ratio >= 3) puissance = 120;
@@ -388,13 +388,23 @@ public class DamageCalculator {
         return puissance;
     }
 
-    /** Vitesse en combat : stages, Écharpe Choix, paralysie. */
-    private static double vitesseEffective(Pokemon p) {
+    /** Vitesse en combat : stages, Écharpe Choix, paralysie, talents météo. */
+    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo) {
         double v = p.getStatCalculee(Stat.VITESSE);
         int stage = p.getStage(Stat.VITESSE);
         if (stage >= 0) v = v * (2.0 + stage) / 2.0;
         else v = v * 2.0 / (2.0 - stage);
         if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
+        // Talents doublant la vitesse sous leur météo
+        String talent = p.getTalent();
+        boolean soleil = meteo == Field.Meteo.SOLEIL || meteo == Field.Meteo.SOLEIL_INTENSE;
+        boolean pluie = meteo == Field.Meteo.PLUIE || meteo == Field.Meteo.PLUIE_INTENSE;
+        if (("Chlorophylle".equals(talent) && soleil)
+            || ("Glissade".equals(talent) && pluie)
+            || ("Baigne Sable".equals(talent) && meteo == Field.Meteo.SABLE)
+            || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)) {
+            v *= 2.0;
+        }
         if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
         return Math.floor(v);
     }
