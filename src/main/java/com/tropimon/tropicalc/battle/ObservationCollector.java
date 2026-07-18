@@ -16,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -453,6 +454,9 @@ public final class ObservationCollector {
             return;
         }
 
+        ADVERSAIRES_VUS.put(adv.getEspece(),
+            new double[]{adv.getPourcentagePv(), adv.getStatut().ordinal()});
+
         double remontee = pvNow - pvPlancherAdv;
         if (remontee >= 4.5 && remontee <= 8.0
                 && adv.getStatut() != Pokemon.Statut.POISON
@@ -549,6 +553,14 @@ public final class ObservationCollector {
     private static boolean joueurVampigraine = false;
     private static String especeJoueurSuivie = null;
 
+    // Adversaires vus ce combat : espèce -> {pv%, ordinal statut}, ordre d'apparition
+    private static final Map<String, double[]> ADVERSAIRES_VUS = new LinkedHashMap<>();
+
+    /** Vue ordonnée (espèce -> {pv%, ordinal Statut}) des Pokémon adverses aperçus. */
+    public static Map<String, double[]> getAdversairesVus() {
+        return ADVERSAIRES_VUS;
+    }
+
     // Scouting inter-combats et états stratégiques
     private static String nomAdversaireCourant = null;
     private static String coupVerrouAdversaire = null;   // dernier coup depuis son entrée
@@ -613,6 +625,7 @@ public final class ObservationCollector {
         coupVerrouAdversaire = null;
         compteurAbrisAdversaire = 0;
         ESPECES_SCOUT_FUSIONNEES.clear();
+        ADVERSAIRES_VUS.clear();
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();

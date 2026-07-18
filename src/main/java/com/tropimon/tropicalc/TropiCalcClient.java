@@ -15,6 +15,7 @@ public class TropiCalcClient implements ClientModInitializer {
     public void onInitializeClient() {
         SmogonDataLoader.charger();
         HudRenderCallback.EVENT.register(new CalcOverlay());
+        com.tropimon.tropicalc.pvp.PvpOverlay.INSTANCE.register();
         LOGGER.info("TropiCalc chargé - moteur de calcul de dégâts (format Simple uniquement)");
     }
 }
