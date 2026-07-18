@@ -75,7 +75,7 @@ object PvpDetector {
 
             tickCounter    = 0
             alreadyScanned = false
-            HunterBoard.LOGGER.info("[PvP] Screen detected: \"$title\"")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Screen detected: \"$title\"")
 
             ScreenEvents.afterTick(screen).register afterTick@{ scr ->
                 if (scr !is HandledScreen<*>) return@afterTick
@@ -86,7 +86,7 @@ object PvpDetector {
                 }
             }
         }
-        HunterBoard.LOGGER.info("[PvP] Detector registered")
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Detector registered")
     }
 
     private fun scanScreen(screen: HandledScreen<*>, ranked: Boolean) {
@@ -120,10 +120,10 @@ object PvpDetector {
                 pvpSessionActive = true
             }
 
-            HunterBoard.LOGGER.info("[PvP] Player   (${detectedPlayer.size}): ${detectedPlayer.map { it.speciesId }}")
-            HunterBoard.LOGGER.info("[PvP] Opponent (${detectedOpponent.size}): ${detectedOpponent.map { it.speciesId }}")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Player   (${detectedPlayer.size}): ${detectedPlayer.map { it.speciesId }}")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Opponent (${detectedOpponent.size}): ${detectedOpponent.map { it.speciesId }}")
         } catch (e: Exception) {
-            HunterBoard.LOGGER.warn("[PvP] Scan error: ${e.message}", e)
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.warn("[PvP] Scan error: ${e.message}", e)
         }
     }
 
@@ -157,7 +157,7 @@ object PvpDetector {
         val pokemonName = DISPLAY_REGEX.find(rawName)?.groupValues?.get(1)?.trim()
             ?: rawName.ifEmpty { return null }
         val speciesId   = resolveSpeciesId(pokemonName) ?: run {
-            HunterBoard.LOGGER.warn("[PvP] Unresolved species from name: \"$pokemonName\"")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.warn("[PvP] Unresolved species from name: \"$pokemonName\"")
             return null
         }
         return PvpPokemon(speciesId)
@@ -191,7 +191,7 @@ object PvpDetector {
 
             return PvpPokemon(species.resourceIdentifier.path, aspects)
         } catch (e: Exception) {
-            HunterBoard.LOGGER.debug("[PvP] Component parse error: ${e.message}")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.debug("[PvP] Component parse error: ${e.message}")
             return null
         }
     }
@@ -203,7 +203,7 @@ object PvpDetector {
             pokemonItemComponentType = net.minecraft.registry.Registries.DATA_COMPONENT_TYPE
                 .get(Identifier.of("cobblemon", "pokemon_item"))
             if (pokemonItemComponentType == null) {
-                HunterBoard.LOGGER.warn("[PvP] cobblemon:pokemon_item component type not found in registry")
+                com.tropimon.tropicalc.TropiCalcClient.LOGGER.warn("[PvP] cobblemon:pokemon_item component type not found in registry")
             }
         }
         return pokemonItemComponentType

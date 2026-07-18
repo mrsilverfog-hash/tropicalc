@@ -128,7 +128,7 @@ object SpriteHelper {
         }
 
         // Fallback: base form sprite
-        HunterBoard.LOGGER.debug("[SpriteHelper] Form '$formName' not found, using base sprite")
+        com.tropimon.tropicalc.TropiCalcClient.LOGGER.debug("[SpriteHelper] Form '$formName' not found, using base sprite")
         downloadBaseSprite(key, speciesName)
     }
 
