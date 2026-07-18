@@ -2,7 +2,6 @@ package com.tropimon.tropicalc;
 
 import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.client.CalcOverlay;
-import com.tropimon.tropicalc.debug.RankedSniffer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ public class TropiCalcClient implements ClientModInitializer {
     public void onInitializeClient() {
         SmogonDataLoader.charger();
         HudRenderCallback.EVENT.register(new CalcOverlay());
-        RankedSniffer.register();
         LOGGER.info("TropiCalc chargé - moteur de calcul de dégâts (format Simple uniquement)");
     }
 }
