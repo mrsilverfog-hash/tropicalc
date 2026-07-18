@@ -118,6 +118,11 @@ object BattleTracker {
 
             playerTeam = playerActor?.let { buildOwnTeam(it) } ?: emptyList()
 
+            opponentIsPlayerFlag = opponentActors.any { a ->
+                try { MinecraftClient.getInstance().world?.getPlayerByUuid(a.uuid) != null }
+                catch (_: Exception) { false }
+            }
+
             for (actor in opponentActors) {
                 for (active in actor.activePokemon) {
                     val bp  = active.battlePokemon ?: continue
@@ -134,7 +139,12 @@ object BattleTracker {
         } catch (_: Exception) {}
     }
 
+    // Vrai si l'acteur adverse est un joueur chargé dans le monde (combat PvP)
+    var opponentIsPlayerFlag = false; private set
+    fun opponentIsPlayer(): Boolean = opponentIsPlayerFlag
+
     fun clearState() {
+        opponentIsPlayerFlag = false
         playerTeam   = emptyList()
         opponentTeam = emptyList()
         opponentHpMap.clear()
@@ -226,7 +236,24 @@ object BattleTracker {
 
     private fun buildOpponentTeam(): List<TrackedMon> {
         val base = PvpDetector.opponentTeam
-        if (base.isEmpty()) return emptyList()
+        if (base.isEmpty()) {
+            // Repli sans preview : construire depuis les espèces vues en combat
+            return opponentHpMap.keys.map { key ->
+                TrackedMon(
+                    speciesId   = key,
+                    aspects     = emptySet(),
+                    hpPercent   = opponentHpMap[key] ?: 1f,
+                    isFainted   = opponentFainted[key] ?: false,
+                    statusKey   = opponentStatus[key],
+                    types       = emptyList(),
+                    moves       = emptyList(),
+                    abilityName = null,
+                    abilityDesc = null,
+                    heldItem    = ItemStack.EMPTY,
+                    isOwn       = false
+                )
+            }
+        }
 
         return base.map { pvp ->
             val key       = pvp.speciesId

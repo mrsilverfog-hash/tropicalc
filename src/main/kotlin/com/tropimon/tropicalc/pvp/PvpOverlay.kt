@@ -79,7 +79,10 @@ object PvpOverlay {
             BattleTracker.clearState()
         }
         wasInBattle = inBattle
-        if (!inBattle || !PvpDetector.pvpSessionActive) return
+        if (!inBattle) return
+        // Repli : même sans preview détectée, activer si l'adversaire est un joueur
+        BattleTracker.sync()
+        if (!PvpDetector.pvpSessionActive && !BattleTracker.opponentIsPlayer()) return
 
         // Sync battle state every frame
         BattleTracker.sync()
