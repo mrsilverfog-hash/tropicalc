@@ -529,6 +529,11 @@ public final class ObservationCollector {
         return true;
     }
 
+    /** Objet confirmé par observation pour cette espèce, ou null. */
+    public static String getObjetConfirme(String espece) {
+        return OBJETS_CONFIRMES.get(espece);
+    }
+
     /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */
     public static boolean estObjetConfirme(String espece) {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
