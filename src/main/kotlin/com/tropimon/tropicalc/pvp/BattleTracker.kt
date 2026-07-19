@@ -54,6 +54,7 @@ object BattleTracker {
     private val opponentHpMap   = mutableMapOf<String, Float>()
     private val opponentFainted = mutableMapOf<String, Boolean>()
     private val opponentStatus  = mutableMapOf<String, String?>()
+    private val opponentAspects = mutableMapOf<String, Set<String>>()
 
     // ── Colour tables ─────────────────────────────────────────────────────────
 
@@ -131,6 +132,7 @@ object BattleTracker {
                     opponentHpMap[key]   = hp
                     opponentFainted[key] = hp <= 0f
                     opponentStatus[key]  = try { bp.status?.showdownName } catch (_: Exception) { null }
+                    opponentAspects[key] = try { bp.state.currentAspects } catch (_: Exception) { emptySet() }
                 }
             }
 
@@ -150,6 +152,7 @@ object BattleTracker {
         opponentHpMap.clear()
         opponentFainted.clear()
         opponentStatus.clear()
+        opponentAspects.clear()
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -239,13 +242,14 @@ object BattleTracker {
         if (base.isEmpty()) {
             // Repli sans preview : construire depuis les espèces vues en combat
             return opponentHpMap.keys.map { key ->
+                val aspectsVus = opponentAspects[key] ?: emptySet()
                 TrackedMon(
                     speciesId   = key,
-                    aspects     = emptySet(),
+                    aspects     = aspectsVus,
                     hpPercent   = opponentHpMap[key] ?: 1f,
                     isFainted   = opponentFainted[key] ?: false,
                     statusKey   = opponentStatus[key],
-                    types       = emptyList(),
+                    types       = resolveTypes(key, aspectsVus),
                     moves       = emptyList(),
                     abilityName = null,
                     abilityDesc = null,
