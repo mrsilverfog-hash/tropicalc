@@ -119,10 +119,33 @@ object PvpDetector {
 
             // Classification : soustraire mon équipe connue (multiset d'espèces) ;
             // le reste est l'équipe adverse. Plus robuste que des colonnes fixes.
-            val maPartie = try {
-                CobblemonClient.storage.myParty
-                    .mapNotNull { it?.species?.resourceIdentifier?.path }
-                    .toMutableList()
+            val maPartie: MutableList<String> = try {
+                // 1) En combat : l'acteur de bataille (API typée, prouvée)
+                com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeJoueur()
+                    ?.mapNotNull { it?.species?.resourceIdentifier?.path }
+                    ?.toMutableList()
+                // 2) Hors combat (preview) : partie client par réflexion,
+                //    tolérante aux différences d'API entre versions Cobblemon
+                    ?: run {
+                        val storage = CobblemonClient.storage
+                        val party = storage.javaClass.methods
+                            .firstOrNull { it.name == "getMyParty" || it.name == "getParty" }
+                            ?.invoke(storage)
+                        val slots = party?.javaClass?.methods
+                            ?.firstOrNull { it.name == "getSlots" }?.invoke(party) as? List<*>
+                            ?: (party as? Iterable<*>)?.toList()
+                            ?: emptyList<Any?>()
+                        slots.mapNotNull { pk ->
+                            if (pk == null) return@mapNotNull null
+                            try {
+                                val sp = pk.javaClass.methods.firstOrNull { it.name == "getSpecies" }?.invoke(pk)
+                                val rid = sp?.javaClass?.methods
+                                    ?.firstOrNull { it.name == "getResourceIdentifier" }?.invoke(sp)
+                                rid?.javaClass?.methods?.firstOrNull { it.name == "getPath" }
+                                    ?.invoke(rid) as? String
+                            } catch (_: Exception) { null }
+                        }.toMutableList()
+                    }
             } catch (_: Exception) { mutableListOf() }
 
             val moi = mutableListOf<PvpPokemon>()
