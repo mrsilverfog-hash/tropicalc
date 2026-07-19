@@ -1,9 +1,9 @@
-// Adapté de TropiHunterBoard (https://github.com/PiikaPops/TropiHunterBoard)
-// Copyright (c) PiikaPops — Licence MIT. Intégré dans TropiCalc avec attribution.
+// Copie fidèle de TropiHunterBoard 1.3.8 (commit 3bd121b)
+// https://github.com/PiikaPops/TropiHunterBoard — Copyright (c) PiikaPops, Licence MIT.
+// Seules modifications : package, logger, enregistrement dans TropiCalcClient.
 package com.tropimon.tropicalc.pvp
 
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
-import com.cobblemon.mod.common.client.CobblemonClient
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.item.ItemStack
@@ -68,139 +68,82 @@ object PvpDetector {
                                           || title.contains(CHALLENGE_DOUBLE_TITLE, ignoreCase = true)
     private fun isRanked(title: String)    = title.contains(RANKED_TITLE, ignoreCase = true)
 
-    // Ticks de rescan : les serveurs remplissent parfois les slots en retard
-    private val TICKS_SCAN = setOf(3, 10, 20, 40)
-
     fun register() {
         ScreenEvents.AFTER_INIT.register afterInit@{ _, screen, _, _ ->
             if (screen !is HandledScreen<*>) return@afterInit
             val title = screen.title.string
+            if (!isChallenge(title) && !isRanked(title)) return@afterInit
 
-            tickCounter = 0
-            var opposantTrouve = false
+            tickCounter    = 0
+            alreadyScanned = false
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Screen detected: \"$title\"")
 
             ScreenEvents.afterTick(screen).register afterTick@{ scr ->
-                if (scr !is HandledScreen<*> || opposantTrouve) return@afterTick
+                if (scr !is HandledScreen<*>) return@afterTick
                 tickCounter++
-                if (tickCounter in TICKS_SCAN) {
-                    scanScreen(scr, isRanked(title), title)
-                    if (opponentTeam.isNotEmpty()) opposantTrouve = true
+                if (tickCounter == 3 && !alreadyScanned) {
+                    alreadyScanned = true
+                    scanScreen(scr, isRanked(title))
                 }
             }
         }
         com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Detector registered")
     }
 
-    private fun scanScreen(screen: HandledScreen<*>, ranked: Boolean, title: String) {
+    private fun scanScreen(screen: HandledScreen<*>, ranked: Boolean) {
         if (!ModConfig.pvpOverlayEnabled) return
         try {
             val handler       = screen.screenHandler
             val slots         = handler.slots
             val containerSize = (slots.size - 36).coerceAtLeast(0)
-            if (containerSize < 27) return  // pas un grand conteneur : ignorer
+            if (containerSize == 0) return
 
-            // Scan de TOUS les slots du conteneur (layout-agnostique)
-            data class Entree(val slotId: Int, val mon: PvpPokemon)
-            val entrees = mutableListOf<Entree>()
-            for (slot in slots) {
-                if (slot.id >= containerSize) continue
-                val stack = slot.stack
-                if (stack.isEmpty) continue
-                val entry = extractPvpPokemon(stack) ?: continue
-                entrees.add(Entree(slot.id, entry))
+            // Ranked layout (54-slot chest, 6×9):
+            //   Player   : cols 1-2, rows 2-4 (skip header row 0 + player-head row 1)
+            //   Opponent : cols 6-7, rows 2-4
+            val playerSlots = if (ranked)
+                slots.filter { it.id < containerSize && it.id >= 18 && it.id < 45 && (it.id % 9 == 1 || it.id % 9 == 2) }
+            else
+                slots.filter { it.id < containerSize && it.id % 9 == 0 }
+
+            val opponentSlots = if (ranked)
+                slots.filter { it.id < containerSize && it.id >= 18 && it.id < 45 && (it.id % 9 == 6 || it.id % 9 == 7) }
+            else
+                slots.filter { it.id < containerSize && it.id % 9 == 8 }
+
+            val detectedPlayer   = scanColumn(playerSlots)
+            val detectedOpponent = scanColumn(opponentSlots)
+
+            playerTeam.clear();   playerTeam.addAll(detectedPlayer)
+            opponentTeam.clear(); opponentTeam.addAll(detectedOpponent)
+
+            if (detectedPlayer.isNotEmpty() || detectedOpponent.isNotEmpty()) {
+                pvpSessionActive = true
             }
 
-            // Heuristique preview : au moins 4 Pokémon identifiés dans le conteneur
-            // (évite de se déclencher sur un coffre Lootr ou un PC)
-            if (entrees.size < 4) {
-                dumpDebug(title, screen, containerSize, entrees.map { it.slotId to it.mon.speciesId })
-                return
-            }
-
-            // Classification : soustraire mon équipe connue (multiset d'espèces) ;
-            // le reste est l'équipe adverse. Plus robuste que des colonnes fixes.
-            val maPartie: MutableList<String> = try {
-                // 1) En combat : l'acteur de bataille (API typée, prouvée)
-                com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeJoueur()
-                    ?.mapNotNull { it?.species?.resourceIdentifier?.path }
-                    ?.toMutableList()
-                // 2) Hors combat (preview) : partie client par réflexion,
-                //    tolérante aux différences d'API entre versions Cobblemon
-                    ?: run {
-                        val storage = CobblemonClient.storage
-                        val party = storage.javaClass.methods
-                            .firstOrNull { it.name == "getMyParty" || it.name == "getParty" }
-                            ?.invoke(storage)
-                        val slots = party?.javaClass?.methods
-                            ?.firstOrNull { it.name == "getSlots" }?.invoke(party) as? List<*>
-                            ?: (party as? Iterable<*>)?.toList()
-                            ?: emptyList<Any?>()
-                        slots.mapNotNull { pk ->
-                            if (pk == null) return@mapNotNull null
-                            try {
-                                val sp = pk.javaClass.methods.firstOrNull { it.name == "getSpecies" }?.invoke(pk)
-                                val rid = sp?.javaClass?.methods
-                                    ?.firstOrNull { it.name == "getResourceIdentifier" }?.invoke(sp)
-                                rid?.javaClass?.methods?.firstOrNull { it.name == "getPath" }
-                                    ?.invoke(rid) as? String
-                            } catch (_: Exception) { null }
-                        }.toMutableList()
-                    }
-            } catch (_: Exception) { mutableListOf() }
-
-            val moi = mutableListOf<PvpPokemon>()
-            val eux = mutableListOf<PvpPokemon>()
-            if (maPartie.isNotEmpty()) {
-                for (e in entrees) {
-                    if (maPartie.remove(e.mon.speciesId)) moi.add(e.mon) else eux.add(e.mon)
-                }
-            } else {
-                // Repli sans partie connue : ancienne heuristique de colonnes
-                for (e in entrees) {
-                    val col = e.slotId % 9
-                    if (col <= 3) moi.add(e.mon) else eux.add(e.mon)
-                }
-            }
-
-            playerTeam.clear();   playerTeam.addAll(moi.take(6))
-            opponentTeam.clear(); opponentTeam.addAll(eux.take(6))
-
-            if (opponentTeam.isNotEmpty()) pvpSessionActive = true
-
-            dumpDebug(title, screen, containerSize, entrees.map { it.slotId to it.mon.speciesId })
-            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info(
-                "[PvP] \"$title\" -> moi(${moi.size})=${moi.map { it.speciesId }} | adverse(${eux.size})=${eux.map { it.speciesId }}")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Player   (${detectedPlayer.size}): ${detectedPlayer.map { it.speciesId }}")
+            com.tropimon.tropicalc.TropiCalcClient.LOGGER.info("[PvP] Opponent (${detectedOpponent.size}): ${detectedOpponent.map { it.speciesId }}")
         } catch (e: Exception) {
             com.tropimon.tropicalc.TropiCalcClient.LOGGER.warn("[PvP] Scan error: ${e.message}", e)
         }
     }
 
-    /** Dump de diagnostic : contenu du conteneur dans config/tropicalc-preview-debug.txt */
-    private fun dumpDebug(title: String, screen: HandledScreen<*>, containerSize: Int,
-                          identifies: List<Pair<Int, String>>) {
-        try {
-            val f = net.fabricmc.loader.api.FabricLoader.getInstance()
-                .configDir.resolve("tropicalc-preview-debug.txt")
-            val sb = StringBuilder()
-            sb.append("=== ").append(java.time.LocalDateTime.now()).append(" ===\n")
-            sb.append("Titre: \"").append(title).append("\" | taille: ").append(containerSize).append("\n")
-            for (slot in screen.screenHandler.slots) {
-                if (slot.id >= containerSize) continue
-                val st = slot.stack
-                if (st.isEmpty) continue
-                val itemId = net.minecraft.registry.Registries.ITEM.getId(st.item)
-                sb.append("slot ").append(slot.id).append(" | ").append(itemId)
-                    .append(" | \"").append(st.name.string).append("\"\n")
-            }
-            sb.append("Identifiés: ").append(identifies).append("\n\n")
-            java.nio.file.Files.writeString(f, sb.toString(),
-                java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND)
-        } catch (_: Exception) {}
-    }
-
     // -------------------------------------------------------------------------
     // Column scanner
     // -------------------------------------------------------------------------
+
+    private fun scanColumn(slots: List<net.minecraft.screen.slot.Slot>): List<PvpPokemon> {
+        val result = mutableListOf<PvpPokemon>()
+        for (slot in slots) {
+            val stack = slot.stack
+            if (stack.isEmpty) continue
+            val itemId = net.minecraft.registry.Registries.ITEM.getId(stack.item).toString()
+            if (itemId != "cobblemon:pokemon_model") continue
+            val entry = extractPvpPokemon(stack) ?: continue
+            result.add(entry)
+        }
+        return result
+    }
 
     // -------------------------------------------------------------------------
     // Extraction

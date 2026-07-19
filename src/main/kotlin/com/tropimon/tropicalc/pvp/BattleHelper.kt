@@ -1,5 +1,6 @@
-// Adapté de TropiHunterBoard (https://github.com/PiikaPops/TropiHunterBoard)
-// Copyright (c) PiikaPops — Licence MIT. Intégré dans TropiCalc avec attribution.
+// Copie fidèle de TropiHunterBoard 1.3.8 (commit 3bd121b)
+// https://github.com/PiikaPops/TropiHunterBoard — Copyright (c) PiikaPops, Licence MIT.
+// Seules modifications : package, logger, enregistrement dans TropiCalcClient.
 package com.tropimon.tropicalc.pvp
 
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies

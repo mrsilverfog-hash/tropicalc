@@ -1,5 +1,6 @@
-// Adapté de TropiHunterBoard (https://github.com/PiikaPops/TropiHunterBoard)
-// Copyright (c) PiikaPops — Licence MIT. Intégré dans TropiCalc avec attribution.
+// Copie fidèle de TropiHunterBoard 1.3.8 (commit 3bd121b)
+// https://github.com/PiikaPops/TropiHunterBoard — Copyright (c) PiikaPops, Licence MIT.
+// Seules modifications : package, logger, enregistrement dans TropiCalcClient.
 package com.tropimon.tropicalc.pvp
 
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
@@ -54,7 +55,6 @@ object BattleTracker {
     private val opponentHpMap   = mutableMapOf<String, Float>()
     private val opponentFainted = mutableMapOf<String, Boolean>()
     private val opponentStatus  = mutableMapOf<String, String?>()
-    private val opponentAspects = mutableMapOf<String, Set<String>>()
 
     // ── Colour tables ─────────────────────────────────────────────────────────
 
@@ -119,20 +119,14 @@ object BattleTracker {
 
             playerTeam = playerActor?.let { buildOwnTeam(it) } ?: emptyList()
 
-            opponentIsPlayerFlag = opponentActors.any { a ->
-                try { MinecraftClient.getInstance().world?.getPlayerByUuid(a.uuid) != null }
-                catch (_: Exception) { false }
-            }
-
             for (actor in opponentActors) {
                 for (active in actor.activePokemon) {
                     val bp  = active.battlePokemon ?: continue
-                    val key = canonicalKey(bp.properties.species ?: continue)
+                    val key = bp.properties.species?.lowercase() ?: continue
                     val hp  = calcHpPercent(bp)
                     opponentHpMap[key]   = hp
                     opponentFainted[key] = hp <= 0f
                     opponentStatus[key]  = try { bp.status?.showdownName } catch (_: Exception) { null }
-                    opponentAspects[key] = try { bp.state.currentAspects } catch (_: Exception) { emptySet() }
                 }
             }
 
@@ -141,18 +135,12 @@ object BattleTracker {
         } catch (_: Exception) {}
     }
 
-    // Vrai si l'acteur adverse est un joueur chargé dans le monde (combat PvP)
-    var opponentIsPlayerFlag = false; private set
-    fun opponentIsPlayer(): Boolean = opponentIsPlayerFlag
-
     fun clearState() {
-        opponentIsPlayerFlag = false
         playerTeam   = emptyList()
         opponentTeam = emptyList()
         opponentHpMap.clear()
         opponentFainted.clear()
         opponentStatus.clear()
-        opponentAspects.clear()
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -239,34 +227,10 @@ object BattleTracker {
 
     private fun buildOpponentTeam(): List<TrackedMon> {
         val base = PvpDetector.opponentTeam
-        if (base.isEmpty()) {
-            // Repli sans preview : construire depuis les espèces vues en combat
-            val vus = opponentHpMap.keys.take(6).map { key ->
-                val aspectsVus = opponentAspects[key] ?: emptySet()
-                TrackedMon(
-                    speciesId   = key,
-                    aspects     = aspectsVus,
-                    hpPercent   = opponentHpMap[key] ?: 1f,
-                    isFainted   = opponentFainted[key] ?: false,
-                    statusKey   = opponentStatus[key],
-                    types       = resolveTypes(key, aspectsVus),
-                    moves       = emptyList(),
-                    abilityName = null,
-                    abilityDesc = null,
-                    heldItem    = ItemStack.EMPTY,
-                    isOwn       = false
-                )
-            }
-            // Compléter à 6 cases : les slots pas encore vus s'affichent en "?"
-            val inconnues = (vus.size until 6).map {
-                TrackedMon("", emptySet(), 1f, false, null,
-                    emptyList(), emptyList(), null, null, ItemStack.EMPTY, isOwn = false)
-            }
-            return vus + inconnues
-        }
+        if (base.isEmpty()) return emptyList()
 
-        return base.distinctBy { canonicalKey(it.speciesId) }.map { pvp ->
-            val key       = canonicalKey(pvp.speciesId)
+        return base.map { pvp ->
+            val key       = pvp.speciesId
             val hpPercent = opponentHpMap[key] ?: 1f
             val isFainted = opponentFainted[key] ?: false
             val statusKey = opponentStatus[key]
@@ -280,12 +244,6 @@ object BattleTracker {
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
-
-    /** Clé d'espèce canonique : deux variantes de nom (majuscules, suffixes de
-     *  forme, ids showdown) pointant vers la même espèce fusionnent. */
-    private fun canonicalKey(raw: String): String = try {
-        PokemonSpecies.getByName(raw.lowercase())?.resourceIdentifier?.path ?: raw.lowercase()
-    } catch (_: Exception) { raw.lowercase() }
 
     private fun resolveTypes(speciesId: String, aspects: Set<String>): List<String> {
         return try {
