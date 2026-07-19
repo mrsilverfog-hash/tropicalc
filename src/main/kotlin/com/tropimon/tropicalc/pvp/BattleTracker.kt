@@ -127,7 +127,7 @@ object BattleTracker {
             for (actor in opponentActors) {
                 for (active in actor.activePokemon) {
                     val bp  = active.battlePokemon ?: continue
-                    val key = bp.properties.species?.lowercase() ?: continue
+                    val key = canonicalKey(bp.properties.species ?: continue)
                     val hp  = calcHpPercent(bp)
                     opponentHpMap[key]   = hp
                     opponentFainted[key] = hp <= 0f
@@ -241,7 +241,7 @@ object BattleTracker {
         val base = PvpDetector.opponentTeam
         if (base.isEmpty()) {
             // Repli sans preview : construire depuis les espèces vues en combat
-            return opponentHpMap.keys.map { key ->
+            val vus = opponentHpMap.keys.take(6).map { key ->
                 val aspectsVus = opponentAspects[key] ?: emptySet()
                 TrackedMon(
                     speciesId   = key,
@@ -257,10 +257,16 @@ object BattleTracker {
                     isOwn       = false
                 )
             }
+            // Compléter à 6 cases : les slots pas encore vus s'affichent en "?"
+            val inconnues = (vus.size until 6).map {
+                TrackedMon("", emptySet(), 1f, false, null,
+                    emptyList(), emptyList(), null, null, ItemStack.EMPTY, isOwn = false)
+            }
+            return vus + inconnues
         }
 
-        return base.map { pvp ->
-            val key       = pvp.speciesId
+        return base.distinctBy { canonicalKey(it.speciesId) }.map { pvp ->
+            val key       = canonicalKey(pvp.speciesId)
             val hpPercent = opponentHpMap[key] ?: 1f
             val isFainted = opponentFainted[key] ?: false
             val statusKey = opponentStatus[key]
@@ -274,6 +280,12 @@ object BattleTracker {
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
+
+    /** Clé d'espèce canonique : deux variantes de nom (majuscules, suffixes de
+     *  forme, ids showdown) pointant vers la même espèce fusionnent. */
+    private fun canonicalKey(raw: String): String = try {
+        PokemonSpecies.getByName(raw.lowercase())?.resourceIdentifier?.path ?: raw.lowercase()
+    } catch (_: Exception) { raw.lowercase() }
 
     private fun resolveTypes(speciesId: String, aspects: Set<String>): List<String> {
         return try {

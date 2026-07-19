@@ -195,7 +195,12 @@ object PvpOverlay {
 
             if (mon.isFainted) RenderSystem.setShaderColor(0.35f, 0.35f, 0.35f, 0.6f)
 
-            if (spriteId != null) {
+            if (mon.speciesId.isEmpty()) {
+                // Slot adverse pas encore vu : point d'interrogation centré
+                val tr = MinecraftClient.getInstance().textRenderer
+                context.drawText(tr, "?", ix + ICON / 2 - tr.getWidth("?") / 2,
+                    iy + ICON / 2 - tr.fontHeight / 2, 0xFF666666.toInt(), false)
+            } else if (spriteId != null) {
                 context.drawTexture(spriteId, ix, iy, 0f, 0f, ICON, ICON, ICON, ICON)
             } else {
                 val alpha = if (mon.isFainted) 0x22000000.toInt() else 0x33000000.toInt()
@@ -252,7 +257,8 @@ object PvpOverlay {
             }
 
             // ── Hover detection ──
-            if (mx >= ix && mx <= ix + ICON && my >= iy && my <= iy + ICON) {
+            if (mon.speciesId.isNotEmpty()
+                && mx >= ix && mx <= ix + ICON && my >= iy && my <= iy + ICON) {
                 tooltipMon      = mon
                 tooltipIsOwn    = mon.isOwn
                 // Anchor tooltip to the right of the panel; if it's the last column go left
