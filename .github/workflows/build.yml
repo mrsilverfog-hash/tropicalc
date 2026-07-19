@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +27,18 @@ jobs:
 
       - name: Build
         run: ./gradlew build 2>&1 | tee build-output.log; exit ${PIPESTATUS[0]}
+        shell: bash
+
+      - name: Pousser le log en cas d'échec
+        if: failure()
+        run: |
+          git config user.name ci-log
+          git config user.email ci@log
+          git checkout --orphan ci-log
+          git rm -rf --cached . > /dev/null 2>&1 || true
+          git add -f build-output.log
+          git commit -q -m "log de build $GITHUB_SHA"
+          git push -f origin ci-log 2>&1 | tee build-output.log; exit ${PIPESTATUS[0]}
         shell: bash
 
       - name: Publier les erreurs dans le résumé
