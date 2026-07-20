@@ -225,6 +225,13 @@ object PvpOverlay {
             mon.statusKey?.let { key ->
                 val dotColor = BattleTracker.STATUS_COLORS[key] ?: 0xFFAAAAAA.toInt()
                 context.fill(ix, iy, ix + 5, iy + 5, dotColor)
+                // TropiCalc : contour pour les statuts qui rongent (adversaire)
+                if (!mon.isOwn && (key == "psn" || key == "tox" || key == "brn")) {
+                    context.fill(ix, iy, ix + ICON, iy + 1, dotColor)
+                    context.fill(ix, iy + ICON - 1, ix + ICON, iy + ICON, dotColor)
+                    context.fill(ix, iy, ix + 1, iy + ICON, dotColor)
+                    context.fill(ix + ICON - 1, iy, ix + ICON, iy + ICON, dotColor)
+                }
             }
 
             // ── Held item icon (bottom-right corner, scaled to ~10×10) ──
@@ -350,6 +357,46 @@ object PvpOverlay {
             } else {
                 lines += Line("Talent: ?", 0xFF666666.toInt())
             }
+
+            // ── Données TropiCalc (ajout : observation + scouting + PP) ──
+            try {
+                val OC = com.tropimon.tropicalc.battle.ObservationCollector
+                val espece = mon.speciesId
+
+                val objetConfirme  = OC.getObjetConfirme(espece)
+                val talentConfirme = OC.getTalentConfirme(espece)
+                val chip           = OC.aChipTalentConfirme(espece)
+                val scout = com.tropimon.tropicalc.battle.ScoutingStore.get(
+                    OC.getNomAdversaireCourant(), espece)
+                val reveles = OC.getCoupsAdversaireReveles(espece)
+
+                val aQuelqueChose = objetConfirme != null || talentConfirme != null || chip ||
+                    (scout != null && (scout.objet != null || scout.talent != null)) ||
+                    reveles.isNotEmpty()
+
+                if (aQuelqueChose) {
+                    lines += Line("──── TropiCalc ────", 0xFF555555.toInt())
+                    when {
+                        objetConfirme != null -> lines += Line("Objet: $objetConfirme ✓", 0xFFFFDD88.toInt())
+                        scout?.objet != null  -> lines += Line("Objet: ${scout.objet} ?", 0xFFBBA866.toInt())
+                    }
+                    when {
+                        talentConfirme != null -> lines += Line("Talent: $talentConfirme ✓", 0xFFAADDFF.toInt())
+                        chip                   -> lines += Line("Talent: Épine de Fer/Peau Dure ✓", 0xFFAADDFF.toInt())
+                        scout?.talent != null  -> lines += Line("Talent: ${scout.talent} ?", 0xFF7899AA.toInt())
+                    }
+                    for (t in reveles) {
+                        val maxPp = (t.pp * 8) / 5
+                        val restants = (maxPp - OC.getPpUtilises(espece, t.name)).coerceAtLeast(0)
+                        val couleur = when {
+                            restants > maxPp / 2 -> 0xFF88DD88.toInt()
+                            restants > maxPp / 4 -> 0xFFDDDD44.toInt()
+                            else                 -> 0xFFDD4444.toInt()
+                        }
+                        lines += Line("▸ ${t.displayName.string}  PP $restants/$maxPp", couleur)
+                    }
+                }
+            } catch (_: Exception) {}
 
         }
 
