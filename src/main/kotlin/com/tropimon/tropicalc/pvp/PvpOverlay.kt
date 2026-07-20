@@ -360,15 +360,15 @@ object PvpOverlay {
 
             // ── Données TropiCalc (ajout : observation + scouting + PP) ──
             try {
-                val OC = com.tropimon.tropicalc.battle.ObservationCollector
                 val espece = mon.speciesId
 
-                val objetConfirme  = OC.getObjetConfirme(espece)
-                val talentConfirme = OC.getTalentConfirme(espece)
-                val chip           = OC.aChipTalentConfirme(espece)
+                val objetConfirme  = com.tropimon.tropicalc.battle.ObservationCollector.getObjetConfirme(espece)
+                val talentConfirme = com.tropimon.tropicalc.battle.ObservationCollector.getTalentConfirme(espece)
+                val chip           = com.tropimon.tropicalc.battle.ObservationCollector.aChipTalentConfirme(espece)
                 val scout = com.tropimon.tropicalc.battle.ScoutingStore.get(
-                    OC.getNomAdversaireCourant(), espece)
-                val reveles = OC.getCoupsAdversaireReveles(espece)
+                    com.tropimon.tropicalc.battle.ObservationCollector.getNomAdversaireCourant(), espece)
+                val reveles: List<com.cobblemon.mod.common.api.moves.MoveTemplate> =
+                    com.tropimon.tropicalc.battle.ObservationCollector.getCoupsAdversaireReveles(espece)
 
                 val aQuelqueChose = objetConfirme != null || talentConfirme != null || chip ||
                     (scout != null && (scout.objet != null || scout.talent != null)) ||
@@ -387,7 +387,8 @@ object PvpOverlay {
                     }
                     for (t in reveles) {
                         val maxPp = (t.pp * 8) / 5
-                        val restants = (maxPp - OC.getPpUtilises(espece, t.name)).coerceAtLeast(0)
+                        val restants = (maxPp - com.tropimon.tropicalc.battle.ObservationCollector
+                            .getPpUtilises(espece, t.name)).coerceAtLeast(0)
                         val couleur = when {
                             restants > maxPp / 2 -> 0xFF88DD88.toInt()
                             restants > maxPp / 4 -> 0xFFDDDD44.toInt()
