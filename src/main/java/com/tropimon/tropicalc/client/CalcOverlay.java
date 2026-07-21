@@ -30,6 +30,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
     private static final int COULEUR_TEXTE = 0xFFFFFF;
     private static final int COULEUR_KO = 0xFF5555;
+    private static final int COULEUR_MOUCHOIR = 0xFF5599FF;   // bleu : hypothèse Mouchoir Choix
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
@@ -86,9 +87,22 @@ public final class CalcOverlay implements HudRenderCallback {
         String fleche = egalite ? "=" : (joueurPremier ? ">" : "<");
         int couleurVitesse = egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
         String suffixe = distorsion ? " [Distorsion]" : "";
-        context.drawText(client.textRenderer,
-            Text.literal(String.format("Vitesse : %d %s %d%s", vitJoueur, fleche, vitAdversaire, suffixe)),
-            x, y, couleurVitesse, true);
+        String texteVitesse = String.format("Vitesse : %d %s %d%s", vitJoueur, fleche, vitAdversaire, suffixe);
+        context.drawText(client.textRenderer, Text.literal(texteVitesse), x, y, couleurVitesse, true);
+
+        // Hypothèse Mouchoir Choix : sa vitesse x1.5 s'il en tenait un.
+        // Affiché en bleu entre parenthèses tant que ce n'est pas déjà son objet
+        // connu, pour anticiper le pire cas de priorité.
+        String objetAdversaire = adversaire.getObjet();
+        boolean mouchoirDejaPris = "Mouchoir Choix".equals(objetAdversaire)
+            || "Écharpe Choix".equals(objetAdversaire);
+        if (!mouchoirDejaPris) {
+            int vitMouchoir = (int) Math.floor(vitAdversaire * 1.5);
+            String texteMouchoir = String.format(" (%d)", vitMouchoir);
+            int largeur = client.textRenderer.getWidth(texteVitesse);
+            context.drawText(client.textRenderer, Text.literal(texteMouchoir),
+                x + largeur, y, COULEUR_MOUCHOIR, true);
+        }
         y += hauteurLigne;
 
         // Recul par contact : Casque Brut (~17%) + Épine de Fer / Peau Dure (12.5%)
