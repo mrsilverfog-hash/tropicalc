@@ -111,7 +111,10 @@ public final class CalcOverlay implements HudRenderCallback {
             if (r.immunise) {
                 ligne = nom + " : immunisé";
             } else {
-                ligne = String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax);
+                Stat statDef = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                    ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+                String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
+                ligne = String.format("%s : %s%.0f%% - %.0f%%", nom, marqueur, r.pourcentageMin, r.pourcentageMax);
                 if ((casqueBrut || epines)
                         && com.tropimon.tropicalc.calc.ContactMoves.estContact(capacite.getNom())) {
                     int coups = DamageCalculator.nombreDeCoupsMax(capacite, joueur);
@@ -198,8 +201,11 @@ public final class CalcOverlay implements HudRenderCallback {
                     if (r.immunise) {
                         ligne = (estRevele ? "✓ " : "") + nom + " : immunisé" + suffixePp;
                     } else {
-                        ligne = String.format("%s%s : %.0f%% - %.0f%%%s",
-                            estRevele ? "✓ " : "", nom, r.pourcentageMin, r.pourcentageMax, suffixePp);
+                        Stat statAtk = capaciteAdv.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                            ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
+                        String marq = adversaire.estCorrigee(statAtk) ? "~" : "";
+                        ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s",
+                            estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
                     }

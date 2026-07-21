@@ -3,7 +3,9 @@ package com.tropimon.tropicalc.battle;
 import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.api.moves.Moves;
 import com.cobblemon.mod.common.pokemon.Species;
+import com.tropimon.tropicalc.calc.DamageCalculator;
 import com.tropimon.tropicalc.calc.Field;
+import com.tropimon.tropicalc.calc.Move;
 import com.tropimon.tropicalc.calc.Nature;
 import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
@@ -275,11 +277,33 @@ public final class ObservationCollector {
             return new ProfilAdversaire(talentsReels, smogon);
         });
 
-        Field terrainNeutre = new Field();
+        Field terrainNeutre = FieldTracker.construireField();
         double observeMin = Math.max(0, perte - TOLERANCE_POURCENT);
         double observeMax = perte + TOLERANCE_POURCENT;
         profil.enregistrerObservation(adversaireEtaitAttaquant, adversaire, joueur, capacite, terrainNeutre,
             observeMin, observeMax);
+
+        // Correction directe par écart prévu/réel : s'applique immédiatement
+        // à toutes les lignes du HUD, y compris pour tes autres Pokémon.
+        try {
+            if (!capacite.isMultiCoups()) {
+                Pokemon attaquant = adversaireEtaitAttaquant ? construireAdversaireEstime(adversaire) : joueur;
+                Pokemon defenseur = adversaireEtaitAttaquant ? joueur : construireAdversaireEstime(adversaire);
+                DamageCalculator.Resultat prevu = DamageCalculator.calculer(
+                    attaquant, defenseur, capacite, terrainNeutre, null, false);
+                double milieuPrevu = (prevu.pourcentageMin + prevu.pourcentageMax) / 2.0;
+                // Coup critique probable (réel >> prévu max) : ne rien conclure
+                boolean critProbable = perte > prevu.pourcentageMax * 1.4;
+                if (milieuPrevu > 1.0 && !prevu.immunise && !critProbable) {
+                    double ratio = perte / milieuPrevu;
+                    Stat cible = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                        ? (adversaireEtaitAttaquant ? Stat.ATTAQUE : Stat.DEFENSE)
+                        : (adversaireEtaitAttaquant ? Stat.ATTAQUE_SPE : Stat.DEFENSE_SPE);
+                    majFacteur(adversaire.getEspece(), cible, ratio);
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public static Pokemon construireAdversaireEstime(Pokemon adversaireBase) {
@@ -328,7 +352,9 @@ public final class ObservationCollector {
             }
         }
 
-        if (profil != null && profil.getNbObservations() >= 3) {
+        // Une seule observation suffit à corriger : mieux vaut une estimation
+        // calibrée sur le réel qu'un set Smogon démenti par les faits
+        if (profil != null && profil.getNbObservations() >= 1) {
             appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
             appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
             appliquerHypothese(b, Stat.DEFENSE, profil.defense);
@@ -371,6 +397,22 @@ public final class ObservationCollector {
 
         if (objetRetire) {
             b.objet(null);
+        }
+
+        // Correction par observation : applique les facteurs mesurés sur les
+        // stats défensives/offensives (ratio réel/prévu des coups passés).
+        Map<Stat, Double> facteurs = FACTEURS.get(espece);
+        if (facteurs != null && !facteurs.isEmpty()) {
+            for (Map.Entry<Stat, Double> e : facteurs.entrySet()) {
+                double f = e.getValue();
+                if (Math.abs(f - 1.0) < 0.12) continue;   // écart dans le bruit : ignorer
+                Stat st = e.getKey();
+                // Dégâts subis plus forts que prévu => son Attaque est plus haute (x f)
+                // Dégâts infligés plus faibles que prévu => sa Défense est plus haute (/ f)
+                boolean offensive = (st == Stat.ATTAQUE || st == Stat.ATTAQUE_SPE);
+                double mult = offensive ? f : 1.0 / f;
+                b.multiplicateurStat(st, mult);
+            }
         }
 
         Pokemon p = b.build();
@@ -534,6 +576,30 @@ public final class ObservationCollector {
         return OBJETS_CONFIRMES.get(espece);
     }
 
+    // Facteurs de correction observés par espèce et par stat défensive/offensive :
+    // ratio dégâts réels / dégâts prévus. > 1 = la cible encaisse moins que prévu.
+    private static final Map<String, Map<Stat, Double>> FACTEURS = new HashMap<>();
+
+    /** Facteur de correction observé pour cette espèce et cette stat (1.0 = aucun). */
+    public static double getFacteur(String espece, Stat stat) {
+        Map<Stat, Double> m = FACTEURS.get(espece);
+        if (m == null) return 1.0;
+        Double f = m.get(stat);
+        return f == null ? 1.0 : f;
+    }
+
+    /**
+     * Corrige le facteur d'une stat à partir d'un écart prévu/réel.
+     * Moyenne glissante pondérée : un écart isolé ne bascule pas tout,
+     * mais deux observations concordantes convergent vite.
+     */
+    private static void majFacteur(String espece, Stat stat, double ratio) {
+        if (!(ratio > 0.05) || !(ratio < 20)) return;   // aberrant : ignorer
+        Map<Stat, Double> m = FACTEURS.computeIfAbsent(espece, k -> new HashMap<>());
+        Double actuel = m.get(stat);
+        m.put(stat, actuel == null ? ratio : actuel * 0.4 + ratio * 0.6);
+    }
+
     /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */
     public static boolean estObjetConfirme(String espece) {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
@@ -631,6 +697,7 @@ public final class ObservationCollector {
         compteurAbrisAdversaire = 0;
         ESPECES_SCOUT_FUSIONNEES.clear();
         ADVERSAIRES_VUS.clear();
+        FACTEURS.clear();
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();

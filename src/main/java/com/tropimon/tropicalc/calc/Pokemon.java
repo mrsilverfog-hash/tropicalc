@@ -39,6 +39,9 @@ public class Pokemon {
 
     private final Map<Stat, Integer> stages = new EnumMap<>(Stat.class);
 
+    /** Corrections mesurées sur les dégâts réels (1.0 = aucune). */
+    private final Map<Stat, Double> correctionsObservees = new EnumMap<>(Stat.class);
+
     private Pokemon(Builder b) {
         this.espece = b.espece;
         this.niveau = b.niveau;
@@ -51,6 +54,7 @@ public class Pokemon {
         this.talent = b.talent;
         this.objet = b.objet;
         this.poidsHg = b.poidsHg;
+        this.correctionsObservees.putAll(b.correctionsObservees);
         this.teraType = b.teraType;
         this.teracristallise = b.teracristallise;
         this.mega = b.mega;
@@ -107,7 +111,14 @@ public class Pokemon {
 
         int valeur = ((2 * base + iv + ev / 4) * niveau) / 100 + 5;
         double multiplicateurNature = nature != null ? nature.multiplicateur(stat) : 1.0;
-        return (int) (valeur * multiplicateurNature);
+        Double correction = correctionsObservees.get(stat);
+        double multCorrection = correction == null ? 1.0 : correction;
+        return (int) (valeur * multiplicateurNature * multCorrection);
+    }
+
+    /** Vrai si cette stat a été recalibrée d'après les dégâts réels observés. */
+    public boolean estCorrigee(Stat stat) {
+        return correctionsObservees.containsKey(stat);
     }
 
     public int getStatEnCombat(Stat stat) {
@@ -189,6 +200,11 @@ public class Pokemon {
         public Builder statBase(Stat stat, int v) { statsBase.put(stat, v); return this; }
         public Builder iv(Stat stat, int v) { ivs.put(stat, v); return this; }
         public Builder ev(Stat stat, int v) { evs.put(stat, v); return this; }
+        private final Map<Stat, Double> correctionsObservees = new EnumMap<>(Stat.class);
+        public Builder multiplicateurStat(Stat stat, double mult) {
+            correctionsObservees.put(stat, mult);
+            return this;
+        }
         public Builder nature(Nature n) { this.nature = n; return this; }
         public Builder talent(String t) { this.talent = t; return this; }
         public Builder objet(String o) { this.objet = o; return this; }
