@@ -56,6 +56,61 @@ public final class BattleStateTracker {
         return null;
     }
 
+    /**
+     * Vrai si le Pokémon actif du joueur est transformé (Métamorph/Imposteur,
+     * Morphing) : l'espèce en combat diffère de celle de l'entité d'équipe.
+     */
+    public static boolean joueurEstTransforme() {
+        ClientBattleActor acteur = getActeurJoueur();
+        if (acteur == null || acteur.getActivePokemon().isEmpty()) return false;
+        ClientBattlePokemon actif = acteur.getActivePokemon().get(0).getBattlePokemon();
+        if (actif == null) return false;
+        try {
+            String especeCombat = actif.getSpecies().getName();
+            for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
+                if (p.getUuid().equals(actif.getUuid())) {
+                    return !especeCombat.equalsIgnoreCase(p.getSpecies().getName());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /** Le Pokémon adverse dont les capacités sont copiées quand on est transformé. */
+    public static com.cobblemon.mod.common.pokemon.Pokemon getSourceTransformation() {
+        ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+        ClientBattleActor acteurJoueur = getActeurJoueur();
+        if (battle == null || acteurJoueur == null) return null;
+        for (var side : battle.getSides()) {
+            if (!side.getActors().contains(acteurJoueur)) {
+                for (ClientBattleActor acteur : side.getActors()) {
+                    if (acteur.getActivePokemon().isEmpty()) continue;
+                    ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
+                    if (cbp == null) continue;
+                    UUID uuid = cbp.getUuid();
+                    for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
+                        if (p.getUuid().equals(uuid)) return p;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Le Pokémon actif du joueur pour l'affichage des capacités.
+     * Si transformé (Imposteur), renvoie la source copiée afin d'afficher
+     * les capacités réellement disponibles, et non celles de Métamorph.
+     */
+    public static com.cobblemon.mod.common.pokemon.Pokemon getPokemonCompletJoueurAffichage() {
+        if (joueurEstTransforme()) {
+            com.cobblemon.mod.common.pokemon.Pokemon source = getSourceTransformation();
+            if (source != null) return source;
+        }
+        return getPokemonCompletJoueur();
+    }
+
     public static com.cobblemon.mod.common.pokemon.Pokemon getPokemonCompletJoueur() {
         ClientBattleActor acteur = getActeurJoueur();
         if (acteur == null || acteur.getActivePokemon().isEmpty()) return null;

@@ -43,7 +43,7 @@ public final class CalcOverlay implements HudRenderCallback {
         if (!BattleStateTracker.estEnCombat()) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
-        com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueur();
+        com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueurAffichage();
         Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
         if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
 
@@ -74,7 +74,9 @@ public final class CalcOverlay implements HudRenderCallback {
         Field field = FieldTracker.construireField();
 
         // --- Section 1 : mes capacités ---
-        context.drawText(client.textRenderer, Text.literal("TropiCalc"), x, y, COULEUR_TITRE, true);
+        String titre = BattleStateTracker.joueurEstTransforme()
+            ? "TropiCalc [transformé]" : "TropiCalc";
+        context.drawText(client.textRenderer, Text.literal(titre), x, y, COULEUR_TITRE, true);
         y += hauteurLigne + 2;
 
         // Vitesses effectives (Distorsion inverse la priorité)
