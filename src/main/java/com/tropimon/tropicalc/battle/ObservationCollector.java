@@ -289,17 +289,55 @@ public final class ObservationCollector {
             if (!capacite.isMultiCoups()) {
                 Pokemon attaquant = adversaireEtaitAttaquant ? construireAdversaireEstime(adversaire) : joueur;
                 Pokemon defenseur = adversaireEtaitAttaquant ? joueur : construireAdversaireEstime(adversaire);
+
+                // La prédiction de référence doit inclure les STAGES actuels
+                // (Mur de Fer etc.), sinon leur effet est compté deux fois :
+                // une fois par le boost, une fois par la "correction".
+                for (Stat st : Stat.values()) {
+                    if (st == Stat.PV) continue;
+                    int stJoueur = BoostTracker.getStageJoueur(st);
+                    int stAdv = BoostTracker.getStageAdversaire(st);
+                    if (adversaireEtaitAttaquant) {
+                        if (stAdv != 0) attaquant.setStage(st, stAdv);
+                        if (stJoueur != 0) defenseur.setStage(st, stJoueur);
+                    } else {
+                        if (stJoueur != 0) attaquant.setStage(st, stJoueur);
+                        if (stAdv != 0) defenseur.setStage(st, stAdv);
+                    }
+                }
+
                 DamageCalculator.Resultat prevu = DamageCalculator.calculer(
                     attaquant, defenseur, capacite, terrainNeutre, null, false);
                 double milieuPrevu = (prevu.pourcentageMin + prevu.pourcentageMax) / 2.0;
+
+                // Le delta de PV observé est NET des résiduels du défenseur
+                // (Restes qui soignent, Toxik/Salaison qui rongent) : on les
+                // retire pour isoler les dégâts du coup lui-même.
+                double perteCoup = perte;
+                try {
+                    boolean defEstAdversaire = !adversaireEtaitAttaquant;
+                    com.tropimon.tropicalc.calc.ResidualProjector.Projection proj =
+                        com.tropimon.tropicalc.calc.ResidualProjector.projeter(
+                            defenseur, terrainNeutre.getMeteo(), true,
+                            defEstAdversaire ? getCompteurToxikProchainAdversaire() : getCompteurToxikProchainJoueur(),
+                            defEstAdversaire ? adversaireSalaison : joueurSalaison,
+                            defEstAdversaire ? adversaireVampigraine : joueurVampigraine);
+                    if (proj != null) perteCoup = Math.max(0, perte - proj.netPremierTourPct());
+                } catch (Exception ignored2) {
+                }
+
                 // Coup critique probable (réel >> prévu max) : ne rien conclure
-                boolean critProbable = perte > prevu.pourcentageMax * 1.4;
+                boolean critProbable = perteCoup > prevu.pourcentageMax * 1.4;
                 if (milieuPrevu > 1.0 && !prevu.immunise && !critProbable) {
-                    double ratio = perte / milieuPrevu;
-                    Stat cible = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
-                        ? (adversaireEtaitAttaquant ? Stat.ATTAQUE : Stat.DEFENSE)
-                        : (adversaireEtaitAttaquant ? Stat.ATTAQUE_SPE : Stat.DEFENSE_SPE);
-                    majFacteur(adversaire.getEspece(), cible, ratio);
+                    double ratio = perteCoup / milieuPrevu;
+                    // Zone morte élargie : un roll bas + un résiduel mal estimé
+                    // ne doivent pas déclencher de correction
+                    if (ratio < 0.75 || ratio > 1.3) {
+                        Stat cible = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                            ? (adversaireEtaitAttaquant ? Stat.ATTAQUE : Stat.DEFENSE)
+                            : (adversaireEtaitAttaquant ? Stat.ATTAQUE_SPE : Stat.DEFENSE_SPE);
+                        majFacteur(adversaire.getEspece(), cible, ratio);
+                    }
                 }
             }
         } catch (Exception ignored) {
