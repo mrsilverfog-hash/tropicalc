@@ -393,10 +393,14 @@ public final class ObservationCollector {
         // Une seule observation suffit à corriger : mieux vaut une estimation
         // calibrée sur le réel qu'un set Smogon démenti par les faits
         if (profil != null && profil.getNbObservations() >= 1) {
-            appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
-            appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
-            appliquerHypothese(b, Stat.DEFENSE, profil.defense);
-            appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
+            // Un seul mécanisme de correction par stat : si un facteur mesuré
+            // est actif, il est la source de vérité et l'hypothèse s'efface
+            // (les deux dérivent des mêmes observations : cumulés, ils
+            // surcorrigeraient — dégâts affichés plus faibles que le réel)
+            if (!facteurActif(espece, Stat.ATTAQUE)) appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
+            if (!facteurActif(espece, Stat.ATTAQUE_SPE)) appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
+            if (!facteurActif(espece, Stat.DEFENSE)) appliquerHypothese(b, Stat.DEFENSE, profil.defense);
+            if (!facteurActif(espece, Stat.DEFENSE_SPE)) appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
 
             if (!objetRetire && objetConfirme == null) {
                 String objetEstime = extraireObjetUnique(profil.attaque);
@@ -617,6 +621,11 @@ public final class ObservationCollector {
     // Facteurs de correction observés par espèce et par stat défensive/offensive :
     // ratio dégâts réels / dégâts prévus. > 1 = la cible encaisse moins que prévu.
     private static final Map<String, Map<Stat, Double>> FACTEURS = new HashMap<>();
+
+    /** Vrai si un facteur mesuré significatif est actif pour cette stat. */
+    private static boolean facteurActif(String espece, Stat stat) {
+        return Math.abs(getFacteur(espece, stat) - 1.0) >= 0.12;
+    }
 
     /** Facteur de correction observé pour cette espèce et cette stat (1.0 = aucun). */
     public static double getFacteur(String espece, Stat stat) {
