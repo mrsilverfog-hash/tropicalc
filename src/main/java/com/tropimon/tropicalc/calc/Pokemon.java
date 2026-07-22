@@ -39,6 +39,10 @@ public class Pokemon {
 
     private final Map<Stat, Integer> stages = new EnumMap<>(Stat.class);
 
+    /** PV max forcés (Imposteur : stats copiées mais PV de Métamorph). 0 = aucun. */
+    private int pvMaxOverride = 0;
+    public void setPvMaxOverride(int pv) { this.pvMaxOverride = pv; }
+
     /** Corrections mesurées sur les dégâts réels (1.0 = aucune). */
     private final Map<Stat, Double> correctionsObservees = new EnumMap<>(Stat.class);
 
@@ -104,6 +108,7 @@ public class Pokemon {
         int iv = getIv(stat);
         int ev = getEv(stat);
 
+        if (stat == Stat.PV && pvMaxOverride > 0) return pvMaxOverride;
         if (stat == Stat.PV) {
             if (espece != null && espece.equalsIgnoreCase("Ferpathie")) return 1;
             return ((2 * base + iv + ev / 4) * niveau) / 100 + niveau + 10;

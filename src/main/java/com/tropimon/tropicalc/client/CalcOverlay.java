@@ -51,6 +51,17 @@ public final class CalcOverlay implements HudRenderCallback {
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
+        // Imposteur : les stats du joueur sont celles de la cible copiée,
+        // mais les PV restent ceux de Métamorph
+        if (BattleStateTracker.joueurEstTransforme()) {
+            Pokemon statsDitto = joueur;
+            Pokemon copie = ObservationCollector.construireAdversaireEstime(adversaireBase);
+            copie.setPvMaxOverride(statsDitto.getPvMax());
+            copie.setPvActuels(statsDitto.getPvActuels());
+            copie.setStatut(statsDitto.getStatut());
+            joueur = copie;
+        }
+
         // Purge les stages si le Pokémon actif d'un camp a changé (switch)
         BoostTracker.verifierActifs(joueur.getEspece(), adversaireBase.getEspece());
 
@@ -127,8 +138,10 @@ public final class CalcOverlay implements HudRenderCallback {
             if (r.immunise) {
                 ligne = nom + " : immunisé";
             } else {
-                Stat statDef = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
-                    ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+                String nomCap = capacite.getNom();
+                boolean frappePhysiqueDef = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                    || "psyshock".equals(nomCap) || "psystrike".equals(nomCap) || "secretsword".equals(nomCap);
+                Stat statDef = frappePhysiqueDef ? Stat.DEFENSE : Stat.DEFENSE_SPE;
                 String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
                 ligne = String.format("%s : %s%.0f%% - %.0f%%", nom, marqueur, r.pourcentageMin, r.pourcentageMax);
                 if ((casqueBrut || epines)
