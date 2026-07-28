@@ -61,6 +61,10 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("chlorophyll", "Chlorophylle");
+        TALENTS.put("swiftswim", "Glissade");
+        TALENTS.put("sandrush", "Baigne Sable");
+        TALENTS.put("slushrush", "Chasse-Neige");
         TALENTS.put("waterabsorb", "Absorb'Eau");
         TALENTS.put("voltabsorb", "Absorb'Volt");
         TALENTS.put("stormdrain", "Lavabo");
