@@ -392,15 +392,13 @@ public final class ObservationCollector {
 
         // Une seule observation suffit à corriger : mieux vaut une estimation
         // calibrée sur le réel qu'un set Smogon démenti par les faits
-        if (profil != null && profil.getNbObservations() >= 1) {
-            // Un seul mécanisme de correction par stat : si un facteur mesuré
-            // est actif, il est la source de vérité et l'hypothèse s'efface
-            // (les deux dérivent des mêmes observations : cumulés, ils
-            // surcorrigeraient — dégâts affichés plus faibles que le réel)
-            if (!facteurActif(espece, Stat.ATTAQUE)) appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
-            if (!facteurActif(espece, Stat.ATTAQUE_SPE)) appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
-            if (!facteurActif(espece, Stat.DEFENSE)) appliquerHypothese(b, Stat.DEFENSE, profil.defense);
-            if (!facteurActif(espece, Stat.DEFENSE_SPE)) appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
+        if (profil != null && profil.getNbObservations() >= 3) {
+            // Seuil remonté à 3 : le moteur de correction rapide est en pause,
+            // on revient à la prudence d'origine pour les hypothèses d'EV
+            appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
+            appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
+            appliquerHypothese(b, Stat.DEFENSE, profil.defense);
+            appliquerHypothese(b, Stat.DEFENSE_SPE, profil.defenseSpe);
 
             if (!objetRetire && objetConfirme == null) {
                 String objetEstime = extraireObjetUnique(profil.attaque);
@@ -441,9 +439,13 @@ public final class ObservationCollector {
             b.objet(null);
         }
 
-        // Correction par observation : applique les facteurs mesurés sur les
-        // stats défensives/offensives (ratio réel/prévu des coups passés).
-        Map<Stat, Double> facteurs = FACTEURS.get(espece);
+        // Correction par observation : DÉSACTIVÉE temporairement — mesure
+        // de bord peu fiable, écrasait des dégâts corrects (retour utilisateur).
+        // Les facteurs continuent d'être calculés (voir majFacteur) mais ne
+        // sont plus appliqués, pour pouvoir diagnostiquer sur des cas concrets
+        // sans que le calcul affiché soit lui-même faussé.
+        boolean CORRECTION_ACTIVE = false;
+        Map<Stat, Double> facteurs = CORRECTION_ACTIVE ? FACTEURS.get(espece) : null;
         if (facteurs != null && !facteurs.isEmpty()) {
             for (Map.Entry<Stat, Double> e : facteurs.entrySet()) {
                 double f = e.getValue();
