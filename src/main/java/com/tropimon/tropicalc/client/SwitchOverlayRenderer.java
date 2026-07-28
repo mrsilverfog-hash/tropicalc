@@ -91,7 +91,8 @@ public final class SwitchOverlayRenderer {
         // Pièges d'entrée : PV à l'arrivée
         double degatsPieges = degatsEntreePct(candidat);
         boolean toile = FieldTracker.isStickyWebJoueur() && estAuSol(candidat);
-        if (degatsPieges > 0 || toile) {
+        boolean picsToxik = picsToxikActifs(candidat);
+        if (degatsPieges > 0 || toile || picsToxik) {
             double pvActuelsPct = 100.0 * candidat.getPvActuels() / Math.max(1, candidat.getPvMax());
             double pvApres = Math.max(0, pvActuelsPct - degatsPieges);
             StringBuilder lignePieges = new StringBuilder();
@@ -101,6 +102,11 @@ public final class SwitchOverlayRenderer {
             if (toile) {
                 if (lignePieges.length() > 0) lignePieges.append(" | ");
                 lignePieges.append("Toile : -1 Vit");
+            }
+            if (picsToxik) {
+                if (lignePieges.length() > 0) lignePieges.append(" | ");
+                int couches = FieldTracker.getToxicSpikesJoueur();
+                lignePieges.append(couches >= 2 ? "Pics Toxik : Toxik" : "Pics Toxik : Poison");
             }
             lignes.add(lignePieges.toString());
             couleurs.add(pvApres <= 0 ? COULEUR_KO : (degatsPieges >= 25 ? 0xFFAA00 : COULEUR_TEXTE));
@@ -225,6 +231,21 @@ public final class SwitchOverlayRenderer {
         }
 
         return total;
+    }
+
+    /** Vrai si le candidat serait empoisonné en entrant (Pics Toxik posés, au sol, non Poison/Acier). */
+    private static boolean picsToxikActifs(Pokemon candidat) {
+        if (FieldTracker.getToxicSpikesJoueur() <= 0) return false;
+        if (!estAuSol(candidat)) return false;
+        if ("Garde Magik".equals(candidat.getTalent())) return false;
+        com.tropimon.tropicalc.calc.PokemonType t1 = candidat.getType1();
+        com.tropimon.tropicalc.calc.PokemonType t2 = candidat.getType2();
+        // Poison : absorbe les Pics Toxik au lieu d'être empoisonné (les retire même)
+        if (t1 == com.tropimon.tropicalc.calc.PokemonType.POISON
+            || t2 == com.tropimon.tropicalc.calc.PokemonType.POISON) return false;
+        if (t1 == com.tropimon.tropicalc.calc.PokemonType.ACIER
+            || t2 == com.tropimon.tropicalc.calc.PokemonType.ACIER) return false;
+        return true;
     }
 
     /** Vrai si le candidat touche le sol (sensible à Picots et Toile Gluante). */
