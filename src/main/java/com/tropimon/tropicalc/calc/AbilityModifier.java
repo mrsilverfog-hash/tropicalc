@@ -200,6 +200,50 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Écailles Glacées", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
+                    ctx.multiplicateurDegatsFinal *= 0.5;
+                }
+            }
+        });
+
+        m.put("Toison Épaisse", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                // Vraie mécanique : double la stat de Défense (pas un
+                // multiplicateur final) — sans effet sur Choc Pied qui
+                // utilise la Défense de l'ATTAQUANT, jamais celle-ci.
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                    ctx.multiplicateurDefense *= 2.0;
+                }
+            }
+        });
+
+        m.put("Boule de Poils", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (com.tropimon.tropicalc.calc.ContactMoves.estContact(ctx.capacite.getNom())) {
+                    ctx.multiplicateurDegatsFinal *= 0.5;
+                }
+                if (ctx.capacite.getType() == PokemonType.FEU) {
+                    ctx.multiplicateurDegatsFinal *= 2.0;
+                }
+            }
+        });
+
+        m.put("Peau Sèche", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.EAU) {
+                    ctx.immuniteType = true;   // absorbe et soigne (hors calcul de dégâts)
+                } else if (ctx.capacite.getType() == PokemonType.FEU) {
+                    ctx.multiplicateurDegatsFinal *= 1.25;
+                }
+            }
+        });
+
         return m;
     }
 
