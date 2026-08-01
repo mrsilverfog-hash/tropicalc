@@ -105,7 +105,10 @@ public final class ShowdownIdMapper {
         TALENTS.put("prankster", "Lunatique");
         TALENTS.put("unburden", "Allège");
         TALENTS.put("rockhead", "Tête de Roc");
-        TALENTS.put("sheerforce", "Grand Chelem");
+        TALENTS.put("sheerforce", "Sans Limite");
+        TALENTS.put("hugepower", "Coloforce");
+        TALENTS.put("purepower", "Force Pure");
+        TALENTS.put("toughclaws", "Griffe Dure");
         TALENTS.put("roughskin", "Peau Dure");
         TALENTS.put("ironbarbs", "Épine de Fer");
         TALENTS.put("flamebody", "Corps Ardent");

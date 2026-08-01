@@ -14,7 +14,8 @@ public final class SetInferenceEngine {
 
     public static final Set<String> TALENTS_OFFENSIFS = Set.of(
         "Cran", "Adrénaline", "Adaptabilité", "Technicien", "Poing de Fer",
-        "Mâchoire Brute", "Force Sable", "Verres Teintés", "Grand Chelem", "Télécharge"
+        "Mâchoire Brute", "Force Sable", "Verres Teintés", "Sans Limite", "Télécharge",
+        "Coloforce", "Force Pure", "Griffe Dure"
     );
 
     public static final Set<String> OBJETS_DEFENSIFS = Set.of(

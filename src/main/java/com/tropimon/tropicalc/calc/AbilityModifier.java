@@ -171,6 +171,35 @@ public interface AbilityModifier {
             }
         });
 
+        AbilityModifier doubleAttaque = new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                    ctx.multiplicateurAttaque *= 2.0;
+                }
+            }
+        };
+        m.put("Coloforce", doubleAttaque);
+        m.put("Force Pure", doubleAttaque);
+
+        m.put("Griffe Dure", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (com.tropimon.tropicalc.calc.ContactMoves.estContact(ctx.capacite.getNom())) {
+                    ctx.multiplicateurDegatsFinal *= 1.3;
+                }
+            }
+        });
+
+        m.put("Sans Limite", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (SecondaryEffectMoves.aEffetSecondaire(ctx.capacite.getNom())) {
+                    ctx.multiplicateurDegatsFinal *= 1.3;
+                }
+            }
+        });
+
         return m;
     }
 
