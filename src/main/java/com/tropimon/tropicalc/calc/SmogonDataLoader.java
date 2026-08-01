@@ -25,7 +25,8 @@ public final class SmogonDataLoader {
         List<String> topItemsShowdownId,
         List<String> topAbilitiesShowdownId,
         List<ParsedSpread> topSpreads,
-        List<String> topMovesShowdownId
+        List<String> topMovesShowdownId,
+        double topItemUsageFraction   // part de l'objet n°1 sur le total (0.0 à 1.0)
     ) {
     }
 
@@ -89,7 +90,8 @@ public final class SmogonDataLoader {
             List<String> topAbilities = extraireTop(pkData.getAsJsonObject("Abilities"), 5);
             List<ParsedSpread> topSpreads = extraireSpreads(pkData.getAsJsonObject("Spreads"), 5);
             List<String> topMoves = extraireTop(pkData.getAsJsonObject("Moves"), 5);
-            DONNEES.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves));
+            double topItemFraction = fractionDuTop(pkData.getAsJsonObject("Items"));
+            DONNEES.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves, topItemFraction));
         }
     }
 
@@ -105,6 +107,21 @@ public final class SmogonDataLoader {
         List<String> resultat = new ArrayList<>();
         for (int i = 0; i < Math.min(n, entrees.size()); i++) resultat.add(entrees.get(i).getKey());
         return resultat;
+    }
+
+    /** Part (0.0 à 1.0) que représente l'entrée n°1 sur le poids total (hors "aucun objet"). */
+    private static double fractionDuTop(JsonObject obj) {
+        if (obj == null) return 0.0;
+        double total = 0.0;
+        double max = 0.0;
+        for (Map.Entry<String, JsonElement> e : obj.entrySet()) {
+            String nom = normaliser(e.getKey());
+            if (nom.isEmpty() || nom.equals("noitem") || nom.equals("nothing")) continue;
+            double poids = e.getValue().getAsDouble();
+            total += poids;
+            if (poids > max) max = poids;
+        }
+        return total <= 0 ? 0.0 : max / total;
     }
 
     private static List<ParsedSpread> extraireSpreads(JsonObject obj, int n) {

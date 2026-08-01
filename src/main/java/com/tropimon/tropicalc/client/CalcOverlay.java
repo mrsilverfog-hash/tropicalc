@@ -237,6 +237,21 @@ public final class CalcOverlay implements HudRenderCallback {
                             estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
+
+                        // Hypothèse objet offensif quasi-certain (> 50% d'usage Smogon) :
+                        // fourchette de dégâts SI l'adversaire tenait cet objet, en bleu.
+                        // Uniquement si l'objet n'est pas déjà un fait confirmé (sinon
+                        // le calcul principal l'inclut déjà).
+                        String ligneHypo = ligneHypotheseObjet(adversaire, joueur, capaciteAdv, field,
+                            especeAdv, smogon, statAtk == Stat.ATTAQUE);
+                        if (ligneHypo != null) {
+                            context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+                            int largeurLigne = client.textRenderer.getWidth(ligne);
+                            context.drawText(client.textRenderer, Text.literal(ligneHypo),
+                                x + largeurLigne, y, COULEUR_MOUCHOIR, true);
+                            y += hauteurLigne;
+                            continue;
+                        }
                     }
                 }
                 context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
@@ -352,6 +367,42 @@ public final class CalcOverlay implements HudRenderCallback {
                 y += hauteurLigne;
             }
         }
+    }
+
+    /**
+     * Si le set Smogon de cette espèce joue un objet offensif (Orbe Vie,
+     * Bandeau/Lunettes Choix) plus de 50% du temps, et que ce n'est pas déjà
+     * un fait confirmé, retourne la fourchette de dégâts hypothétique avec
+     * cet objet — sinon null. Ne mute pas durablement le Pokémon (objet
+     * restauré après le calcul).
+     */
+    private static String ligneHypotheseObjet(Pokemon adversaire, Pokemon joueur,
+                                               com.tropimon.tropicalc.calc.Move capacite, Field field,
+                                               String espece, SmogonDataLoader.SmogonPokemonData smogon,
+                                               boolean estPhysique) {
+        if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return null;
+        if (smogon.topItemUsageFraction() < 0.5) return null;
+        if (ObservationCollector.estObjetConfirme(espece)) return null;   // déjà un fait connu
+
+        String objetProbable = com.tropimon.tropicalc.calc.ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+        if (objetProbable == null) return null;
+        boolean estOrbeVie = "Orbe Vie".equals(objetProbable);
+        boolean estBandeau = "Bandeau Choix".equals(objetProbable);
+        boolean estLunettes = "Lunettes Choix".equals(objetProbable);
+        if (!estOrbeVie && !estBandeau && !estLunettes) return null;
+        if (estBandeau && !estPhysique) return null;
+        if (estLunettes && estPhysique) return null;
+
+        // Déjà l'objet actif : le range normal l'inclut déjà, pas la peine de redire
+        if (objetProbable.equals(adversaire.getObjet())) return null;
+
+        String objetOriginal = adversaire.getObjet();
+        adversaire.setObjet(objetProbable);
+        DamageCalculator.Resultat hypo = DamageCalculator.calculer(adversaire, joueur, capacite, field, field.getEcransJoueur(), false);
+        adversaire.setObjet(objetOriginal);
+
+        if (hypo.immunise) return null;
+        return String.format(" (%.0f%% - %.0f%%)", hypo.pourcentageMin, hypo.pourcentageMax);
     }
 
     private static int vitesseEffective(Pokemon p) {
