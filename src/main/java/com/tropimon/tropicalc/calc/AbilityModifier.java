@@ -28,6 +28,21 @@ public interface AbilityModifier {
         m.put("Absorb'Volt", immuniteContre(PokemonType.ELECTRIK));
         m.put("Lavabo", immuniteContre(PokemonType.EAU));
         m.put("Torche", immuniteContre(PokemonType.FEU));
+        m.put("Paratonnerre", immuniteContre(PokemonType.ELECTRIK));
+        m.put("Herbivore", immuniteContre(PokemonType.PLANTE));
+
+        // Garde Mystik : seules les attaques super efficaces touchent
+        // (indépendant du type de la capacité, contrairement aux immunités ci-dessus)
+        m.put("Garde Mystik", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                double eff = ctx.capacite.getType().efficaciteContre(
+                    ctx.defenseur.getType1(), ctx.defenseur.getType2());
+                if (eff <= 1.0) {
+                    ctx.immuniteType = true;
+                }
+            }
+        });
 
         m.put("Isograisse", new AbilityModifier() {
             @Override

@@ -65,6 +65,9 @@ public final class ShowdownIdMapper {
         TALENTS.put("swiftswim", "Glissade");
         TALENTS.put("sandrush", "Baigne Sable");
         TALENTS.put("slushrush", "Chasse-Neige");
+        TALENTS.put("lightningrod", "Paratonnerre");
+        TALENTS.put("sapsipper", "Herbivore");
+        TALENTS.put("wonderguard", "Garde Mystik");
         TALENTS.put("waterabsorb", "Absorb'Eau");
         TALENTS.put("voltabsorb", "Absorb'Volt");
         TALENTS.put("stormdrain", "Lavabo");
