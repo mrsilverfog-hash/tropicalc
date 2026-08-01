@@ -25,7 +25,7 @@ public class Pokemon {
     private final Nature nature;
 
     private final String talent;
-    private final String objet;
+    private String objet;
 
     // Poids en hectogrammes (données species Cobblemon). 0 = inconnu.
     private final double poidsHg;
@@ -158,6 +158,7 @@ public class Pokemon {
     public boolean estKO() { return pvActuels <= 0; }
     public Statut getStatut() { return statut; }
     public void setStatut(Statut statut) { this.statut = statut; }
+    public void setObjet(String objet) { this.objet = objet; }
     public String getTalent() { return talent; }
     public String getObjet() { return objet; }
 

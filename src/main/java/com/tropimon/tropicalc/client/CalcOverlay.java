@@ -330,9 +330,25 @@ public final class CalcOverlay implements HudRenderCallback {
                 StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
                     ? profil.defense : profil.defenseSpe;
                 context.drawText(client.textRenderer,
-                    Text.literal(String.format("Inférence Def EV %d-%d | Objets : %s",
-                        hypDef.evMin, hypDef.evMax, hypDef.objetsPossibles)),
+                    Text.literal(String.format("Inférence Def EV %d-%d", hypDef.evMin, hypDef.evMax)),
                     x, y, COULEUR_TEXTE, true);
+                y += hauteurLigne;
+            }
+
+            // Objet : uniquement affiché quand on SAIT (jamais une supposition).
+            // Casque Brut / Restes : détectés par le motif de chip/soin.
+            // Écharpe Choix : il agit avant alors que sa vitesse max sans objet
+            // ne le permettrait pas. Bandeau/Lunettes Choix : ratio net x1.5.
+            // Orbe Vie : ratio net x1.3 + son propre recul de ~10% le même tour.
+            String objetConfirme = ObservationCollector.getObjetConfirme(especeAdv);
+            boolean objetRetire = ObservationCollector.estObjetConfirme(especeAdv) && objetConfirme == null;
+            if (objetConfirme != null) {
+                context.drawText(client.textRenderer,
+                    Text.literal("Objet confirmé : " + objetConfirme), x, y, COULEUR_REVELE, true);
+                y += hauteurLigne;
+            } else if (objetRetire) {
+                context.drawText(client.textRenderer,
+                    Text.literal("Objet confirmé : aucun (Sabotage)"), x, y, COULEUR_REVELE, true);
                 y += hauteurLigne;
             }
         }

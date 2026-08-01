@@ -283,6 +283,15 @@ public final class ObservationCollector {
         profil.enregistrerObservation(adversaireEtaitAttaquant, adversaire, joueur, capacite, terrainNeutre,
             observeMin, observeMax);
 
+        // --- Détection d'objet par signal fort, distincte du moteur de correction ---
+        // Une seule observation nette suffit : les ratios 1.0 / 1.3 / 1.5 sont assez
+        // séparés pour ne pas se confondre avec le bruit normal des rolls (85-100%).
+        try {
+            detecterObjetOffensifParSignal(adversaireEtaitAttaquant, perte, adversaire, joueur,
+                capacite, template, terrainNeutre);
+        } catch (Exception ignored3) {
+        }
+
         // Correction directe par écart prévu/réel : s'applique immédiatement
         // à toutes les lignes du HUD, y compris pour tes autres Pokémon.
         try {
@@ -710,6 +719,86 @@ public final class ObservationCollector {
     public static int getCompteurToxikProchainAdversaire() { return compteurToxikAdversaire + 1; }
 
     /** L'adversaire n'a pas attaqué ce tour (aucun coup, ou un coup de statut). */
+    /**
+     * Confirme Écharpe/Mouchoir Choix, Bandeau/Lunettes Choix ou Orbe Vie par
+     * un signal fort et net — indépendant du moteur de correction (désactivé).
+     */
+    private static void detecterObjetOffensifParSignal(boolean adversaireEtaitAttaquant, double perte,
+                                                        Pokemon adversaire, Pokemon joueur,
+                                                        com.tropimon.tropicalc.calc.Move capacite,
+                                                        MoveTemplate template, Field terrainNeutre) {
+        String espece = adversaire.getEspece();
+        if (OBJETS_CONFIRMES.containsKey(espece)) return;   // déjà un fait connu, rien à chercher
+        if (capacite.isMultiCoups()) return;                 // trop de variance
+        if (!"physical".equalsIgnoreCase(String.valueOf(template.getDamageCategory().getName()))
+            && !"special".equalsIgnoreCase(String.valueOf(template.getDamageCategory().getName()))) return;
+
+        // --- 1. Écharpe/Mouchoir Choix : l'adversaire agit avant alors que
+        //     sa vitesse MAX possible (sans objet) ne le permettrait pas ---
+        if (adversaireEtaitAttaquant && Boolean.TRUE.equals(adversaireAAgiEnPremier)
+                && joueur.getStatut() != Pokemon.Statut.PARALYSIE
+                && adversaire.getStatut() != Pokemon.Statut.PARALYSIE
+                && !FieldTracker.isDistorsion()) {
+            int vitesseMaxSansObjet = (int) Math.floor(
+                ((2 * adversaire.getStatBase(Stat.VITESSE) + 31 + 63) * adversaire.getNiveau()) / 100.0 + 5) * 11 / 10;
+            int vitesseJoueurReelle = joueur.getStatCalculee(Stat.VITESSE);
+            int stageJoueur = joueur.getStage(Stat.VITESSE);
+            double mult = stageJoueur >= 0 ? (2.0 + stageJoueur) / 2.0 : 2.0 / (2.0 - stageJoueur);
+            vitesseJoueurReelle = (int) (vitesseJoueurReelle * mult);
+            if (vitesseMaxSansObjet < vitesseJoueurReelle) {
+                OBJETS_CONFIRMES.put(espece, "Écharpe Choix");
+            }
+            return;
+        }
+
+        // Pour le reste (dégâts), seuls les coups de l'ADVERSAIRE nous renseignent
+        // sur SON objet offensif
+        if (!adversaireEtaitAttaquant) return;
+
+        // Prédiction de référence SANS objet (le set estimé peut déjà en supposer un)
+        Pokemon attaquantSansObjet = construireAdversaireEstime(adversaire);
+        attaquantSansObjet.setObjet(null);
+        DamageCalculator.Resultat sansObjet = DamageCalculator.calculer(
+            attaquantSansObjet, joueur, capacite, terrainNeutre, null, false);
+        if (sansObjet.immunise) return;
+        double milieuSansObjet = (sansObjet.pourcentageMin + sansObjet.pourcentageMax) / 2.0;
+        if (milieuSansObjet < 2.0) return;   // trop petit pour être fiable
+
+        double perteCoup = perte;
+        try {
+            com.tropimon.tropicalc.calc.ResidualProjector.Projection proj =
+                com.tropimon.tropicalc.calc.ResidualProjector.projeter(
+                    joueur, terrainNeutre.getMeteo(), true,
+                    getCompteurToxikProchainJoueur(), joueurSalaison, joueurVampigraine);
+            if (proj != null) perteCoup = Math.max(0, perte - proj.netPremierTourPct());
+        } catch (Exception ignored) {
+        }
+
+        boolean critProbable = perteCoup > sansObjet.pourcentageMax * 1.65;
+        if (critProbable) return;   // coup critique probable : rien à conclure
+
+        double ratio = perteCoup / milieuSansObjet;
+
+        // --- 2. Bandeau/Lunettes Choix : ratio net proche de x1.5 ---
+        if (ratio >= 1.4 && ratio <= 1.65) {
+            String objet = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+                ? "Bandeau Choix" : "Lunettes Choix";
+            OBJETS_CONFIRMES.put(espece, objet);
+            return;
+        }
+
+        // --- 3. Orbe Vie : ratio net proche de x1.3 ET l'attaquant perd bien
+        //     ~10% de ses PV max sur ce même tour (le recul de l'Orbe Vie).
+        //     Exclu si le joueur a aussi attaqué ce tour (ambiguïté : le recul
+        //     pourrait être une riposte plutôt que l'Orbe Vie). ---
+        if (ratio >= 1.2 && ratio < 1.4 && coupJoueurDuTour == null && pvAdversaireDebutTour >= 0) {
+            double recul = pvAdversaireDebutTour - adversaire.getPourcentagePv();
+            if (recul >= 7.0 && recul <= 13.0) {
+                OBJETS_CONFIRMES.put(espece, "Orbe Vie");
+            }
+        }
+    }
+
     private static boolean adversaireNAPasAttaque() {
         if (coupAdversaireDuTour == null) return true;
         MoveTemplate t = Moves.INSTANCE.getByName(coupAdversaireDuTour.showdownId());
