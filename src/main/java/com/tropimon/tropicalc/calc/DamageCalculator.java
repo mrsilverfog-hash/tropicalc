@@ -138,6 +138,10 @@ public class DamageCalculator {
         double critMult = critique ? 1.5 : 1.0;
 
         int[] degats = new int[16];
+        // Le jeu regroupe écrans, terrain et objets/talents (Ceinture Pro,
+        // Filtre, Orbe Vie...) en UNE seule étape "other", arrondie une fois —
+        // pas trois arrondis séquentiels, qui grignoteraient des dégâts en trop.
+        double autre = ecrans * champTerrain * ctx.multiplicateurDegatsFinal;
         for (int i = 0; i < 16; i++) {
             double alea = (85 + i) / 100.0;
             long d = base;
@@ -146,9 +150,7 @@ public class DamageCalculator {
             d = appliquerEtFloor(d, alea);
             d = appliquerEtFloor(d, stab);
             d = appliquerEtFloor(d, efficacite);
-            d = appliquerEtFloor(d, ecrans);
-            d = appliquerEtFloor(d, champTerrain);
-            d = appliquerEtFloor(d, ctx.multiplicateurDegatsFinal);
+            d = appliquerEtFloor(d, autre);
             degats[i] = (int) Math.max(1, d);
         }
 

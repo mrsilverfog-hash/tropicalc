@@ -37,7 +37,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 double eff = ctx.capacite.getType().efficaciteContre(
-                    ctx.defenseur.getType1(), ctx.defenseur.getType2());
+                    ctx.defenseur.getTypeDefenseurEffectif1(), ctx.defenseur.getTypeDefenseurEffectif2());
                 if (eff <= 1.0) {
                     ctx.immuniteType = true;
                 }
