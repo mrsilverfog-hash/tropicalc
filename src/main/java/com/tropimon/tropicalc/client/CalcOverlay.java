@@ -49,6 +49,11 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (adversaireBase == null || joueur == null || monComplet == null) return;
 
+        // Espèce stable pour la détection de switch : celle de l'équipe (ex: "Métamorph"),
+        // PAS l'espèce copiée si transformé — sinon chaque transformation/changement de
+        // cible copiée déclenche à tort une purge des boosts comme un vrai switch.
+        String especeJoueurStable = joueur.getEspece();
+
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
         // Imposteur : les stats du joueur sont celles de la cible copiée,
@@ -63,7 +68,7 @@ public final class CalcOverlay implements HudRenderCallback {
         }
 
         // Purge les stages si le Pokémon actif d'un camp a changé (switch)
-        BoostTracker.verifierActifs(joueur.getEspece(), adversaireBase.getEspece());
+        BoostTracker.verifierActifs(especeJoueurStable, adversaireBase.getEspece());
 
         // Boosts live des deux camps
         for (Stat s : Stat.values()) {
