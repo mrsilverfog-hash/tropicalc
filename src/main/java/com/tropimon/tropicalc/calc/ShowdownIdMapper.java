@@ -61,6 +61,8 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("heavymetal", "Heavy Metal");
+        TALENTS.put("lightmetal", "Light Metal");
         TALENTS.put("chlorophyll", "Chlorophylle");
         TALENTS.put("swiftswim", "Glissade");
         TALENTS.put("sandrush", "Baigne Sable");
@@ -135,6 +137,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
         OBJETS.put("choicescarf", "Écharpe Choix");
+        OBJETS.put("floatstone", "Pierrallégée");
         OBJETS.put("lifeorb", "Orbe Vie");
         OBJETS.put("expertbelt", "Ceinture Pro");
         OBJETS.put("assaultvest", "Veste de Combat");

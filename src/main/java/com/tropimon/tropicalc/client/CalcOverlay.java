@@ -85,8 +85,20 @@ public final class CalcOverlay implements HudRenderCallback {
 
         MinecraftClient client = MinecraftClient.getInstance();
         int x = 8;
-        int y = 170;
         int hauteurLigne = client.textRenderer.fontHeight + 2;
+
+        // Le panneau a beaucoup grandi (Résiduel, Verrou Choix, durées, jusqu'à
+        // 6 capacités adverses...) : estimation haute du nombre de lignes pour
+        // garantir qu'il reste visible même sur petite résolution / GUI Scale élevée.
+        int nbCapacitesJoueur = 0;
+        for (Move coup : monComplet.getMoveSet()) {
+            if (coup != null) nbCapacitesJoueur++;
+        }
+        int lignesEstimees = 2 + nbCapacitesJoueur + 1 + 6 + 1 + 2 + 1 + 2 + 3;
+        int hauteurEstimee = lignesEstimees * hauteurLigne + 12;
+        int scaledHeight = client.getWindow().getScaledHeight();
+        int y = Math.min(170, Math.max(4, scaledHeight - hauteurEstimee));
+
         Field field = FieldTracker.construireField();
 
         // --- Section 1 : mes capacités ---

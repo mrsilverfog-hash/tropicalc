@@ -412,14 +412,14 @@ public class DamageCalculator {
         return Math.floor(v);
     }
 
-    /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierre Allégée. */
+    /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierrallégée. */
     private static double poidsEffectif(Pokemon p) {
         double poids = p.getPoidsHg();
         if (poids <= 0) return 0;
         String talent = p.getTalent();
         if ("Heavy Metal".equals(talent)) poids *= 2.0;
         if ("Light Metal".equals(talent)) poids *= 0.5;
-        if ("Pierre Allégée".equals(p.getObjet())) poids *= 0.5;
+        if ("Pierrallégée".equals(p.getObjet())) poids *= 0.5;
         return Math.max(1, poids);
     }
 
