@@ -115,6 +115,15 @@ public final class ResidualProjector {
             constant -= 1;
             ajouter(detail, "-Corps Gel");
         }
+        if ("Peau Sèche".equals(talent)) {
+            if (meteo == Field.Meteo.PLUIE || meteo == Field.Meteo.PLUIE_INTENSE) {
+                constant -= 2;
+                ajouter(detail, "-Peau Sèche");
+            } else if (meteo == Field.Meteo.SOLEIL || meteo == Field.Meteo.SOLEIL_INTENSE) {
+                constant += 2;
+                ajouter(detail, "Peau Sèche");
+            }
+        }
 
         if (constant == 0 && !toxik) return null;
 
