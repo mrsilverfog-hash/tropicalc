@@ -132,6 +132,7 @@ public class DamageCalculator {
         double stab = calculerSTAB(attaquant, capacite, ctx);
         double meteo = terrain.multiplicateurMeteo(capacite.getType());
         double champTerrain = estAuSol(attaquant) ? terrain.multiplicateurTerrain(capacite.getType()) : 1.0;
+        double champTerrainDef = multiplicateurTerrainDefensif(terrain, capacite, defenseur);
         double ecrans = (!critique && ecransDefenseur != null)
             ? ecransDefenseur.multiplicateur(capacite.getCategorie())
             : 1.0;
@@ -141,7 +142,7 @@ public class DamageCalculator {
         // Le jeu regroupe écrans, terrain et objets/talents (Ceinture Pro,
         // Filtre, Orbe Vie...) en UNE seule étape "other", arrondie une fois —
         // pas trois arrondis séquentiels, qui grignoteraient des dégâts en trop.
-        double autre = ecrans * champTerrain * ctx.multiplicateurDegatsFinal;
+        double autre = ecrans * champTerrain * champTerrainDef * ctx.multiplicateurDegatsFinal;
         for (int i = 0; i < 16; i++) {
             double alea = (85 + i) / 100.0;
             long d = base;
@@ -525,6 +526,27 @@ public class DamageCalculator {
 
     private static boolean estAuSol(Pokemon p) {
         if (p.possedeType(PokemonType.VOL)) return false;
-        return !"Lévitation".equals(p.getTalent());
+        if ("Lévitation".equals(p.getTalent())) return false;
+        return !"Ballon".equals(p.getObjet());
+    }
+
+    /**
+     * Multiplicateur défensif du terrain : dépend du sol du DÉFENSEUR,
+     * pas de l'attaquant (contrairement au boost de type Élec/Herbu/Psy).
+     * Champ Brumeux : Dragon x0.5. Champ Herbu : Séisme/Ébranlement/Amplitude x0.5.
+     */
+    private static double multiplicateurTerrainDefensif(Field terrain, Move capacite, Pokemon defenseur) {
+        if (!estAuSol(defenseur)) return 1.0;
+        if (terrain.getTerrain() == Field.TypeTerrain.BRUMEUX
+            && capacite.getType() == PokemonType.DRAGON) {
+            return 0.5;
+        }
+        if (terrain.getTerrain() == Field.TypeTerrain.HERBU) {
+            String nom = capacite.getNom();
+            if ("earthquake".equals(nom) || "bulldoze".equals(nom) || "magnitude".equals(nom)) {
+                return 0.5;
+            }
+        }
+        return 1.0;
     }
 }
