@@ -117,7 +117,7 @@ public interface AbilityModifier {
             }
         });
 
-        m.put("Adrénaline", new AbilityModifier() {
+        m.put("Agitation", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {

@@ -92,7 +92,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("unaware", "Lucidité");
         TALENTS.put("adaptability", "Adaptabilité");
         TALENTS.put("guts", "Cran");
-        TALENTS.put("hustle", "Adrénaline");
+        TALENTS.put("hustle", "Agitation");
         TALENTS.put("technician", "Technicien");
         TALENTS.put("ironfist", "Poing de Fer");
         TALENTS.put("strongjaw", "Mâchoire Brute");
