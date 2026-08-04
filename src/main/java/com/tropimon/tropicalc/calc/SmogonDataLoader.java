@@ -34,14 +34,30 @@ public final class SmogonDataLoader {
     private static volatile boolean charge = false;
     private static volatile boolean erreur = false;
 
-    private static final String[] URLS_ESSAI = {
-        "https://www.smogon.com/stats/2025-12/chaos/gen9nationaldex-0.json",
-        "https://www.smogon.com/stats/2025-11/chaos/gen9nationaldex-0.json",
-        "https://www.smogon.com/stats/2025-10/chaos/gen9nationaldex-0.json",
-        "https://www.smogon.com/stats/2025-09/chaos/gen9nationaldex-0.json",
-        "https://www.smogon.com/stats/2025-12/chaos/gen9ou-0.json",
-        "https://www.smogon.com/stats/2025-11/chaos/gen9ou-0.json",
-    };
+    /**
+     * URLs calculées dynamiquement sur les mois RÉCENTS, jamais codées en dur.
+     * Une liste de dates fixes périme d'elle-même chaque mois — c'était le cas
+     * ici : figée à "2025-12" pendant que Smogon publiait déjà jusqu'en 2026-06+,
+     * l'estimation Smogon tournait potentiellement à vide ou sur une méta
+     * obsolète depuis des mois sans que rien ne le signale.
+     * Smogon publie le mois M vers le 1er du mois M+1 : on essaie d'abord le
+     * mois précédent (le plus susceptible d'être déjà publié et stable), puis
+     * on remonte jusqu'à 4 mois en arrière, sur gen9nationaldex puis gen9ou.
+     */
+    private static String[] construireUrlsEssai() {
+        java.time.YearMonth maintenant = java.time.YearMonth.now(java.time.ZoneOffset.UTC);
+        List<String> urls = new ArrayList<>();
+        for (String format : new String[]{"gen9nationaldex", "gen9ou"}) {
+            for (int i = 1; i <= 4; i++) {
+                java.time.YearMonth mois = maintenant.minusMonths(i);
+                urls.add(String.format("https://www.smogon.com/stats/%04d-%02d/chaos/%s-0.json",
+                    mois.getYear(), mois.getMonthValue(), format));
+            }
+        }
+        return urls.toArray(new String[0]);
+    }
+
+    private static final String[] URLS_ESSAI = construireUrlsEssai();
 
     public static void charger() {
         Thread t = new Thread(() -> {
