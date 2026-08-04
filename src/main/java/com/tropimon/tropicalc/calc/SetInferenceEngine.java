@@ -13,14 +13,14 @@ public final class SetInferenceEngine {
     );
 
     public static final Set<String> TALENTS_OFFENSIFS = Set.of(
-        "Cran", "Adrénaline", "Adaptabilité", "Technicien", "Poing de Fer",
+        "Cran", "Agitation", "Adaptabilité", "Technicien", "Poing de Fer",
         "Mâchoire Brute", "Force Sable", "Verres Teintés", "Sans Limite", "Télécharge",
         "Coloforce", "Force Pure", "Griffe Dure"
     );
 
     public static final Set<String> OBJETS_DEFENSIFS = Set.of(
-        "Veste de Combat", "Évoluroc", "Grosse Bottes", "Restes", "Boue Noire",
-        "Baie Sitrus", "Baie Agava", "Baie Iapapa", "Baie Wiki", "Baie Mago", "Casque Clou"
+        "Veste de Combat", "Évoluroc", "Grosses Bottes", "Restes", "Boue Noire",
+        "Baie Sitrus", "Baie Agava", "Baie Iapapa", "Baie Wiki", "Baie Mago", "Casque Brut"
     );
 
     public static final Set<String> TALENTS_DEFENSIFS = Set.of(
