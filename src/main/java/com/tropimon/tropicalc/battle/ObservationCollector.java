@@ -853,6 +853,7 @@ public final class ObservationCollector {
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
         BoostTracker.reinitialiser();
+        TypeTracker.reinitialiser();
         FieldTracker.reinitialiser();
         pvJoueurDebutTour = -1;
         pvAdversaireDebutTour = -1;
