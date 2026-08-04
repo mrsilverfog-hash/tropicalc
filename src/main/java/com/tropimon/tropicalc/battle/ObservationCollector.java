@@ -58,7 +58,7 @@ public final class ObservationCollector {
         "quickattack", "extremespeed", "aquajet", "bulletpunch", "machpunch",
         "iceshard", "shadowsneak", "suckerpunch", "accelerock", "vacuumwave",
         "jetpunch", "grassyglide", "firstimpression", "fakeout", "feint",
-        "raging bolt", "thunderclap", "upperhand", "protect", "detect",
+        "thunderclap", "upperhand", "protect", "detect",
         "banefulbunker", "silktrap", "burningbulwark", "spikyshield", "kingsshield",
         "obstruct", "endure", "trickroom"
     );
