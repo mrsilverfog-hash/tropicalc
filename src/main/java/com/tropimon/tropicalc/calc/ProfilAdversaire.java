@@ -57,7 +57,7 @@ public class ProfilAdversaire {
         }
 
         Set<String> talentsDefSmogon = intersection(SetInferenceEngine.TALENTS_DEFENSIFS,
-            talentsSmogon.isEmpty() ? SetInferenceEngine.TALENTS_OFFENSIFS : talentsSmogon);
+            talentsReelsEspece != null ? talentsReelsEspece : SetInferenceEngine.TALENTS_DEFENSIFS);
 
         this.attaque = construireHypothese(plages, Stat.ATTAQUE, objetsSmogon, talentsSmogon);
         this.attaqueSpe = construireHypothese(plages, Stat.ATTAQUE_SPE, objetsSmogon, talentsSmogon);
