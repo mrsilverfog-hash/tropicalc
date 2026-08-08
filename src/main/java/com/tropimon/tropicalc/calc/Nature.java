@@ -21,14 +21,14 @@ public enum Nature {
     NAIF(Stat.VITESSE, Stat.DEFENSE_SPE),
     MODESTE(Stat.ATTAQUE_SPE, Stat.ATTAQUE),
     DOUX(Stat.ATTAQUE_SPE, Stat.DEFENSE),
-    PUDIQUE(null, null),
+    PUDIQUE(Stat.ATTAQUE_SPE, Stat.VITESSE),
     FOUFOU(Stat.ATTAQUE_SPE, Stat.DEFENSE_SPE),
-    DISCRET(Stat.ATTAQUE_SPE, Stat.VITESSE),
+    DISCRET(null, null),
     CALME(Stat.DEFENSE_SPE, Stat.ATTAQUE),
     GENTIL(Stat.DEFENSE_SPE, Stat.DEFENSE),
     PRUDENT(Stat.DEFENSE_SPE, Stat.ATTAQUE_SPE),
-    BIZARRE(null, null),
-    MALPOLI(Stat.DEFENSE_SPE, Stat.VITESSE);
+    BIZARRE(Stat.DEFENSE_SPE, Stat.ATTAQUE_SPE),
+    MALPOLI(null, null);
 
     private final Stat statAugmentee;
     private final Stat statDiminuee;
