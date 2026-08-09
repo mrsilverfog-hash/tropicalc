@@ -9,6 +9,43 @@ public final class FieldTracker {
     private FieldTracker() {
     }
 
+    /**
+     * Vrai si le Pokémon actif d'un des deux camps porte la Roche qui
+     * prolonge cette météo à 8 tours (approximation : vérifie les deux
+     * actifs sans savoir précisément lequel a lancé la capacité météo).
+     */
+    private static boolean rocheAllongeMeteo(Field.Meteo meteo) {
+        String rocheAttendue = switch (meteo) {
+            case SOLEIL -> "Roche Chaude";
+            case PLUIE -> "Roche Humide";
+            case SABLE -> "Roche Lisse";
+            case NEIGE -> "Roche Glacée";
+            default -> null;
+        };
+        if (rocheAttendue == null) return false;
+        try {
+            com.tropimon.tropicalc.calc.Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
+            com.tropimon.tropicalc.calc.Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            return (joueur != null && rocheAttendue.equals(joueur.getObjet()))
+                || (adversaire != null && rocheAttendue.equals(adversaire.getObjet()));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** 5 tours par défaut, 8 si l'un des deux actifs porte Argile Pouvoir. */
+    private static int dureeEcran() {
+        try {
+            com.tropimon.tropicalc.calc.Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
+            com.tropimon.tropicalc.calc.Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            boolean argile = (joueur != null && "Argile Pouvoir".equals(joueur.getObjet()))
+                || (adversaire != null && "Argile Pouvoir".equals(adversaire.getObjet()));
+            return argile ? 8 : 5;
+        } catch (Exception e) {
+            return 5;
+        }
+    }
+
     private static Field.Meteo meteoActive = Field.Meteo.AUCUNE;
     private static Field.TypeTerrain terrainActif = Field.TypeTerrain.AUCUN;
     private static boolean distorsion = false;
@@ -67,10 +104,13 @@ public final class FieldTracker {
                     case "desolateland" -> Field.Meteo.SOLEIL_INTENSE;
                     default -> meteoActive;
                 };
-                // 5 tours au déclenchement (8 avec Roche Lisse, non détectable :
-                // on affiche l'hypothèse basse). Les upkeep ne réarment pas.
+                // 5 tours au déclenchement, 8 si le lanceur porte la Roche
+                // adéquate (approximation : on regarde les deux actifs, un
+                // faux positif nécessiterait l'autre camp à porter la même
+                // roche sans avoir lancé la météo - cas marginal). Les
+                // upkeep ne réarment pas.
                 if ("start".equals(action) && nouvelle != meteoActive) {
-                    toursMeteoRestants = 5;
+                    toursMeteoRestants = rocheAllongeMeteo(nouvelle) ? 8 : 5;
                 }
                 meteoActive = nouvelle;
             }
@@ -90,13 +130,13 @@ public final class FieldTracker {
 
             switch (effet) {
                 case "reflect" -> {
-                    if (allie) reflectJoueur = debut; else { reflectAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
+                    if (allie) reflectJoueur = debut; else { reflectAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
                 }
                 case "lightscreen" -> {
-                    if (allie) lightScreenJoueur = debut; else { lightScreenAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
+                    if (allie) lightScreenJoueur = debut; else { lightScreenAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
                 }
                 case "auroraveil" -> {
-                    if (allie) auroraVeilJoueur = debut; else { auroraVeilAdversaire = debut; if (debut) toursEcransAdversaireRestants = 5; }
+                    if (allie) auroraVeilJoueur = debut; else { auroraVeilAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
                 }
                 case "stealthrock" -> {
                     if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
