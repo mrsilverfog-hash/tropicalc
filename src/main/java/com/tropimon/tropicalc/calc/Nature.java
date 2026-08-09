@@ -27,8 +27,8 @@ public enum Nature {
     CALME(Stat.DEFENSE_SPE, Stat.ATTAQUE),
     GENTIL(Stat.DEFENSE_SPE, Stat.DEFENSE),
     PRUDENT(Stat.DEFENSE_SPE, Stat.ATTAQUE_SPE),
-    BIZARRE(Stat.DEFENSE_SPE, Stat.ATTAQUE_SPE),
-    MALPOLI(null, null);
+    BIZARRE(null, null),
+    MALPOLI(Stat.DEFENSE_SPE, Stat.VITESSE);
 
     private final Stat statAugmentee;
     private final Stat statDiminuee;

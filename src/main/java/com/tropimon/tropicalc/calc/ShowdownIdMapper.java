@@ -51,9 +51,9 @@ public final class ShowdownIdMapper {
         NATURES.put("naive", Nature.NAIF);
         NATURES.put("modest", Nature.MODESTE);
         NATURES.put("mild", Nature.DOUX);
-        NATURES.put("bashful", Nature.PUDIQUE);
+        NATURES.put("bashful", Nature.DISCRET);
         NATURES.put("rash", Nature.FOUFOU);
-        NATURES.put("quiet", Nature.DISCRET);
+        NATURES.put("quiet", Nature.PUDIQUE);
         NATURES.put("calm", Nature.CALME);
         NATURES.put("gentle", Nature.GENTIL);
         NATURES.put("sassy", Nature.MALPOLI);
