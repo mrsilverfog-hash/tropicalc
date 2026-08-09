@@ -440,8 +440,27 @@ public class DamageCalculator {
         if (capacite.getType() == PokemonType.STELLAIRE) {
             return defenseur.isTeracristallise() ? 2.0 : 1.0;
         }
+
+        // Ballon : immunise le porteur au Sol tant qu'il le tient (mais pas
+        // contre Mille Flèches, qui ignore explicitement ce genre d'immunité)
+        if (capacite.getType() == PokemonType.SOL
+                && "Ballon".equals(defenseur.getObjet())
+                && !"thousandarrows".equals(capacite.getNom())) {
+            return 0.0;
+        }
+
         PokemonType t1 = defenseur.getTypeDefenseurEffectif1();
         PokemonType t2 = defenseur.getTypeDefenseurEffectif2();
+
+        // Mille Flèches : touche les types Vol comme s'ils n'étaient pas
+        // immunisés au Sol (son effet signature), reste du calcul inchangé
+        if ("thousandarrows".equals(capacite.getNom())) {
+            double eff1 = (t1 == PokemonType.VOL) ? 1.0 : capacite.getType().efficaciteContre(t1);
+            if (t2 == null) return eff1;
+            double eff2 = (t2 == PokemonType.VOL) ? 1.0 : capacite.getType().efficaciteContre(t2);
+            return eff1 * eff2;
+        }
+
         return capacite.getType().efficaciteContre(t1, t2);
     }
 

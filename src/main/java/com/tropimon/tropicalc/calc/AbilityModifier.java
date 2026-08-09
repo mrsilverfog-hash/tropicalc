@@ -251,7 +251,9 @@ public interface AbilityModifier {
         return new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                if (ctx.capacite.getType() == typeImmunise) {
+                // Mille Flèches ignore explicitement l'immunité Sol de Lévitation
+                if (ctx.capacite.getType() == typeImmunise
+                        && !"thousandarrows".equals(ctx.capacite.getNom())) {
                     ctx.immuniteType = true;
                 }
             }
