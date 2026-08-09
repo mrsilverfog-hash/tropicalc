@@ -80,9 +80,42 @@ public class DamageCalculator {
         if (objetAttaquant != null) objetAttaquant.appliquerCoteAttaquant(ctx);
 
         AbilityModifier talentDefenseur = AbilityModifier.pour(defenseur.getTalent());
-        if (talentDefenseur != null) talentDefenseur.appliquerCoteDefenseur(ctx);
+        // Brise Moule/Turboblaze/Téravolt ignorent le talent défensif de la
+        // cible (Garde Mystik, Lévitation, Filtre, Multi-écailles, Pare-Balles,
+        // Anti-Bruit, etc. n'ont alors aucun effet)
+        boolean ignoreTalentDefenseur = "Brise Moule".equals(attaquant.getTalent())
+            || "Turboblaze".equals(attaquant.getTalent())
+            || "Téravolt".equals(attaquant.getTalent());
+        if (talentDefenseur != null && !ignoreTalentDefenseur) talentDefenseur.appliquerCoteDefenseur(ctx);
         ItemModifier objetDefenseur = ItemModifier.pour(defenseur.getObjet());
         if (objetDefenseur != null) objetDefenseur.appliquerCoteDefenseur(ctx);
+
+        // Talents "de Ruine" (Gen 9) : réduisent une stat de -25% chez TOUS
+        // les Pokémon sur le terrain SAUF leur porteur. Portée globale, donc
+        // le porteur peut être l'attaquant OU le défenseur de ce calcul —
+        // seul celui qui NE porte PAS le talent est affecté (le porteur
+        // s'exclut lui-même). Chaque Ruine ne touche QUE sa propre stat
+        // (physique/spéciale) pour éviter un cumul erroné avec sa jumelle
+        // si les deux sont actives simultanément sur le terrain.
+        boolean physique = capacite.getCategorie() == Move.Categorie.PHYSIQUE;
+
+        if (physique) {
+            boolean attDefRuine = "Épée de Ruine".equals(attaquant.getTalent());
+            boolean defDefRuine = "Épée de Ruine".equals(defenseur.getTalent());
+            if (attDefRuine && !defDefRuine) ctx.multiplicateurDefense *= 0.75;
+
+            boolean attAtkRuine = "Tablettes de Ruine".equals(attaquant.getTalent());
+            boolean defAtkRuine = "Tablettes de Ruine".equals(defenseur.getTalent());
+            if (defAtkRuine && !attAtkRuine) ctx.multiplicateurAttaque *= 0.75;
+        } else {
+            boolean attSpdRuine = "Vase de Ruine".equals(attaquant.getTalent());
+            boolean defSpdRuine = "Vase de Ruine".equals(defenseur.getTalent());
+            if (attSpdRuine && !defSpdRuine) ctx.multiplicateurDefense *= 0.75;
+
+            boolean attSpaRuine = "Perles de Ruine".equals(attaquant.getTalent());
+            boolean defSpaRuine = "Perles de Ruine".equals(defenseur.getTalent());
+            if (defSpaRuine && !attSpaRuine) ctx.multiplicateurAttaque *= 0.75;
+        }
 
         if (ctx.immuniteType) return Resultat.immunise();
 
