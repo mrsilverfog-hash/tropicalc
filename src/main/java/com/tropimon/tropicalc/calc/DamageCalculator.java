@@ -449,6 +449,18 @@ public class DamageCalculator {
             return 0.0;
         }
 
+        // Lyophilisation (Freeze-Dry) : toujours super efficace contre l'Eau,
+        // même si ce type résiste normalement à la Glace. Le reste du calcul
+        // (double type, résistances additionnelles) suit la table normale.
+        if ("freezedry".equals(capacite.getNom())) {
+            PokemonType t1 = defenseur.getTypeDefenseurEffectif1();
+            PokemonType t2 = defenseur.getTypeDefenseurEffectif2();
+            double eff1 = (t1 == PokemonType.EAU) ? 2.0 : capacite.getType().efficaciteContre(t1);
+            if (t2 == null) return eff1;
+            double eff2 = (t2 == PokemonType.EAU) ? 2.0 : capacite.getType().efficaciteContre(t2);
+            return eff1 * eff2;
+        }
+
         PokemonType t1 = defenseur.getTypeDefenseurEffectif1();
         PokemonType t2 = defenseur.getTypeDefenseurEffectif2();
 
