@@ -32,8 +32,8 @@ public class DamageCalculator {
                 return;
             }
 
-            this.degatsMin = degatsParRoll[0];
-            this.degatsMax = degatsParRoll[degatsParRoll.length - 1];
+            int degatsBrutMin = degatsParRoll[0];
+            int degatsBrutMax = degatsParRoll[degatsParRoll.length - 1];
 
             // Fantômasque (Mimiquant/Mimigal) : le déguisement intact absorbe
             // le coup, remplacé par exactement 1/8 des PV max de "costume
@@ -41,15 +41,13 @@ public class DamageCalculator {
             // "déguisement intact" = à pleins PV (pas de suivi d'état dédié).
             boolean deguisementIntact = "Fantômasque".equals(defenseurRobuste)
                 && pvActuelsDefenseur == (int) pvMaxDefenseur;
-            int degatsMinEffectifs = degatsMin;
-            int degatsMaxEffectifs = degatsMax;
             if (deguisementIntact) {
                 int cout = Math.max(1, (int) (pvMaxDefenseur / 8));
-                degatsMinEffectifs = cout;
-                degatsMaxEffectifs = cout;
+                degatsBrutMin = cout;
+                degatsBrutMax = cout;
             }
-            this.degatsMin = degatsMinEffectifs;
-            this.degatsMax = degatsMaxEffectifs;
+            this.degatsMin = degatsBrutMin;
+            this.degatsMax = degatsBrutMax;
             this.pourcentageMin = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMin) / pvMaxDefenseur;
             this.pourcentageMax = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMax) / pvMaxDefenseur;
 
