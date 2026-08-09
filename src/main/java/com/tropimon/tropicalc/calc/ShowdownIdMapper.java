@@ -61,6 +61,7 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("sturdy", "Robuste");
         TALENTS.put("heavymetal", "Heavy Metal");
         TALENTS.put("lightmetal", "Light Metal");
         TALENTS.put("icebody", "Corps Gel");

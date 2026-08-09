@@ -16,7 +16,7 @@ public class DamageCalculator {
         public final double efficaciteType;
 
         private Resultat(int[] degatsParRoll, double pvMaxDefenseur, int pvActuelsDefenseur,
-                          boolean immunise, double efficaciteType) {
+                          boolean immunise, double efficaciteType, String defenseurRobuste) {
             this.degatsParRoll = degatsParRoll;
             this.immunise = immunise;
             this.efficaciteType = efficaciteType;
@@ -35,15 +35,27 @@ public class DamageCalculator {
             this.degatsMax = degatsParRoll[degatsParRoll.length - 1];
             this.pourcentageMin = pvMaxDefenseur == 0 ? 0 : (100.0 * degatsMin) / pvMaxDefenseur;
             this.pourcentageMax = pvMaxDefenseur == 0 ? 0 : (100.0 * degatsMax) / pvMaxDefenseur;
-            this.koGaranti = degatsMin >= pvActuelsDefenseur;
-            this.koPossible = degatsMax >= pvActuelsDefenseur;
+
+            // Robuste : survit toujours à 1 PV si le coup serait fatal ET
+            // que le défenseur est à pleins PV (ignoré si l'attaquant a
+            // une capacité qui ignore les talents, non modélisé ici)
+            boolean robusteActif = "Robuste".equals(defenseurRobuste)
+                && pvActuelsDefenseur == (int) pvMaxDefenseur;
+            if (robusteActif) {
+                this.koGaranti = false;
+                this.koPossible = degatsMax >= pvActuelsDefenseur && degatsMin < pvActuelsDefenseur;
+            } else {
+                this.koGaranti = degatsMin >= pvActuelsDefenseur;
+                this.koPossible = degatsMax >= pvActuelsDefenseur;
+            }
         }
 
-        public static Resultat immunise() { return new Resultat(new int[0], 0, 0, true, 0.0); }
-        public static Resultat sansDegats() { return new Resultat(new int[0], 0, 0, false, 1.0); }
+        public static Resultat immunise() { return new Resultat(new int[0], 0, 0, true, 0.0, null); }
+        public static Resultat sansDegats() { return new Resultat(new int[0], 0, 0, false, 1.0, null); }
 
         private static Resultat depuis(int[] degats, Pokemon defenseur, double efficacite) {
-            return new Resultat(degats, defenseur.getPvMax(), defenseur.getPvActuels(), false, efficacite);
+            return new Resultat(degats, defenseur.getPvMax(), defenseur.getPvActuels(), false, efficacite,
+                defenseur.getTalent());
         }
     }
 
