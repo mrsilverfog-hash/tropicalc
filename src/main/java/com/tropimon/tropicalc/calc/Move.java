@@ -104,7 +104,9 @@ public class Move {
         public Builder contact() { this.contact = true; return this; }
         public Builder son() { this.son = true; return this; }
         public Builder poing() { this.poing = true; return this; }
+        public Builder poing(boolean v) { this.poing = v; return this; }
         public Builder morsure() { this.morsure = true; return this; }
+        public Builder morsure(boolean v) { this.morsure = v; return this; }
         public Builder pulsation() { this.pulsation = true; return this; }
         public Builder tranchant() { this.tranchant = true; return this; }
         public Builder bombe() { this.bombe = true; return this; }

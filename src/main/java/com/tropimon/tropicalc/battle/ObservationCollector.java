@@ -884,6 +884,9 @@ public final class ObservationCollector {
         else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         return com.tropimon.tropicalc.calc.Move.builder(template.getName(), type, categorie)
             .puissance((int) template.getPower())
+            
+            .poing(com.tropimon.tropicalc.calc.MoveFlags.estPoing(template.getName()))
+            .morsure(com.tropimon.tropicalc.calc.MoveFlags.estMorsure(template.getName()))
             .build();
     }
 }

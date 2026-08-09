@@ -437,6 +437,9 @@ public final class CalcOverlay implements HudRenderCallback {
         else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         return com.tropimon.tropicalc.calc.Move.builder(coup.getName(), type, categorie)
             .puissance((int) coup.getPower())
+            
+            .poing(com.tropimon.tropicalc.calc.MoveFlags.estPoing(coup.getName()))
+            .morsure(com.tropimon.tropicalc.calc.MoveFlags.estMorsure(coup.getName()))
             .build();
     }
 
@@ -450,6 +453,9 @@ public final class CalcOverlay implements HudRenderCallback {
         else categorie = com.tropimon.tropicalc.calc.Move.Categorie.STATUT;
         return com.tropimon.tropicalc.calc.Move.builder(template.getName(), type, categorie)
             .puissance((int) template.getPower())
+            
+            .poing(com.tropimon.tropicalc.calc.MoveFlags.estPoing(template.getName()))
+            .morsure(com.tropimon.tropicalc.calc.MoveFlags.estMorsure(template.getName()))
             .build();
     }
 }
