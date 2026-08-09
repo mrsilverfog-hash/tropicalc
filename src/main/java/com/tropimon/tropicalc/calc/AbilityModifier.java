@@ -263,14 +263,14 @@ public interface AbilityModifier {
     }
 
     // Capacités à flag "ball/bomb" les plus jouées en compétitif (Pare-Balles)
-    private static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
+    static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
         "shadowball", "sludgebomb", "aurasphere", "focusblast", "energyball",
         "electroball", "gyroball", "weatherball", "mudbomb", "octazooka",
         "eggbomb", "rockwrecker", "acidspray", "pyroball", "mistball",
         "pollenpuff", "beakblast", "barrage");
 
     // Capacités à flag "son" les plus jouées en compétitif (Anti-Bruit)
-    private static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
+    static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
         "boomburst", "hypervoice", "bugbuzz", "roar", "screech",
         "sing", "supersonic", "growl", "snarl", "uproar",
         "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
