@@ -1,0 +1,59 @@
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.11.1!
+
+Here are the highlights of this release:
+ - Parallel load and store for Configuration Cache
+ - Java compilation errors at the end of the build output
+ - Consolidated report for warnings and deprecations
+
+For more details see https://docs.gradle.org/8.11.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :
+Fabric Loom: 1.9.2
+:remapping 52 mods from modImplementation (java-api)
+
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources
+> Task :processIncludeJars
+> Task :sourcesJar
+> Task :processTestResources NO-SOURCE
+> Task :validateAccessWidener NO-SOURCE
+> Task :remapSourcesJar
+> Task :compileKotlin
+
+> Task :compileJava
+/home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/calc/DamageCalculator.java:51: error: variable degatsMin might already have been assigned
+            this.degatsMin = degatsMinEffectifs;
+                ^
+/home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/calc/DamageCalculator.java:52: error: variable degatsMax might already have been assigned
+            this.degatsMax = degatsMaxEffectifs;
+                ^
+2 errors
+
+> Task :compileJava FAILED
+[Incubating] Problems report is available at: file:///home/runner/work/tropicalc/tropicalc/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  /home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/calc/DamageCalculator.java:51: error: variable degatsMin might already have been assigned
+              this.degatsMin = degatsMinEffectifs;
+                  ^
+  /home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/calc/DamageCalculator.java:52: error: variable degatsMax might already have been assigned
+              this.degatsMax = degatsMaxEffectifs;
+                  ^
+  2 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1m 54s
+6 actionable tasks: 6 executed
