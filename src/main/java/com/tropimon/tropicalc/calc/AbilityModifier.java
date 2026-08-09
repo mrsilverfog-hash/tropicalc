@@ -24,6 +24,8 @@ public interface AbilityModifier {
         Map<String, AbilityModifier> m = new HashMap<>();
 
         m.put("Lévitation", immuniteContre(PokemonType.SOL));
+        m.put("Pare-Balles", immuniteContreCapacites(CAPACITES_BALLE));
+        m.put("Anti-Bruit", immuniteContreCapacites(CAPACITES_SON));
         m.put("Absorb'Eau", immuniteContre(PokemonType.EAU));
         m.put("Absorb'Volt", immuniteContre(PokemonType.ELECTRIK));
         m.put("Lavabo", immuniteContre(PokemonType.EAU));
@@ -254,6 +256,31 @@ public interface AbilityModifier {
                 // Mille Flèches ignore explicitement l'immunité Sol de Lévitation
                 if (ctx.capacite.getType() == typeImmunise
                         && !"thousandarrows".equals(ctx.capacite.getNom())) {
+                    ctx.immuniteType = true;
+                }
+            }
+        };
+    }
+
+    // Capacités à flag "ball/bomb" les plus jouées en compétitif (Pare-Balles)
+    private static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
+        "shadowball", "sludgebomb", "aurasphere", "focusblast", "energyball",
+        "electroball", "gyroball", "weatherball", "mudbomb", "octazooka",
+        "eggbomb", "rockwrecker", "acidspray", "pyroball", "mistball",
+        "pollenpuff", "beakblast", "barrage");
+
+    // Capacités à flag "son" les plus jouées en compétitif (Anti-Bruit)
+    private static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
+        "boomburst", "hypervoice", "bugbuzz", "roar", "screech",
+        "sing", "supersonic", "growl", "snarl", "uproar",
+        "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
+        "relicsong", "round", "chatter", "grasswhistle", "metalsound");
+
+    private static AbilityModifier immuniteContreCapacites(java.util.Set<String> capacitesConcernees) {
+        return new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (capacitesConcernees.contains(ctx.capacite.getNom())) {
                     ctx.immuniteType = true;
                 }
             }
