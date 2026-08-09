@@ -34,8 +34,24 @@ public class DamageCalculator {
 
             this.degatsMin = degatsParRoll[0];
             this.degatsMax = degatsParRoll[degatsParRoll.length - 1];
-            this.pourcentageMin = pvMaxDefenseur == 0 ? 0 : (100.0 * degatsMin) / pvMaxDefenseur;
-            this.pourcentageMax = pvMaxDefenseur == 0 ? 0 : (100.0 * degatsMax) / pvMaxDefenseur;
+
+            // Fantômasque (Mimiquant/Mimigal) : le déguisement intact absorbe
+            // le coup, remplacé par exactement 1/8 des PV max de "costume
+            // brisé" (pas les dégâts réels de la capacité). Approximation :
+            // "déguisement intact" = à pleins PV (pas de suivi d'état dédié).
+            boolean deguisementIntact = "Fantômasque".equals(defenseurRobuste)
+                && pvActuelsDefenseur == (int) pvMaxDefenseur;
+            int degatsMinEffectifs = degatsMin;
+            int degatsMaxEffectifs = degatsMax;
+            if (deguisementIntact) {
+                int cout = Math.max(1, (int) (pvMaxDefenseur / 8));
+                degatsMinEffectifs = cout;
+                degatsMaxEffectifs = cout;
+            }
+            this.degatsMin = degatsMinEffectifs;
+            this.degatsMax = degatsMaxEffectifs;
+            this.pourcentageMin = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMin) / pvMaxDefenseur;
+            this.pourcentageMax = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMax) / pvMaxDefenseur;
 
             // Robuste ou Ceinture Focus : survit à 1 PV sur un coup fatal
             // si à pleins PV (garanti, pas de chance d'échec pour ces deux-là)
