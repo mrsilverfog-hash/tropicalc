@@ -405,7 +405,7 @@ public class DamageCalculator {
     }
 
     /** Vitesse en combat : stages, Écharpe Choix, paralysie, talents météo. */
-    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo) {
+    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
         double v = p.getStatCalculee(Stat.VITESSE);
         int stage = p.getStage(Stat.VITESSE);
         if (stage >= 0) v = v * (2.0 + stage) / 2.0;
@@ -421,8 +421,55 @@ public class DamageCalculator {
             || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)) {
             v *= 2.0;
         }
+        if (Stat.VITESSE == statLaPlusHaute(p) && estBoostParadox(p, meteo, terrain)) {
+            v *= 1.5;
+        }
         if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
         return Math.floor(v);
+    }
+
+    // Compatibilité : ancien appel sans terrain (Moteur Quark alors ignoré)
+    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo) {
+        return vitesseEnCombat(p, meteo, Field.TypeTerrain.AUCUN);
+    }
+
+    /**
+     * Protosynthèse / Moteur Quark : +30% (+50% Vitesse) sur la stat la plus
+     * haute du Pokémon si actif. Actif sous soleil intense (Protosynthèse) ou
+     * terrain électrique (Moteur Quark) uniquement — le cas "activé une fois
+     * via Énergie Booster puis persistant" n'est pas modélisé (nécessiterait
+     * un suivi de consommation d'objet à usage unique, non disponible ici).
+     */
+    private static boolean estBoostParadox(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
+        String talent = p.getTalent();
+        if ("Proto-Synthèse".equals(talent)) {
+            return meteo == Field.Meteo.SOLEIL_INTENSE || meteo == Field.Meteo.SOLEIL;
+        }
+        if ("Moteur Quark".equals(talent)) {
+            return terrain == Field.TypeTerrain.ELECTRIQUE;
+        }
+        return false;
+    }
+
+    /** La stat (hors PV) avec la plus haute valeur calculée (avant stages). */
+    private static Stat statLaPlusHaute(Pokemon p) {
+        Stat meilleure = Stat.ATTAQUE;
+        int max = -1;
+        for (Stat s : new Stat[]{Stat.ATTAQUE, Stat.DEFENSE, Stat.ATTAQUE_SPE, Stat.DEFENSE_SPE, Stat.VITESSE}) {
+            int v = p.getStatCalculee(s);
+            if (v > max) {
+                max = v;
+                meilleure = s;
+            }
+        }
+        return meilleure;
+    }
+
+    /** Multiplicateur Protosynthèse/Moteur Quark applicable à une stat donnée (offense/défense). */
+    private static double multiplicateurParadox(Pokemon p, Stat stat, Field terrain) {
+        if (stat != statLaPlusHaute(p)) return 1.0;
+        if (!estBoostParadox(p, terrain.getMeteo(), terrain.getTerrain())) return 1.0;
+        return stat == Stat.VITESSE ? 1.5 : 1.3;
     }
 
     /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierrallégée. */
@@ -506,6 +553,7 @@ public class DamageCalculator {
 
         double valeur = appliquerStage(base, stage);
         valeur *= ctx.multiplicateurAttaque;
+        valeur *= multiplicateurParadox(attaquant, stat, ctx.terrain);
 
         if (stat == Stat.ATTAQUE && attaquant.getStatut() == Pokemon.Statut.BRULURE && !ctx.ignorerPenaliteBrulure) {
             valeur *= 0.5;
@@ -527,6 +575,7 @@ public class DamageCalculator {
 
         double valeur = appliquerStage(base, stage);
         valeur *= ctx.multiplicateurDefense;
+        valeur *= multiplicateurParadox(defenseur, stat, terrain);
 
         if (terrain.getMeteo() == Field.Meteo.SABLE && stat == Stat.DEFENSE_SPE
             && defenseur.possedeType(PokemonType.ROCHE)) {

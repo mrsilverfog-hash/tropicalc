@@ -423,8 +423,8 @@ public final class CalcOverlay implements HudRenderCallback {
     }
 
     private static int vitesseEffective(Pokemon p) {
-        return (int) DamageCalculator.vitesseEnCombat(p,
-            FieldTracker.construireField().getMeteo());
+        Field f = FieldTracker.construireField();
+        return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain());
     }
 
     private com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {

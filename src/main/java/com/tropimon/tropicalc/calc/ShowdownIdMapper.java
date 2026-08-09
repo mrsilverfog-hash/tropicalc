@@ -175,7 +175,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("lumberry", "Baie Lum");
         OBJETS.put("salacberry", "Baie Salac");
         OBJETS.put("petayaberry", "Baie Petaya");
-        OBJETS.put("boosterenergy", "Énergie Turbo");
+        OBJETS.put("boosterenergy", "Énergie Booster");
         OBJETS.put("clearamulet", "Amulette Claire");
         OBJETS.put("covertcloak", "Cape Secrète");
         OBJETS.put("mirrorherb", "Herbe Miroir");

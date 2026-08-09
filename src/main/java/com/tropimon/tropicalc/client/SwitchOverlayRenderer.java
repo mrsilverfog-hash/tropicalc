@@ -258,8 +258,8 @@ public final class SwitchOverlayRenderer {
 
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {
         if (appliquerStages) {
-            return (int) DamageCalculator.vitesseEnCombat(p,
-                FieldTracker.construireField().getMeteo());
+            Field f = FieldTracker.construireField();
+            return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain());
         }
         // Sans stages (candidat qui rentre) : vitesse de base + objet + statut + météo
         Pokemon copie = p;
