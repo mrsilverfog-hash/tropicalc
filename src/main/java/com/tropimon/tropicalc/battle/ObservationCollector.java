@@ -142,7 +142,8 @@ public final class ObservationCollector {
             }
 
             if (coupJoueurDuTour != null && "knockoff".equals(coupJoueurDuTour.showdownId())
-                    && perteAdversaire >= 0.5) {
+                    && perteAdversaire >= 0.5
+                    && !"Glu".equals(adversaire.getTalent())) {
                 OBJETS_RETIRES.add(adversaire.getEspece());
             }
 
