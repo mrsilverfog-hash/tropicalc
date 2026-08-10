@@ -211,6 +211,16 @@ public interface AbilityModifier {
             }
         });
 
+        // Dent de Dragon (Regidrago) : +50% dégâts sur les capacités Dragon
+        m.put("Dent de Dragon", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.DRAGON) {
+                    ctx.multiplicateurDegatsFinal *= 1.5;
+                }
+            }
+        });
+
         m.put("Tranchant", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
