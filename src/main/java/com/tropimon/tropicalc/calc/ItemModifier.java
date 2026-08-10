@@ -85,6 +85,19 @@ public interface ItemModifier {
             }
         });
 
+        // Gant de Boxe (Punching Glove) : +10% dégâts sur les capacités "poing",
+        // cumulable avec Poing de Fer (confirmé Bulbapedia). Rend aussi la
+        // capacité non-contact en vrai jeu (recul par contact/Casque Brut
+        // évité) - non modélisé ici, limite mineure.
+        m.put("Gant de Boxe", new ItemModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (com.tropimon.tropicalc.calc.MoveFlags.estPoing(ctx.capacite.getNom())) {
+                    ctx.multiplicateurDegatsFinal *= 1.1;
+                }
+            }
+        });
+
         return m;
     }
 }

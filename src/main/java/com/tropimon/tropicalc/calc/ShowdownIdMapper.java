@@ -198,7 +198,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("clearamulet", "Amulette Claire");
         OBJETS.put("covertcloak", "Cape Secrète");
         OBJETS.put("mirrorherb", "Herbe Miroir");
-        OBJETS.put("punchingglove", "Gant Boxe");
+        OBJETS.put("punchingglove", "Gant de Boxe");
     }
 
     private static String normaliser(String id) {
