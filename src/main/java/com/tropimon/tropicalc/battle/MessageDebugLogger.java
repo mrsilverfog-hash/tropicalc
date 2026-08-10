@@ -25,6 +25,8 @@ public final class MessageDebugLogger {
         return FabricLoader.getInstance().getConfigDir().resolve("tropicalc-messages-debug.txt");
     }
 
+    private static final long TAILLE_MAX_OCTETS = 500_000; // ~500 Ko
+
     public static void log(Text message) {
         try {
             if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
@@ -48,7 +50,16 @@ public final class MessageDebugLogger {
                 }
             }
             sb.append("\n");
-            Files.writeString(fichier(), sb.toString(),
+
+            Path f = fichier();
+            // Repart de zéro si le fichier a grossi au-delà du raisonnable
+            // (session longue) : on garde toujours les données récentes,
+            // les plus utiles pour un diagnostic en cours, sans fichier
+            // qui grossit indéfiniment sur plusieurs heures de jeu.
+            if (Files.exists(f) && Files.size(f) > TAILLE_MAX_OCTETS) {
+                Files.writeString(f, "=== log tronqué (taille max atteinte) ===\n");
+            }
+            Files.writeString(f, sb.toString(),
                 StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (Exception ignored) {
         }
