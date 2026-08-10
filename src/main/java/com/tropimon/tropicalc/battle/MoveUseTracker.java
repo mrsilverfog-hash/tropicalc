@@ -17,6 +17,15 @@ public final class MoveUseTracker {
     public record CoupDetecte(String showdownId, String proprietaire) {
     }
 
+    /** Extrait le nom du propriétaire (Minecraft) depuis un arg owned_pokemon imbriqué. */
+    private static String extraireProprietaire(Object arg) {
+        if (!(arg instanceof Text texteArg) || !(texteArg.getContent() instanceof TranslatableTextContent sousContenu)) return null;
+        if (!CLE_PROPRIETAIRE.equals(sousContenu.getKey())) return null;
+        Object[] sousArgs = sousContenu.getArgs();
+        if (sousArgs.length > 0 && sousArgs[0] instanceof String nom) return nom;
+        return null;
+    }
+
     public static void traiterMessage(Text message) {
         if (message == null) return;
 
@@ -50,6 +59,39 @@ public final class MoveUseTracker {
 
         if (CLE_NOUVEAU_TOUR.equals(cle)) {
             ObservationCollector.signalerNouveauTour();
+            return;
+        }
+
+        // Confirmation DIRECTE et fiable par message explicite du jeu -
+        // remplace/renforce les heuristiques par seuils de dégâts existantes.
+        if ("cobblemon.battle.ability.generic".equals(cle)) {
+            Object[] args = contenu.getArgs();
+            if (args.length >= 2 && args[1] instanceof String talentAnglais) {
+                String proprietaire = extraireProprietaire(args[0]);
+                ObservationCollector.confirmerTalentParMessage(proprietaire, talentAnglais);
+            }
+            return;
+        }
+        if (cle.startsWith("cobblemon.battle.damage.")) {
+            String source = cle.substring("cobblemon.battle.damage.".length());
+            Object[] args = contenu.getArgs();
+            if (args.length >= 2) {
+                // arg[1] = le PORTEUR de la source de dégâts (celui qui inflige le recul)
+                String porteur = extraireProprietaire(args[1]);
+                if ("rockyhelmet".equals(source)) {
+                    ObservationCollector.confirmerObjetParMessage(porteur, source);
+                } else if ("ironbarbs".equals(source) || "roughskin".equals(source)) {
+                    ObservationCollector.confirmerTalentParMessage(porteur, source);
+                }
+            }
+            return;
+        }
+        if (cle.startsWith("cobblemon.battle.heal.") && !cle.endsWith(".generic")) {
+            Object[] args = contenu.getArgs();
+            if (args.length >= 2 && args[1] instanceof String objetAnglais) {
+                String proprietaire = extraireProprietaire(args[0]);
+                ObservationCollector.confirmerObjetParMessageNomAnglais(proprietaire, objetAnglais);
+            }
             return;
         }
 

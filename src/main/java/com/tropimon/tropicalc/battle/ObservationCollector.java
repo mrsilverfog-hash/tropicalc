@@ -663,6 +663,56 @@ public final class ObservationCollector {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
     }
 
+    /**
+     * Confirmation DIRECTE d'un talent par message explicite du jeu
+     * ("cobblemon.battle.ability.generic"), bien plus fiable que les
+     * heuristiques par seuils de dégâts. Ne concerne que l'adversaire
+     * (le talent du joueur est déjà connu avec certitude).
+     */
+    public static void confirmerTalentParMessage(String proprietaire, String talentAnglais) {
+        try {
+            Boolean estAdversaire = determinerAttaquant(proprietaire);
+            if (!Boolean.TRUE.equals(estAdversaire)) return;
+            Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            if (adversaire == null) return;
+            String talentFr = ShowdownIdMapper.talent(talentAnglais);
+            if (talentFr != null) {
+                TALENTS_CONFIRMES.put(adversaire.getEspece(), talentFr);
+                if ("Épine de Fer".equals(talentFr) || "Peau Dure".equals(talentFr)) {
+                    TALENTS_CHIP_CONFIRMES.add(adversaire.getEspece());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Confirmation DIRECTE d'un objet par message explicite du jeu, avec
+     * l'id showdown déjà connu (ex: "rockyhelmet" tiré de la clé du message
+     * "cobblemon.battle.damage.rockyhelmet"). Ne concerne que l'adversaire.
+     */
+    public static void confirmerObjetParMessage(String proprietaire, String objetShowdownId) {
+        try {
+            Boolean estAdversaire = determinerAttaquant(proprietaire);
+            if (!Boolean.TRUE.equals(estAdversaire)) return;
+            Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            if (adversaire == null) return;
+            String objetFr = ShowdownIdMapper.objet(objetShowdownId);
+            if (objetFr != null) OBJETS_CONFIRMES.put(adversaire.getEspece(), objetFr);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Confirmation DIRECTE d'un objet dont le nom arrive en anglais espacé
+     * ("Black Sludge", "Leftovers") plutôt qu'en id showdown - la
+     * normalisation du mapper gère déjà espaces/majuscules donc le lookup
+     * fonctionne directement. Ne concerne que l'adversaire.
+     */
+    public static void confirmerObjetParMessageNomAnglais(String proprietaire, String objetAnglaisEspace) {
+        confirmerObjetParMessage(proprietaire, objetAnglaisEspace);
+    }
+
     // Espèces dont le talent à chip de contact (Épine de Fer / Peau Dure) est observé
     private static final Set<String> TALENTS_CHIP_CONFIRMES = new HashSet<>();
 
