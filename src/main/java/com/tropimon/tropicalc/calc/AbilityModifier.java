@@ -291,6 +291,31 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Seigneur Suprême", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                // +10% par coéquipier KO (max +50%, 5 coéquipiers). Le
+                // porteur peut être le joueur ou l'adversaire : on compare
+                // l'espèce de l'attaquant à celle du joueur actif pour
+                // savoir de quelle équipe compter les KO.
+                try {
+                    Pokemon joueurActif = com.tropimon.tropicalc.battle.BattleStateTracker.getJoueurActifDepuisEquipe();
+                    boolean estJoueur = joueurActif != null
+                        && joueurActif.getEspece().equalsIgnoreCase(ctx.attaquant.getEspece());
+                    java.util.List<com.cobblemon.mod.common.pokemon.Pokemon> equipe = estJoueur
+                        ? com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeJoueur()
+                        : com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeAdversaire();
+                    if (equipe == null) return;
+                    int koCount = 0;
+                    for (com.cobblemon.mod.common.pokemon.Pokemon p : equipe) {
+                        if (p != null && p.isFainted()) koCount++;
+                    }
+                    ctx.multiplicateurDegatsFinal *= 1.0 + Math.min(5, koCount) * 0.1;
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
         return m;
     }
 

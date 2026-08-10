@@ -56,6 +56,21 @@ public final class BattleStateTracker {
         return null;
     }
 
+    /** Équipe complète de l'adversaire (pour Seigneur Suprême et similaires). */
+    public static List<com.cobblemon.mod.common.pokemon.Pokemon> getEquipeAdversaire() {
+        ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+        ClientBattleActor acteurJoueur = getActeurJoueur();
+        if (battle == null || acteurJoueur == null) return null;
+        for (var side : battle.getSides()) {
+            if (!side.getActors().contains(acteurJoueur)) {
+                for (ClientBattleActor acteur : side.getActors()) {
+                    return acteur.getPokemon();
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Vrai si le Pokémon actif du joueur est transformé (Métamorph/Imposteur,
      * Morphing) : l'espèce en combat diffère de celle de l'entité d'équipe.
