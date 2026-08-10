@@ -150,10 +150,10 @@ public final class ShowdownIdMapper {
         TALENTS.put("turboblaze", "Turboblaze");
         TALENTS.put("teravolt", "Téravolt");
         TALENTS.put("supremeoverlord", "Seigneur Suprême");
-        TALENTS.put("vesselofruin", "Vase de Ruine");
-        TALENTS.put("swordofruin", "Épée de Ruine");
-        TALENTS.put("beadsofruin", "Perles de Ruine");
-        TALENTS.put("tabletsofruin", "Tablettes de Ruine");
+        TALENTS.put("vesselofruin", "Urne du Fléau");
+        TALENTS.put("swordofruin", "Épée du Fléau");
+        TALENTS.put("beadsofruin", "Perles du Fléau");
+        TALENTS.put("tabletsofruin", "Tablettes du Fléau");
         TALENTS.put("protean", "Protéen");
         TALENTS.put("libero", "Libéro");
         TALENTS.put("disguise", "Fantômasque");

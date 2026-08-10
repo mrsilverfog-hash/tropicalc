@@ -126,35 +126,43 @@ public class DamageCalculator {
         // si les deux sont actives simultanément sur le terrain.
         boolean physique = capacite.getCategorie() == Move.Categorie.PHYSIQUE;
         // Choc Psy/Frappe Psy/Lame Ointe : catégorie SPÉCIALE mais utilisent
-        // la Défense PHYSIQUE du défenseur. Épée de Ruine (qui réduit la
+        // la Défense PHYSIQUE du défenseur. Épée du Fléau (qui réduit la
         // Défense) doit donc s'appliquer même si la capacité est spéciale -
-        // seul le routage DÉFENSIF des Ruines en tient compte (Tablettes/
-        // Perles restent indexées sur la catégorie standard : les cas
-        // Tricherie et Choc Pied, où la stat OFFENSIVE réelle diverge aussi
-        // de la catégorie, sont une limite connue non corrigée ici).
+        // seul le routage DÉFENSIF en tient compte (Tablettes/Perles restent
+        // indexées sur la catégorie standard : les cas Tricherie et Choc
+        // Pied, où la stat OFFENSIVE réelle diverge aussi de la catégorie,
+        // sont une limite connue non corrigée ici).
         String nomPourRuine = capacite.getNom();
         boolean statDefUtiliseeEstPhysique = physique
             || "psyshock".equals(nomPourRuine) || "psystrike".equals(nomPourRuine)
             || "secretsword".equals(nomPourRuine);
 
+        // Épée du Fléau (Chien-Pao) : -25% Défense de tous sauf le porteur.
         if (statDefUtiliseeEstPhysique) {
-            boolean attDefRuine = "Épée de Ruine".equals(attaquant.getTalent());
-            boolean defDefRuine = "Épée de Ruine".equals(defenseur.getTalent());
-            if (attDefRuine && !defDefRuine) ctx.multiplicateurDefense *= 0.75;
+            boolean attEpee = "Épée du Fléau".equals(attaquant.getTalent());
+            boolean defEpee = "Épée du Fléau".equals(defenseur.getTalent());
+            if (attEpee && !defEpee) ctx.multiplicateurDefense *= 0.75;
         } else {
-            boolean attSpdRuine = "Vase de Ruine".equals(attaquant.getTalent());
-            boolean defSpdRuine = "Vase de Ruine".equals(defenseur.getTalent());
-            if (attSpdRuine && !defSpdRuine) ctx.multiplicateurDefense *= 0.75;
+            // Perles du Fléau (Chi-Yu) : -25% Défense Spéciale de tous sauf
+            // le porteur (nom vérifié sur Poképédia, la stat concernée est
+            // bien la Défense Spéciale, pas l'Attaque Spéciale).
+            boolean attPerles = "Perles du Fléau".equals(attaquant.getTalent());
+            boolean defPerles = "Perles du Fléau".equals(defenseur.getTalent());
+            if (attPerles && !defPerles) ctx.multiplicateurDefense *= 0.75;
         }
 
+        // Tablettes du Fléau (Wo-Chien) : -25% Attaque de tous sauf le porteur.
         if (physique) {
-            boolean attAtkRuine = "Tablettes de Ruine".equals(attaquant.getTalent());
-            boolean defAtkRuine = "Tablettes de Ruine".equals(defenseur.getTalent());
-            if (defAtkRuine && !attAtkRuine) ctx.multiplicateurAttaque *= 0.75;
+            boolean attTablettes = "Tablettes du Fléau".equals(attaquant.getTalent());
+            boolean defTablettes = "Tablettes du Fléau".equals(defenseur.getTalent());
+            if (defTablettes && !attTablettes) ctx.multiplicateurAttaque *= 0.75;
         } else {
-            boolean attSpaRuine = "Perles de Ruine".equals(attaquant.getTalent());
-            boolean defSpaRuine = "Perles de Ruine".equals(defenseur.getTalent());
-            if (defSpaRuine && !attSpaRuine) ctx.multiplicateurAttaque *= 0.75;
+            // Urne du Fléau (Ting-Lu) : -25% Attaque Spéciale de tous sauf
+            // le porteur (nom vérifié sur Poképédia, la stat concernée est
+            // bien l'Attaque Spéciale, pas la Défense Spéciale).
+            boolean attUrne = "Urne du Fléau".equals(attaquant.getTalent());
+            boolean defUrne = "Urne du Fléau".equals(defenseur.getTalent());
+            if (defUrne && !attUrne) ctx.multiplicateurAttaque *= 0.75;
         }
 
         // Aura Sombre / Aura Fée (Yveltal/Xerneas) : +33% dégâts du type
