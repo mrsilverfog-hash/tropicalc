@@ -20,6 +20,12 @@ public final class MoveUseTracker {
     public static void traiterMessage(Text message) {
         if (message == null) return;
 
+        // Diagnostic temporaire : capture la clé + les arguments de CHAQUE
+        // message dans config/tropicalc-messages-debug.txt. À retirer une
+        // fois la vraie clé du changement de type (Protéen/Libéro) confirmée
+        // par observation en jeu - actuellement une hypothèse non vérifiée.
+        MessageDebugLogger.log(message);
+
         BoostTracker.traiterMessage(message);
         FieldTracker.traiterMessage(message);
         TypeTracker.traiterMessage(message);
