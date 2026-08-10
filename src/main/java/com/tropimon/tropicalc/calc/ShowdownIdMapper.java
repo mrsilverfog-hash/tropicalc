@@ -61,6 +61,7 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("quickfeet", "Pied Véloce");
         TALENTS.put("sharpness", "Tranchant");
         TALENTS.put("eartheater", "Absorbe-Terre");
         TALENTS.put("iceface", "Tête de Gel");

@@ -484,7 +484,14 @@ public class DamageCalculator {
         if (Stat.VITESSE == statLaPlusHaute(p) && estBoostParadox(p, meteo, terrain)) {
             v *= 1.5;
         }
-        if (p.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        // Pied Véloce (Quick Feet) : +50% sous n'importe quel statut, et
+        // ignore le malus de paralysie habituel (sinon net une pénalité)
+        boolean piedVeloce = "Pied Véloce".equals(talent) && p.getStatut() != Pokemon.Statut.AUCUN;
+        if (piedVeloce) {
+            v *= 1.5;
+        } else if (p.getStatut() == Pokemon.Statut.PARALYSIE) {
+            v *= 0.5;
+        }
         return Math.floor(v);
     }
 
