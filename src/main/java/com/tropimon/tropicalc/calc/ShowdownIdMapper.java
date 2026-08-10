@@ -61,6 +61,9 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("darkaura", "Aura Sombre");
+        TALENTS.put("fairyaura", "Aura Fée");
+        TALENTS.put("aurabreak", "Aura Brisée");
         TALENTS.put("prismarmor", "Prisme-Armure");
         TALENTS.put("quickfeet", "Pied Véloce");
         TALENTS.put("sharpness", "Tranchant");

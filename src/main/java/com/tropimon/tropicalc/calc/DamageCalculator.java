@@ -144,6 +144,23 @@ public class DamageCalculator {
             if (defSpaRuine && !attSpaRuine) ctx.multiplicateurAttaque *= 0.75;
         }
 
+        // Aura Sombre / Aura Fée (Yveltal/Xerneas) : +33% dégâts du type
+        // correspondant pour TOUS les Pokémon sur le terrain (portée globale,
+        // comme les Ruines), inversé en -25% si l'un des deux actifs a Aura
+        // Brisée (Aura Break neutralise et inverse les deux auras à la fois).
+        boolean auraSombreActive = "Aura Sombre".equals(attaquant.getTalent())
+            || "Aura Sombre".equals(defenseur.getTalent());
+        boolean auraFeeActive = "Aura Fée".equals(attaquant.getTalent())
+            || "Aura Fée".equals(defenseur.getTalent());
+        boolean auraBrisee = "Aura Brisée".equals(attaquant.getTalent())
+            || "Aura Brisée".equals(defenseur.getTalent());
+        if (auraSombreActive && capacite.getType() == PokemonType.TENEBRES) {
+            ctx.multiplicateurDegatsFinal *= auraBrisee ? 0.75 : 1.33;
+        }
+        if (auraFeeActive && capacite.getType() == PokemonType.FEE) {
+            ctx.multiplicateurDegatsFinal *= auraBrisee ? 0.75 : 1.33;
+        }
+
         if (ctx.immuniteType) return Resultat.immunise();
 
         double efficacite = calculerEfficaciteType(capacite, defenseur);
