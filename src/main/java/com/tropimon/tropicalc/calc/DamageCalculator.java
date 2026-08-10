@@ -125,20 +125,33 @@ public class DamageCalculator {
         // (physique/spéciale) pour éviter un cumul erroné avec sa jumelle
         // si les deux sont actives simultanément sur le terrain.
         boolean physique = capacite.getCategorie() == Move.Categorie.PHYSIQUE;
+        // Choc Psy/Frappe Psy/Lame Ointe : catégorie SPÉCIALE mais utilisent
+        // la Défense PHYSIQUE du défenseur. Épée de Ruine (qui réduit la
+        // Défense) doit donc s'appliquer même si la capacité est spéciale -
+        // seul le routage DÉFENSIF des Ruines en tient compte (Tablettes/
+        // Perles restent indexées sur la catégorie standard : les cas
+        // Tricherie et Choc Pied, où la stat OFFENSIVE réelle diverge aussi
+        // de la catégorie, sont une limite connue non corrigée ici).
+        String nomPourRuine = capacite.getNom();
+        boolean statDefUtiliseeEstPhysique = physique
+            || "psyshock".equals(nomPourRuine) || "psystrike".equals(nomPourRuine)
+            || "secretsword".equals(nomPourRuine);
 
-        if (physique) {
+        if (statDefUtiliseeEstPhysique) {
             boolean attDefRuine = "Épée de Ruine".equals(attaquant.getTalent());
             boolean defDefRuine = "Épée de Ruine".equals(defenseur.getTalent());
             if (attDefRuine && !defDefRuine) ctx.multiplicateurDefense *= 0.75;
-
-            boolean attAtkRuine = "Tablettes de Ruine".equals(attaquant.getTalent());
-            boolean defAtkRuine = "Tablettes de Ruine".equals(defenseur.getTalent());
-            if (defAtkRuine && !attAtkRuine) ctx.multiplicateurAttaque *= 0.75;
         } else {
             boolean attSpdRuine = "Vase de Ruine".equals(attaquant.getTalent());
             boolean defSpdRuine = "Vase de Ruine".equals(defenseur.getTalent());
             if (attSpdRuine && !defSpdRuine) ctx.multiplicateurDefense *= 0.75;
+        }
 
+        if (physique) {
+            boolean attAtkRuine = "Tablettes de Ruine".equals(attaquant.getTalent());
+            boolean defAtkRuine = "Tablettes de Ruine".equals(defenseur.getTalent());
+            if (defAtkRuine && !attAtkRuine) ctx.multiplicateurAttaque *= 0.75;
+        } else {
             boolean attSpaRuine = "Perles de Ruine".equals(attaquant.getTalent());
             boolean defSpaRuine = "Perles de Ruine".equals(defenseur.getTalent());
             if (defSpaRuine && !attSpaRuine) ctx.multiplicateurAttaque *= 0.75;
