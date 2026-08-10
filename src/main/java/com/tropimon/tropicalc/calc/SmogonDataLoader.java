@@ -18,7 +18,7 @@ public final class SmogonDataLoader {
     }
 
     public record ParsedSpread(String natureShowdownId, int hpEv, int atkEv, int defEv,
-                                int spaEv, int spdEv, int speEv) {
+                                int spaEv, int spdEv, int speEv, double poids) {
     }
 
     public record SmogonPokemonData(
@@ -149,13 +149,13 @@ public final class SmogonDataLoader {
         entrees.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
         List<ParsedSpread> resultat = new ArrayList<>();
         for (int i = 0; i < Math.min(n, entrees.size()); i++) {
-            ParsedSpread s = parserSpread(entrees.get(i).getKey());
+            ParsedSpread s = parserSpread(entrees.get(i).getKey(), entrees.get(i).getValue());
             if (s != null) resultat.add(s);
         }
         return resultat;
     }
 
-    private static ParsedSpread parserSpread(String spread) {
+    private static ParsedSpread parserSpread(String spread, double poids) {
         try {
             String[] parties = spread.split(":");
             if (parties.length != 2) return null;
@@ -165,7 +165,7 @@ public final class SmogonDataLoader {
             return new ParsedSpread(nature,
                 Integer.parseInt(evs[0].trim()), Integer.parseInt(evs[1].trim()),
                 Integer.parseInt(evs[2].trim()), Integer.parseInt(evs[3].trim()),
-                Integer.parseInt(evs[4].trim()), Integer.parseInt(evs[5].trim()));
+                Integer.parseInt(evs[4].trim()), Integer.parseInt(evs[5].trim()), poids);
         } catch (Exception e) {
             return null;
         }

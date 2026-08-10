@@ -1,5 +1,6 @@
 package com.tropimon.tropicalc.calc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,12 +79,30 @@ public class ProfilAdversaire {
         return h;
     }
 
+    /**
+     * Ignore les spreads trop marginaux (moins de 15% du poids du spread le
+     * plus populaire) avant de calculer la plage min/max par stat. Sans ce
+     * filtre, un set minoritaire à 2-3% d'usage élargit la plage jusqu'à 0
+     * EV même quand 80%+ des joueurs investissent le maximum sur cette
+     * stat — donnant une impression trompeuse d'incertitude totale.
+     */
     private static Map<Stat, int[]> calculerPlagesEV(List<SmogonDataLoader.ParsedSpread> spreads) {
+        double poidsMax = 0;
+        for (SmogonDataLoader.ParsedSpread s : spreads) {
+            poidsMax = Math.max(poidsMax, s.poids());
+        }
+        double seuil = poidsMax * 0.15;
+        List<SmogonDataLoader.ParsedSpread> spreadsRetenus = new ArrayList<>();
+        for (SmogonDataLoader.ParsedSpread s : spreads) {
+            if (s.poids() >= seuil) spreadsRetenus.add(s);
+        }
+        if (spreadsRetenus.isEmpty()) spreadsRetenus = spreads;   // filet de sécurité
+
         Map<Stat, int[]> resultat = new HashMap<>();
         for (Stat s : new Stat[]{Stat.PV, Stat.ATTAQUE, Stat.DEFENSE,
                                   Stat.ATTAQUE_SPE, Stat.DEFENSE_SPE, Stat.VITESSE}) {
             int min = 252, max = 0;
-            for (SmogonDataLoader.ParsedSpread spread : spreads) {
+            for (SmogonDataLoader.ParsedSpread spread : spreadsRetenus) {
                 int ev = getEvFromSpread(spread, s);
                 min = Math.min(min, ev);
                 max = Math.max(max, ev);
