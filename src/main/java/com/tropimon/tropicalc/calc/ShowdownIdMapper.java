@@ -66,6 +66,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("iceface", "Tête de Gel");
         TALENTS.put("waterbubble", "Aquabulle");
         TALENTS.put("rockypayload", "Porte-Roche");
+        TALENTS.put("transistor", "Transistor");
         TALENTS.put("bulletproof", "Pare-Balles");
         TALENTS.put("soundproof", "Anti-Bruit");
         TALENTS.put("sturdy", "Robuste");

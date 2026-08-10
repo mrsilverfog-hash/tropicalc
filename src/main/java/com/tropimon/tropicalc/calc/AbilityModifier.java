@@ -212,6 +212,16 @@ public interface AbilityModifier {
             }
         });
 
+        // +30% en génération actuelle (était +50% en Gen 8 uniquement, réduit depuis)
+        m.put("Transistor", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.ELECTRIK) {
+                    ctx.multiplicateurDegatsFinal *= 1.3;
+                }
+            }
+        });
+
         m.put("Sans Limite", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
