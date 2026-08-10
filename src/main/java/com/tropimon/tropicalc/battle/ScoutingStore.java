@@ -34,6 +34,30 @@ public final class ScoutingStore {
     // joueur adverse -> (espèce -> faits)
     private static Map<String, Map<String, Faits>> donnees = null;
 
+    /**
+     * Migration silencieuse des anciens noms français vers les noms corrects,
+     * appliquée aux données déjà persistées sur disque avant ces corrections
+     * (session de test où plusieurs noms ont été fixés en cours de route).
+     * Sans ça, un fait scouté avec l'ancien nom devient inerte (affiché mais
+     * sans effet, plus aucune clé du registre ne le reconnaît).
+     */
+    private static final Map<String, String> ANCIENS_NOMS = Map.of(
+        "Gant Boxe", "Gant de Boxe",
+        "Épée de Ruine", "Épée du Fléau",
+        "Vase de Ruine", "Urne du Fléau",
+        "Tablettes de Ruine", "Tablettes du Fléau",
+        "Perles de Ruine", "Perles du Fléau",
+        "Adrénaline", "Agitation",
+        "Lunatique", "Farceur",
+        "Casque Clou", "Casque Brut",
+        "Grosse Bottes", "Grosses Bottes",
+        "Énergie Turbo", "Énergie Booster"
+    );
+
+    private static String migrer(String nom) {
+        return nom == null ? null : ANCIENS_NOMS.getOrDefault(nom, nom);
+    }
+
     private ScoutingStore() {
     }
 
@@ -52,6 +76,26 @@ public final class ScoutingStore {
                 }
             } catch (Exception e) {
                 // Fichier corrompu ou illisible : on repart de zéro sans crasher
+            }
+
+            // Migration des anciens noms sur les données fraîchement chargées
+            boolean migrationAppliquee = false;
+            for (Map<String, Faits> parEspece : donnees.values()) {
+                for (Faits f : parEspece.values()) {
+                    String talentMigre = migrer(f.talent);
+                    String objetMigre = migrer(f.objet);
+                    if (!java.util.Objects.equals(talentMigre, f.talent)) {
+                        f.talent = talentMigre;
+                        migrationAppliquee = true;
+                    }
+                    if (!java.util.Objects.equals(objetMigre, f.objet)) {
+                        f.objet = objetMigre;
+                        migrationAppliquee = true;
+                    }
+                }
+            }
+            if (migrationAppliquee) {
+                sauvegarder();
             }
         }
         return donnees;
