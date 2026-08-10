@@ -34,6 +34,22 @@ public interface AbilityModifier {
         m.put("Paratonnerre", immuniteContre(PokemonType.ELECTRIK));
         m.put("Herbivore", immuniteContre(PokemonType.PLANTE));
 
+        // Bien Cuit : immunité Feu totale (le boost Défense +2 associé,
+        // effet de stage persistant, n'est pas modélisé ici)
+        m.put("Bien Cuit", immuniteContre(PokemonType.FEU));
+
+        // Sel Purificateur : résistance SUPPLÉMENTAIRE (x0.5 en plus de la
+        // table de type normale) aux capacités Spectre, au-delà de la
+        // résistance de type déjà calculée normalement
+        m.put("Sel Purificateur", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.SPECTRE) {
+                    ctx.multiplicateurDegatsFinal *= 0.5;
+                }
+            }
+        });
+
         // Garde Mystik : seules les attaques super efficaces touchent
         // (indépendant du type de la capacité, contrairement aux immunités ci-dessus)
         m.put("Garde Mystik", new AbilityModifier() {

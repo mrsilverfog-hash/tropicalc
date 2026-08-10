@@ -61,6 +61,8 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("purifyingsalt", "Sel Purificateur");
+        TALENTS.put("wellbakedbody", "Bien Cuit");
         TALENTS.put("toxicboost", "Rage Poison");
         TALENTS.put("flareboost", "Rage Brûlure");
         TALENTS.put("orichalcumpulse", "Pouls Orichalque");
