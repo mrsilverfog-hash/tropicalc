@@ -17,7 +17,7 @@ public class DamageCalculator {
 
         private Resultat(int[] degatsParRoll, double pvMaxDefenseur, int pvActuelsDefenseur,
                           boolean immunise, double efficaciteType, String defenseurRobuste,
-                          String defenseurObjet) {
+                          String defenseurObjet, boolean capacitePhysique) {
             this.degatsParRoll = degatsParRoll;
             this.immunise = immunise;
             this.efficaciteType = efficaciteType;
@@ -34,6 +34,18 @@ public class DamageCalculator {
 
             int degatsBrutMin = degatsParRoll[0];
             int degatsBrutMax = degatsParRoll[degatsParRoll.length - 1];
+
+            // Tête de Gel (Bekaglaçon) : bloque TOTALEMENT (0 dégât, pas de
+            // coût fixe) le premier coup de catégorie PHYSIQUE si intact.
+            // Ne protège PAS contre le spécial, même Choc Psy/Lame Ointe qui
+            // utilisent la Défense physique mais restent catégorie spéciale.
+            boolean teteDeGelActive = "Tête de Gel".equals(defenseurRobuste)
+                && pvActuelsDefenseur == (int) pvMaxDefenseur
+                && capacitePhysique;
+            if (teteDeGelActive) {
+                degatsBrutMin = 0;
+                degatsBrutMax = 0;
+            }
 
             // Fantômasque (Mimiquant/Mimigal) : le déguisement intact absorbe
             // le coup, remplacé par exactement 1/8 des PV max de "costume
@@ -65,12 +77,13 @@ public class DamageCalculator {
             }
         }
 
-        public static Resultat immunise() { return new Resultat(new int[0], 0, 0, true, 0.0, null, null); }
-        public static Resultat sansDegats() { return new Resultat(new int[0], 0, 0, false, 1.0, null, null); }
+        public static Resultat immunise() { return new Resultat(new int[0], 0, 0, true, 0.0, null, null, false); }
+        public static Resultat sansDegats() { return new Resultat(new int[0], 0, 0, false, 1.0, null, null, false); }
 
-        private static Resultat depuis(int[] degats, Pokemon defenseur, double efficacite) {
+        private static Resultat depuis(int[] degats, Pokemon defenseur, double efficacite, Move capacite) {
             return new Resultat(degats, defenseur.getPvMax(), defenseur.getPvActuels(), false, efficacite,
-                defenseur.getTalent(), defenseur.getObjet());
+                defenseur.getTalent(), defenseur.getObjet(),
+                capacite.getCategorie() == Move.Categorie.PHYSIQUE);
         }
     }
 
@@ -141,7 +154,7 @@ public class DamageCalculator {
         if (fixes != null) {
             int[] d = new int[16];
             java.util.Arrays.fill(d, Math.max(1, fixes));
-            return Resultat.depuis(d, defenseur, efficacite);
+            return Resultat.depuis(d, defenseur, efficacite, capacite);
         }
 
         appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
@@ -225,7 +238,7 @@ public class DamageCalculator {
             }
         }
 
-        return Resultat.depuis(degats, defenseur, efficacite);
+        return Resultat.depuis(degats, defenseur, efficacite, capacite);
     }
 
     // Capacités multi-coups (id showdown -> {coups min, coups max})
