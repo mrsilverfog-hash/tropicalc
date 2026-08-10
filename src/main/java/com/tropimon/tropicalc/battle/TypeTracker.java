@@ -59,6 +59,21 @@ public final class TypeTracker {
             }
         }
 
+        // Format réel observé : le type arrive en argument STRING BRUTE
+        // ("Ice", "Fire"...), pas en objet de traduction imbriqué comme
+        // supposé initialement. Repli si le type n'a pas été trouvé ci-dessus.
+        if (type == null) {
+            for (Object arg : contenu.getArgs()) {
+                if (arg instanceof String brut) {
+                    PokemonType t = ShowdownIdMapper.type(brut);
+                    if (t != null) {
+                        type = t;
+                        break;
+                    }
+                }
+            }
+        }
+
         if (type == null) return;
         boolean joueur = Boolean.TRUE.equals(estJoueur);
 
