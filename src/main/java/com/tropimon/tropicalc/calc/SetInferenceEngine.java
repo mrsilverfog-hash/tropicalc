@@ -15,17 +15,24 @@ public final class SetInferenceEngine {
     public static final Set<String> TALENTS_OFFENSIFS = Set.of(
         "Cran", "Agitation", "Adaptabilité", "Technicien", "Poing de Fer",
         "Mâchoire Brute", "Force Sable", "Verres Teintés", "Sans Limite", "Télécharge",
-        "Coloforce", "Force Pure", "Griffe Dure"
+        "Coloforce", "Force Pure", "Griffe Dure", "Rage Poison", "Rage Brûlure",
+        "Pouls Orichalque", "Moteur Hadron", "Dent de Dragon", "Œil Révélateur",
+        "Aquabulle", "Porte-Roche", "Seigneur Suprême", "Tranchant", "Transistor"
     );
 
     public static final Set<String> OBJETS_DEFENSIFS = Set.of(
         "Veste de Combat", "Évoluroc", "Grosses Bottes", "Restes", "Boue Noire",
-        "Baie Sitrus", "Baie Agava", "Baie Iapapa", "Baie Wiki", "Baie Mago", "Casque Brut"
+        "Baie Sitrus", "Baie Agava", "Baie Iapapa", "Baie Wiki", "Baie Mago", "Casque Brut",
+        "Ceinture Focus", "Garde-Talent"
     );
 
     public static final Set<String> TALENTS_DEFENSIFS = Set.of(
         "Isograisse", "Filtre", "Solide Roc", "Multi-écailles", "Spectro-Bouclier",
-        "Régé-Force", "Médic Nature"
+        "Régé-Force", "Médic Nature", "Sel Purificateur", "Bien Cuit", "Prisme-Armure",
+        "Absorb'Eau", "Absorb'Volt", "Absorbe-Terre", "Anti-Bruit", "Aquabulle",
+        "Boule de Poils", "Garde Mystik", "Herbivore", "Lavabo", "Lucidité",
+        "Lévitation", "Paratonnerre", "Pare-Balles", "Peau Sèche", "Toison Épaisse",
+        "Torche", "Écailles Glacées", "Robuste", "Fantômasque"
     );
 
     public static void narrow(StatHypothesis hypothese, Stat statCible, boolean estStatAttaquant,
