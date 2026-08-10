@@ -203,6 +203,15 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Porte-Roche", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.ROCHE) {
+                    ctx.multiplicateurDegatsFinal *= 1.5;
+                }
+            }
+        });
+
         m.put("Sans Limite", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
