@@ -23,6 +23,18 @@ public final class MoveFlags {
         "bite", "crunch", "firefang", "thunderfang", "icefang",
         "poisonfang", "hyperfang", "jawlock", "psychicfangs");
 
+    // Capacités "tranchantes" (Tranchant/Sharpness +50%) les plus jouées
+    private static final Set<String> TRANCHANT = Set.of(
+        "leafblade", "airslash", "nightslash", "crosspoison", "psychocut",
+        "razorshell", "sacredsword", "aerialace", "slash", "cut",
+        "stoneaxe", "ceaselessedge", "kowtowcleave", "populationbomb",
+        "behemothblade", "razorleaf", "solarblade", "xscissor",
+        "aircutter", "furycutter");
+
+    public static boolean estTranchant(String showdownId) {
+        return showdownId != null && TRANCHANT.contains(showdownId);
+    }
+
     public static boolean estPoing(String showdownId) {
         return showdownId != null && POING.contains(showdownId);
     }

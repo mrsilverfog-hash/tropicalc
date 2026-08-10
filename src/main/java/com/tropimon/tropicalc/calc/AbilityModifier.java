@@ -193,6 +193,15 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Tranchant", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (com.tropimon.tropicalc.calc.MoveFlags.estTranchant(ctx.capacite.getNom())) {
+                    ctx.multiplicateurDegatsFinal *= 1.5;
+                }
+            }
+        });
+
         m.put("Sans Limite", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
