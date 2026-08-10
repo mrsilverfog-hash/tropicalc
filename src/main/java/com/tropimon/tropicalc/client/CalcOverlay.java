@@ -359,7 +359,8 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
             context.drawText(client.textRenderer,
                 Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
-                    top.hpEv(), top.defEv(), top.spdEv(), top.natureShowdownId())),
+                    top.hpEv(), top.defEv(), top.spdEv(),
+                    ShowdownIdMapper.nature(top.natureShowdownId()))),
                 x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
 
