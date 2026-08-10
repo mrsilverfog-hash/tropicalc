@@ -317,6 +317,27 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Rage Poison", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
+                        && (ctx.attaquant.getStatut() == Pokemon.Statut.POISON
+                            || ctx.attaquant.getStatut() == Pokemon.Statut.POISON_GRAVE)) {
+                    ctx.multiplicateurDegatsFinal *= 1.5;
+                }
+            }
+        });
+
+        m.put("Rage Brûlure", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE
+                        && ctx.attaquant.getStatut() == Pokemon.Statut.BRULURE) {
+                    ctx.multiplicateurDegatsFinal *= 1.5;
+                }
+            }
+        });
+
         return m;
     }
 
