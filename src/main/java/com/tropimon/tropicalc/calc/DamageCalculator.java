@@ -109,10 +109,12 @@ public class DamageCalculator {
         AbilityModifier talentDefenseur = AbilityModifier.pour(defenseur.getTalent());
         // Brise Moule/Turboblaze/Téravolt ignorent le talent défensif de la
         // cible (Garde Mystik, Lévitation, Filtre, Multi-écailles, Pare-Balles,
-        // Anti-Bruit, etc. n'ont alors aucun effet)
-        boolean ignoreTalentDefenseur = "Brise Moule".equals(attaquant.getTalent())
+        // Anti-Bruit, etc. n'ont alors aucun effet) - SAUF si le défenseur
+        // porte Garde-Talent, qui protège explicitement contre ce contournement.
+        boolean ignoreTalentDefenseur = ("Brise Moule".equals(attaquant.getTalent())
             || "Turboblaze".equals(attaquant.getTalent())
-            || "Téravolt".equals(attaquant.getTalent());
+            || "Téravolt".equals(attaquant.getTalent()))
+            && !"Garde-Talent".equals(defenseur.getObjet());
         if (talentDefenseur != null && !ignoreTalentDefenseur) talentDefenseur.appliquerCoteDefenseur(ctx);
         ItemModifier objetDefenseur = ItemModifier.pour(defenseur.getObjet());
         if (objetDefenseur != null) objetDefenseur.appliquerCoteDefenseur(ctx);
