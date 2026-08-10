@@ -64,6 +64,7 @@ public interface AbilityModifier {
         };
         m.put("Filtre", reductionSuperEfficace);
         m.put("Solide Roc", reductionSuperEfficace);
+        m.put("Prisme-Armure", reductionSuperEfficace);
 
         AbilityModifier demiDegatsPleinePv = new AbilityModifier() {
             @Override
