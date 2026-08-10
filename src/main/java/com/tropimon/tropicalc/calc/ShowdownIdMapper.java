@@ -62,6 +62,7 @@ public final class ShowdownIdMapper {
 
         TALENTS.put("levitate", "Lévitation");
         TALENTS.put("sharpness", "Tranchant");
+        TALENTS.put("eartheater", "Absorbe-Terre");
         TALENTS.put("bulletproof", "Pare-Balles");
         TALENTS.put("soundproof", "Anti-Bruit");
         TALENTS.put("sturdy", "Robuste");

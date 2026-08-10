@@ -23,7 +23,8 @@ public interface AbilityModifier {
     private static Map<String, AbilityModifier> construireRegistre() {
         Map<String, AbilityModifier> m = new HashMap<>();
 
-        m.put("Lévitation", immuniteContre(PokemonType.SOL));
+        m.put("Lévitation", immuniteContre(PokemonType.SOL, true));
+        m.put("Absorbe-Terre", immuniteContre(PokemonType.SOL));
         m.put("Pare-Balles", immuniteContreCapacites(CAPACITES_BALLE));
         m.put("Anti-Bruit", immuniteContreCapacites(CAPACITES_SON));
         m.put("Absorb'Eau", immuniteContre(PokemonType.EAU));
@@ -259,12 +260,22 @@ public interface AbilityModifier {
     }
 
     private static AbilityModifier immuniteContre(PokemonType typeImmunise) {
+        return immuniteContre(typeImmunise, false);
+    }
+
+    /**
+     * @param percePariMilleFleches vrai uniquement pour Lévitation : Mille
+     *                              Flèches ne perce QUE l'immunité liée au vol
+     *                              (Vol/Lévitation), pas les immunités
+     *                              d'absorption comme Absorb'Eau ou
+     *                              Absorbe-Terre qui n'ont rien à voir.
+     */
+    private static AbilityModifier immuniteContre(PokemonType typeImmunise, boolean percePariMilleFleches) {
         return new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                // Mille Flèches ignore explicitement l'immunité Sol de Lévitation
                 if (ctx.capacite.getType() == typeImmunise
-                        && !"thousandarrows".equals(ctx.capacite.getNom())) {
+                        && !(percePariMilleFleches && "thousandarrows".equals(ctx.capacite.getNom()))) {
                     ctx.immuniteType = true;
                 }
             }
