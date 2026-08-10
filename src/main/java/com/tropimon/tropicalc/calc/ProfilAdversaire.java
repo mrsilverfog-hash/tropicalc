@@ -60,12 +60,22 @@ public class ProfilAdversaire {
         Set<String> talentsDefSmogon = intersection(SetInferenceEngine.TALENTS_DEFENSIFS,
             talentsReelsEspece != null ? talentsReelsEspece : SetInferenceEngine.TALENTS_DEFENSIFS);
 
+        // Objets défensifs candidats : mêmes objets top Smogon que côté
+        // offensif (Smogon ne sépare pas offensif/défensif, un objet peut
+        // apparaître dans les deux rôles), croisés avec la liste des objets
+        // effectivement défensifs. Sans ça, on testait TOUS les objets
+        // défensifs génériques (Ceinture Focus, toutes les baies...) même
+        // quand Smogon montre que 0% des joueurs les utilisent sur cette
+        // espèce précise - élargissant inutilement l'espace d'hypothèses.
+        Set<String> objetsDefSmogon = intersection(objetsSmogon, SetInferenceEngine.OBJETS_DEFENSIFS);
+        if (objetsDefSmogon.isEmpty()) objetsDefSmogon = SetInferenceEngine.OBJETS_DEFENSIFS;
+
         this.attaque = construireHypothese(plages, Stat.ATTAQUE, objetsSmogon, talentsSmogon);
         this.attaqueSpe = construireHypothese(plages, Stat.ATTAQUE_SPE, objetsSmogon, talentsSmogon);
         this.defense = construireHypothese(plages, Stat.DEFENSE,
-            SetInferenceEngine.OBJETS_DEFENSIFS, talentsDefSmogon);
+            objetsDefSmogon, talentsDefSmogon);
         this.defenseSpe = construireHypothese(plages, Stat.DEFENSE_SPE,
-            SetInferenceEngine.OBJETS_DEFENSIFS, talentsDefSmogon);
+            objetsDefSmogon, talentsDefSmogon);
     }
 
     private static StatHypothesis construireHypothese(Map<Stat, int[]> plages, Stat stat,
