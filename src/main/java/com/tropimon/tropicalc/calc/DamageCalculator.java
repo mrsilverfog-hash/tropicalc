@@ -186,7 +186,7 @@ public class DamageCalculator {
 
         if (ctx.immuniteType) return Resultat.immunise();
 
-        double efficacite = calculerEfficaciteType(capacite, defenseur);
+        double efficacite = calculerEfficaciteType(capacite, defenseur, attaquant);
         if (efficacite == 0.0) return Resultat.immunise();
 
         // Dégâts fixes : ignorent stats, boosts, STAB et efficacité (sauf immunité)
@@ -608,7 +608,7 @@ public class DamageCalculator {
         return Math.max(1, poids);
     }
 
-    private static double calculerEfficaciteType(Move capacite, Pokemon defenseur) {
+    private static double calculerEfficaciteType(Move capacite, Pokemon defenseur, Pokemon attaquant) {
         if (capacite.getType() == PokemonType.STELLAIRE) {
             return defenseur.isTeracristallise() ? 2.0 : 1.0;
         }
@@ -642,6 +642,19 @@ public class DamageCalculator {
             double eff1 = (t1 == PokemonType.VOL) ? 1.0 : capacite.getType().efficaciteContre(t1);
             if (t2 == null) return eff1;
             double eff2 = (t2 == PokemonType.VOL) ? 1.0 : capacite.getType().efficaciteContre(t2);
+            return eff1 * eff2;
+        }
+
+        // Œil Révélateur (Ursaking Lune Vermeille) : les capacités Normal et
+        // Combat de son porteur touchent les Spectre de façon neutre (1.0x),
+        // au lieu de l'immunité totale habituelle. Le reste du calcul (autre
+        // type du défenseur) suit la table normale.
+        boolean oeilRevelateur = "Œil Révélateur".equals(attaquant.getTalent())
+            && (capacite.getType() == PokemonType.NORMAL || capacite.getType() == PokemonType.COMBAT);
+        if (oeilRevelateur) {
+            double eff1 = (t1 == PokemonType.SPECTRE) ? 1.0 : capacite.getType().efficaciteContre(t1);
+            if (t2 == null) return eff1;
+            double eff2 = (t2 == PokemonType.SPECTRE) ? 1.0 : capacite.getType().efficaciteContre(t2);
             return eff1 * eff2;
         }
 
