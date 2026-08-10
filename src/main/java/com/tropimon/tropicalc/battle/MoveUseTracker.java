@@ -30,8 +30,23 @@ public final class MoveUseTracker {
         FieldTracker.traiterMessage(message);
         TypeTracker.traiterMessage(message);
 
+        // Switch explicite (confirmé par observation réelle en jeu, format
+        // "cobblemon.battle.switch.self"/".other") : reset immédiat et fiable
+        // des trackers du camp concerné, en complément (pas remplacement) de
+        // la détection indirecte par comparaison d'espèce déjà en place.
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
+
+        if ("cobblemon.battle.switch.self".equals(cle)) {
+            BoostTracker.reinitialiserJoueur();
+            TypeTracker.reinitialiserJoueur();
+            return;
+        }
+        if ("cobblemon.battle.switch.other".equals(cle)) {
+            BoostTracker.reinitialiserAdversaire();
+            TypeTracker.reinitialiserAdversaire();
+            return;
+        }
 
         if (CLE_NOUVEAU_TOUR.equals(cle)) {
             ObservationCollector.signalerNouveauTour();
