@@ -326,12 +326,19 @@ public final class ObservationCollector {
                 double perteCoup = perte;
                 try {
                     boolean defEstAdversaire = !adversaireEtaitAttaquant;
+                    boolean talentConf = !defEstAdversaire
+                        || getTalentConfirme(adversaire.getEspece()) != null;
+                    java.util.Set<String> talentsPoss = defEstAdversaire
+                        ? getTalentsReelsEspece(adversaire) : null;
+                    boolean soinIncertain = defEstAdversaire && !talentConf
+                        && talentsPoss != null && talentsPoss.contains("Soin Poison");
                     com.tropimon.tropicalc.calc.ResidualProjector.Projection proj =
                         com.tropimon.tropicalc.calc.ResidualProjector.projeter(
                             defenseur, terrainNeutre.getMeteo(), true,
                             defEstAdversaire ? getCompteurToxikProchainAdversaire() : getCompteurToxikProchainJoueur(),
                             defEstAdversaire ? adversaireSalaison : joueurSalaison,
-                            defEstAdversaire ? adversaireVampigraine : joueurVampigraine);
+                            defEstAdversaire ? adversaireVampigraine : joueurVampigraine,
+                            talentConf, soinIncertain);
                     if (proj != null) perteCoup = Math.max(0, perte - proj.netPremierTourPct());
                 } catch (Exception ignored2) {
                 }
@@ -820,7 +827,8 @@ public final class ObservationCollector {
             com.tropimon.tropicalc.calc.ResidualProjector.Projection proj =
                 com.tropimon.tropicalc.calc.ResidualProjector.projeter(
                     joueur, terrainNeutre.getMeteo(), true,
-                    getCompteurToxikProchainJoueur(), joueurSalaison, joueurVampigraine);
+                    getCompteurToxikProchainJoueur(), joueurSalaison, joueurVampigraine,
+                    true, false);
             if (proj != null) perteCoup = Math.max(0, perte - proj.netPremierTourPct());
         } catch (Exception ignored) {
         }
@@ -914,7 +922,7 @@ public final class ObservationCollector {
         espaceAdversaireDuTour = null;
     }
 
-    private static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
+    public static Set<String> getTalentsReelsEspece(Pokemon adversaire) {
         Species espece = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(adversaire.getEspece());
         if (espece == null) return null;
         Set<String> r = new HashSet<>();

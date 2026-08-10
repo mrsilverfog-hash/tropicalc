@@ -24,7 +24,7 @@ public final class ResidualProjector {
     }
 
     public static Projection projeter(Pokemon p, Field.Meteo meteo, boolean objetSur) {
-        return projeter(p, meteo, objetSur, 1, false, false);
+        return projeter(p, meteo, objetSur, 1, false, false, true, false);
     }
 
     /**
@@ -33,15 +33,26 @@ public final class ResidualProjector {
      *                              poison vient d'être posé, n+1 après n tours subis)
      * @param salaison             sous Salaison (1/8, 1/4 pour les types Eau/Acier)
      * @param vampigraine          sous Vampigraine (1/8 par tour)
+     * @param talentConfirme       vrai si le talent affiché est un fait observé,
+     *                             pas une simple estimation Smogon
+     * @param soinPoisonIncertain  vrai si Soin Poison fait partie des talents
+     *                             RÉELLEMENT POSSIBLES de cette espèce ET n'est
+     *                             pas confirmé — dans ce cas, la composante
+     *                             poison/toxik est totalement omise plutôt que
+     *                             de deviner un sens (dégâts ou soin)
      */
     public static Projection projeter(Pokemon p, Field.Meteo meteo, boolean objetSur,
                                       int compteurToxikProchain, boolean salaison,
-                                      boolean vampigraine) {
-        String talent = p.getTalent();
-        String objet = p.getObjet();
+                                      boolean vampigraine, boolean talentConfirme,
+                                      boolean soinPoisonIncertain) {
+        // Le talent affiché n'est utilisé QUE s'il est confirmé — un talent
+        // simplement estimé (Smogon) ne doit jamais faire apparaître ou
+        // disparaître une ligne de résiduel : "au cas où" n'est pas une base
+        // suffisante pour afficher un chiffre.
+        String talent = talentConfirme ? p.getTalent() : null;
+        String objet = objetSur ? p.getObjet() : null;
         boolean gardeMagik = "Garde Magik".equals(talent);
         boolean soinPoison = "Soin Poison".equals(talent);
-        String marqueObjet = objetSur ? "" : "?";
 
         StringBuilder detail = new StringBuilder();
 
@@ -58,6 +69,10 @@ public final class ResidualProjector {
             if (soinPoison) {
                 constant -= 2;
                 ajouter(detail, "Soin Poison");
+            } else if (soinPoisonIncertain) {
+                // Pourrait être un soin (Soin Poison) ou des dégâts (autre
+                // talent) : on ne sait pas lequel, donc on n'affiche rien
+                // pour cette source plutôt que de deviner.
             } else if (!gardeMagik) {
                 constant += 2;
                 ajouter(detail, "poison");
@@ -67,6 +82,8 @@ public final class ResidualProjector {
                 constant -= 2;
                 toxik = false;
                 ajouter(detail, "Soin Poison");
+            } else if (soinPoisonIncertain) {
+                toxik = false;
             } else if (gardeMagik) {
                 toxik = false;
             } else {
@@ -87,22 +104,24 @@ public final class ResidualProjector {
             ajouter(detail, "Vampigraine");
         }
 
-        if (meteo == Field.Meteo.SABLE && !gardeMagik && !immuniseSable(p)) {
+        if (meteo == Field.Meteo.SABLE && !gardeMagik && !immuniseSable(p, talent, objet)) {
             constant += 1;
             ajouter(detail, "sable");
         }
 
+        // Restes/Boue Noire : n'apparaissent QUE si l'objet est confirmé (vu
+        // en jeu), jamais sur la seule base d'une estimation Smogon.
         if ("Restes".equals(objet)) {
             constant -= 1;
-            ajouter(detail, "-Restes" + marqueObjet);
+            ajouter(detail, "-Restes");
         } else if ("Boue Noire".equals(objet)) {
             boolean typePoison = p.getType1() == PokemonType.POISON || p.getType2() == PokemonType.POISON;
             if (typePoison) {
                 constant -= 1;
-                ajouter(detail, "-Boue Noire" + marqueObjet);
+                ajouter(detail, "-Boue Noire");
             } else if (!gardeMagik) {
                 constant += 2;
-                ajouter(detail, "Boue Noire" + marqueObjet);
+                ajouter(detail, "Boue Noire");
             }
         }
 
@@ -148,15 +167,16 @@ public final class ResidualProjector {
         return new Projection(netPremierTour, toursKO, detail.toString());
     }
 
-    private static boolean immuniseSable(Pokemon p) {
+    private static boolean immuniseSable(Pokemon p, String talentFiltre, String objetFiltre) {
+        // Le TYPE est un fait toujours certain (jamais une estimation) :
+        // l'immunité par type reste active indépendamment de talentConfirme.
         PokemonType t1 = p.getType1();
         PokemonType t2 = p.getType2();
         if (t1 == PokemonType.ROCHE || t1 == PokemonType.SOL || t1 == PokemonType.ACIER) return true;
         if (t2 == PokemonType.ROCHE || t2 == PokemonType.SOL || t2 == PokemonType.ACIER) return true;
-        String talent = p.getTalent();
-        if ("Voile Sable".equals(talent) || "Baigne Sable".equals(talent)
-            || "Force Sable".equals(talent) || "Envelocape".equals(talent)) return true;
-        return "Lunettes Filtre".equals(p.getObjet());
+        if ("Voile Sable".equals(talentFiltre) || "Baigne Sable".equals(talentFiltre)
+            || "Force Sable".equals(talentFiltre) || "Envelocape".equals(talentFiltre)) return true;
+        return "Lunettes Filtre".equals(objetFiltre);
     }
 
     private static void ajouter(StringBuilder sb, String source) {

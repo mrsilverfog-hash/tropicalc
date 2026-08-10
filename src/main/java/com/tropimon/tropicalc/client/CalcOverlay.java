@@ -278,10 +278,15 @@ public final class CalcOverlay implements HudRenderCallback {
 
         // --- Projection des dégâts résiduels adverses (cœur du stall) ---
         boolean objetSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
+        boolean talentConfirmeAdv = ObservationCollector.getTalentConfirme(adversaireBase.getEspece()) != null;
+        java.util.Set<String> talentsPossiblesAdv = ObservationCollector.getTalentsReelsEspece(adversaireBase);
+        boolean soinPoisonIncertainAdv = !talentConfirmeAdv
+            && talentsPossiblesAdv != null && talentsPossiblesAdv.contains("Soin Poison");
         ResidualProjector.Projection proj = ResidualProjector.projeter(adversaire, field.getMeteo(), objetSur,
             ObservationCollector.getCompteurToxikProchainAdversaire(),
             ObservationCollector.isAdversaireSalaison(),
-            ObservationCollector.isAdversaireVampigraine());
+            ObservationCollector.isAdversaireVampigraine(),
+            talentConfirmeAdv, soinPoisonIncertainAdv);
         if (proj != null) {
             y += 4;
             String ligneProj;
@@ -294,21 +299,22 @@ public final class CalcOverlay implements HudRenderCallback {
                         proj.netPremierTourPct(), proj.detail());
                 couleurProj = COULEUR_REVELE;
             } else {
+                boolean sourceConfirmee = objetSur || talentConfirmeAdv;
                 ligneProj = String.format("Résiduel : +%.0f%%/t (%s)%s",
                     -proj.netPremierTourPct(), proj.detail(),
-                    objetSur ? " : régénère" : "");
-                couleurProj = objetSur ? 0xFFAA00 : COULEUR_TEXTE;
+                    sourceConfirmee ? " : régénère" : "");
+                couleurProj = sourceConfirmee ? 0xFFAA00 : COULEUR_TEXTE;
             }
             context.drawText(client.textRenderer, Text.literal(ligneProj), x, y, couleurProj, true);
             y += hauteurLigne;
         }
 
         // --- Projection résiduelle du joueur : anticiper sa propre mort ---
-        // L'objet et le statut du joueur sont réels, jamais estimés
+        // L'objet et le talent du joueur sont réels, jamais estimés
         ResidualProjector.Projection projJoueur = ResidualProjector.projeter(joueur, field.getMeteo(), true,
             ObservationCollector.getCompteurToxikProchainJoueur(),
             ObservationCollector.isJoueurSalaison(),
-            ObservationCollector.isJoueurVampigraine());
+            ObservationCollector.isJoueurVampigraine(), true, false);
         if (projJoueur != null) {
             if (proj == null) y += 4;
             String ligneToi;
