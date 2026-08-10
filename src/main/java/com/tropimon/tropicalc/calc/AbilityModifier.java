@@ -256,6 +256,22 @@ public interface AbilityModifier {
             }
         });
 
+        m.put("Aquabulle", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.EAU) {
+                    ctx.multiplicateurDegatsFinal *= 2.0;
+                }
+            }
+
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.FEU) {
+                    ctx.multiplicateurDegatsFinal *= 0.5;
+                }
+            }
+        });
+
         return m;
     }
 
