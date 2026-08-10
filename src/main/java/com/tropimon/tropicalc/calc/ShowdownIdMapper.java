@@ -61,6 +61,8 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("orichalcumpulse", "Pouls Orichalque");
+        TALENTS.put("hadronengine", "Moteur Hadron");
         TALENTS.put("darkaura", "Aura Sombre");
         TALENTS.put("fairyaura", "Aura Fée");
         TALENTS.put("aurabreak", "Aura Brisée");

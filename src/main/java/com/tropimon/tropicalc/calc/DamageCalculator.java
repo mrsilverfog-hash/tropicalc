@@ -564,9 +564,27 @@ public class DamageCalculator {
 
     /** Multiplicateur Protosynthèse/Moteur Quark applicable à une stat donnée (offense/défense). */
     private static double multiplicateurParadox(Pokemon p, Stat stat, Field terrain) {
+        // Pouls Orichalque (Attaque physique fixe, soleil) / Moteur Hadron
+        // (Attaque Spéciale fixe, terrain électrique) : contrairement à
+        // Protosynthèse/Moteur Quark, ils boostent TOUJOURS la même stat,
+        // pas nécessairement la plus haute du Pokémon. Ratio officiel exact
+        // 5461/4096 (~33,3%), pas un simple +30%.
+        String talent = p.getTalent();
+        boolean soleilActif = terrain.getMeteo() == Field.Meteo.SOLEIL
+            || terrain.getMeteo() == Field.Meteo.SOLEIL_INTENSE;
+        if ("Pouls Orichalque".equals(talent) && stat == Stat.ATTAQUE && soleilActif) {
+            return 5461.0 / 4096.0;
+        }
+        if ("Moteur Hadron".equals(talent) && stat == Stat.ATTAQUE_SPE
+                && terrain.getTerrain() == Field.TypeTerrain.ELECTRIQUE) {
+            return 5461.0 / 4096.0;
+        }
+
         if (stat != statLaPlusHaute(p)) return 1.0;
         if (!estBoostParadox(p, terrain.getMeteo(), terrain.getTerrain())) return 1.0;
-        return stat == Stat.VITESSE ? 1.5 : 1.3;
+        // Ratio officiel exact : 5461/4096 (~33,3%) pour les stats hors
+        // Vitesse, 6144/4096 (1.5 exact) pour la Vitesse.
+        return stat == Stat.VITESSE ? 1.5 : 5461.0 / 4096.0;
     }
 
     /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierrallégée. */
