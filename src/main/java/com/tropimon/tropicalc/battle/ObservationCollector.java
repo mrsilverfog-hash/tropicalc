@@ -33,6 +33,24 @@ public final class ObservationCollector {
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
 
+    /**
+     * Vrai dès qu'un Pokémon SAUVAGE (sans propriétaire) est détecté dans le
+     * combat en cours. Signal confirmé par observation réelle : un Pokémon
+     * sauvage apparaît comme "cobblemon.species.XXX.name" nu dans les
+     * messages de combat, jamais enveloppé dans "owned_pokemon" comme
+     * n'importe quel Pokémon de dresseur (joueur ou adversaire PvP).
+     * Réinitialisé à chaque fin de combat.
+     */
+    private static boolean combatSauvageDetecte = false;
+
+    public static boolean estCombatSauvage() {
+        return combatSauvageDetecte;
+    }
+
+    public static void signalerPokemonSauvage() {
+        combatSauvageDetecte = true;
+    }
+
     // PP consommés par l'adversaire : espèce -> (id capacité -> PP utilisés)
     private static final Map<String, Map<String, Integer>> PP_UTILISES = new HashMap<>();
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
@@ -874,6 +892,8 @@ public final class ObservationCollector {
     }
 
     public static void reinitialiser() {
+        combatSauvageDetecte = false;
+
         // Persister les faits du combat avant de tout effacer
         if (nomAdversaireCourant != null) {
             Set<String> especes = new HashSet<>();

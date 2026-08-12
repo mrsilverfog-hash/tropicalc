@@ -46,6 +46,29 @@ public final class MoveUseTracker {
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
 
+        // Détection Pokémon sauvage : vérifiée sur TOUT message SAUF
+        // switch/withdraw (self/other), qui utilisent un format à 2
+        // arguments séparés "NomJoueur | espèce" MÊME pour un Pokémon de
+        // dresseur - un faux positif y serait certain sur n'importe quel
+        // switch PvP normal. Sur tous les autres messages (used_move_on,
+        // fainted...), un Pokémon de dresseur est TOUJOURS enveloppé dans
+        // "owned_pokemon", jamais présenté comme une espèce nue - signal
+        // fiable confirmé par observation réelle (combat sauvage : espèce
+        // nue partout, aucun switch/withdraw n'existe pour lui).
+        boolean estMessageSwitchOuWithdraw = cle.startsWith("cobblemon.battle.switch.")
+            || cle.startsWith("cobblemon.battle.withdraw.");
+        if (!estMessageSwitchOuWithdraw) {
+            for (Object arg : contenu.getArgs()) {
+                if (arg instanceof Text texteArg && texteArg.getContent() instanceof TranslatableTextContent sousContenu) {
+                    String sousCle = sousContenu.getKey();
+                    if (sousCle != null && sousCle.startsWith("cobblemon.species.")) {
+                        ObservationCollector.signalerPokemonSauvage();
+                        break;
+                    }
+                }
+            }
+        }
+
         if ("cobblemon.battle.switch.self".equals(cle)) {
             BoostTracker.reinitialiserJoueur();
             TypeTracker.reinitialiserJoueur();

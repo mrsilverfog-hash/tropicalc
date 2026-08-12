@@ -41,6 +41,7 @@ public final class CalcOverlay implements HudRenderCallback {
         ObservationCollector.tick();
 
         if (!BattleStateTracker.estEnCombat()) return;
+        if (ObservationCollector.estCombatSauvage()) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
         com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueurAffichage();
