@@ -356,17 +356,33 @@ public final class CalcOverlay implements HudRenderCallback {
         // --- Section 3 : set estimé ---
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
+            com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
+
+            // Parmi les 3 spreads Smogon les plus populaires, affiche celui
+            // qui reste cohérent avec les dégâts déjà observés (au lieu de
+            // toujours montrer le #1 même après une observation qui le
+            // contredit). Repli sur le #1 si aucune observation ou si aucun
+            // des 3 ne reste cohérent (set hors du top 3, ou EV pas encore
+            // assez resserrés pour trancher).
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
+            boolean deduitParObservation = false;
+            if (profil != null && profil.getNbObservations() > 0) {
+                SmogonDataLoader.ParsedSpread choisi = profil.spreadPlusProbable(smogon.topSpreads(), 3);
+                if (choisi != null) {
+                    deduitParObservation = choisi != smogon.topSpreads().get(0);
+                    top = choisi;
+                }
+            }
+
             context.drawText(client.textRenderer, Text.literal("Set estimé :"), x, y, COULEUR_TITRE, true);
             y += hauteurLigne;
             context.drawText(client.textRenderer,
                 Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
                     top.hpEv(), top.defEv(), top.spdEv(),
                     ShowdownIdMapper.nature(top.natureShowdownId()))),
-                x, y, COULEUR_TEXTE, true);
+                x, y, deduitParObservation ? COULEUR_REVELE : COULEUR_TEXTE, true);
             y += hauteurLigne;
 
-            com.tropimon.tropicalc.calc.ProfilAdversaire profil = ObservationCollector.getProfil(especeAdv);
             if (profil != null && profil.getNbObservations() >= 3) {
                 StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
                     ? profil.defense : profil.defenseSpe;

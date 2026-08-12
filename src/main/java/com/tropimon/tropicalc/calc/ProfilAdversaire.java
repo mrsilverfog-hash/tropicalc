@@ -165,4 +165,54 @@ public class ProfilAdversaire {
         r.retainAll(b);
         return r;
     }
+
+    /**
+     * Parmi les N spreads Smogon les plus populaires (déjà triés par
+     * poids), retourne le plus probable qui reste ENCORE cohérent avec
+     * les dégâts observés en combat - au lieu d'afficher systématiquement
+     * le spread #1 même après une observation qui le contredit clairement.
+     *
+     * Réutilise entièrement le narrowing déjà en place (StatHypothesis
+     * resserré par SetInferenceEngine.narrow) : un spread est "cohérent"
+     * si ses 4 EV offensifs/défensifs tombent tous dans les plages déjà
+     * resserrées par l'observation, ET si sa nature est compatible avec
+     * les stats que le narrowing a identifiées comme pouvant être
+     * boostées/neutres/baissées. Aucun nouveau mécanisme d'observation :
+     * juste une lecture, après coup, de ce que le narrowing sait déjà.
+     *
+     * Retourne null si aucun des N spreads testés ne reste cohérent
+     * (l'appelant doit alors se rabattre sur un affichage générique).
+     */
+    public SmogonDataLoader.ParsedSpread spreadPlusProbable(List<SmogonDataLoader.ParsedSpread> topSpreads, int n) {
+        int limite = Math.min(n, topSpreads.size());
+        for (int i = 0; i < limite; i++) {
+            SmogonDataLoader.ParsedSpread s = topSpreads.get(i);
+            if (spreadEstCoherent(s)) return s;
+        }
+        return null;
+    }
+
+    private boolean spreadEstCoherent(SmogonDataLoader.ParsedSpread s) {
+        if (!evDansPlage(attaque, s.atkEv())) return false;
+        if (!evDansPlage(attaqueSpe, s.spaEv())) return false;
+        if (!evDansPlage(defense, s.defEv())) return false;
+        if (!evDansPlage(defenseSpe, s.spdEv())) return false;
+
+        Nature nature = ShowdownIdMapper.nature(s.natureShowdownId());
+        if (!natureCoherente(attaque, Stat.ATTAQUE, nature)) return false;
+        if (!natureCoherente(attaqueSpe, Stat.ATTAQUE_SPE, nature)) return false;
+        if (!natureCoherente(defense, Stat.DEFENSE, nature)) return false;
+        if (!natureCoherente(defenseSpe, Stat.DEFENSE_SPE, nature)) return false;
+        return true;
+    }
+
+    private static boolean evDansPlage(StatHypothesis h, int ev) {
+        return ev >= h.evMin && ev <= h.evMax;
+    }
+
+    private static boolean natureCoherente(StatHypothesis h, Stat stat, Nature nature) {
+        if (nature.getStatAugmentee() == stat) return h.peutEtreBoostee;
+        if (nature.getStatDiminuee() == stat) return h.peutEtreBaissee;
+        return h.peutEtreNeutre;
+    }
 }
