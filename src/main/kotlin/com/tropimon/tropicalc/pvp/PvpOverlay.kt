@@ -72,6 +72,7 @@ object PvpOverlay {
     // ──────────────────────────────────────────────────────────────────────────
 
     private fun render(context: DrawContext) {
+        if (!com.tropimon.tropicalc.ModToggle.estActif()) return
         if (!ModConfig.pvpOverlayEnabled) return
 
         val inBattle = BattleHelper.isInBattle()

@@ -14,6 +14,7 @@ public class TropiCalcClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         SmogonDataLoader.charger();
+        ModToggle.enregistrer();
         HudRenderCallback.EVENT.register(new CalcOverlay());
         com.tropimon.tropicalc.pvp.PvpOverlay.INSTANCE.register();
         com.tropimon.tropicalc.pvp.PvpDetector.INSTANCE.register();

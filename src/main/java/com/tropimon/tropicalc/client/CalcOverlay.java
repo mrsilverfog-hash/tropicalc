@@ -40,6 +40,7 @@ public final class CalcOverlay implements HudRenderCallback {
         // Doit tourner AUSSI hors combat : c'est là que le reset entre combats s'exécute
         ObservationCollector.tick();
 
+        if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
         if (!BattleStateTracker.estEnCombat()) return;
         if (ObservationCollector.estCombatSauvage()) return;
 
