@@ -11,6 +11,27 @@ public interface AbilityModifier {
     default void appliquerCoteDefenseur(ModifierContext ctx) {
     }
 
+    // ATTENTION - ordre de declaration significatif.
+    // Dans une interface, les champs sont initialises dans l'ordre du texte.
+    // Ces deux Set doivent etre declares AVANT REGISTRE : construireRegistre()
+    // les passe a immuniteContreCapacites(), et s'ils sont declares plus bas ils
+    // valent encore null a ce moment-la. Le modificateur capture alors un Set
+    // null et lance une NullPointerException des qu'un defenseur porte
+    // Pare-Balles ou Anti-Bruit - en plein rendu du HUD, donc crash du client.
+    // Capacités à flag "ball/bomb" les plus jouées en compétitif (Pare-Balles)
+    static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
+        "shadowball", "sludgebomb", "aurasphere", "focusblast", "energyball",
+        "electroball", "gyroball", "weatherball", "mudbomb", "octazooka",
+        "eggbomb", "rockwrecker", "acidspray", "pyroball", "mistball",
+        "pollenpuff", "beakblast", "barrage");
+
+    // Capacités à flag "son" les plus jouées en compétitif (Anti-Bruit)
+    static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
+        "boomburst", "hypervoice", "bugbuzz", "roar", "screech",
+        "sing", "supersonic", "growl", "snarl", "uproar",
+        "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
+        "relicsong", "round", "chatter", "grasswhistle", "metalsound");
+
     Map<String, AbilityModifier> REGISTRE = construireRegistre();
 
     static AbilityModifier pour(String nomTalent) {
@@ -389,20 +410,6 @@ public interface AbilityModifier {
             }
         };
     }
-
-    // Capacités à flag "ball/bomb" les plus jouées en compétitif (Pare-Balles)
-    static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
-        "shadowball", "sludgebomb", "aurasphere", "focusblast", "energyball",
-        "electroball", "gyroball", "weatherball", "mudbomb", "octazooka",
-        "eggbomb", "rockwrecker", "acidspray", "pyroball", "mistball",
-        "pollenpuff", "beakblast", "barrage");
-
-    // Capacités à flag "son" les plus jouées en compétitif (Anti-Bruit)
-    static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
-        "boomburst", "hypervoice", "bugbuzz", "roar", "screech",
-        "sing", "supersonic", "growl", "snarl", "uproar",
-        "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
-        "relicsong", "round", "chatter", "grasswhistle", "metalsound");
 
     private static AbilityModifier immuniteContreCapacites(java.util.Set<String> capacitesConcernees) {
         return new AbilityModifier() {
