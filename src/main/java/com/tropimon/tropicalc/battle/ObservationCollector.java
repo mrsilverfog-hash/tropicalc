@@ -684,6 +684,17 @@ public final class ObservationCollector {
         m.put(stat, actuel == null ? ratio : actuel * 0.4 + ratio * 0.6);
     }
 
+    /**
+     * Confirmation directe d'un objet par espèce, sans passer par un nom de
+     * propriétaire - utilisée quand l'objet est déduit d'un comportement
+     * observé (ex: un écran qui dure plus longtemps que possible sans
+     * Lumargile) plutôt que d'un message explicite du jeu.
+     */
+    public static void confirmerObjetDirect(String espece, String objetFr) {
+        if (espece == null || objetFr == null) return;
+        OBJETS_CONFIRMES.put(espece, objetFr);
+    }
+
     /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */
     public static boolean estObjetConfirme(String espece) {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);

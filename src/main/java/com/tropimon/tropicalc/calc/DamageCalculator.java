@@ -246,7 +246,10 @@ public class DamageCalculator {
         double meteo = terrain.multiplicateurMeteo(capacite.getType());
         double champTerrain = estAuSol(attaquant) ? terrain.multiplicateurTerrain(capacite.getType()) : 1.0;
         double champTerrainDef = multiplicateurTerrainDefensif(terrain, capacite, defenseur);
-        double ecrans = (!critique && ecransDefenseur != null)
+        // Infiltration : ignore Reflet/Mur Lumière/Voile Aurore de la cible,
+        // comme les critiques le font déjà
+        boolean infiltration = "Infiltration".equals(attaquant.getTalent());
+        double ecrans = (!critique && !infiltration && ecransDefenseur != null)
             ? ecransDefenseur.multiplicateur(capacite.getCategorie())
             : 1.0;
         double critMult = critique ? 1.5 : 1.0;

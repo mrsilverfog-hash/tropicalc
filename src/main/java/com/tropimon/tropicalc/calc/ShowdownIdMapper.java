@@ -61,6 +61,7 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("infiltrator", "Infiltration");
         TALENTS.put("stickyhold", "Glu");
         TALENTS.put("mindseye", "Œil Révélateur");
         TALENTS.put("dragonsmaw", "Dent de Dragon");
@@ -189,7 +190,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("airballoon", "Ballon");
         OBJETS.put("muscleband", "Bandeau Muscles");
         OBJETS.put("wiseglasses", "Lunettes Savantes");
-        OBJETS.put("lightclay", "Argile Pouvoir");
+        OBJETS.put("lightclay", "Lumargile");
         OBJETS.put("heatrock", "Roche Chaude");
         OBJETS.put("damprock", "Roche Humide");
         OBJETS.put("smoothrock", "Roche Lisse");

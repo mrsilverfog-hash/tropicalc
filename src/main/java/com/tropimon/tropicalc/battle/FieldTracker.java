@@ -33,13 +33,13 @@ public final class FieldTracker {
         }
     }
 
-    /** 5 tours par défaut, 8 si l'un des deux actifs porte Argile Pouvoir. */
+    /** 5 tours par défaut, 8 si l'un des deux actifs porte Lumargile. */
     private static int dureeEcran() {
         try {
             com.tropimon.tropicalc.calc.Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
             com.tropimon.tropicalc.calc.Pokemon adversaire = BattleStateTracker.getAdversaireActif();
-            boolean argile = (joueur != null && "Argile Pouvoir".equals(joueur.getObjet()))
-                || (adversaire != null && "Argile Pouvoir".equals(adversaire.getObjet()));
+            boolean argile = (joueur != null && "Lumargile".equals(joueur.getObjet()))
+                || (adversaire != null && "Lumargile".equals(adversaire.getObjet()));
             return argile ? 8 : 5;
         } catch (Exception e) {
             return 5;
@@ -56,6 +56,19 @@ public final class FieldTracker {
     private static boolean reflectAdversaire = false;
     private static boolean lightScreenAdversaire = false;
     private static boolean auroraVeilAdversaire = false;
+
+    /**
+     * Espèce présumée avoir posé l'écran adverse actif, capturée au moment
+     * du sidestart (le Pokémon adverse actif à cet instant en est
+     * l'auteur quasi-certain, puisque c'est lui qui vient d'agir ce tour).
+     * Sert uniquement à l'inférence Lumargile ci-dessous - ne
+     * remplace pas un vrai suivi de propriétaire, non disponible dans ce
+     * message précis.
+     */
+    private static String poseurEcranAdversaire = null;
+
+    /** Évite de réappliquer la correction Lumargile en boucle une fois faite pour cet écran. */
+    private static boolean correctionArgilePouvoirAppliquee = false;
 
     // Pièges d'entrée (côté joueur = posés par l'adversaire, subis par le joueur)
     private static boolean stealthRockJoueur = false;
@@ -130,13 +143,16 @@ public final class FieldTracker {
 
             switch (effet) {
                 case "reflect" -> {
-                    if (allie) reflectJoueur = debut; else { reflectAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
+                    if (allie) reflectJoueur = debut;
+                    else { reflectAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "lightscreen" -> {
-                    if (allie) lightScreenJoueur = debut; else { lightScreenAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
+                    if (allie) lightScreenJoueur = debut;
+                    else { lightScreenAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "auroraveil" -> {
-                    if (allie) auroraVeilJoueur = debut; else { auroraVeilAdversaire = debut; if (debut) toursEcransAdversaireRestants = dureeEcran(); }
+                    if (allie) auroraVeilJoueur = debut;
+                    else { auroraVeilAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "stealthrock" -> {
                     if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
@@ -201,10 +217,39 @@ public final class FieldTracker {
         return reflectAdversaire || lightScreenAdversaire || auroraVeilAdversaire;
     }
 
+    public static boolean adversaireAReflet() { return reflectAdversaire; }
+    public static boolean adversaireAMurLumiere() { return lightScreenAdversaire; }
+    public static boolean adversaireAVoileAurore() { return auroraVeilAdversaire; }
+
     /** À appeler une fois par tour : décrémente les durées. */
+    private static void capturerPoseurEcran() {
+        correctionArgilePouvoirAppliquee = false;
+        try {
+            com.tropimon.tropicalc.calc.Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv != null) poseurEcranAdversaire = adv.getEspece();
+        } catch (Exception ignored) {
+        }
+    }
+
     public static void nouveauTour() {
         if (toursMeteoRestants > 0) toursMeteoRestants--;
-        if (toursEcransAdversaireRestants > 0) toursEcransAdversaireRestants--;
+        if (toursEcransAdversaireRestants > 0) {
+            toursEcransAdversaireRestants--;
+            // Le mur dure encore alors que notre hypothèse de départ (5
+            // tours, pas d'Lumargile détecté au moment du lancement)
+            // vient d'expirer : c'est la preuve comportementale que le
+            // porteur a Lumargile depuis le début. Corrige la durée
+            // restante vers 8 tours totaux, et confirme l'objet plutôt que
+            // de continuer à afficher '?' - certain, pas juste probable.
+            // Ne se déclenche qu'une fois par écran (flag remis à zéro au
+            // sidestart suivant) pour ne pas se redéclencher à tort si la
+            // durée initiale était déjà 8.
+            if (toursEcransAdversaireRestants == 0 && adversaireAUnEcran() && !correctionArgilePouvoirAppliquee) {
+                toursEcransAdversaireRestants = 3;   // 8 tours totaux - 5 déjà écoulés
+                ObservationCollector.confirmerObjetDirect(poseurEcranAdversaire, "Lumargile");
+                correctionArgilePouvoirAppliquee = true;
+            }
+        }
     }
 
     public static void reinitialiser() {
@@ -227,5 +272,7 @@ public final class FieldTracker {
         stickyWebAdversaire = false;
         toursMeteoRestants = 0;
         toursEcransAdversaireRestants = 0;
+        poseurEcranAdversaire = null;
+        correctionArgilePouvoirAppliquee = false;
     }
 }

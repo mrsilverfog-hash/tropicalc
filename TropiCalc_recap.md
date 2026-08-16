@@ -105,7 +105,7 @@ Face à Casque Brut et/ou Épine de Fer/Peau Dure, chaque attaque de contact aff
 - **Compteur de PP adverses** : par espèce, Pression pris en compte (seulement sur les capacités qui ciblent le porteur — vérifié via le champ target Showdown, pas juste "offensif vs statut").
 - **Pièges d'entrée** (écran de switch) : Piège de Roc, Picots, Pics Toxik, Toile Gluante. Grosses Bottes/Garde Magik/Lévitation/Ballon reconnus.
 - **Verrou Choix** : objet Choix + coup déjà utilisé depuis l'entrée.
-- **Durées** : météo et écrans, prolongées à 8 tours si le lanceur porte la Roche/Argile Pouvoir correspondante (vérifie les deux actifs, approximation).
+- **Durées** : météo et écrans, prolongées à 8 tours si le lanceur porte la Roche/Lumargile correspondante (vérifie les deux actifs, approximation).
 - **Boosts** : reset fiable à la fois par déduction indirecte (comparaison d'espèce entre frames) ET par message explicite `cobblemon.battle.switch.self/.other` (plus rapide, ajouté cette nuit).
 - **Type override (Protéen/Libéro/Détrempage)** : voir bug majeur corrigé, section Audit.
 - **Métamorph/Imposteur** : capacités et stats affichées sont celles de la cible copiée ; PV/statut restent ceux de Métamorph.
