@@ -41,17 +41,18 @@ public final class ScoutingStore {
      * Sans ça, un fait scouté avec l'ancien nom devient inerte (affiché mais
      * sans effet, plus aucune clé du registre ne le reconnaît).
      */
-    private static final Map<String, String> ANCIENS_NOMS = Map.of(
-        "Gant Boxe", "Gant de Boxe",
-        "Épée de Ruine", "Épée du Fléau",
-        "Vase de Ruine", "Urne du Fléau",
-        "Tablettes de Ruine", "Tablettes du Fléau",
-        "Perles de Ruine", "Perles du Fléau",
-        "Adrénaline", "Agitation",
-        "Lunatique", "Farceur",
-        "Casque Clou", "Casque Brut",
-        "Grosse Bottes", "Grosses Bottes",
-        "Énergie Turbo", "Énergie Booster"
+    private static final Map<String, String> ANCIENS_NOMS = Map.ofEntries(
+        Map.entry("Gant Boxe", "Gant de Boxe"),
+        Map.entry("Épée de Ruine", "Épée du Fléau"),
+        Map.entry("Vase de Ruine", "Urne du Fléau"),
+        Map.entry("Tablettes de Ruine", "Tablettes du Fléau"),
+        Map.entry("Perles de Ruine", "Perles du Fléau"),
+        Map.entry("Adrénaline", "Agitation"),
+        Map.entry("Lunatique", "Farceur"),
+        Map.entry("Casque Clou", "Casque Brut"),
+        Map.entry("Grosse Bottes", "Grosses Bottes"),
+        Map.entry("Énergie Turbo", "Énergie Booster"),
+        Map.entry("Écharpe Choix", "Mouchoir Choix")
     );
 
     private static String migrer(String nom) {

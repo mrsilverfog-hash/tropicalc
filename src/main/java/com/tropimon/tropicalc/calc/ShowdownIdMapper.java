@@ -166,7 +166,7 @@ public final class ShowdownIdMapper {
 
         OBJETS.put("choiceband", "Bandeau Choix");
         OBJETS.put("choicespecs", "Lunettes Choix");
-        OBJETS.put("choicescarf", "Écharpe Choix");
+        OBJETS.put("choicescarf", "Mouchoir Choix");
         OBJETS.put("floatstone", "Pierrallégée");
         OBJETS.put("abilityshield", "Garde-Talent");
         OBJETS.put("loadeddice", "Dé Pipé");

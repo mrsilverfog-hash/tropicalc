@@ -507,13 +507,13 @@ public class DamageCalculator {
         return puissance;
     }
 
-    /** Vitesse en combat : stages, Écharpe Choix, paralysie, talents météo. */
+    /** Vitesse en combat : stages, Mouchoir Choix, paralysie, talents météo. */
     public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
         double v = p.getStatCalculee(Stat.VITESSE);
         int stage = p.getStage(Stat.VITESSE);
         if (stage >= 0) v = v * (2.0 + stage) / 2.0;
         else v = v * 2.0 / (2.0 - stage);
-        if ("Écharpe Choix".equals(p.getObjet())) v *= 1.5;
+        if ("Mouchoir Choix".equals(p.getObjet())) v *= 1.5;
         // Talents doublant la vitesse sous leur météo
         String talent = p.getTalent();
         boolean soleil = meteo == Field.Meteo.SOLEIL || meteo == Field.Meteo.SOLEIL_INTENSE;

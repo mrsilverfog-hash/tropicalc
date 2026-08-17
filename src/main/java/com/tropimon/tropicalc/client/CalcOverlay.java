@@ -126,8 +126,7 @@ public final class CalcOverlay implements HudRenderCallback {
         // Affiché en bleu entre parenthèses tant que ce n'est pas déjà son objet
         // connu, pour anticiper le pire cas de priorité.
         String objetAdversaire = adversaire.getObjet();
-        boolean mouchoirDejaPris = "Mouchoir Choix".equals(objetAdversaire)
-            || "Écharpe Choix".equals(objetAdversaire);
+        boolean mouchoirDejaPris = "Mouchoir Choix".equals(objetAdversaire);
         if (!mouchoirDejaPris) {
             int vitMouchoir = (int) Math.floor(vitAdversaire * 1.5);
             String texteMouchoir = String.format(" (%d)", vitMouchoir);
@@ -400,7 +399,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
             // Objet : uniquement affiché quand on SAIT (jamais une supposition).
             // Casque Brut / Restes : détectés par le motif de chip/soin.
-            // Écharpe Choix : il agit avant alors que sa vitesse max sans objet
+            // Mouchoir Choix : il agit avant alors que sa vitesse max sans objet
             // ne le permettrait pas. Bandeau/Lunettes Choix : ratio net x1.5.
             // Orbe Vie : ratio net x1.3 + son propre recul de ~10% le même tour.
             String objetConfirme = ObservationCollector.getObjetConfirme(especeAdv);

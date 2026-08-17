@@ -266,7 +266,7 @@ public final class SwitchOverlayRenderer {
         // Sans stages (candidat qui rentre) : vitesse de base + objet + statut + météo
         Pokemon copie = p;
         double v = copie.getStatCalculee(Stat.VITESSE);
-        if ("Écharpe Choix".equals(copie.getObjet())) v *= 1.5;
+        if ("Mouchoir Choix".equals(copie.getObjet())) v *= 1.5;
         String talent = copie.getTalent();
         var meteo = FieldTracker.construireField().getMeteo();
         boolean soleil = meteo == com.tropimon.tropicalc.calc.Field.Meteo.SOLEIL

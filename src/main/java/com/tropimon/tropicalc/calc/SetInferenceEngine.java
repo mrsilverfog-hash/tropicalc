@@ -8,7 +8,7 @@ public final class SetInferenceEngine {
     }
 
     public static final Set<String> OBJETS_OFFENSIFS = Set.of(
-        "Bandeau Choix", "Lunettes Choix", "Écharpe Choix", "Orbe Vie", "Ceinture Pro",
+        "Bandeau Choix", "Lunettes Choix", "Mouchoir Choix", "Orbe Vie", "Ceinture Pro",
         "Bandeau Muscles", "Lunettes Savantes", "Gant de Boxe"
     );
 

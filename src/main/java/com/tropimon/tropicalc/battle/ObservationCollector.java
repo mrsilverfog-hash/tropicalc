@@ -291,7 +291,7 @@ public final class ObservationCollector {
         int stage = BoostTracker.getStageJoueur(Stat.VITESSE);
         if (stage >= 0) v = v * (2.0 + stage) / 2.0;
         else v = v * 2.0 / (2.0 - stage);
-        if ("Écharpe Choix".equals(joueur.getObjet())) v *= 1.5;
+        if ("Mouchoir Choix".equals(joueur.getObjet())) v *= 1.5;
         if (joueur.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
         return (int) Math.floor(v);
     }
@@ -554,7 +554,7 @@ public final class ObservationCollector {
     }
 
     /**
-     * Confirme Écharpe Choix si la vitesse minimale garantie par l'ordre
+     * Confirme Mouchoir Choix si la vitesse minimale garantie par l'ordre
      * d'action observé DÉPASSE ce que ce Pokémon pourrait atteindre au
      * MAXIMUM sans elle (252 EV, nature boostante, + le meilleur talent
      * de vitesse plausible pour cette espèce sous la météo actuelle) -
@@ -603,7 +603,7 @@ public final class ObservationCollector {
             }
 
             if (vitesseMinObservee > meilleureVitesse) {
-                OBJETS_CONFIRMES.put(espece, "Écharpe Choix");
+                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
             }
         } catch (Exception ignored) {
         }
@@ -937,7 +937,7 @@ public final class ObservationCollector {
             double mult = stageJoueur >= 0 ? (2.0 + stageJoueur) / 2.0 : 2.0 / (2.0 - stageJoueur);
             vitesseJoueurReelle = (int) (vitesseJoueurReelle * mult);
             if (vitesseMaxSansObjet < vitesseJoueurReelle) {
-                OBJETS_CONFIRMES.put(espece, "Écharpe Choix");
+                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
             }
             return;
         }

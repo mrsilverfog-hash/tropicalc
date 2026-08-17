@@ -12,7 +12,7 @@ Vocabulaire : **estimé** = vient du set Smogon (affiché avec `?`) ; **confirm�
 ### Capacités à puissance variable
 Elles ont toutes une puissance de base de 0 dans les données Showdown — sans traitement spécial, elles affichaient zéro dégât.
 
-- Gyroball et Boule Élek : selon le ratio de vitesse (avec stages, Écharpe Choix, paralysie, talents météo).
+- Gyroball et Boule Élek : selon le ratio de vitesse (avec stages, Mouchoir Choix, paralysie, talents météo).
 - Châtiment : ×2 si la cible a un statut.
 - Façade : ×2 si brûlure/poison/paralysie, et ignore correctement la pénalité d'attaque de la brûlure.
 - Balayage, Nœud Herbe : paliers selon le poids de la cible.
@@ -44,7 +44,7 @@ Lu depuis Cobblemon, formes régionales exactes. Modifié par Heavy Metal, Light
 Champ Élec/Herbu/Psy : +30% sur le type correspondant si l'attaquant est au sol. Champ Brumeux : Dragon ×0,5 si le défenseur est au sol. Champ Herbu : Séisme/Ébranlement/Amplitude ×0,5 si le défenseur est au sol (en plus du boost Plante).
 
 ### Vitesse en combat
-Stages, Écharpe Choix (×1,5), paralysie (×0,5), talents météo qui doublent la vitesse (Chlorophylle/Glissade/Baigne Sable/Chasse-Neige), et Pied Véloce (×1,5 sous n'importe quel statut, ignore le malus de paralysie). Même calcul utilisé partout (HUD principal, écran de switch, Gyroball/Boule Élek). La ligne Vitesse affiche en bleu, entre parenthèses, la vitesse qu'aurait l'adversaire avec un Mouchoir Choix.
+Stages, Mouchoir Choix (×1,5), paralysie (×0,5), talents météo qui doublent la vitesse (Chlorophylle/Glissade/Baigne Sable/Chasse-Neige), et Pied Véloce (×1,5 sous n'importe quel statut, ignore le malus de paralysie). Même calcul utilisé partout (HUD principal, écran de switch, Gyroball/Boule Élek). La ligne Vitesse affiche en bleu, entre parenthèses, la vitesse qu'aurait l'adversaire avec un Mouchoir Choix.
 
 ### Ordre des multiplicateurs
 Conforme au jeu réel : météo → critique → aléatoire (85-100%) → STAB → efficacité de type → étape "autre" (écrans + terrain défensif + objets/talents, combinés et arrondis **une seule fois**).
