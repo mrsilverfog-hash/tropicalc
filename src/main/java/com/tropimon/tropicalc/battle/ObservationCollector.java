@@ -309,11 +309,17 @@ public final class ObservationCollector {
         com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
         if (capacite == null || capacite.estCapaciteDeStatut()) return;
 
+        String objetConfirmeDejaSu = OBJETS_CONFIRMES.get(adversaire.getEspece());
+        String talentConfirmeDejaSu = TALENTS_CONFIRMES.get(adversaire.getEspece());
         ProfilAdversaire profil = PROFILS.computeIfAbsent(adversaire.getEspece(), k -> {
             Set<String> talentsReels = getTalentsReelsEspece(adversaire);
             SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(adversaire.getEspece());
-            return new ProfilAdversaire(talentsReels, smogon);
+            return new ProfilAdversaire(talentsReels, smogon, objetConfirmeDejaSu, talentConfirmeDejaSu);
         });
+        // Une confirmation arrivée APRÈS la première construction du profil
+        // (le cas le plus fréquent) doit quand même verrouiller les
+        // candidats, sans perdre les plages EV déjà resserrées.
+        profil.verrouillerSiConfirme(objetConfirmeDejaSu, talentConfirmeDejaSu);
 
         Field terrainNeutre = FieldTracker.construireField();
         double observeMin = Math.max(0, perte - TOLERANCE_POURCENT);

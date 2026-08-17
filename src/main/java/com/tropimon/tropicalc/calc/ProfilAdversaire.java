@@ -27,13 +27,34 @@ public class ProfilAdversaire {
     }
 
     public ProfilAdversaire(Set<String> talentsReelsEspece, SmogonDataLoader.SmogonPokemonData smogon) {
+        this(talentsReelsEspece, smogon, null, null);
+    }
+
+    /**
+     * @param objetConfirme  objet déjà CONFIRMÉ par observation (Restes,
+     *                       Casque Brut, Mouchoir/Bandeau/Lunettes Choix,
+     *                       Orbe Vie, Évoluroc...) - si non-null, verrouille
+     *                       le candidat objet UNIQUE plutôt que de continuer
+     *                       à tester des alternatives déjà écartées avec
+     *                       certitude. Sans ça, chaque nouvelle observation
+     *                       de dégâts re-teste "et si c'était un autre
+     *                       objet ?" pour rien, ce qui empêche l'EV de se
+     *                       resserrer aussi précisément que possible une
+     *                       fois l'objet réellement connu.
+     * @param talentConfirme même principe pour le talent.
+     */
+    public ProfilAdversaire(Set<String> talentsReelsEspece, SmogonDataLoader.SmogonPokemonData smogon,
+                             String objetConfirme, String talentConfirme) {
         if (smogon == null || smogon.topSpreads().isEmpty()) {
             Set<String> talentsOff = intersection(SetInferenceEngine.TALENTS_OFFENSIFS, talentsReelsEspece);
             Set<String> talentsDef = intersection(SetInferenceEngine.TALENTS_DEFENSIFS, talentsReelsEspece);
-            this.attaque = new StatHypothesis(SetInferenceEngine.OBJETS_OFFENSIFS, talentsOff);
-            this.attaqueSpe = new StatHypothesis(SetInferenceEngine.OBJETS_OFFENSIFS, talentsOff);
-            this.defense = new StatHypothesis(SetInferenceEngine.OBJETS_DEFENSIFS, talentsDef);
-            this.defenseSpe = new StatHypothesis(SetInferenceEngine.OBJETS_DEFENSIFS, talentsDef);
+            if (talentConfirme != null) { talentsOff = Set.of(talentConfirme); talentsDef = Set.of(talentConfirme); }
+            Set<String> objetsOff = objetConfirme != null ? Set.of(objetConfirme) : SetInferenceEngine.OBJETS_OFFENSIFS;
+            Set<String> objetsDef = objetConfirme != null ? Set.of(objetConfirme) : SetInferenceEngine.OBJETS_DEFENSIFS;
+            this.attaque = new StatHypothesis(objetsOff, talentsOff);
+            this.attaqueSpe = new StatHypothesis(objetsOff, talentsOff);
+            this.defense = new StatHypothesis(objetsDef, talentsDef);
+            this.defenseSpe = new StatHypothesis(objetsDef, talentsDef);
             return;
         }
 
@@ -70,12 +91,45 @@ public class ProfilAdversaire {
         Set<String> objetsDefSmogon = intersection(objetsSmogon, SetInferenceEngine.OBJETS_DEFENSIFS);
         if (objetsDefSmogon.isEmpty()) objetsDefSmogon = SetInferenceEngine.OBJETS_DEFENSIFS;
 
+        // Verrouillage si l'objet/talent est déjà CONFIRMÉ par observation :
+        // un seul candidat plutôt que de continuer à tester des
+        // alternatives déjà écartées avec certitude.
+        if (objetConfirme != null) {
+            objetsSmogon = Set.of(objetConfirme);
+            objetsDefSmogon = Set.of(objetConfirme);
+        }
+        if (talentConfirme != null) {
+            talentsSmogon = Set.of(talentConfirme);
+            talentsDefSmogon = Set.of(talentConfirme);
+        }
+
         this.attaque = construireHypothese(plages, Stat.ATTAQUE, objetsSmogon, talentsSmogon);
         this.attaqueSpe = construireHypothese(plages, Stat.ATTAQUE_SPE, objetsSmogon, talentsSmogon);
         this.defense = construireHypothese(plages, Stat.DEFENSE,
             objetsDefSmogon, talentsDefSmogon);
         this.defenseSpe = construireHypothese(plages, Stat.DEFENSE_SPE,
             objetsDefSmogon, talentsDefSmogon);
+    }
+
+    /**
+     * Verrouille rétroactivement l'objet/talent candidat d'un profil déjà
+     * construit, sans perdre les plages EV déjà resserrées par narrowing -
+     * nécessaire car la confirmation arrive souvent APRÈS la première
+     * construction du profil (computeIfAbsent ne le reconstruit jamais).
+     */
+    public void verrouillerSiConfirme(String objetConfirme, String talentConfirme) {
+        if (objetConfirme != null) {
+            for (StatHypothesis h : new StatHypothesis[]{attaque, attaqueSpe, defense, defenseSpe}) {
+                h.objetsPossibles.clear();
+                h.objetsPossibles.add(objetConfirme);
+            }
+        }
+        if (talentConfirme != null) {
+            for (StatHypothesis h : new StatHypothesis[]{attaque, attaqueSpe, defense, defenseSpe}) {
+                h.talentsPossibles.clear();
+                h.talentsPossibles.add(talentConfirme);
+            }
+        }
     }
 
     private static StatHypothesis construireHypothese(Map<Stat, int[]> plages, Stat stat,
