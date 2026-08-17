@@ -619,12 +619,21 @@ public final class ObservationCollector {
      * précise - le risque de faux positif est donc faible, mais reste
      * d'une nature différente d'une observation directe.
      */
+    /**
+     * Confirme Évoluroc si Smogon le montre comme objet n°1 pour cette
+     * espèce, avec un seuil de dominance plus permissif (50%) que pour un
+     * objet générique - Évoluroc n'a STRICTEMENT AUCUN EFFET sur un
+     * Pokémon totalement évolué, donc le simple fait qu'il soit l'objet
+     * le plus joué sur une espèce est déjà auto-validant : aucun joueur
+     * sensé ne le porterait s'il n'apportait rien. Couvre les murs NFE
+     * moins extrêmes que Porygon2 (Cerfrousse, Téraclope...) où l'usage
+     * peut être dominant sans dépasser 80%.
+     */
     private static void tenterConfirmerEvoluroc(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
         if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
-        if (smogon.topItemUsageFraction() < 0.80) return;
         String topObjet = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
-        if ("Évoluroc".equals(topObjet)) {
+        if ("Évoluroc".equals(topObjet) && smogon.topItemUsageFraction() >= 0.50) {
             OBJETS_CONFIRMES.put(espece, "Évoluroc");
         }
     }
