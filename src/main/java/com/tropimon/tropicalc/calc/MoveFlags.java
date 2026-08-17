@@ -42,4 +42,15 @@ public final class MoveFlags {
     public static boolean estMorsure(String showdownId) {
         return showdownId != null && MORSURE.contains(showdownId);
     }
+
+    // Capacités à recul propre (blessent leur utilisateur) les plus jouées -
+    // utile pour exclure ce cas de la détection Orbe Vie par observation
+    private static final Set<String> RECUL = Set.of(
+        "bravebird", "headsmash", "doubleedge", "flareblitz", "wildcharge",
+        "submission", "takedown", "volttackle", "woodhammer",
+        "headcharge", "highjumpkick", "jumpkick", "steelbeam", "chloroblast");
+
+    public static boolean aRecul(String showdownId) {
+        return showdownId != null && RECUL.contains(showdownId);
+    }
 }

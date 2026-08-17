@@ -187,7 +187,26 @@ public final class ObservationCollector {
                 }
             }
 
-            // Inférence de vitesse : l'adversaire a agi en premier avec des coups non prioritaires
+            // Détection Orbe Vie : tour "propre" où l'adversaire attaque
+            // (dégâts, pas statut, pas de recul propre à la capacité) et
+            // perd ~10% de ses PV max le même tour, sans autre source
+            // possible (statut, Salaison, Vampigraine, sable non-immunisé,
+            // dégâts du joueur qui viendraient troubler la mesure).
+            if (coupAdversaireDuTour != null
+                    && !adversaireNAPasAttaque()
+                    && !com.tropimon.tropicalc.calc.MoveFlags.aRecul(coupAdversaireDuTour.showdownId())
+                    && perteAdversaire >= 8.0 && perteAdversaire <= 12.0
+                    && (coupJoueurDuTour == null || joueurNAPasAttaque())
+                    && adversaire.getStatut() == Pokemon.Statut.AUCUN
+                    && !adversaireVampigraine
+                    && !adversaireSalaison
+                    && !OBJETS_CONFIRMES.containsKey(adversaire.getEspece())
+                    && !OBJETS_RETIRES.contains(adversaire.getEspece())
+                    && (FieldTracker.construireField().getMeteo() != Field.Meteo.SABLE
+                        || immuniseSableSimple(adversaire))) {
+                OBJETS_CONFIRMES.put(adversaire.getEspece(), "Orbe Vie");
+            }
+
             if (Boolean.TRUE.equals(adversaireAAgiEnPremier)
                     && coupJoueurDuTour != null && coupAdversaireDuTour != null
                     && !COUPS_PRIORITAIRES.contains(coupJoueurDuTour.showdownId())
@@ -384,6 +403,8 @@ public final class ObservationCollector {
         ProfilAdversaire profil = PROFILS.get(espece);
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
         boolean objetRetire = OBJETS_RETIRES.contains(espece);
+        tenterConfirmerEcharpeChoix(espece, adversaireBase);
+        tenterConfirmerEvoluroc(espece, smogon);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
@@ -440,7 +461,14 @@ public final class ObservationCollector {
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
-                if (objetEstime != null) b.objet(objetEstime);
+                if (objetEstime != null) {
+                    b.objet(objetEstime);
+                    // Rendu visible ("Objet confirmé"), pas juste appliqué
+                    // silencieusement au calcul : le narrowing a déjà éliminé
+                    // tous les autres candidats testés, même niveau de
+                    // confiance que le calcul qui s'en sert depuis toujours.
+                    OBJETS_CONFIRMES.put(espece, objetEstime);
+                }
             }
 
             String talentEstime = extraireTalentUnique(profil.attaque);
@@ -523,6 +551,82 @@ public final class ObservationCollector {
             if (n.getStatAugmentee() == stat) return n;
         }
         return null;
+    }
+
+    /**
+     * Confirme Écharpe Choix si la vitesse minimale garantie par l'ordre
+     * d'action observé DÉPASSE ce que ce Pokémon pourrait atteindre au
+     * MAXIMUM sans elle (252 EV, nature boostante, + le meilleur talent
+     * de vitesse plausible pour cette espèce sous la météo actuelle) -
+     * dans ce cas, l'écharpe est la seule explication restante, pas
+     * juste la plus probable.
+     */
+    private static void tenterConfirmerEcharpeChoix(String espece, Pokemon adversaireBase) {
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
+        int vitesseMinObservee = getVitesseMinObservee(espece);
+        if (vitesseMinObservee <= 0) return;
+
+        try {
+            Set<String> talentsPossibles = getTalentsReelsEspece(adversaireBase);
+            com.tropimon.tropicalc.calc.Field.Meteo meteoActuelle =
+                FieldTracker.construireField().getMeteo();
+
+            double meilleureVitesse = 0;
+            String[] talentsAEssayer = {null, "Chlorophylle", "Glissade", "Baigne Sable", "Chasse-Neige"};
+            for (String talent : talentsAEssayer) {
+                if (talent != null && (talentsPossibles == null || !talentsPossibles.contains(talent))) continue;
+                Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
+                        adversaireBase.getType1(), adversaireBase.getType2())
+                    .statBase(Stat.VITESSE, adversaireBase.getStatBase(Stat.VITESSE))
+                    .iv(Stat.VITESSE, 31)
+                    .ev(Stat.VITESSE, 252)
+                    .nature(Nature.TIMIDE);
+                if (talent != null) b.talent(talent);
+                double v = com.tropimon.tropicalc.calc.DamageCalculator.vitesseEnCombat(b.build(), meteoActuelle);
+                meilleureVitesse = Math.max(meilleureVitesse, v);
+            }
+            // Pied Véloce seulement si un statut est réellement actif
+            // maintenant (sinon le talent ne ferait rien)
+            if (talentsPossibles != null && talentsPossibles.contains("Pied Véloce")
+                    && adversaireBase.getStatut() != Pokemon.Statut.AUCUN) {
+                Pokemon avecPiedVeloce = Pokemon.builder(espece, adversaireBase.getNiveau(),
+                        adversaireBase.getType1(), adversaireBase.getType2())
+                    .statBase(Stat.VITESSE, adversaireBase.getStatBase(Stat.VITESSE))
+                    .iv(Stat.VITESSE, 31)
+                    .ev(Stat.VITESSE, 252)
+                    .nature(Nature.TIMIDE)
+                    .talent("Pied Véloce")
+                    .build();
+                avecPiedVeloce.setStatut(adversaireBase.getStatut());
+                double v = com.tropimon.tropicalc.calc.DamageCalculator.vitesseEnCombat(avecPiedVeloce, meteoActuelle);
+                meilleureVitesse = Math.max(meilleureVitesse, v);
+            }
+
+            if (vitesseMinObservee > meilleureVitesse) {
+                OBJETS_CONFIRMES.put(espece, "Écharpe Choix");
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Confirme Évoluroc si Smogon montre une dominance TRÈS forte (≥80%)
+     * pour cet objet sur cette espèce - PAS une preuve comportementale
+     * comme les autres détections de ce fichier, mais une quasi-certitude
+     * statistique (ex: Porygon2 joue Évoluroc depuis plus d'une décennie
+     * à quasiment 100% des cas). Un tel niveau de dominance n'existe en
+     * pratique que pour les objets quasi-obligatoires sur une espèce
+     * précise - le risque de faux positif est donc faible, mais reste
+     * d'une nature différente d'une observation directe.
+     */
+    private static void tenterConfirmerEvoluroc(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
+        if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
+        if (smogon.topItemUsageFraction() < 0.80) return;
+        String topObjet = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+        if ("Évoluroc".equals(topObjet)) {
+            OBJETS_CONFIRMES.put(espece, "Évoluroc");
+        }
     }
 
     private static String extraireObjetUnique(StatHypothesis hyp) {
@@ -890,6 +994,12 @@ public final class ObservationCollector {
     private static boolean adversaireNAPasAttaque() {
         if (coupAdversaireDuTour == null) return true;
         MoveTemplate t = Moves.INSTANCE.getByName(coupAdversaireDuTour.showdownId());
+        return t != null && "status".equalsIgnoreCase(String.valueOf(t.getDamageCategory().getName()));
+    }
+
+    private static boolean joueurNAPasAttaque() {
+        if (coupJoueurDuTour == null) return true;
+        MoveTemplate t = Moves.INSTANCE.getByName(coupJoueurDuTour.showdownId());
         return t != null && "status".equalsIgnoreCase(String.valueOf(t.getDamageCategory().getName()));
     }
 
