@@ -183,16 +183,16 @@ public class ProfilAdversaire {
      * Retourne null si aucun des N spreads testés ne reste cohérent
      * (l'appelant doit alors se rabattre sur un affichage générique).
      */
-    public SmogonDataLoader.ParsedSpread spreadPlusProbable(List<SmogonDataLoader.ParsedSpread> topSpreads, int n) {
+    public SmogonDataLoader.ParsedSpread spreadPlusProbable(List<SmogonDataLoader.ParsedSpread> topSpreads, int n, Pokemon reference) {
         int limite = Math.min(n, topSpreads.size());
         for (int i = 0; i < limite; i++) {
             SmogonDataLoader.ParsedSpread s = topSpreads.get(i);
-            if (spreadEstCoherent(s)) return s;
+            if (spreadEstCoherent(s, reference)) return s;
         }
         return null;
     }
 
-    private boolean spreadEstCoherent(SmogonDataLoader.ParsedSpread s) {
+    private boolean spreadEstCoherent(SmogonDataLoader.ParsedSpread s, Pokemon reference) {
         if (!evDansPlage(attaque, s.atkEv())) return false;
         if (!evDansPlage(attaqueSpe, s.spaEv())) return false;
         if (!evDansPlage(defense, s.defEv())) return false;
@@ -203,6 +203,30 @@ public class ProfilAdversaire {
         if (!natureCoherente(attaqueSpe, Stat.ATTAQUE_SPE, nature)) return false;
         if (!natureCoherente(defense, Stat.DEFENSE, nature)) return false;
         if (!natureCoherente(defenseSpe, Stat.DEFENSE_SPE, nature)) return false;
+
+        // Vitesse : cross-check contre l'ordre d'action déjà observé en
+        // combat (signal déjà collecté ailleurs, jamais exploité ici avant).
+        // Si ce spread impliquerait une vitesse INFÉRIEURE au minimum
+        // garanti par l'observation (l'adversaire a agi avant nous sans
+        // priorité, donc sa vitesse réelle est au moins celle-ci), le
+        // spread est provablement faux - il ne devine pas juste un peu
+        // moins bien, il est mathématiquement incompatible avec un fait
+        // déjà établi avec certitude.
+        if (reference != null) {
+            int vitesseMinConnue = com.tropimon.tropicalc.battle.ObservationCollector
+                .getVitesseMinObservee(reference.getEspece());
+            if (vitesseMinConnue > 0) {
+                Pokemon hypothese = Pokemon.builder(reference.getEspece(), reference.getNiveau(),
+                        reference.getType1(), reference.getType2())
+                    .statBase(Stat.VITESSE, reference.getStatBase(Stat.VITESSE))
+                    .iv(Stat.VITESSE, 31)
+                    .ev(Stat.VITESSE, s.speEv())
+                    .nature(nature)
+                    .build();
+                if (hypothese.getStatCalculee(Stat.VITESSE) < vitesseMinConnue) return false;
+            }
+        }
+
         return true;
     }
 

@@ -370,8 +370,10 @@ public final class CalcOverlay implements HudRenderCallback {
             // assez resserrés pour trancher).
             SmogonDataLoader.ParsedSpread top = smogon.topSpreads().get(0);
             boolean deduitParObservation = false;
-            if (profil != null && profil.getNbObservations() > 0) {
-                SmogonDataLoader.ParsedSpread choisi = profil.spreadPlusProbable(smogon.topSpreads(), 3);
+            boolean aUneObservation = profil != null && profil.getNbObservations() > 0;
+            boolean aUneVitesseObservee = ObservationCollector.getVitesseMinObservee(especeAdv) > 0;
+            if (profil != null && (aUneObservation || aUneVitesseObservee)) {
+                SmogonDataLoader.ParsedSpread choisi = profil.spreadPlusProbable(smogon.topSpreads(), 3, adversaire);
                 if (choisi != null) {
                     deduitParObservation = choisi != smogon.topSpreads().get(0);
                     top = choisi;
