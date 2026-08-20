@@ -89,6 +89,12 @@ public class DamageCalculator {
 
     private DamageCalculator() {}
 
+    // Seules espèces du jeu où Protéen (Kecleon exclu, jamais joué en
+    // compétitif) ou Libéro sont un talent caché quasi-systématiquement
+    // utilisé plutôt qu'une simple option parmi d'autres.
+    private static final java.util.Set<String> ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN =
+        java.util.Set.of("meowscarada", "cinderace", "greninja");
+
     public static Resultat calculer(Pokemon attaquant, Pokemon defenseur, Move capacite,
                                      Field terrain, Field.Ecrans ecransDefenseur, boolean critique) {
 
@@ -738,9 +744,14 @@ public class DamageCalculator {
     private static double calculerSTAB(Pokemon attaquant, Move capacite, ModifierContext ctx) {
         PokemonType typeCapacite = capacite.getType();
 
-        // Protéen / Libéro : l'attaquant prend le type de son attaque → STAB garanti
+        // Protéen / Libéro : l'attaquant prend le type de son attaque → STAB garanti.
+        // Miascarade/Pyrobut/Amphinobi sont les 3 SEULES espèces du jeu où ce talent
+        // caché est quasi-systématiquement joué en compétitif - on l'assume par
+        // défaut AVANT même toute confirmation, plutôt que d'attendre un premier
+        // changement de type observé pour l'appliquer.
         String talent = attaquant.getTalent();
-        boolean proteen = "Protéen".equals(talent) || "Libéro".equals(talent);
+        boolean proteen = "Protéen".equals(talent) || "Libéro".equals(talent)
+            || ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN.contains(attaquant.getEspece());
 
         boolean typeOriginal = attaquant.possedeType(typeCapacite) || proteen;
 
