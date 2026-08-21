@@ -745,13 +745,20 @@ public class DamageCalculator {
         PokemonType typeCapacite = capacite.getType();
 
         // Protéen / Libéro : l'attaquant prend le type de son attaque → STAB garanti.
-        // Miascarade/Pyrobut/Amphinobi sont les 3 SEULES espèces du jeu où ce talent
-        // caché est quasi-systématiquement joué en compétitif - on l'assume par
-        // défaut AVANT même toute confirmation, plutôt que d'attendre un premier
-        // changement de type observé pour l'appliquer.
+        // Depuis la Gen 9, ce déclenchement n'a lieu QU'UNE SEULE FOIS par entrée
+        // sur le terrain (sur le premier coup joué) - le Pokémon reste ensuite
+        // bloqué sur ce type jusqu'à ce qu'il sorte et revienne. Miascarade/
+        // Pyrobut/Amphinobi sont les 3 SEULES espèces où ce talent caché est
+        // quasi-systématiquement joué en compétitif : on assume le STAB garanti
+        // TANT QU'AUCUN changement de type réel n'a encore été OBSERVÉ pour ce
+        // séjour sur le terrain (isTypesModifies()) - dès qu'un coup a révélé
+        // son vrai type via TypeTracker, on arrête de deviner et on utilise ce
+        // type réel normalement (STAB seulement si le type de la capacité
+        // correspond vraiment, comme pour n'importe quel autre Pokémon).
         String talent = attaquant.getTalent();
         boolean proteen = "Protéen".equals(talent) || "Libéro".equals(talent)
-            || ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN.contains(attaquant.getEspece());
+            || (!attaquant.isTypesModifies()
+                && ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN.contains(attaquant.getEspece()));
 
         boolean typeOriginal = attaquant.possedeType(typeCapacite) || proteen;
 
