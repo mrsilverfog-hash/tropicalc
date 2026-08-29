@@ -175,9 +175,31 @@ public final class SmogonDataLoader {
         return s.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 
+    /**
+     * Sets manuels pour les espèces absentes des données Smogon (bannies
+     * des formats consultés - gen9nationaldex/gen9ou - mais rencontrables
+     * en jeu sur des formats plus permissifs). Vérifié avant recherche
+     * dans les données Smogon chargées : à défaut, aucune capacité/objet/
+     * talent estimé ne serait jamais affiché pour ces espèces avant
+     * qu'elles n'aient réellement agi en combat.
+     */
+    private static final Map<String, SmogonPokemonData> FALLBACKS_MANUELS = Map.of(
+        "dracovish", new SmogonPokemonData(
+            List.of("choicescarf"),
+            List.of("strongjaw"),
+            List.of(new ParsedSpread("adamant", 4, 252, 0, 0, 0, 252, 1.0)),
+            List.of("fishiousrend", "crunch", "psychicfangs", "outrage"),
+            1.0
+        )
+    );
+
     public static SmogonPokemonData getDonnees(String especeShowdownId) {
-        if (!charge) return null;
-        return DONNEES.get(normaliser(especeShowdownId));
+        String id = normaliser(especeShowdownId);
+        if (charge) {
+            SmogonPokemonData d = DONNEES.get(id);
+            if (d != null) return d;
+        }
+        return FALLBACKS_MANUELS.get(id);
     }
 
     public static boolean estCharge() { return charge; }
