@@ -192,11 +192,15 @@ public final class SmogonDataLoader {
             1.0
         ),
         "dragapult", new SmogonPokemonData(
-            List.of("choicespecs"),
+            List.of("choicespecs", "lifeorb"),
             List.of("infiltrator"),
-            List.of(new ParsedSpread("timid", 0, 0, 0, 252, 4, 252, 1.0)),
-            List.of("dracometeor", "shadowball", "flamethrower", "uturn"),
-            1.0
+            List.of(
+                new ParsedSpread("timid", 0, 0, 0, 252, 4, 252, 1.0),
+                new ParsedSpread("adamant", 0, 252, 0, 0, 4, 252, 0.5)
+            ),
+            List.of("dracometeor", "shadowball", "flamethrower", "uturn",
+                    "dragondance", "dragondarts", "phantomforce", "suckerpunch"),
+            0.6
         )
     );
 
