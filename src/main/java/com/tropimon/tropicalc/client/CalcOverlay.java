@@ -351,6 +351,14 @@ public final class CalcOverlay implements HudRenderCallback {
             if (FieldTracker.adversaireAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
             durees.append(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants()));
         }
+        if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
+            if (durees.length() > 0) durees.append(" | ");
+            StringBuilder noms = new StringBuilder();
+            if (FieldTracker.joueurAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
+            if (FieldTracker.joueurAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
+            if (FieldTracker.joueurAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
+            durees.append(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants()));
+        }
         if (durees.length() > 0) {
             context.drawText(client.textRenderer, Text.literal(durees.toString()), x, y, COULEUR_TEXTE, true);
             y += hauteurLigne;

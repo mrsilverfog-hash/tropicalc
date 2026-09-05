@@ -143,15 +143,15 @@ public final class FieldTracker {
 
             switch (effet) {
                 case "reflect" -> {
-                    if (allie) reflectJoueur = debut;
+                    if (allie) { reflectJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { reflectAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "lightscreen" -> {
-                    if (allie) lightScreenJoueur = debut;
+                    if (allie) { lightScreenJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { lightScreenAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "auroraveil" -> {
-                    if (allie) auroraVeilJoueur = debut;
+                    if (allie) { auroraVeilJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { auroraVeilAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
                 case "stealthrock" -> {
@@ -209,17 +209,26 @@ public final class FieldTracker {
     // Durées restantes (hypothèse basse : 5 tours, sans Roche Lisse/Lumargile)
     private static int toursMeteoRestants = 0;
     private static int toursEcransAdversaireRestants = 0;
+    private static int toursEcransJoueurRestants = 0;
 
     public static int getToursMeteoRestants() { return toursMeteoRestants; }
     public static int getToursEcransAdversaireRestants() { return toursEcransAdversaireRestants; }
+    public static int getToursEcransJoueurRestants() { return toursEcransJoueurRestants; }
 
     public static boolean adversaireAUnEcran() {
         return reflectAdversaire || lightScreenAdversaire || auroraVeilAdversaire;
     }
 
+    public static boolean joueurAUnEcran() {
+        return reflectJoueur || lightScreenJoueur || auroraVeilJoueur;
+    }
+
     public static boolean adversaireAReflet() { return reflectAdversaire; }
     public static boolean adversaireAMurLumiere() { return lightScreenAdversaire; }
     public static boolean adversaireAVoileAurore() { return auroraVeilAdversaire; }
+    public static boolean joueurAReflet() { return reflectJoueur; }
+    public static boolean joueurAMurLumiere() { return lightScreenJoueur; }
+    public static boolean joueurAVoileAurore() { return auroraVeilJoueur; }
 
     /** À appeler une fois par tour : décrémente les durées. */
     private static void capturerPoseurEcran() {
@@ -233,6 +242,7 @@ public final class FieldTracker {
 
     public static void nouveauTour() {
         if (toursMeteoRestants > 0) toursMeteoRestants--;
+        if (toursEcransJoueurRestants > 0) toursEcransJoueurRestants--;
         if (toursEcransAdversaireRestants > 0) {
             toursEcransAdversaireRestants--;
             // Le mur dure encore alors que notre hypothèse de départ (5
@@ -272,6 +282,7 @@ public final class FieldTracker {
         stickyWebAdversaire = false;
         toursMeteoRestants = 0;
         toursEcransAdversaireRestants = 0;
+        toursEcransJoueurRestants = 0;
         poseurEcranAdversaire = null;
         correctionArgilePouvoirAppliquee = false;
     }
