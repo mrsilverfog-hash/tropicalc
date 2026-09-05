@@ -190,6 +190,13 @@ public final class SmogonDataLoader {
             List.of(new ParsedSpread("adamant", 4, 252, 0, 0, 0, 252, 1.0)),
             List.of("fishiousrend", "crunch", "psychicfangs", "outrage"),
             1.0
+        ),
+        "dragapult", new SmogonPokemonData(
+            List.of("choicespecs"),
+            List.of("infiltrator"),
+            List.of(new ParsedSpread("timid", 0, 0, 0, 252, 4, 252, 1.0)),
+            List.of("dracometeor", "shadowball", "flamethrower", "uturn"),
+            1.0
         )
     );
 
