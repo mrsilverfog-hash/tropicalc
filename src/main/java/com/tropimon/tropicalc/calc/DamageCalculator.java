@@ -403,6 +403,13 @@ public class DamageCalculator {
         if (nom == null) return puissance;
 
         switch (nom) {
+            case "boltbeak", "fishiousrend" -> {
+                // Prise de Bec / Branchicrok : double puissance (170) si
+                // l'attaquant agit avant la cible (comparaison de vitesse).
+                double vitAttaquant = vitesseEnCombat(attaquant, meteo);
+                double vitDefenseur = vitesseEnCombat(defenseur, meteo);
+                if (vitAttaquant > vitDefenseur) puissance = 170;
+            }
             case "knockoff" -> {
                 // Sabotage : x1.5 si le défenseur tient un objet
                 if (defenseur.getObjet() != null) puissance = (int) (puissance * 1.5);

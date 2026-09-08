@@ -258,6 +258,21 @@ public final class CalcOverlay implements HudRenderCallback {
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
 
+                        // Prise de Bec / Branchicrok : double puissance si
+                        // l'adversaire attaque avant moi. Affiche les DEUX
+                        // scénarios plutôt que de deviner l'ordre d'action,
+                        // qui dépend aussi de la capacité que JE choisirai.
+                        if ("boltbeak".equals(template.getName()) || "fishiousrend".equals(template.getName())) {
+                            DamageCalculator.Resultat avant = calculerAvecPuissanceForcee(
+                                adversaire, joueur, capaciteAdv, 170, field, field.getEcransJoueur());
+                            DamageCalculator.Resultat apres = calculerAvecPuissanceForcee(
+                                adversaire, joueur, capaciteAdv, 85, field, field.getEcransJoueur());
+                            ligne = String.format("%s%s (avt) : %.0f%%-%.0f%% | (après) : %.0f%%-%.0f%%%s",
+                                estRevele ? "✓ " : "", nom,
+                                avant.pourcentageMin, avant.pourcentageMax,
+                                apres.pourcentageMin, apres.pourcentageMax, suffixePp);
+                        }
+
                         // Hypothèse objet offensif quasi-certain (> 50% d'usage Smogon) :
                         // fourchette de dégâts SI l'adversaire tenait cet objet, en bleu.
                         // Uniquement si l'objet n'est pas déjà un fait confirmé (sinon
@@ -497,6 +512,30 @@ public final class CalcOverlay implements HudRenderCallback {
             .poing(com.tropimon.tropicalc.calc.MoveFlags.estPoing(coup.getName()))
             .morsure(com.tropimon.tropicalc.calc.MoveFlags.estMorsure(coup.getName()))
             .build();
+    }
+
+    /**
+     * Recalcule les dégâts d'une capacité en forçant sa puissance de base,
+     * sans passer par puissanceEffective (DamageCalculator) - utile pour
+     * Prise de Bec/Branchicrok, où on veut voir explicitement les DEUX
+     * scénarios (avant/après) plutôt qu'une seule valeur déduite d'une
+     * comparaison de vitesse qui pourrait ne pas se vérifier selon la
+     * capacité que l'adversaire choisira réellement.
+     */
+    private DamageCalculator.Resultat calculerAvecPuissanceForcee(Pokemon attaquant, Pokemon defenseur,
+            com.tropimon.tropicalc.calc.Move original, int puissanceForcee, Field terrain, Field.Ecrans ecrans) {
+        com.tropimon.tropicalc.calc.Move copie = com.tropimon.tropicalc.calc.Move
+            .builder("_forced_" + original.getNom(), original.getType(), original.getCategorie())
+            .puissance(puissanceForcee)
+            .precision(original.getPrecision())
+            .prioritee(original.getPrioritee())
+            .ratioCritique(original.getRatioCritique())
+            .multiCoups(original.getCoupsMin(), original.getCoupsMax())
+            .poing(original.isPoing())
+            .morsure(original.isMorsure())
+            .contact()
+            .build();
+        return DamageCalculator.calculer(attaquant, defenseur, copie, terrain, ecrans, false);
     }
 
     private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
