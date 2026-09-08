@@ -51,6 +51,8 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (adversaireBase == null || joueur == null || monComplet == null) return;
 
+        joueur.setCoupsRageFistSubis(ObservationCollector.getCoupsRageFistJoueur(joueur.getEspece()));
+
         // Espèce stable pour la détection de switch : celle de l'équipe (ex: "Métamorph"),
         // PAS l'espèce copiée si transformé — sinon chaque transformation/changement de
         // cible copiée déclenche à tort une purge des boosts comme un vrai switch.

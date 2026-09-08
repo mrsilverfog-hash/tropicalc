@@ -37,6 +37,11 @@ public class Pokemon {
     private int pvActuels;
     private Statut statut = Statut.AUCUN;
 
+    // Poing de Colère : nombre de capacités offensives réellement subies
+    // (max 6, plafonné) - ne reset JAMAIS au switch/K.O., contrairement à
+    // la plupart des compteurs suivis ailleurs dans le mod.
+    private int coupsRageFistSubis = 0;
+
     private final Map<Stat, Integer> stages = new EnumMap<>(Stat.class);
 
     /** PV max forcés (Imposteur : stats copiées mais PV de Métamorph). 0 = aucun. */
@@ -158,6 +163,8 @@ public class Pokemon {
     public boolean estKO() { return pvActuels <= 0; }
     public Statut getStatut() { return statut; }
     public void setStatut(Statut statut) { this.statut = statut; }
+    public int getCoupsRageFistSubis() { return coupsRageFistSubis; }
+    public void setCoupsRageFistSubis(int n) { this.coupsRageFistSubis = Math.max(0, Math.min(6, n)); }
     public void setObjet(String objet) { this.objet = objet; }
     public String getTalent() { return talent; }
     public String getObjet() { return objet; }

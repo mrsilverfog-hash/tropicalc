@@ -407,6 +407,12 @@ public class DamageCalculator {
                 // Sabotage : x1.5 si le défenseur tient un objet
                 if (defenseur.getObjet() != null) puissance = (int) (puissance * 1.5);
             }
+            case "ragefist" -> {
+                // Poing de Colère : +50 par capacité offensive réellement
+                // subie (max 6, plafond 350) - le compteur ne reset jamais
+                // au switch, déjà géré comme tel sur l'attaquant.
+                puissance = Math.min(350, 50 + 50 * attaquant.getCoupsRageFistSubis());
+            }
             case "facade" -> {
                 // Façade : x2 si brûlure, poison ou paralysie ; ignore la pénalité de brûlure
                 Pokemon.Statut s = attaquant.getStatut();

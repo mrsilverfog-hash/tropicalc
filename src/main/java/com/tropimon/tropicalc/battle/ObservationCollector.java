@@ -135,6 +135,24 @@ public final class ObservationCollector {
             double perteJoueur = pvJoueurDebutTour - pvJoueurMaintenant;
             double perteAdversaire = pvAdversaireDebutTour - pvAdversaireMaintenant;
 
+            // Poing de Colère : +1 coup subi (max 6) par capacité offensive
+            // qui a réellement touché - persiste toute la durée du combat.
+            // Limite acceptée : si le Clone se brise le MÊME tour que ce
+            // coup, notre état "Clone actif" reflète déjà l'après-coup (le
+            // message end.substitute arrive avant ce traitement), donc ce
+            // cas très marginal peut sous-estimer le compteur d'un coup -
+            // jamais le surestimer.
+            if (perteJoueur > 0 && coupAdversaireDuTour != null && !adversaireNAPasAttaque()
+                    && !FieldTracker.joueurAUnClone()) {
+                String esp = joueur.getEspece();
+                COUPS_RAGE_FIST_JOUEUR.merge(esp, 1, (a, b) -> Math.min(6, a + b));
+            }
+            if (perteAdversaire > 0 && coupJoueurDuTour != null && !joueurNAPasAttaque()
+                    && !FieldTracker.adversaireAUnClone()) {
+                String esp = adversaire.getEspece();
+                COUPS_RAGE_FIST_ADVERSAIRE.merge(esp, 1, (a, b) -> Math.min(6, a + b));
+            }
+
             if (perteAdversaire < -5.0 || perteJoueur < -5.0) {
                 // Soin adverse de ~1/16 sans switch ni capacité de soin : Restes confirmés
                 // (Vampigraine/Vœu soignent 1/8+ et le tour d'après pour Vœu : exclus)
@@ -534,6 +552,7 @@ public final class ObservationCollector {
             ? (double) adversaireBase.getPvActuels() / adversaireBase.getPvMax() : 1.0;
         p.setPvActuels((int) Math.round(fractionPv * p.getPvMax()));
         p.setStatut(adversaireBase.getStatut());
+        p.setCoupsRageFistSubis(getCoupsRageFistAdversaire(espece));
 
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
@@ -916,6 +935,19 @@ public final class ObservationCollector {
     private static int compteurToxikJoueur = 0;
     private static int compteurToxikAdversaire = 0;
 
+    // Poing de Colère : persiste PAR ESPÈCE pour toute la durée du combat,
+    // ne reset jamais au switch (contrairement à tout le reste ci-dessus).
+    private static final Map<String, Integer> COUPS_RAGE_FIST_JOUEUR = new HashMap<>();
+    private static final Map<String, Integer> COUPS_RAGE_FIST_ADVERSAIRE = new HashMap<>();
+
+    public static int getCoupsRageFistJoueur(String espece) {
+        return COUPS_RAGE_FIST_JOUEUR.getOrDefault(espece, 0);
+    }
+
+    public static int getCoupsRageFistAdversaire(String espece) {
+        return COUPS_RAGE_FIST_ADVERSAIRE.getOrDefault(espece, 0);
+    }
+
     public static boolean isJoueurSalaison() { return joueurSalaison; }
     public static boolean isJoueurVampigraine() { return joueurVampigraine; }
     public static boolean isAdversaireSalaison() { return adversaireSalaison; }
@@ -1064,6 +1096,8 @@ public final class ObservationCollector {
         adversaireSalaison = false;
         compteurToxikJoueur = 0;
         compteurToxikAdversaire = 0;
+        COUPS_RAGE_FIST_JOUEUR.clear();
+        COUPS_RAGE_FIST_ADVERSAIRE.clear();
         especeJoueurSuivie = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
