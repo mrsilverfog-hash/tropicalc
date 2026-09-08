@@ -18,7 +18,7 @@ public final class MoveUseTracker {
     }
 
     /** Extrait le nom du propriétaire (Minecraft) depuis un arg owned_pokemon imbriqué. */
-    private static String extraireProprietaire(Object arg) {
+    public static String extraireProprietaire(Object arg) {
         if (!(arg instanceof Text texteArg) || !(texteArg.getContent() instanceof TranslatableTextContent sousContenu)) return null;
         if (!CLE_PROPRIETAIRE.equals(sousContenu.getKey())) return null;
         Object[] sousArgs = sousContenu.getArgs();

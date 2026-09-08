@@ -57,6 +57,18 @@ public final class FieldTracker {
     private static boolean lightScreenAdversaire = false;
     private static boolean auroraVeilAdversaire = false;
 
+    private static boolean substituteJoueur = false;
+    private static boolean substituteAdversaire = false;
+
+    /** Nombre de tours restants avant l'impact - 0 si aucune Prescience en vol. */
+    private static int futureSightJoueurTours = 0;      // va me toucher
+    private static int futureSightAdversaireTours = 0;  // va toucher l'adversaire
+
+    public static boolean joueurAUnClone() { return substituteJoueur; }
+    public static boolean adversaireAUnClone() { return substituteAdversaire; }
+    public static int getFutureSightJoueurTours() { return futureSightJoueurTours; }
+    public static int getFutureSightAdversaireTours() { return futureSightAdversaireTours; }
+
     /**
      * Espèce présumée avoir posé l'écran adverse actif, capturée au moment
      * du sidestart (le Pokémon adverse actif à cet instant en est
@@ -172,6 +184,40 @@ public final class FieldTracker {
             return;
         }
 
+        // Clone (Substitute) : le porteur est directement l'argument, jamais
+        // une cible - déclenché par sa propre capacité, sur lui-même.
+        if (cle.equals("cobblemon.battle.start.substitute") || cle.equals("cobblemon.battle.end.substitute")) {
+            String poseur = MoveUseTracker.extraireProprietaire(contenu.getArgs().length > 0 ? contenu.getArgs()[0] : null);
+            Boolean estAdversaire = ObservationCollector.determinerAttaquant(poseur);
+            if (estAdversaire == null) return;
+            boolean actif = cle.endsWith("start.substitute");
+            if (estAdversaire) substituteAdversaire = actif; else substituteJoueur = actif;
+            return;
+        }
+
+        // Prescience (Future Sight) : frappe le Pokémon qui occupe la
+        // position visée 2 tours après le lancement, PAS forcément celui
+        // ciblé au départ (un switch entre-temps change la cible réelle -
+        // confirmé par observation directe). L'indicateur ne nomme donc
+        // jamais de cible précise, juste "dans X tours".
+        if (cle.equals("cobblemon.battle.start.futuresight")) {
+            String lanceur = MoveUseTracker.extraireProprietaire(contenu.getArgs().length > 0 ? contenu.getArgs()[0] : null);
+            Boolean estAdversaire = ObservationCollector.determinerAttaquant(lanceur);
+            if (estAdversaire == null) return;
+            // Le lanceur est CELUI qui a envoyé Prescience : si c'est
+            // l'adversaire, l'impact me touchera MOI (compteur joueur) ;
+            // si c'est moi, l'impact touchera l'ADVERSAIRE (compteur adv).
+            if (estAdversaire) futureSightJoueurTours = 2; else futureSightAdversaireTours = 2;
+            return;
+        }
+        if (cle.equals("cobblemon.battle.end.futuresight")) {
+            String cible = MoveUseTracker.extraireProprietaire(contenu.getArgs().length > 0 ? contenu.getArgs()[0] : null);
+            Boolean estAdversaire = ObservationCollector.determinerAttaquant(cible);
+            if (estAdversaire == null) return;
+            if (estAdversaire) futureSightAdversaireTours = 0; else futureSightJoueurTours = 0;
+            return;
+        }
+
         // Terrains
         if (cle.contains("electricterrain")) {
             terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.ELECTRIQUE;
@@ -242,6 +288,8 @@ public final class FieldTracker {
 
     public static void nouveauTour() {
         if (toursMeteoRestants > 0) toursMeteoRestants--;
+        if (futureSightJoueurTours > 0) futureSightJoueurTours--;
+        if (futureSightAdversaireTours > 0) futureSightAdversaireTours--;
         if (toursEcransJoueurRestants > 0) toursEcransJoueurRestants--;
         if (toursEcransAdversaireRestants > 0) {
             toursEcransAdversaireRestants--;
@@ -283,6 +331,10 @@ public final class FieldTracker {
         toursMeteoRestants = 0;
         toursEcransAdversaireRestants = 0;
         toursEcransJoueurRestants = 0;
+        substituteJoueur = false;
+        substituteAdversaire = false;
+        futureSightJoueurTours = 0;
+        futureSightAdversaireTours = 0;
         poseurEcranAdversaire = null;
         correctionArgilePouvoirAppliquee = false;
     }

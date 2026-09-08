@@ -738,7 +738,7 @@ public final class ObservationCollector {
         }
     }
 
-    private static Boolean determinerAttaquant(String proprietaire) {
+    public static Boolean determinerAttaquant(String proprietaire) {
         if (proprietaire == null) return null;
         var joueurMc = MinecraftClient.getInstance().player;
         if (joueurMc == null) return null;
