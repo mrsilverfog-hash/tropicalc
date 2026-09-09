@@ -103,6 +103,13 @@ public final class CalcOverlay implements HudRenderCallback {
         int scaledHeight = client.getWindow().getScaledHeight();
         int y = Math.min(170, Math.max(4, scaledHeight - hauteurEstimee));
 
+        // --- Cadre : fond semi-transparent (même style que le panneau PvP) ---
+        int yDebutCadre = y - 4;
+        int xDebutCadre = x - 4;
+        int largeurCadre = 260;
+        context.fill(xDebutCadre, yDebutCadre, xDebutCadre + largeurCadre, yDebutCadre + hauteurEstimee + 8,
+            0xC0101010);
+
         Field field = FieldTracker.construireField();
 
         // --- Section 1 : mes capacités ---
@@ -467,6 +474,17 @@ public final class CalcOverlay implements HudRenderCallback {
                 y += hauteurLigne;
             }
         }
+
+        // --- Cadre : bordure dorée, dessinée en dernier avec la vraie hauteur atteinte ---
+        drawBorder(context, xDebutCadre, yDebutCadre, largeurCadre, (y + 4) - yDebutCadre, 0xFFE8B84B);
+    }
+
+    /** Contour rectangulaire simple, 1px, style cohérent avec le panneau PvP. */
+    private static void drawBorder(DrawContext context, int x, int y, int w, int h, int couleur) {
+        context.fill(x, y, x + w, y + 1, couleur);
+        context.fill(x, y + h - 1, x + w, y + h, couleur);
+        context.fill(x, y, x + 1, y + h, couleur);
+        context.fill(x + w - 1, y, x + w, y + h, couleur);
     }
 
     /**
