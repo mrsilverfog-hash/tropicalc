@@ -32,7 +32,7 @@ public final class SwitchOverlayRenderer {
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
     private static final int COULEUR_FOND = 0xE0100010;
-    private static final int COULEUR_BORDURE = 0xFF5000FF;
+    private static final int COULEUR_BORDURE = 0xFFE8B84B;   // doré, cohérent avec le panneau PvP et le HUD principal
 
     private SwitchOverlayRenderer() {
     }
