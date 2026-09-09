@@ -34,10 +34,6 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
-    private static final int COULEUR_MUR = 0xFFAAAAAA;         // gris pierre
-    private static final int COULEUR_MUR_JOINT = 0xFF3A2A1A;   // brun foncé, joints de brique
-    private static final int COULEUR_CLONE = 0xFFCCBBFF;       // violet pâle, silhouette "fantôme"
-    private static final int COULEUR_CLONE_FOND = 0x80AA88FF;  // même teinte, translucide, en arrière-plan
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -386,7 +382,7 @@ public final class CalcOverlay implements HudRenderCallback {
             dessinerIconeMur(context, x, y);
             context.drawText(client.textRenderer,
                 Text.literal(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants())),
-                x + 11, y, COULEUR_TEXTE, true);
+                x + 13, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
         }
         if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
@@ -397,19 +393,19 @@ public final class CalcOverlay implements HudRenderCallback {
             dessinerIconeMur(context, x, y);
             context.drawText(client.textRenderer,
                 Text.literal(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants())),
-                x + 11, y, COULEUR_TEXTE, true);
+                x + 13, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
         }
 
         // --- Clone : une ligne dédiée par camp, petite icône à gauche ---
         if (FieldTracker.joueurAUnClone()) {
             dessinerIconeClone(context, x, y);
-            context.drawText(client.textRenderer, Text.literal("Clone toi"), x + 11, y, COULEUR_TEXTE, true);
+            context.drawText(client.textRenderer, Text.literal("Clone toi"), x + 13, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
         }
         if (FieldTracker.adversaireAUnClone()) {
             dessinerIconeClone(context, x, y);
-            context.drawText(client.textRenderer, Text.literal("Clone adv"), x + 11, y, COULEUR_TEXTE, true);
+            context.drawText(client.textRenderer, Text.literal("Clone adv"), x + 13, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
         }
 
@@ -554,20 +550,19 @@ public final class CalcOverlay implements HudRenderCallback {
         return DamageCalculator.calculer(attaquant, defenseur, copie, terrain, ecrans, false);
     }
 
-    /** Petit pattern de briques (8x7px) évoquant un mur/écran. */
+    private static final net.minecraft.util.Identifier TEXTURE_MUR =
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/mur.png");
+    private static final net.minecraft.util.Identifier TEXTURE_CLONE =
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/clone.png");
+
+    /** Petite icône (16x16, réduite à 10px à l'affichage) évoquant un mur/écran. */
     private void dessinerIconeMur(DrawContext context, int x, int y) {
-        context.fill(x, y, x + 8, y + 3, COULEUR_MUR);
-        context.fill(x + 3, y, x + 4, y + 3, COULEUR_MUR_JOINT);
-        context.fill(x, y + 3, x + 8, y + 4, COULEUR_MUR_JOINT);
-        context.fill(x, y + 4, x + 8, y + 7, COULEUR_MUR);
-        context.fill(x, y + 4, x + 1, y + 7, COULEUR_MUR_JOINT);
-        context.fill(x + 5, y + 4, x + 6, y + 7, COULEUR_MUR_JOINT);
+        context.drawTexture(TEXTURE_MUR, x, y, 0, 0, 10, 10, 16, 16);
     }
 
-    /** Deux silhouettes décalées (8x8px) évoquant une copie/Clone. */
+    /** Petite icône (16x16, réduite à 10px à l'affichage) évoquant un Clone fantomatique. */
     private void dessinerIconeClone(DrawContext context, int x, int y) {
-        context.fill(x + 2, y, x + 8, y + 7, COULEUR_CLONE_FOND);
-        context.fill(x, y + 1, x + 6, y + 8, COULEUR_CLONE);
+        context.drawTexture(TEXTURE_CLONE, x, y, 0, 0, 10, 10, 16, 16);
     }
 
     private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
