@@ -35,6 +35,17 @@ public final class SmogonDataLoader {
     private static volatile boolean erreur = false;
 
     /**
+     * Données complémentaires (National Dex Ubers) : couvre les légendaires,
+     * fabuleux et espèces bannies de gen9nationaldex/gen9ou (ex: Dracovish,
+     * Dragapult) - ces espèces ont ZÉRO usage dans les deux premiers formats
+     * puisqu'elles n'y sont pas jouables du tout, mais National Dex Ubers
+     * autorise tout, donc de VRAIES données Smogon existent là plutôt que de
+     * deviner des sets manuels un par un pour chaque espèce concernée.
+     */
+    private static final Map<String, SmogonPokemonData> DONNEES_UBERS = new HashMap<>();
+    private static volatile boolean chargeUbers = false;
+
+    /**
      * URLs calculées dynamiquement sur les mois RÉCENTS, jamais codées en dur.
      * Une liste de dates fixes périme d'elle-même chaque mois — c'était le cas
      * ici : figée à "2025-12" pendant que Smogon publiait déjà jusqu'en 2026-06+,
@@ -42,12 +53,12 @@ public final class SmogonDataLoader {
      * obsolète depuis des mois sans que rien ne le signale.
      * Smogon publie le mois M vers le 1er du mois M+1 : on essaie d'abord le
      * mois précédent (le plus susceptible d'être déjà publié et stable), puis
-     * on remonte jusqu'à 4 mois en arrière, sur gen9nationaldex puis gen9ou.
+     * on remonte jusqu'à 4 mois en arrière.
      */
-    private static String[] construireUrlsEssai() {
+    private static String[] construireUrlsEssai(String... formats) {
         java.time.YearMonth maintenant = java.time.YearMonth.now(java.time.ZoneOffset.UTC);
         List<String> urls = new ArrayList<>();
-        for (String format : new String[]{"gen9nationaldex", "gen9ou"}) {
+        for (String format : formats) {
             for (int i = 1; i <= 4; i++) {
                 java.time.YearMonth mois = maintenant.minusMonths(i);
                 urls.add(String.format("https://www.smogon.com/stats/%04d-%02d/chaos/%s-0.json",
@@ -57,48 +68,66 @@ public final class SmogonDataLoader {
         return urls.toArray(new String[0]);
     }
 
-    private static final String[] URLS_ESSAI = construireUrlsEssai();
+    private static final String[] URLS_ESSAI = construireUrlsEssai("gen9nationaldex", "gen9ou");
+
+    /**
+     * gen9nationaldexubers : autorise TOUS les Pokémon de toutes générations
+     * sans restriction de tier, contrairement aux deux formats ci-dessus qui
+     * excluent les espèces bannies (Dracovish, Dragapult...). Chargé en
+     * complément, jamais à la place - la source principale reste prioritaire
+     * pour toute espèce présente dans les deux.
+     */
+    private static final String[] URLS_ESSAI_UBERS = construireUrlsEssai("gen9nationaldexubers");
 
     public static void charger() {
         Thread t = new Thread(() -> {
-            for (String url : URLS_ESSAI) {
-                try {
-                    TropiCalcClient.LOGGER.info("[TropiCalc] Chargement sets Smogon : {}", url);
-                    HttpClient client = HttpClient.newBuilder()
-                        .connectTimeout(Duration.ofSeconds(15))
-                        .build();
-                    HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .timeout(Duration.ofSeconds(60))
-                        .header("User-Agent", "TropiCalc/1.0 Cobblemon-Fabric-Mod")
-                        .header("Accept", "application/json")
-                        .GET()
-                        .build();
-                    HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-                    if (resp.statusCode() != 200) {
-                        TropiCalcClient.LOGGER.warn("[TropiCalc] HTTP {} pour {}", resp.statusCode(), url);
-                        continue;
-                    }
-                    parser(resp.body());
-                    charge = true;
-                    TropiCalcClient.LOGGER.info("[TropiCalc] Sets Smogon chargés : {} Pokémon ({})", DONNEES.size(), url);
-                    return;
-                } catch (Exception e) {
-                    TropiCalcClient.LOGGER.warn("[TropiCalc] Échec chargement {} : {}", url, e.getMessage());
-                }
+            boolean succesPrincipal = essayerCharger(URLS_ESSAI, DONNEES);
+            charge = succesPrincipal;
+            chargeUbers = essayerCharger(URLS_ESSAI_UBERS, DONNEES_UBERS);
+            if (!succesPrincipal) {
+                erreur = true;
+                TropiCalcClient.LOGGER.warn("[TropiCalc] Impossible de charger les sets Smogon.");
             }
-            erreur = true;
-            TropiCalcClient.LOGGER.warn("[TropiCalc] Impossible de charger les sets Smogon.");
         }, "TropiCalc-SmogonLoader");
         t.setDaemon(true);
         t.start();
     }
 
-    private static void parser(String json) {
+    /** Essaie chaque URL dans l'ordre, retourne true dès qu'une réussit. */
+    private static boolean essayerCharger(String[] urls, Map<String, SmogonPokemonData> cible) {
+        for (String url : urls) {
+            try {
+                TropiCalcClient.LOGGER.info("[TropiCalc] Chargement sets Smogon : {}", url);
+                HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(15))
+                    .build();
+                HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(60))
+                    .header("User-Agent", "TropiCalc/1.0 Cobblemon-Fabric-Mod")
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                if (resp.statusCode() != 200) {
+                    TropiCalcClient.LOGGER.warn("[TropiCalc] HTTP {} pour {}", resp.statusCode(), url);
+                    continue;
+                }
+                parser(resp.body(), cible);
+                TropiCalcClient.LOGGER.info("[TropiCalc] Sets Smogon chargés : {} Pokémon ({})", cible.size(), url);
+                return true;
+            } catch (Exception e) {
+                TropiCalcClient.LOGGER.warn("[TropiCalc] Échec chargement {} : {}", url, e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private static void parser(String json, Map<String, SmogonPokemonData> cible) {
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         JsonObject data = root.getAsJsonObject("data");
         if (data == null) return;
-        DONNEES.clear();
+        cible.clear();
         for (Map.Entry<String, JsonElement> entree : data.entrySet()) {
             String nomPokemon = normaliser(entree.getKey());
             JsonObject pkData = entree.getValue().getAsJsonObject();
@@ -107,7 +136,7 @@ public final class SmogonDataLoader {
             List<ParsedSpread> topSpreads = extraireSpreads(pkData.getAsJsonObject("Spreads"), 5);
             List<String> topMoves = extraireTop(pkData.getAsJsonObject("Moves"), 5);
             double topItemFraction = fractionDuTop(pkData.getAsJsonObject("Items"));
-            DONNEES.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves, topItemFraction));
+            cible.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves, topItemFraction));
         }
     }
 
@@ -208,6 +237,10 @@ public final class SmogonDataLoader {
         String id = normaliser(especeShowdownId);
         if (charge) {
             SmogonPokemonData d = DONNEES.get(id);
+            if (d != null) return d;
+        }
+        if (chargeUbers) {
+            SmogonPokemonData d = DONNEES_UBERS.get(id);
             if (d != null) return d;
         }
         return FALLBACKS_MANUELS.get(id);
