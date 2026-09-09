@@ -275,9 +275,7 @@ public final class ObservationCollector {
             coupVerrouAdversaire = coup.showdownId();
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
-                COUPS_ADVERSAIRE
-                    .computeIfAbsent(adversaire.getEspece(), k -> new LinkedHashSet<>())
-                    .add(coup.showdownId());
+                ajouterCapaciteAdversaire(adversaire.getEspece(), coup.showdownId(), true);
 
                 // Comptage des PP : Pression (talent du joueur) ajoute 1 PP,
                 // mais seulement si la capacité CIBLE le Pokémon qui a Pression
@@ -442,9 +440,9 @@ public final class ObservationCollector {
         if (scout != null && !ESPECES_SCOUT_FUSIONNEES.contains(espece)) {
             ESPECES_SCOUT_FUSIONNEES.add(espece);
             if (!scout.capacites.isEmpty()) {
-                COUPS_ADVERSAIRE
-                    .computeIfAbsent(espece, k -> new LinkedHashSet<>())
-                    .addAll(scout.capacites);
+                for (String capaciteScoutee : scout.capacites) {
+                    ajouterCapaciteAdversaire(espece, capaciteScoutee, false);
+                }
             }
             if (scout.chipTalent) TALENTS_CHIP_CONFIRMES.add(espece);
         }
@@ -673,6 +671,25 @@ public final class ObservationCollector {
         Set<String> s = new HashSet<>(hyp.talentsPossibles);
         s.remove(StatHypothesis.AUCUN);
         return s.size() == 1 ? s.iterator().next() : null;
+    }
+
+    /**
+     * Ajoute une capacité connue pour cette espèce, en garantissant de
+     * NE JAMAIS dépasser 4 (un vrai Pokémon n'en connaît jamais plus).
+     * Une observation RÉELLE de ce combat (certaine) fait toujours de la
+     * place en retirant la plus ancienne entrée si nécessaire ; une
+     * entrée de scouting ancien (potentiellement obsolète, le set adverse
+     * a pu changer entre deux combats) n'est jamais ajoutée si ça
+     * dépasserait 4.
+     */
+    private static void ajouterCapaciteAdversaire(String espece, String capaciteId, boolean estObservationReelle) {
+        LinkedHashSet<String> ensemble = COUPS_ADVERSAIRE.computeIfAbsent(espece, k -> new LinkedHashSet<>());
+        if (ensemble.contains(capaciteId)) return;
+        if (ensemble.size() >= 4) {
+            if (!estObservationReelle) return;
+            ensemble.remove(ensemble.iterator().next());
+        }
+        ensemble.add(capaciteId);
     }
 
     public static List<MoveTemplate> getCoupsAdversaireReveles(String espece) {
