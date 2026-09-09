@@ -34,6 +34,10 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
+    private static final int COULEUR_MUR = 0xFFAAAAAA;         // gris pierre
+    private static final int COULEUR_MUR_JOINT = 0xFF3A2A1A;   // brun foncé, joints de brique
+    private static final int COULEUR_CLONE = 0xFFCCBBFF;       // violet pâle, silhouette "fantôme"
+    private static final int COULEUR_CLONE_FOND = 0x80AA88FF;  // même teinte, translucide, en arrière-plan
 
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
@@ -354,35 +358,11 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Durées : météo et écrans adverses (hypothèse basse 5 tours) ---
+        // --- Durées : météo (hypothèse basse 5 tours) ---
         StringBuilder durees = new StringBuilder();
         if (field.getMeteo() != com.tropimon.tropicalc.calc.Field.Meteo.AUCUNE
                 && FieldTracker.getToursMeteoRestants() > 0) {
             durees.append(String.format("Météo : ~%dt", FieldTracker.getToursMeteoRestants()));
-        }
-        if (FieldTracker.adversaireAUnEcran() && FieldTracker.getToursEcransAdversaireRestants() > 0) {
-            if (durees.length() > 0) durees.append(" | ");
-            StringBuilder noms = new StringBuilder();
-            if (FieldTracker.adversaireAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
-            if (FieldTracker.adversaireAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
-            if (FieldTracker.adversaireAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            durees.append(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants()));
-        }
-        if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
-            if (durees.length() > 0) durees.append(" | ");
-            StringBuilder noms = new StringBuilder();
-            if (FieldTracker.joueurAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
-            if (FieldTracker.joueurAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
-            if (FieldTracker.joueurAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            durees.append(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants()));
-        }
-        if (FieldTracker.joueurAUnClone()) {
-            if (durees.length() > 0) durees.append(" | ");
-            durees.append("Clone toi");
-        }
-        if (FieldTracker.adversaireAUnClone()) {
-            if (durees.length() > 0) durees.append(" | ");
-            durees.append("Clone adv");
         }
         if (FieldTracker.getFutureSightJoueurTours() > 0) {
             if (durees.length() > 0) durees.append(" | ");
@@ -394,6 +374,42 @@ public final class CalcOverlay implements HudRenderCallback {
         }
         if (durees.length() > 0) {
             context.drawText(client.textRenderer, Text.literal(durees.toString()), x, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+        }
+
+        // --- Murs : une ligne dédiée par camp, petite icône à gauche ---
+        if (FieldTracker.adversaireAUnEcran() && FieldTracker.getToursEcransAdversaireRestants() > 0) {
+            StringBuilder noms = new StringBuilder();
+            if (FieldTracker.adversaireAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
+            if (FieldTracker.adversaireAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
+            if (FieldTracker.adversaireAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
+            dessinerIconeMur(context, x, y);
+            context.drawText(client.textRenderer,
+                Text.literal(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants())),
+                x + 11, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+        }
+        if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
+            StringBuilder noms = new StringBuilder();
+            if (FieldTracker.joueurAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
+            if (FieldTracker.joueurAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
+            if (FieldTracker.joueurAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
+            dessinerIconeMur(context, x, y);
+            context.drawText(client.textRenderer,
+                Text.literal(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants())),
+                x + 11, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+        }
+
+        // --- Clone : une ligne dédiée par camp, petite icône à gauche ---
+        if (FieldTracker.joueurAUnClone()) {
+            dessinerIconeClone(context, x, y);
+            context.drawText(client.textRenderer, Text.literal("Clone toi"), x + 11, y, COULEUR_TEXTE, true);
+            y += hauteurLigne;
+        }
+        if (FieldTracker.adversaireAUnClone()) {
+            dessinerIconeClone(context, x, y);
+            context.drawText(client.textRenderer, Text.literal("Clone adv"), x + 11, y, COULEUR_TEXTE, true);
             y += hauteurLigne;
         }
 
@@ -536,6 +552,22 @@ public final class CalcOverlay implements HudRenderCallback {
             .contact()
             .build();
         return DamageCalculator.calculer(attaquant, defenseur, copie, terrain, ecrans, false);
+    }
+
+    /** Petit pattern de briques (8x7px) évoquant un mur/écran. */
+    private void dessinerIconeMur(DrawContext context, int x, int y) {
+        context.fill(x, y, x + 8, y + 3, COULEUR_MUR);
+        context.fill(x + 3, y, x + 4, y + 3, COULEUR_MUR_JOINT);
+        context.fill(x, y + 3, x + 8, y + 4, COULEUR_MUR_JOINT);
+        context.fill(x, y + 4, x + 8, y + 7, COULEUR_MUR);
+        context.fill(x, y + 4, x + 1, y + 7, COULEUR_MUR_JOINT);
+        context.fill(x + 5, y + 4, x + 6, y + 7, COULEUR_MUR_JOINT);
+    }
+
+    /** Deux silhouettes décalées (8x8px) évoquant une copie/Clone. */
+    private void dessinerIconeClone(DrawContext context, int x, int y) {
+        context.fill(x + 2, y, x + 8, y + 7, COULEUR_CLONE_FOND);
+        context.fill(x, y + 1, x + 6, y + 8, COULEUR_CLONE);
     }
 
     private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
