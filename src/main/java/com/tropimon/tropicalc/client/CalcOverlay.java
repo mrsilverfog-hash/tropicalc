@@ -35,6 +35,18 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
 
+    private record LigneTexte(String texte, int x, int y, int couleur) {}
+    private record LigneIcone(int type, int x, int y) {}   // type : 0 = mur, 1 = clone
+
+    private final List<LigneTexte> lignesAffichage = new ArrayList<>();
+    private final List<LigneIcone> iconesAffichage = new ArrayList<>();
+
+    /** Bufférise une ligne de texte au lieu de la dessiner immédiatement : permet de
+     *  connaître la taille réelle du contenu AVANT de dessiner le cadre qui l'entoure. */
+    private void dessinerTexte(String texte, int x, int y, int couleur) {
+        lignesAffichage.add(new LigneTexte(texte, x, y, couleur));
+    }
+
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
         // Doit tourner AUSSI hors combat : c'est là que le reset entre combats s'exécute
@@ -50,6 +62,9 @@ public final class CalcOverlay implements HudRenderCallback {
         if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
 
         if (adversaireBase == null || joueur == null || monComplet == null) return;
+
+        lignesAffichage.clear();
+        iconesAffichage.clear();
 
         joueur.setCoupsRageFistSubis(ObservationCollector.getCoupsRageFistJoueur(joueur.getEspece()));
 
@@ -103,19 +118,18 @@ public final class CalcOverlay implements HudRenderCallback {
         int scaledHeight = client.getWindow().getScaledHeight();
         int y = Math.min(170, Math.max(4, scaledHeight - hauteurEstimee));
 
-        // --- Cadre : fond semi-transparent (même style que le panneau PvP) ---
+        // Position de départ du cadre : le fond et la bordure sont dessinés à la
+        // TOUTE FIN de la fonction, une fois la taille réelle du contenu connue
+        // (tout le texte/icônes est bufferisé au lieu d'être dessiné immédiatement).
         int yDebutCadre = y - 4;
         int xDebutCadre = x - 4;
-        int largeurCadre = 260;
-        context.fill(xDebutCadre, yDebutCadre, xDebutCadre + largeurCadre, yDebutCadre + hauteurEstimee + 8,
-            0xC0101010);
 
         Field field = FieldTracker.construireField();
 
         // --- Section 1 : mes capacités ---
         String titre = BattleStateTracker.joueurEstTransforme()
             ? "TropiCalc [transformé]" : "TropiCalc";
-        context.drawText(client.textRenderer, Text.literal(titre), x, y, COULEUR_TITRE, true);
+        dessinerTexte(titre, x, y, COULEUR_TITRE);
         y += hauteurLigne + 2;
 
         // Vitesses effectives (Distorsion inverse la priorité)
@@ -129,7 +143,7 @@ public final class CalcOverlay implements HudRenderCallback {
         int couleurVitesse = egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
         String suffixe = distorsion ? " [Distorsion]" : "";
         String texteVitesse = String.format("Vitesse : %d %s %d%s", vitJoueur, fleche, vitAdversaire, suffixe);
-        context.drawText(client.textRenderer, Text.literal(texteVitesse), x, y, couleurVitesse, true);
+        dessinerTexte(texteVitesse, x, y, couleurVitesse);
 
         // Hypothèse Mouchoir Choix : sa vitesse x1.5 s'il en tenait un.
         // Affiché en bleu entre parenthèses tant que ce n'est pas déjà son objet
@@ -140,8 +154,7 @@ public final class CalcOverlay implements HudRenderCallback {
             int vitMouchoir = (int) Math.floor(vitAdversaire * 1.5);
             String texteMouchoir = String.format(" (%d)", vitMouchoir);
             int largeur = client.textRenderer.getWidth(texteVitesse);
-            context.drawText(client.textRenderer, Text.literal(texteMouchoir),
-                x + largeur, y, COULEUR_MOUCHOIR, true);
+            dessinerTexte(texteMouchoir, x + largeur, y, COULEUR_MOUCHOIR);
         }
         y += hauteurLigne;
 
@@ -181,7 +194,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 if (r.koGaranti) couleur = COULEUR_KO;
                 else if (r.koPossible) couleur = 0xFFAA00;
             }
-            context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+            dessinerTexte(ligne, x, y, couleur);
             y += hauteurLigne;
         }
 
@@ -207,7 +220,7 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (!aAfficher.isEmpty()) {
             y += 4;
-            context.drawText(client.textRenderer, Text.literal("Capacités adverses :"), x, y, COULEUR_DANGER, true);
+            dessinerTexte("Capacités adverses :", x, y, COULEUR_DANGER);
             y += hauteurLigne;
 
             // Verrou Choix : objet Choix + un coup déjà utilisé depuis son entrée
@@ -217,9 +230,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 MoveTemplate tv = Moves.INSTANCE.getByName(verrou);
                 String nomVerrou = tv != null ? tv.getDisplayName().getString() : verrou;
                 boolean sur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
-                context.drawText(client.textRenderer,
-                    Text.literal(String.format("Verrou Choix%s : %s", sur ? "" : "?", nomVerrou)),
-                    x, y, 0xFFAA00, true);
+                dessinerTexte(String.format("Verrou Choix%s : %s", sur ? "" : "?", nomVerrou), x, y, 0xFFAA00);
                 y += hauteurLigne;
             }
 
@@ -227,9 +238,7 @@ public final class CalcOverlay implements HudRenderCallback {
             int abris = ObservationCollector.getCompteurAbrisAdversaire();
             if (false && abris >= 1) {
                 double chance = 100.0 / Math.pow(3, abris);
-                context.drawText(client.textRenderer,
-                    Text.literal(String.format("Abri x%d → prochain ~%.0f%%", abris, chance)),
-                    x, y, COULEUR_TEXTE, true);
+                dessinerTexte(String.format("Abri x%d → prochain ~%.0f%%", abris, chance), x, y, COULEUR_TEXTE);
                 y += hauteurLigne;
             }
             y -= hauteurLigne;
@@ -287,16 +296,15 @@ public final class CalcOverlay implements HudRenderCallback {
                         String ligneHypo = ligneHypotheseObjet(adversaire, joueur, capaciteAdv, field,
                             especeAdv, smogon, statAtk == Stat.ATTAQUE);
                         if (ligneHypo != null) {
-                            context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+                            dessinerTexte(ligne, x, y, couleur);
                             int largeurLigne = client.textRenderer.getWidth(ligne);
-                            context.drawText(client.textRenderer, Text.literal(ligneHypo),
-                                x + largeurLigne, y, COULEUR_MOUCHOIR, true);
+                            dessinerTexte(ligneHypo, x + largeurLigne, y, COULEUR_MOUCHOIR);
                             y += hauteurLigne;
                             continue;
                         }
                     }
                 }
-                context.drawText(client.textRenderer, Text.literal(ligne), x, y, couleur, true);
+                dessinerTexte(ligne, x, y, couleur);
                 y += hauteurLigne;
             }
         }
@@ -330,7 +338,7 @@ public final class CalcOverlay implements HudRenderCallback {
                     sourceConfirmee ? " : régénère" : "");
                 couleurProj = sourceConfirmee ? 0xFFAA00 : COULEUR_TEXTE;
             }
-            context.drawText(client.textRenderer, Text.literal(ligneProj), x, y, couleurProj, true);
+            dessinerTexte(ligneProj, x, y, couleurProj);
             y += hauteurLigne;
         }
 
@@ -357,7 +365,7 @@ public final class CalcOverlay implements HudRenderCallback {
                     -projJoueur.netPremierTourPct(), projJoueur.detail());
                 couleurToi = COULEUR_REVELE;
             }
-            context.drawText(client.textRenderer, Text.literal(ligneToi), x, y, couleurToi, true);
+            dessinerTexte(ligneToi, x, y, couleurToi);
             y += hauteurLigne;
         }
 
@@ -376,7 +384,7 @@ public final class CalcOverlay implements HudRenderCallback {
             durees.append(String.format("Prescience sur adv : %dt", FieldTracker.getFutureSightAdversaireTours()));
         }
         if (durees.length() > 0) {
-            context.drawText(client.textRenderer, Text.literal(durees.toString()), x, y, COULEUR_TEXTE, true);
+            dessinerTexte(durees.toString(), x, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
 
@@ -386,10 +394,8 @@ public final class CalcOverlay implements HudRenderCallback {
             if (FieldTracker.adversaireAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
             if (FieldTracker.adversaireAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
             if (FieldTracker.adversaireAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            dessinerIconeMur(context, x, y);
-            context.drawText(client.textRenderer,
-                Text.literal(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants())),
-                x + 13, y, COULEUR_TEXTE, true);
+            dessinerIconeMur(x, y);
+            dessinerTexte(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants()), x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
         if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
@@ -397,22 +403,20 @@ public final class CalcOverlay implements HudRenderCallback {
             if (FieldTracker.joueurAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
             if (FieldTracker.joueurAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
             if (FieldTracker.joueurAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            dessinerIconeMur(context, x, y);
-            context.drawText(client.textRenderer,
-                Text.literal(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants())),
-                x + 13, y, COULEUR_TEXTE, true);
+            dessinerIconeMur(x, y);
+            dessinerTexte(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants()), x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
 
         // --- Clone : une ligne dédiée par camp, petite icône à gauche ---
         if (FieldTracker.joueurAUnClone()) {
-            dessinerIconeClone(context, x, y);
-            context.drawText(client.textRenderer, Text.literal("Clone toi"), x + 13, y, COULEUR_TEXTE, true);
+            dessinerIconeClone(x, y);
+            dessinerTexte("Clone toi", x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
         if (FieldTracker.adversaireAUnClone()) {
-            dessinerIconeClone(context, x, y);
-            context.drawText(client.textRenderer, Text.literal("Clone adv"), x + 13, y, COULEUR_TEXTE, true);
+            dessinerIconeClone(x, y);
+            dessinerTexte("Clone adv", x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
 
@@ -439,21 +443,17 @@ public final class CalcOverlay implements HudRenderCallback {
                 }
             }
 
-            context.drawText(client.textRenderer, Text.literal("Set estimé :"), x, y, COULEUR_TITRE, true);
+            dessinerTexte("Set estimé :", x, y, COULEUR_TITRE);
             y += hauteurLigne;
-            context.drawText(client.textRenderer,
-                Text.literal(String.format("HP %d | Def %d | DéfSpé %d | %s",
+            dessinerTexte(String.format("HP %d | Def %d | DéfSpé %d | %s",
                     top.hpEv(), top.defEv(), top.spdEv(),
-                    ShowdownIdMapper.nature(top.natureShowdownId()))),
-                x, y, deduitParObservation ? COULEUR_REVELE : COULEUR_TEXTE, true);
+                    ShowdownIdMapper.nature(top.natureShowdownId())), x, y, deduitParObservation ? COULEUR_REVELE : COULEUR_TEXTE);
             y += hauteurLigne;
 
             if (profil != null && profil.getNbObservations() >= 3) {
                 StatHypothesis hypDef = profil.defense.nombreObservations >= profil.defenseSpe.nombreObservations
                     ? profil.defense : profil.defenseSpe;
-                context.drawText(client.textRenderer,
-                    Text.literal(String.format("Inférence Def EV %d-%d", hypDef.evMin, hypDef.evMax)),
-                    x, y, COULEUR_TEXTE, true);
+                dessinerTexte(String.format("Inférence Def EV %d-%d", hypDef.evMin, hypDef.evMax), x, y, COULEUR_TEXTE);
                 y += hauteurLigne;
             }
 
@@ -465,18 +465,38 @@ public final class CalcOverlay implements HudRenderCallback {
             String objetConfirme = ObservationCollector.getObjetConfirme(especeAdv);
             boolean objetRetire = ObservationCollector.estObjetConfirme(especeAdv) && objetConfirme == null;
             if (objetConfirme != null) {
-                context.drawText(client.textRenderer,
-                    Text.literal("Objet confirmé : " + objetConfirme), x, y, COULEUR_REVELE, true);
+                dessinerTexte("Objet confirmé : " + objetConfirme, x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             } else if (objetRetire) {
-                context.drawText(client.textRenderer,
-                    Text.literal("Objet confirmé : aucun (Sabotage)"), x, y, COULEUR_REVELE, true);
+                dessinerTexte("Objet confirmé : aucun (Sabotage)", x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             }
         }
 
-        // --- Cadre : bordure dorée, dessinée en dernier avec la vraie hauteur atteinte ---
-        drawBorder(context, xDebutCadre, yDebutCadre, largeurCadre, (y + 4) - yDebutCadre, 0xFFE8B84B);
+        // --- Cadre adaptatif : taille calculée sur le contenu réellement bufferisé ---
+        int largeurContenu = 0;
+        for (LigneTexte l : lignesAffichage) {
+            int droite = (l.x() - x) + client.textRenderer.getWidth(l.texte());
+            largeurContenu = Math.max(largeurContenu, droite);
+        }
+        for (LigneIcone ic : iconesAffichage) {
+            int droite = (ic.x() - x) + 10;   // icônes affichées à 10px
+            largeurContenu = Math.max(largeurContenu, droite);
+        }
+        int largeurCadre = largeurContenu + 8;
+        int hauteurCadre = (y + 4) - yDebutCadre;
+
+        context.fill(xDebutCadre, yDebutCadre, xDebutCadre + largeurCadre, yDebutCadre + hauteurCadre, 0xC0101010);
+        drawBorder(context, xDebutCadre, yDebutCadre, largeurCadre, hauteurCadre, 0xFFE8B84B);
+
+        // Dessin réel, par-dessus le cadre qui vient d'être posé
+        for (LigneTexte l : lignesAffichage) {
+            context.drawText(client.textRenderer, Text.literal(l.texte()), l.x(), l.y(), l.couleur(), true);
+        }
+        for (LigneIcone ic : iconesAffichage) {
+            net.minecraft.util.Identifier tex = ic.type() == 0 ? TEXTURE_MUR : TEXTURE_CLONE;
+            context.drawTexture(tex, ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
+        }
     }
 
     /** Contour rectangulaire simple, 1px, style cohérent avec le panneau PvP. */
@@ -573,14 +593,14 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final net.minecraft.util.Identifier TEXTURE_CLONE =
         net.minecraft.util.Identifier.of("tropicalc", "textures/gui/clone.png");
 
-    /** Petite icône (16x16, réduite à 10px à l'affichage) évoquant un mur/écran. */
-    private void dessinerIconeMur(DrawContext context, int x, int y) {
-        context.drawTexture(TEXTURE_MUR, x, y, 0, 0, 10, 10, 16, 16);
+    /** Bufférise une icône mur au lieu de la dessiner immédiatement (même raison que t()). */
+    private void dessinerIconeMur(int x, int y) {
+        iconesAffichage.add(new LigneIcone(0, x, y));
     }
 
-    /** Petite icône (16x16, réduite à 10px à l'affichage) évoquant un Clone fantomatique. */
-    private void dessinerIconeClone(DrawContext context, int x, int y) {
-        context.drawTexture(TEXTURE_CLONE, x, y, 0, 0, 10, 10, 16, 16);
+    /** Bufférise une icône Clone au lieu de la dessiner immédiatement (même raison que t()). */
+    private void dessinerIconeClone(int x, int y) {
+        iconesAffichage.add(new LigneIcone(1, x, y));
     }
 
     private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
