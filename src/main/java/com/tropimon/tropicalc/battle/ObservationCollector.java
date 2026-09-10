@@ -125,6 +125,13 @@ public final class ObservationCollector {
 
         FieldTracker.nouveauTour();
 
+        // Vulné-Assurance : +2 Attaque ET +2 Attaque Spé simultanément après avoir
+        // subi un coup super efficace - signature quasi unique (seule autre source
+        // connue : Croissance sous soleil, explicitement exclue ci-dessous).
+        tenterConfirmerVulneAssurance(adversaire, joueur);
+        stageAtkAdvDebutTour = BoostTracker.getStageAdversaire(Stat.ATTAQUE);
+        stageAtkSpeAdvDebutTour = BoostTracker.getStageAdversaire(Stat.ATTAQUE_SPE);
+
         // Compteurs Toxik : +1 par tour passé empoisonné gravement (reset au switch/soin)
         if (joueur.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikJoueur++;
         else compteurToxikJoueur = 0;
@@ -652,6 +659,37 @@ public final class ObservationCollector {
      * moins extrêmes que Porygon2 (Cerfrousse, Téraclope...) où l'usage
      * peut être dominant sans dépasser 80%.
      */
+    /**
+     * Confirme Vulné-Assurance si l'adversaire vient de gagner EXACTEMENT +2
+     * Attaque ET +2 Attaque Spé simultanément le même tour, juste après avoir
+     * subi un coup super efficace du joueur. Ce double-boost précis n'a qu'une
+     * seule autre source connue en jeu (Croissance sous soleil), explicitement
+     * exclue en vérifiant que l'adversaire n'a pas lui-même joué cette capacité
+     * ce tour. Ne couvre pas le cas Contrary (-2/-2 au lieu de +2/+2), plus rare.
+     */
+    private static void tenterConfirmerVulneAssurance(Pokemon adversaire, Pokemon joueur) {
+        if (OBJETS_CONFIRMES.containsKey(adversaire.getEspece())
+                || OBJETS_RETIRES.contains(adversaire.getEspece())) return;
+        if (coupJoueurDuTour == null || joueurNAPasAttaque()) return;
+        if (coupAdversaireDuTour != null && "growth".equals(coupAdversaireDuTour.showdownId())) return;
+
+        int deltaAtk = BoostTracker.getStageAdversaire(Stat.ATTAQUE) - stageAtkAdvDebutTour;
+        int deltaAtkSpe = BoostTracker.getStageAdversaire(Stat.ATTAQUE_SPE) - stageAtkSpeAdvDebutTour;
+        if (deltaAtk != 2 || deltaAtkSpe != 2) return;
+
+        try {
+            MoveTemplate template = Moves.INSTANCE.getByName(coupJoueurDuTour.showdownId());
+            if (template == null) return;
+            com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
+            if (capacite == null) return;
+            double efficacite = DamageCalculator.calculerEfficaciteType(capacite, adversaire, joueur);
+            if (efficacite > 1.0) {
+                OBJETS_CONFIRMES.put(adversaire.getEspece(), "Vulné-Assurance");
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
     private static void tenterConfirmerEvoluroc(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
         if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
@@ -951,6 +989,11 @@ public final class ObservationCollector {
     private static boolean adversaireVampigraine = false;
     private static int compteurToxikJoueur = 0;
     private static int compteurToxikAdversaire = 0;
+
+    // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,
+    // pour détecter un gain de +2/+2 simultané (Vulné-Assurance) précisément CE tour.
+    private static int stageAtkAdvDebutTour = 0;
+    private static int stageAtkSpeAdvDebutTour = 0;
 
     // Poing de Colère : persiste PAR ESPÈCE pour toute la durée du combat,
     // ne reset jamais au switch (contrairement à tout le reste ci-dessus).

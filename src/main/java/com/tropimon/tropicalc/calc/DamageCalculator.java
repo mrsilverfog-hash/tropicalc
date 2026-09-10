@@ -630,7 +630,7 @@ public class DamageCalculator {
         return Math.max(1, poids);
     }
 
-    private static double calculerEfficaciteType(Move capacite, Pokemon defenseur, Pokemon attaquant) {
+    public static double calculerEfficaciteType(Move capacite, Pokemon defenseur, Pokemon attaquant) {
         if (capacite.getType() == PokemonType.STELLAIRE) {
             return defenseur.isTeracristallise() ? 2.0 : 1.0;
         }
