@@ -46,6 +46,18 @@ public final class FieldTracker {
         }
     }
 
+    private static int dureeTerrain() {
+        try {
+            com.tropimon.tropicalc.calc.Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
+            com.tropimon.tropicalc.calc.Pokemon adversaire = BattleStateTracker.getAdversaireActif();
+            boolean champduit = (joueur != null && "Champ'Duit".equals(joueur.getObjet()))
+                || (adversaire != null && "Champ'Duit".equals(adversaire.getObjet()));
+            return champduit ? 8 : 5;
+        } catch (Exception e) {
+            return 5;
+        }
+    }
+
     private static Field.Meteo meteoActive = Field.Meteo.AUCUNE;
     private static Field.TypeTerrain terrainActif = Field.TypeTerrain.AUCUN;
     private static boolean distorsion = false;
@@ -81,6 +93,13 @@ public final class FieldTracker {
 
     /** Évite de réappliquer la correction Lumargile en boucle une fois faite pour cet écran. */
     private static boolean correctionArgilePouvoirAppliquee = false;
+
+    private static int toursTerrainRestants = 0;
+    /** Même principe que poseurEcranAdversaire, mais pour le terrain (peut être posé par n'importe quel camp). */
+    private static String poseurTerrainAdversaire = null;
+    private static boolean correctionChampDuitAppliquee = false;
+
+    public static int getToursTerrainRestants() { return toursTerrainRestants; }
 
     // Pièges d'entrée (côté joueur = posés par l'adversaire, subis par le joueur)
     private static boolean stealthRockJoueur = false;
@@ -219,14 +238,20 @@ public final class FieldTracker {
         }
 
         // Terrains
-        if (cle.contains("electricterrain")) {
-            terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.ELECTRIQUE;
-        } else if (cle.contains("grassyterrain")) {
-            terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.HERBU;
-        } else if (cle.contains("psychicterrain")) {
-            terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.PSYCHIQUE;
-        } else if (cle.contains("mistyterrain")) {
-            terrainActif = cle.endsWith(".end") ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.BRUMEUX;
+        if (cle.contains("electricterrain") || cle.contains("grassyterrain")
+                || cle.contains("psychicterrain") || cle.contains("mistyterrain")) {
+            boolean finTerrain = cle.endsWith(".end");
+            if (cle.contains("electricterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.ELECTRIQUE;
+            else if (cle.contains("grassyterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.HERBU;
+            else if (cle.contains("psychicterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.PSYCHIQUE;
+            else terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.BRUMEUX;
+
+            if (finTerrain) {
+                toursTerrainRestants = 0;
+            } else {
+                toursTerrainRestants = dureeTerrain();
+                capturerPoseurTerrain();
+            }
         }
     }
 
@@ -286,6 +311,15 @@ public final class FieldTracker {
         }
     }
 
+    private static void capturerPoseurTerrain() {
+        correctionChampDuitAppliquee = false;
+        try {
+            com.tropimon.tropicalc.calc.Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv != null) poseurTerrainAdversaire = adv.getEspece();
+        } catch (Exception ignored) {
+        }
+    }
+
     public static void nouveauTour() {
         if (toursMeteoRestants > 0) toursMeteoRestants--;
         if (futureSightJoueurTours > 0) futureSightJoueurTours--;
@@ -306,6 +340,15 @@ public final class FieldTracker {
                 toursEcransAdversaireRestants = 3;   // 8 tours totaux - 5 déjà écoulés
                 ObservationCollector.confirmerObjetDirect(poseurEcranAdversaire, "Lumargile");
                 correctionArgilePouvoirAppliquee = true;
+            }
+        }
+        if (toursTerrainRestants > 0) {
+            toursTerrainRestants--;
+            // Même logique que Lumargile ci-dessus, pour Champ'Duit sur le terrain.
+            if (toursTerrainRestants == 0 && terrainActif != Field.TypeTerrain.AUCUN && !correctionChampDuitAppliquee) {
+                toursTerrainRestants = 3;
+                ObservationCollector.confirmerObjetDirect(poseurTerrainAdversaire, "Champ'Duit");
+                correctionChampDuitAppliquee = true;
             }
         }
     }
@@ -337,5 +380,8 @@ public final class FieldTracker {
         futureSightAdversaireTours = 0;
         poseurEcranAdversaire = null;
         correctionArgilePouvoirAppliquee = false;
+        toursTerrainRestants = 0;
+        poseurTerrainAdversaire = null;
+        correctionChampDuitAppliquee = false;
     }
 }

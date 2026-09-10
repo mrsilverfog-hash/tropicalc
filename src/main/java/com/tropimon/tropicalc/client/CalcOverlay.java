@@ -385,6 +385,22 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
+        // --- Terrain : une ligne avec icône selon le type actif ---
+        if (field.getTerrain() != com.tropimon.tropicalc.calc.Field.TypeTerrain.AUCUN
+                && FieldTracker.getToursTerrainRestants() > 0) {
+            int typeIconeTerrain = switch (field.getTerrain()) {
+                case ELECTRIQUE -> 7;
+                case HERBU -> 8;
+                case PSYCHIQUE -> 9;
+                case BRUMEUX -> 10;
+                default -> -1;
+            };
+            if (typeIconeTerrain >= 0) dessinerIcone(typeIconeTerrain, x, y);
+            dessinerTexte(String.format("Terrain : ~%dt", FieldTracker.getToursTerrainRestants()),
+                x + 13, y, COULEUR_TEXTE);
+            y += hauteurLigne;
+        }
+
         // --- Prescience : une ligne dédiée par camp, icône œil à gauche ---
         if (FieldTracker.getFutureSightJoueurTours() > 0) {
             dessinerIcone(6, x, y);
@@ -607,6 +623,10 @@ public final class CalcOverlay implements HudRenderCallback {
         net.minecraft.util.Identifier.of("tropicalc", "textures/gui/sable.png"),
         net.minecraft.util.Identifier.of("tropicalc", "textures/gui/neige.png"),
         net.minecraft.util.Identifier.of("tropicalc", "textures/gui/prescience.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/electrique.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/herbu.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/psychique.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/brumeux.png"),
     };
 
     /** Bufférise une icône (par index dans TEXTURES_ICONES) au lieu de la dessiner immédiatement. */
