@@ -36,7 +36,7 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_REVELE = 0x55FF55;
 
     private record LigneTexte(String texte, int x, int y, int couleur) {}
-    private record LigneIcone(int type, int x, int y) {}   // type : 0 = mur, 1 = clone
+    private record LigneIcone(int type, int x, int y) {}   // voir TEXTURES_ICONES pour la liste des types
 
     private final List<LigneTexte> lignesAffichage = new ArrayList<>();
     private final List<LigneIcone> iconesAffichage = new ArrayList<>();
@@ -369,22 +369,33 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Durées : météo (hypothèse basse 5 tours) ---
-        StringBuilder durees = new StringBuilder();
+        // --- Météo : une ligne avec icône selon le type actif ---
         if (field.getMeteo() != com.tropimon.tropicalc.calc.Field.Meteo.AUCUNE
                 && FieldTracker.getToursMeteoRestants() > 0) {
-            durees.append(String.format("Météo : ~%dt", FieldTracker.getToursMeteoRestants()));
+            int typeIconeMeteo = switch (field.getMeteo()) {
+                case SOLEIL, SOLEIL_INTENSE -> 2;
+                case PLUIE, PLUIE_INTENSE -> 3;
+                case SABLE -> 4;
+                case NEIGE -> 5;
+                default -> -1;
+            };
+            if (typeIconeMeteo >= 0) dessinerIcone(typeIconeMeteo, x, y);
+            dessinerTexte(String.format("Météo : ~%dt", FieldTracker.getToursMeteoRestants()),
+                x + 13, y, COULEUR_TEXTE);
+            y += hauteurLigne;
         }
+
+        // --- Prescience : une ligne dédiée par camp, icône œil à gauche ---
         if (FieldTracker.getFutureSightJoueurTours() > 0) {
-            if (durees.length() > 0) durees.append(" | ");
-            durees.append(String.format("Prescience sur toi : %dt", FieldTracker.getFutureSightJoueurTours()));
+            dessinerIcone(6, x, y);
+            dessinerTexte(String.format("Prescience sur toi : %dt", FieldTracker.getFutureSightJoueurTours()),
+                x + 13, y, COULEUR_TEXTE);
+            y += hauteurLigne;
         }
         if (FieldTracker.getFutureSightAdversaireTours() > 0) {
-            if (durees.length() > 0) durees.append(" | ");
-            durees.append(String.format("Prescience sur adv : %dt", FieldTracker.getFutureSightAdversaireTours()));
-        }
-        if (durees.length() > 0) {
-            dessinerTexte(durees.toString(), x, y, COULEUR_TEXTE);
+            dessinerIcone(6, x, y);
+            dessinerTexte(String.format("Prescience sur adv : %dt", FieldTracker.getFutureSightAdversaireTours()),
+                x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
 
@@ -494,8 +505,7 @@ public final class CalcOverlay implements HudRenderCallback {
             context.drawText(client.textRenderer, Text.literal(l.texte()), l.x(), l.y(), l.couleur(), true);
         }
         for (LigneIcone ic : iconesAffichage) {
-            net.minecraft.util.Identifier tex = ic.type() == 0 ? TEXTURE_MUR : TEXTURE_CLONE;
-            context.drawTexture(tex, ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
+            context.drawTexture(TEXTURES_ICONES[ic.type()], ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
         }
     }
 
@@ -588,20 +598,24 @@ public final class CalcOverlay implements HudRenderCallback {
         return DamageCalculator.calculer(attaquant, defenseur, copie, terrain, ecrans, false);
     }
 
-    private static final net.minecraft.util.Identifier TEXTURE_MUR =
-        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/mur.png");
-    private static final net.minecraft.util.Identifier TEXTURE_CLONE =
-        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/clone.png");
+    // Index : 0=mur, 1=clone, 2=soleil, 3=pluie, 4=sable, 5=neige, 6=prescience
+    private static final net.minecraft.util.Identifier[] TEXTURES_ICONES = {
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/mur.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/clone.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/soleil.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/pluie.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/sable.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/neige.png"),
+        net.minecraft.util.Identifier.of("tropicalc", "textures/gui/prescience.png"),
+    };
 
-    /** Bufférise une icône mur au lieu de la dessiner immédiatement (même raison que t()). */
-    private void dessinerIconeMur(int x, int y) {
-        iconesAffichage.add(new LigneIcone(0, x, y));
+    /** Bufférise une icône (par index dans TEXTURES_ICONES) au lieu de la dessiner immédiatement. */
+    private void dessinerIcone(int type, int x, int y) {
+        iconesAffichage.add(new LigneIcone(type, x, y));
     }
 
-    /** Bufférise une icône Clone au lieu de la dessiner immédiatement (même raison que t()). */
-    private void dessinerIconeClone(int x, int y) {
-        iconesAffichage.add(new LigneIcone(1, x, y));
-    }
+    private void dessinerIconeMur(int x, int y) { dessinerIcone(0, x, y); }
+    private void dessinerIconeClone(int x, int y) { dessinerIcone(1, x, y); }
 
     private com.tropimon.tropicalc.calc.Move convertirTemplate(MoveTemplate template) {
         PokemonType type = ShowdownIdMapper.type(template.getElementalType().getName());
