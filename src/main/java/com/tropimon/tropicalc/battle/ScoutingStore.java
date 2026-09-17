@@ -52,7 +52,9 @@ public final class ScoutingStore {
         Map.entry("Casque Clou", "Casque Brut"),
         Map.entry("Grosse Bottes", "Grosses Bottes"),
         Map.entry("Énergie Turbo", "Énergie Booster"),
-        Map.entry("Écharpe Choix", "Mouchoir Choix")
+        Map.entry("Écharpe Choix", "Mouchoir Choix"),
+        Map.entry("Robuste", "Fermeté"),
+        Map.entry("Seigneur Suprême", "Général Suprême")
     );
 
     private static String migrer(String nom) {

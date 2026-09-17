@@ -56,7 +56,7 @@ public final class BattleStateTracker {
         return null;
     }
 
-    /** Équipe complète de l'adversaire (pour Seigneur Suprême et similaires). */
+    /** Équipe complète de l'adversaire (pour Général Suprême et similaires). */
     public static List<com.cobblemon.mod.common.pokemon.Pokemon> getEquipeAdversaire() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         ClientBattleActor acteurJoueur = getActeurJoueur();

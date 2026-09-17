@@ -17,7 +17,7 @@ public final class SetInferenceEngine {
         "Mâchoire Brute", "Force Sable", "Verres Teintés", "Sans Limite", "Télécharge",
         "Coloforce", "Force Pure", "Griffe Dure", "Rage Poison", "Rage Brûlure",
         "Pouls Orichalque", "Moteur Hadron", "Dent de Dragon", "Œil Révélateur",
-        "Aquabulle", "Porte-Roche", "Seigneur Suprême", "Tranchant", "Transistor",
+        "Aquabulle", "Porte-Roche", "Général Suprême", "Tranchant", "Transistor",
         "Infiltration"
     );
 

@@ -129,8 +129,12 @@ public final class ObservationCollector {
         // subi un coup super efficace - signature quasi unique (seule autre source
         // connue : Croissance sous soleil, explicitement exclue ci-dessous).
         tenterConfirmerVulneAssurance(adversaire, joueur);
+        tenterConfirmerDefiantBattant(adversaire);
         stageAtkAdvDebutTour = BoostTracker.getStageAdversaire(Stat.ATTAQUE);
         stageAtkSpeAdvDebutTour = BoostTracker.getStageAdversaire(Stat.ATTAQUE_SPE);
+        stageDefAdvDebutTour = BoostTracker.getStageAdversaire(Stat.DEFENSE);
+        stageDefSpeAdvDebutTour = BoostTracker.getStageAdversaire(Stat.DEFENSE_SPE);
+        stageVitAdvDebutTour = BoostTracker.getStageAdversaire(Stat.VITESSE);
 
         // Compteurs Toxik : +1 par tour passé empoisonné gravement (reset au switch/soin)
         if (joueur.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikJoueur++;
@@ -690,6 +694,33 @@ public final class ObservationCollector {
         }
     }
 
+    /**
+     * Confirme Défiant (+2 Attaque) ou Battant (+2 Attaque Spé) si l'adversaire
+     * subit une baisse d'au moins une stat ce tour (par l'attaquant, pas
+     * auto-infligée) et que son Attaque ou Attaque Spé monte de +2 en réaction,
+     * sans qu'il ait lui-même joué de capacité offensive ce tour (ce qui
+     * exclurait une explication auto-infligée).
+     */
+    private static void tenterConfirmerDefiantBattant(Pokemon adversaire) {
+        boolean talentDejaConnu = TALENTS_CONFIRMES.containsKey(adversaire.getEspece());
+        if (talentDejaConnu) return;
+
+        boolean uneAutreStatABaisse =
+            (BoostTracker.getStageAdversaire(Stat.DEFENSE) - stageDefAdvDebutTour < 0)
+            || (BoostTracker.getStageAdversaire(Stat.DEFENSE_SPE) - stageDefSpeAdvDebutTour < 0)
+            || (BoostTracker.getStageAdversaire(Stat.VITESSE) - stageVitAdvDebutTour < 0);
+        if (!uneAutreStatABaisse) return;
+
+        int deltaAtk = BoostTracker.getStageAdversaire(Stat.ATTAQUE) - stageAtkAdvDebutTour;
+        int deltaAtkSpe = BoostTracker.getStageAdversaire(Stat.ATTAQUE_SPE) - stageAtkSpeAdvDebutTour;
+
+        if (deltaAtk == 2) {
+            TALENTS_CONFIRMES.put(adversaire.getEspece(), "Défiant");
+        } else if (deltaAtkSpe == 2) {
+            TALENTS_CONFIRMES.put(adversaire.getEspece(), "Battant");
+        }
+    }
+
     private static void tenterConfirmerEvoluroc(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
         if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
@@ -994,6 +1025,12 @@ public final class ObservationCollector {
     // pour détecter un gain de +2/+2 simultané (Vulné-Assurance) précisément CE tour.
     private static int stageAtkAdvDebutTour = 0;
     private static int stageAtkSpeAdvDebutTour = 0;
+
+    // Snapshots supplémentaires pour Défiant/Battant (une autre stat baisse,
+    // en réaction l'Attaque ou l'Attaque Spé monte de +2).
+    private static int stageDefAdvDebutTour = 0;
+    private static int stageDefSpeAdvDebutTour = 0;
+    private static int stageVitAdvDebutTour = 0;
 
     // Poing de Colère : persiste PAR ESPÈCE pour toute la durée du combat,
     // ne reset jamais au switch (contrairement à tout le reste ci-dessus).

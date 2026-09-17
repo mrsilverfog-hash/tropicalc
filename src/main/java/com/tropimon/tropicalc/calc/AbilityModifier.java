@@ -339,7 +339,7 @@ public interface AbilityModifier {
             }
         });
 
-        m.put("Seigneur Suprême", new AbilityModifier() {
+        m.put("Général Suprême", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 // +10% par coéquipier KO (max +50%, 5 coéquipiers). Le
