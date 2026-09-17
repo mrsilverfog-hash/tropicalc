@@ -63,9 +63,9 @@ public class DamageCalculator {
             this.pourcentageMin = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMin) / pvMaxDefenseur;
             this.pourcentageMax = pvMaxDefenseur == 0 ? 0 : (100.0 * this.degatsMax) / pvMaxDefenseur;
 
-            // Robuste ou Ceinture Focus : survit à 1 PV sur un coup fatal
+            // Fermeté ou Ceinture Focus : survit à 1 PV sur un coup fatal
             // si à pleins PV (garanti, pas de chance d'échec pour ces deux-là)
-            boolean protectionActive = ("Robuste".equals(defenseurRobuste)
+            boolean protectionActive = ("Fermeté".equals(defenseurRobuste)
                 || "Ceinture Focus".equals(defenseurObjet))
                 && pvActuelsDefenseur == (int) pvMaxDefenseur;
             if (protectionActive) {

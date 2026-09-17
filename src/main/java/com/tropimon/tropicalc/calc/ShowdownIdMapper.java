@@ -84,7 +84,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("transistor", "Transistor");
         TALENTS.put("bulletproof", "Pare-Balles");
         TALENTS.put("soundproof", "Anti-Bruit");
-        TALENTS.put("sturdy", "Robuste");
+        TALENTS.put("sturdy", "Fermeté");
         TALENTS.put("heavymetal", "Heavy Metal");
         TALENTS.put("lightmetal", "Light Metal");
         TALENTS.put("icebody", "Corps Gel");

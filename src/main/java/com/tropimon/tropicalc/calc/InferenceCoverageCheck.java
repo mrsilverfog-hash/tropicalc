@@ -21,7 +21,7 @@ import java.util.Set;
  * Limite connue : ne couvre QUE ce qui passe par le registre standard
  * (AbilityModifier.REGISTRE / ItemModifier.REGISTRE). Les talents/objets
  * testés "en dur" par égalité de string ailleurs dans DamageCalculator
- * (Robuste, Fantômasque, Ceinture Focus, Garde-Talent...) sont invisibles
+ * (Fermeté, Fantômasque, Ceinture Focus, Garde-Talent...) sont invisibles
  * à ce scan - ils ont été ajoutés manuellement aux listes cette nuit, mais
  * un futur ajout du même genre ne serait pas détecté automatiquement ici.
  */

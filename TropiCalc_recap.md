@@ -124,7 +124,7 @@ Sets Smogon absents (espèces bannies/hors Pokédex régional) : National Dex Ub
 2. Reconnexion en plein combat : compteurs repartent de zéro.
 3. Imposteur n'hérite pas des stages de boost de la cible au moment de la transformation.
 4. Baies de résistance/stat et effets de stage à usage unique (Weakness/Blunder Policy) non modélisés — nécessitent un vrai suivi de consommation, absent de l'architecture. Testé et délibérément écarté pour Baie Sitrus (risque de sous-estimation silencieuse après consommation, pire que l'absence).
-5. Garde-fou de couverture d'inférence : ne détecte pas les cas testés en dur (Robuste, Fantômasque, Ceinture Focus, Garde-Talent).
+5. Garde-fou de couverture d'inférence : ne détecte pas les cas testés en dur (Fermeté, Fantômasque, Ceinture Focus, Garde-Talent).
 6. Tooltip PvP : ligne "types" ne reflète pas la Téracristallisation (cosmétique).
 7. Poing de Colère + Clone au même tour : si le Clone se brise exactement le même tour qu'un coup, le compteur peut être sous-estimé d'un coup (jamais surestimé) — l'état "Clone actif" reflète déjà l'après-coup au moment du traitement.
 8. Blabla Dodo (Sleep Talk) et Random Battle : pas de log réel disponible, formats de message/détection non implémentés plutôt que devinés.
