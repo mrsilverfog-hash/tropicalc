@@ -262,15 +262,27 @@ public final class CalcOverlay implements HudRenderCallback {
                 if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) {
                     ligne = (estRevele ? "✓ " : "") + nom + " : statut" + suffixePp;
                 } else {
-                    DamageCalculator.Resultat r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, field.getEcransJoueur(), false);
+                    // Fulgurayon : +1 Attaque Spéciale GARANTI dès son lancement
+                    // (tour de charge, ou immédiatement sous la pluie) - pas
+                    // conditionnel comme Prise de Bec, donc appliqué directement
+                    // au calcul plutôt que d'afficher deux scénarios.
+                    boolean estFulgurayon = "electroshot".equals(template.getName());
+                    if (estFulgurayon) adversaire.modifierStage(Stat.ATTAQUE_SPE, 1);
+                    DamageCalculator.Resultat r;
+                    try {
+                        r = DamageCalculator.calculer(adversaire, joueur, capaciteAdv, field, field.getEcransJoueur(), false);
+                    } finally {
+                        if (estFulgurayon) adversaire.modifierStage(Stat.ATTAQUE_SPE, -1);
+                    }
                     if (r.immunise) {
                         ligne = (estRevele ? "✓ " : "") + nom + " : immunisé" + suffixePp;
                     } else {
                         Stat statAtk = capaciteAdv.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
                             ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
                         String marq = adversaire.estCorrigee(statAtk) ? "~" : "";
-                        ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s",
-                            estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixePp);
+                        String suffixeBoost = estFulgurayon ? " (+1)" : "";
+                        ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s%s",
+                            estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixeBoost, suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
 
