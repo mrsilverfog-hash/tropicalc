@@ -240,7 +240,7 @@ public final class SmogonDataLoader {
      * du méta, mais restent des options importantes à afficher.
      */
     private static final Map<String, List<String>> MOVES_GARANTIS = Map.of(
-        "kingambit", List.of("suckerpunch", "kowtowcleave", "ironhead")
+        "kingambit", List.of("suckerpunch", "kowtowcleave", "ironhead", "uturn")
     );
 
     public static SmogonPokemonData getDonnees(String especeShowdownId) {
@@ -258,8 +258,8 @@ public final class SmogonDataLoader {
             return new SmogonPokemonData(List.of(), List.of(), List.of(), garanties, 0.0);
         }
 
-        List<String> movesFusionnes = new ArrayList<>(base.topMovesShowdownId());
-        for (String m : garanties) {
+        List<String> movesFusionnes = new ArrayList<>(garanties);
+        for (String m : base.topMovesShowdownId()) {
             if (!movesFusionnes.contains(m)) movesFusionnes.add(m);
         }
         return new SmogonPokemonData(base.topItemsShowdownId(), base.topAbilitiesShowdownId(),
