@@ -233,17 +233,37 @@ public final class SmogonDataLoader {
         )
     );
 
+    /**
+     * Capacités garanties en complément des données Smogon réelles (pas un
+     * remplacement) - pour des capacités notables qui pourraient ne pas
+     * apparaître dans le top 5 Smogon d'un mois donné selon les tendances
+     * du méta, mais restent des options importantes à afficher.
+     */
+    private static final Map<String, List<String>> MOVES_GARANTIS = Map.of(
+        "kingambit", List.of("suckerpunch", "kowtowcleave", "ironhead")
+    );
+
     public static SmogonPokemonData getDonnees(String especeShowdownId) {
         String id = normaliser(especeShowdownId);
-        if (charge) {
-            SmogonPokemonData d = DONNEES.get(id);
-            if (d != null) return d;
+        SmogonPokemonData base = null;
+        if (charge) base = DONNEES.get(id);
+        if (base == null && chargeUbers) base = DONNEES_UBERS.get(id);
+        if (base == null) base = FALLBACKS_MANUELS.get(id);
+
+        List<String> garanties = MOVES_GARANTIS.get(id);
+        if (garanties == null) return base;
+        if (base == null) {
+            // Aucune donnée Smogon du tout : les capacités garanties suffisent
+            // à afficher quelque chose plutôt que rien.
+            return new SmogonPokemonData(List.of(), List.of(), List.of(), garanties, 0.0);
         }
-        if (chargeUbers) {
-            SmogonPokemonData d = DONNEES_UBERS.get(id);
-            if (d != null) return d;
+
+        List<String> movesFusionnes = new ArrayList<>(base.topMovesShowdownId());
+        for (String m : garanties) {
+            if (!movesFusionnes.contains(m)) movesFusionnes.add(m);
         }
-        return FALLBACKS_MANUELS.get(id);
+        return new SmogonPokemonData(base.topItemsShowdownId(), base.topAbilitiesShowdownId(),
+            base.topSpreads(), movesFusionnes, base.topItemUsageFraction());
     }
 
     public static boolean estCharge() { return charge; }
