@@ -397,7 +397,7 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Terrain : une ligne avec icône selon le type actif ---
+        // --- Terrain : une ligne avec icône selon le type actif, et son effet ---
         if (field.getTerrain() != com.tropimon.tropicalc.calc.Field.TypeTerrain.AUCUN
                 && FieldTracker.getToursTerrainRestants() > 0) {
             int typeIconeTerrain = switch (field.getTerrain()) {
@@ -408,7 +408,28 @@ public final class CalcOverlay implements HudRenderCallback {
                 default -> -1;
             };
             if (typeIconeTerrain >= 0) dessinerIcone(typeIconeTerrain, x, y);
-            dessinerTexte(String.format("Terrain : ~%dt", FieldTracker.getToursTerrainRestants()),
+
+            String nomTerrain = switch (field.getTerrain()) {
+                case ELECTRIQUE -> "Champ Électrique";
+                case HERBU -> "Champ Herbu";
+                case PSYCHIQUE -> "Champ Psychique";
+                case BRUMEUX -> "Champ Brumeux";
+                default -> "Terrain";
+            };
+            String effet = switch (field.getTerrain()) {
+                case ELECTRIQUE -> "anti-sommeil (sol)";
+                case HERBU -> {
+                    // Ne soigne que les Pokémon au sol (pas Vol/Lévitation/Ballon) -
+                    // vérifié sur Poképédia, précision importante pour ne pas
+                    // afficher un soin qui ne s'appliquera pas réellement.
+                    boolean quelquUnEnProfite = DamageCalculator.estAuSol(joueur) || DamageCalculator.estAuSol(adversaire);
+                    yield quelquUnEnProfite ? "+6% hp/t (sol)" : "0% (aucun au sol)";
+                }
+                case PSYCHIQUE -> "anti-priorité (sol)";
+                case BRUMEUX -> "anti-statut (sol)";
+                default -> "";
+            };
+            dessinerTexte(String.format("%s (~%dt) (%s)", nomTerrain, FieldTracker.getToursTerrainRestants(), effet),
                 x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }

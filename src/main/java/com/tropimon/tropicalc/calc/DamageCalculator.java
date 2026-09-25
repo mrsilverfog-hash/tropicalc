@@ -789,7 +789,7 @@ public class DamageCalculator {
         return 1.0;
     }
 
-    private static boolean estAuSol(Pokemon p) {
+    public static boolean estAuSol(Pokemon p) {
         if (p.possedeType(PokemonType.VOL)) return false;
         if ("Lévitation".equals(p.getTalent())) return false;
         return !"Ballon".equals(p.getObjet());
