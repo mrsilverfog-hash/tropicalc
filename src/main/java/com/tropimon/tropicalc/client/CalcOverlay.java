@@ -381,7 +381,7 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Météo : une ligne avec icône selon le type actif ---
+        // --- Météo : une ligne avec icône selon le type actif, et son effet ---
         if (field.getMeteo() != com.tropimon.tropicalc.calc.Field.Meteo.AUCUNE
                 && FieldTracker.getToursMeteoRestants() > 0) {
             int typeIconeMeteo = switch (field.getMeteo()) {
@@ -392,7 +392,32 @@ public final class CalcOverlay implements HudRenderCallback {
                 default -> -1;
             };
             if (typeIconeMeteo >= 0) dessinerIcone(typeIconeMeteo, x, y);
-            dessinerTexte(String.format("Météo : ~%dt", FieldTracker.getToursMeteoRestants()),
+
+            String nomMeteo = switch (field.getMeteo()) {
+                case SOLEIL -> "Soleil";
+                case SOLEIL_INTENSE -> "Soleil Intense";
+                case PLUIE -> "Pluie";
+                case PLUIE_INTENSE -> "Pluie Battante";
+                case SABLE -> "Tempête de Sable";
+                case NEIGE -> "Tempête de Neige";
+                default -> "Météo";
+            };
+            String effetMeteo = switch (field.getMeteo()) {
+                case SOLEIL, SOLEIL_INTENSE -> "+50% Feu / -50% Eau";
+                case PLUIE, PLUIE_INTENSE -> "+50% Eau / -50% Feu";
+                case SABLE -> {
+                    boolean quelquUnRoche = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE)
+                        || adversaire.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE);
+                    yield quelquUnRoche ? "+50% DéfSpé Roche" : "0% (aucun Roche)";
+                }
+                case NEIGE -> {
+                    boolean quelquUnGlace = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.GLACE)
+                        || adversaire.possedeType(com.tropimon.tropicalc.calc.PokemonType.GLACE);
+                    yield quelquUnGlace ? "+50% Déf Glace" : "0% (aucun Glace)";
+                }
+                default -> "";
+            };
+            dessinerTexte(String.format("%s (~%dt) (%s)", nomMeteo, FieldTracker.getToursMeteoRestants(), effetMeteo),
                 x + 13, y, COULEUR_TEXTE);
             y += hauteurLigne;
         }
