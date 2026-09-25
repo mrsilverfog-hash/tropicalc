@@ -1193,6 +1193,11 @@ public final class ObservationCollector {
         adversaireSalaison = false;
         compteurToxikJoueur = 0;
         compteurToxikAdversaire = 0;
+        stageAtkAdvDebutTour = 0;
+        stageAtkSpeAdvDebutTour = 0;
+        stageDefAdvDebutTour = 0;
+        stageDefSpeAdvDebutTour = 0;
+        stageVitAdvDebutTour = 0;
         COUPS_RAGE_FIST_JOUEUR.clear();
         COUPS_RAGE_FIST_ADVERSAIRE.clear();
         especeJoueurSuivie = null;
