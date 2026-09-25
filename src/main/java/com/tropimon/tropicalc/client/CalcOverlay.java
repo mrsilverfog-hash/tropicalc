@@ -408,7 +408,8 @@ public final class CalcOverlay implements HudRenderCallback {
                 case SABLE -> {
                     boolean quelquUnRoche = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE)
                         || adversaire.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE);
-                    yield quelquUnRoche ? "+50% DéfSpé Roche" : "0% (aucun Roche)";
+                    String base = "1/16 hp/t (Roche/Sol/Acier immunisés)";
+                    yield quelquUnRoche ? base + ", +50% DéfSpé Roche" : base;
                 }
                 case NEIGE -> {
                     boolean quelquUnGlace = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.GLACE)
