@@ -690,7 +690,7 @@ public class DamageCalculator {
                 ctx.multiplicateurDegatsFinal *= 1.2;
             }
             String talentDef = defenseur.getTalent();
-            if ("Filtre".equals(talentDef) || "Solide Roc".equals(talentDef)) {
+            if ("Filtre".equals(talentDef) || "Solide Roc".equals(talentDef) || "Prisme-Armure".equals(talentDef)) {
                 ctx.multiplicateurDegatsFinal *= 0.75;
             }
         } else if (efficacite > 0.0 && efficacite < 1.0) {
