@@ -47,6 +47,25 @@ public final class CalcOverlay implements HudRenderCallback {
         lignesAffichage.add(new LigneTexte(texte, x, y, couleur));
     }
 
+    /** Construit "Atq+2, Vit-1" à partir des stages actifs (hors PV), vide si tous neutres. */
+    private String formatBoosts(Pokemon p) {
+        String[][] abrev = {
+            {"ATTAQUE", "Atq"}, {"DEFENSE", "Def"}, {"ATTAQUE_SPE", "AtqSpé"},
+            {"DEFENSE_SPE", "DéfSpé"}, {"VITESSE", "Vit"}
+        };
+        StringBuilder sb = new StringBuilder();
+        for (Stat s : Stat.values()) {
+            if (s == Stat.PV) continue;
+            int stage = p.getStage(s);
+            if (stage == 0) continue;
+            String court = s.name();
+            for (String[] a : abrev) if (a[0].equals(court)) court = a[1];
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(court).append(stage > 0 ? "+" : "").append(stage);
+        }
+        return sb.toString();
+    }
+
     @Override
     public void onHudRender(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {
         // Doit tourner AUSSI hors combat : c'est là que le reset entre combats s'exécute
@@ -131,6 +150,18 @@ public final class CalcOverlay implements HudRenderCallback {
             ? "TropiCalc [transformé]" : "TropiCalc";
         dessinerTexte(titre, x, y, COULEUR_TITRE);
         y += hauteurLigne + 2;
+
+        // Boosts actifs des deux camps, pour vérifier visuellement que le
+        // mod utilise bien le même stage que ce qui est réellement en jeu.
+        String boostsJoueur = formatBoosts(joueur);
+        String boostsAdv = formatBoosts(adversaire);
+        if (!boostsJoueur.isEmpty() || !boostsAdv.isEmpty()) {
+            String ligneBoosts = (boostsJoueur.isEmpty() ? "" : "Toi : " + boostsJoueur)
+                + (!boostsJoueur.isEmpty() && !boostsAdv.isEmpty() ? "  |  " : "")
+                + (boostsAdv.isEmpty() ? "" : "Adv : " + boostsAdv);
+            dessinerTexte(ligneBoosts, x, y, COULEUR_MOUCHOIR);
+            y += hauteurLigne;
+        }
 
         // Vitesses effectives (Distorsion inverse la priorité)
         int vitJoueur = vitesseEffective(joueur);
@@ -299,6 +330,19 @@ public final class CalcOverlay implements HudRenderCallback {
                                 estRevele ? "✓ " : "", nom,
                                 avant.pourcentageMin, avant.pourcentageMax,
                                 apres.pourcentageMin, apres.pourcentageMax, suffixePp);
+                        }
+
+                        // Laser Hasard : 30% de chances de doubler sa puissance
+                        // (80 -> 160) pour le tour en cours - chance aléatoire pure,
+                        // ni conditionnelle ni garantie. Affiche la valeur normale
+                        // puis, entre parenthèses, la valeur si ça double.
+                        if ("ficklebeam".equals(template.getName())) {
+                            DamageCalculator.Resultat boostee = calculerAvecPuissanceForcee(
+                                adversaire, joueur, capaciteAdv, 160, field, field.getEcransJoueur());
+                            ligne = String.format("%s%s : %.0f%% - %.0f%% (%.0f%% - %.0f%%)%s",
+                                estRevele ? "✓ " : "", nom,
+                                r.pourcentageMin, r.pourcentageMax,
+                                boostee.pourcentageMin, boostee.pourcentageMax, suffixePp);
                         }
 
                         // Hypothèse objet offensif quasi-certain (> 50% d'usage Smogon) :
@@ -554,7 +598,7 @@ public final class CalcOverlay implements HudRenderCallback {
                 dessinerTexte("Objet confirmé : " + objetConfirme, x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             } else if (objetRetire) {
-                dessinerTexte("Objet confirmé : aucun (Sabotage)", x, y, COULEUR_REVELE);
+                dessinerTexte("Objet confirmé : aucun (retiré)", x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             }
         }

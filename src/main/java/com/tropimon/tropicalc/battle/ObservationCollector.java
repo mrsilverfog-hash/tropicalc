@@ -194,6 +194,16 @@ public final class ObservationCollector {
                 OBJETS_RETIRES.add(adversaire.getEspece());
             }
 
+            // Ballon : explose dès qu'une attaque touche RÉELLEMENT le porteur
+            // (jamais sur les dégâts indirects - confusion, brûlure, poison,
+            // sable, Piège de Roc - vérifié sur Poképédia). perteAdversaire > 0
+            // exclut déjà naturellement le cas d'immunité Sol non consommée
+            // (une capacité Sol contre un Ballon intact inflige 0 dégât).
+            if ("Ballon".equals(adversaire.getObjet()) && coupJoueurDuTour != null
+                    && !joueurNAPasAttaque() && perteAdversaire > 0) {
+                OBJETS_RETIRES.add(adversaire.getEspece());
+            }
+
             // Détection Casque Brut : tour "propre" où le joueur attaque au contact,
             // l'adversaire ne l'attaque pas, et le joueur perd des PV quand même.
             // 12.5% = Épine de Fer/Peau Dure seule | ~17% = Casque Brut | ~29% = les deux
