@@ -179,6 +179,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("eviolite", "Évoluroc");
         OBJETS.put("heavydutyboots", "Grosses Bottes");
         OBJETS.put("leftovers", "Restes");
+        OBJETS.put("whiteherb", "Herbe Blanche");
         OBJETS.put("weaknesspolicy", "Vulné-Assurance");
         OBJETS.put("terrainextender", "Champ'Duit");
         OBJETS.put("rockyhelmet", "Casque Brut");

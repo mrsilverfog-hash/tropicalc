@@ -121,6 +121,23 @@ public final class BoostTracker {
         return STAGES_ADVERSAIRE.getOrDefault(stat, 0);
     }
 
+    /**
+     * Force le stage adverse à une valeur précise, sans passer par un message
+     * boost/unboost. Utilisé uniquement pour Herbe Blanche : quand une capacité
+     * auto-baissante (Surchauffe, Draco-Météore...) est jouée par un porteur de
+     * cet objet, Cobblemon envoie déjà le vrai message de baisse (traité
+     * normalement ci-dessus) mais aucun message séparé pour la restauration
+     * immédiate qui suit en vrai jeu - donc on la simule nous-mêmes ici.
+     */
+    public static void forcerStageAdversaire(Stat stat, int valeur) {
+        STAGES_ADVERSAIRE.put(stat, Math.max(-6, Math.min(6, valeur)));
+    }
+
+    /** Symétrique à forcerStageAdversaire, pour le cas où c'est le joueur qui porte Herbe Blanche. */
+    public static void forcerStageJoueur(Stat stat, int valeur) {
+        STAGES_JOUEUR.put(stat, Math.max(-6, Math.min(6, valeur)));
+    }
+
     /** À appeler quand le Pokémon du camp correspondant change (switch). */
     public static void reinitialiserJoueur() {
         STAGES_JOUEUR.clear();

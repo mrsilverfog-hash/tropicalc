@@ -272,6 +272,8 @@ public final class ObservationCollector {
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
         adversaireAAgiEnPremier = null;
+
+        tenterAppliquerHerbeBlanche(joueur, adversaire);
     }
 
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
@@ -711,6 +713,37 @@ public final class ObservationCollector {
      * sans qu'il ait lui-même joué de capacité offensive ce tour (ce qui
      * exclurait une explication auto-infligée).
      */
+    /**
+     * Herbe Blanche : restaure TOUTES les stats du porteur ayant subi une
+     * baisse à la fin du tour, quelle qu'en soit la cause (capacité auto-
+     * baissante comme Surchauffe/Draco-Météore, ou même un talent adverse
+     * comme Intimidation - confirmé sur Poképédia) - usage unique, consommé
+     * dès qu'au moins une restauration a eu lieu.
+     */
+    private static void tenterAppliquerHerbeBlanche(Pokemon joueur, Pokemon adversaire) {
+        appliquerHerbeBlancheUnCote(joueur, false);
+        appliquerHerbeBlancheUnCote(adversaire, true);
+    }
+
+    private static void appliquerHerbeBlancheUnCote(Pokemon porteur, boolean estAdversaire) {
+        if (porteur == null || !"Herbe Blanche".equals(porteur.getObjet())) return;
+        boolean auMoinsUneBaisse = false;
+        for (Stat s : Stat.values()) {
+            if (s == Stat.PV) continue;
+            int stage = estAdversaire ? BoostTracker.getStageAdversaire(s) : BoostTracker.getStageJoueur(s);
+            if (stage < 0) {
+                if (estAdversaire) BoostTracker.forcerStageAdversaire(s, 0);
+                else BoostTracker.forcerStageJoueur(s, 0);
+                auMoinsUneBaisse = true;
+            }
+        }
+        // Consommé - ne s'applique qu'à l'estimation adverse (l'objet du
+        // joueur n'a pas besoin d'être "retiré", il est déjà vu directement).
+        if (auMoinsUneBaisse && estAdversaire) {
+            OBJETS_RETIRES.add(porteur.getEspece());
+        }
+    }
+
     private static void tenterConfirmerDefiantBattant(Pokemon adversaire) {
         boolean talentDejaConnu = TALENTS_CONFIRMES.containsKey(adversaire.getEspece());
         if (talentDejaConnu) return;
