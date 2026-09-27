@@ -92,7 +92,7 @@ public final class SwitchOverlayRenderer {
 
         // Pièges d'entrée : PV à l'arrivée
         double degatsPieges = degatsEntreePct(candidat);
-        boolean toile = FieldTracker.isStickyWebJoueur() && estAuSol(candidat);
+        boolean toile = FieldTracker.isStickyWebJoueur() && DamageCalculator.estAuSol(candidat);
         boolean picsToxik = picsToxikActifs(candidat);
         if (degatsPieges > 0 || toile || picsToxik) {
             double pvActuelsPct = 100.0 * candidat.getPvActuels() / Math.max(1, candidat.getPvMax());
@@ -224,7 +224,7 @@ public final class SwitchOverlayRenderer {
         }
 
         int couches = FieldTracker.getSpikesJoueur();
-        if (couches > 0 && estAuSol(candidat)) {
+        if (couches > 0 && DamageCalculator.estAuSol(candidat)) {
             total += switch (couches) {
                 case 1 -> 12.5;
                 case 2 -> 100.0 / 6.0;
@@ -238,7 +238,7 @@ public final class SwitchOverlayRenderer {
     /** Vrai si le candidat serait empoisonné en entrant (Pics Toxik posés, au sol, non Poison/Acier). */
     private static boolean picsToxikActifs(Pokemon candidat) {
         if (FieldTracker.getToxicSpikesJoueur() <= 0) return false;
-        if (!estAuSol(candidat)) return false;
+        if (!DamageCalculator.estAuSol(candidat)) return false;
         if ("Garde Magik".equals(candidat.getTalent())) return false;
         com.tropimon.tropicalc.calc.PokemonType t1 = candidat.getType1();
         com.tropimon.tropicalc.calc.PokemonType t2 = candidat.getType2();
@@ -248,14 +248,6 @@ public final class SwitchOverlayRenderer {
         if (t1 == com.tropimon.tropicalc.calc.PokemonType.ACIER
             || t2 == com.tropimon.tropicalc.calc.PokemonType.ACIER) return false;
         return true;
-    }
-
-    /** Vrai si le candidat touche le sol (sensible à Picots et Toile Gluante). */
-    private static boolean estAuSol(Pokemon candidat) {
-        if (candidat.getType1() == com.tropimon.tropicalc.calc.PokemonType.VOL
-            || candidat.getType2() == com.tropimon.tropicalc.calc.PokemonType.VOL) return false;
-        if ("Lévitation".equals(candidat.getTalent())) return false;
-        return !"Ballon".equals(candidat.getObjet());
     }
 
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {
