@@ -202,7 +202,17 @@ public final class CalcOverlay implements HudRenderCallback {
             com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
             if (capacite == null || capacite.estCapaciteDeStatut()) continue;
 
-            DamageCalculator.Resultat r = DamageCalculator.calculer(joueur, adversaire, capacite, field, field.getEcransAdversaire(), false);
+            // Fulgurayon : +1 Attaque Spéciale GARANTI dès son lancement -
+            // même traitement que côté adversaire, appliqué directement au
+            // calcul plutôt que d'afficher deux scénarios (pas conditionnel).
+            boolean estFulgurayon = "electroshot".equals(capacite.getNom());
+            if (estFulgurayon) joueur.modifierStage(Stat.ATTAQUE_SPE, 1);
+            DamageCalculator.Resultat r;
+            try {
+                r = DamageCalculator.calculer(joueur, adversaire, capacite, field, field.getEcransAdversaire(), false);
+            } finally {
+                if (estFulgurayon) joueur.modifierStage(Stat.ATTAQUE_SPE, -1);
+            }
             String nom = coup.getDisplayName().getString();
             String ligne;
             int couleur = COULEUR_TEXTE;
@@ -214,7 +224,8 @@ public final class CalcOverlay implements HudRenderCallback {
                     || "psyshock".equals(nomCap) || "psystrike".equals(nomCap) || "secretsword".equals(nomCap);
                 Stat statDef = frappePhysiqueDef ? Stat.DEFENSE : Stat.DEFENSE_SPE;
                 String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
-                ligne = String.format("%s : %s%.0f%% - %.0f%%", nom, marqueur, r.pourcentageMin, r.pourcentageMax);
+                String suffixeBoost = estFulgurayon ? " (+1)" : "";
+                ligne = String.format("%s : %s%.0f%% - %.0f%%%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax, suffixeBoost);
 
                 // Laser Hasard : 30% de chances de doubler sa puissance (80 -> 160).
                 // Valeur normale, puis entre parenthèses la valeur si ça double.
@@ -224,6 +235,19 @@ public final class CalcOverlay implements HudRenderCallback {
                     ligne = String.format("%s : %s%.0f%% - %.0f%% (%.0f%% - %.0f%%)", nom, marqueur,
                         r.pourcentageMin, r.pourcentageMax,
                         boostee.pourcentageMin, boostee.pourcentageMax);
+                }
+
+                // Prise de Bec / Branchicrok : double puissance si J'agis
+                // avant l'adversaire. Affiche les DEUX scénarios plutôt que
+                // de deviner l'ordre d'action.
+                if ("boltbeak".equals(nomCap) || "fishiousrend".equals(nomCap)) {
+                    DamageCalculator.Resultat avant = calculerAvecPuissanceForcee(
+                        joueur, adversaire, capacite, 170, field, field.getEcransAdversaire());
+                    DamageCalculator.Resultat apres = calculerAvecPuissanceForcee(
+                        joueur, adversaire, capacite, 85, field, field.getEcransAdversaire());
+                    ligne = String.format("%s (avt) : %.0f%%-%.0f%% | (après) : %.0f%%-%.0f%%", nom,
+                        avant.pourcentageMin, avant.pourcentageMax,
+                        apres.pourcentageMin, apres.pourcentageMax);
                 }
                 if ((casqueBrut || epines)
                         && com.tropimon.tropicalc.calc.ContactMoves.estContact(capacite.getNom())) {
