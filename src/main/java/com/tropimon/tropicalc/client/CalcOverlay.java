@@ -215,6 +215,16 @@ public final class CalcOverlay implements HudRenderCallback {
                 Stat statDef = frappePhysiqueDef ? Stat.DEFENSE : Stat.DEFENSE_SPE;
                 String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
                 ligne = String.format("%s : %s%.0f%% - %.0f%%", nom, marqueur, r.pourcentageMin, r.pourcentageMax);
+
+                // Laser Hasard : 30% de chances de doubler sa puissance (80 -> 160).
+                // Valeur normale, puis entre parenthèses la valeur si ça double.
+                if ("ficklebeam".equals(nomCap)) {
+                    DamageCalculator.Resultat boostee = calculerAvecPuissanceForcee(
+                        joueur, adversaire, capacite, 160, field, field.getEcransAdversaire());
+                    ligne = String.format("%s : %s%.0f%% - %.0f%% (%.0f%% - %.0f%%)", nom, marqueur,
+                        r.pourcentageMin, r.pourcentageMax,
+                        boostee.pourcentageMin, boostee.pourcentageMax);
+                }
                 if ((casqueBrut || epines)
                         && com.tropimon.tropicalc.calc.ContactMoves.estContact(capacite.getNom())) {
                     int coups = DamageCalculator.nombreDeCoupsMax(capacite, joueur);
