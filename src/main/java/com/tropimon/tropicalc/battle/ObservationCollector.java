@@ -223,8 +223,15 @@ public final class ObservationCollector {
             // (jamais sur les dégâts indirects - confusion, brûlure, poison,
             // sable, Piège de Roc - vérifié sur Poképédia). perteAdversaire > 0
             // exclut déjà naturellement le cas d'immunité Sol non consommée
-            // (une capacité Sol contre un Ballon intact inflige 0 dégât).
-            if ("Ballon".equals(adversaire.getObjet()) && coupJoueurDuTour != null
+            // (une capacité Sol contre un Ballon intact inflige 0 dégât - le
+            // Ballon n'éclate d'ailleurs pas dans ce cas précis, confirmé).
+            // IMPORTANT : adversaire ici est l'objet BRUT (BattleStateTracker),
+            // qui ne connaît pas l'objet estimé/confirmé - il faut reconstruire
+            // l'estimation pour savoir si "Ballon" est vraiment ce qu'on pense
+            // qu'il tient, sinon cette condition ne se déclenche quasiment
+            // jamais en pratique.
+            if ("Ballon".equals(construireAdversaireEstime(adversaire).getObjet())
+                    && coupJoueurDuTour != null
                     && !joueurNAPasAttaque() && perteAdversaire > 0) {
                 OBJETS_RETIRES.add(adversaire.getEspece());
             }
@@ -394,7 +401,11 @@ public final class ObservationCollector {
         // Baie de résistance (Occa, Passho, etc.) : le joueur a attaqué
         // l'adversaire, qui encaisse nettement moins que prévu.
         if (!adversaireEtaitAttaquant) {
-            tenterConfirmerBaieResistance(adversaire, joueur, capacite, perte, terrainNeutre);
+            // adversaire est ici l'objet BRUT (BattleStateTracker) : pour un
+            // calcul de dégâts attendus correct (EV/objet défensif estimés),
+            // il faut l'objet reconstruit, même bug que celui trouvé sur le
+            // Ballon et Herbe Blanche.
+            tenterConfirmerBaieResistance(construireAdversaireEstime(adversaire), joueur, capacite, perte, terrainNeutre);
         }
 
         // --- Détection d'objet par signal fort, distincte du moteur de correction ---
@@ -780,7 +791,11 @@ public final class ObservationCollector {
      */
     private static void tenterAppliquerHerbeBlanche(Pokemon joueur, Pokemon adversaire) {
         appliquerHerbeBlancheUnCote(joueur, false);
-        appliquerHerbeBlancheUnCote(adversaire, true);
+        // adversaire est l'objet BRUT (BattleStateTracker) : il ne connaît
+        // pas l'objet estimé/confirmé, seulement ce qui a été réellement
+        // révélé en jeu - même bug que celui trouvé sur le Ballon, corrigé
+        // ici en reconstruisant l'estimation avant de vérifier l'objet.
+        appliquerHerbeBlancheUnCote(construireAdversaireEstime(adversaire), true);
     }
 
     private static void appliquerHerbeBlancheUnCote(Pokemon porteur, boolean estAdversaire) {
