@@ -15,6 +15,8 @@ import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.calc.Stat;
 import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1055,6 +1057,35 @@ public final class ObservationCollector {
     public static void confirmerObjetDirect(String espece, String objetFr) {
         if (espece == null || objetFr == null) return;
         OBJETS_CONFIRMES.put(espece, objetFr);
+    }
+
+    /**
+     * Intercepte les messages "cobblemon.battle.enditem.XXX" - confirmé par
+     * un vrai log (tropicalc-messages-debug.txt, combat contre Ratdeglingo,
+     * clé exacte "cobblemon.battle.enditem.airballoon") : un message dédié
+     * existe pour la destruction du Ballon, bien plus fiable que la détection
+     * par comportement (perteAdversaire/perteJoueur > 0) utilisée jusqu'ici,
+     * qui reste en place en secours mais ne devrait plus jamais être
+     * nécessaire pour ce cas précis.
+     */
+    public static void traiterMessageObjet(Text message) {
+        if (message == null) return;
+        if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
+        String cle = contenu.getKey();
+        if (cle == null || !cle.equals("cobblemon.battle.enditem.airballoon")) return;
+
+        Object[] args = contenu.getArgs();
+        if (args.length == 0) return;
+        String proprietaire = MoveUseTracker.extraireProprietaire(args[0]);
+        Boolean estAdversaire = determinerAttaquant(proprietaire);
+        if (estAdversaire == null) return;
+
+        if (estAdversaire) {
+            Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv != null) OBJETS_RETIRES.add(adv.getEspece());
+        } else {
+            ballonJoueurEclate = true;
+        }
     }
 
     /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */

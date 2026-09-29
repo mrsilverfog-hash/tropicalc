@@ -38,6 +38,7 @@ public final class MoveUseTracker {
         BoostTracker.traiterMessage(message);
         FieldTracker.traiterMessage(message);
         TypeTracker.traiterMessage(message);
+        ObservationCollector.traiterMessageObjet(message);
 
         // Switch explicite (confirmé par observation réelle en jeu, format
         // "cobblemon.battle.switch.self"/".other") : reset immédiat et fiable
