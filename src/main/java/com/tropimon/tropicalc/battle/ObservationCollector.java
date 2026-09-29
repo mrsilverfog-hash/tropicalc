@@ -236,6 +236,16 @@ public final class ObservationCollector {
                 OBJETS_RETIRES.add(adversaire.getEspece());
             }
 
+            // Symétrique, pour MON propre Ballon. Même si joueur.getObjet()
+            // devrait en théorie déjà refléter la vraie destruction de
+            // l'objet (lu en direct depuis Cobblemon, pas une estimation),
+            // un flag de secours indépendant évite tout souci si la mise à
+            // jour n'est pas immédiate côté client - forcé dans CalcOverlay.
+            if ("Ballon".equals(joueur.getObjet()) && coupAdversaireDuTour != null
+                    && !adversaireNAPasAttaque() && perteJoueur > 0) {
+                ballonJoueurEclate = true;
+            }
+
             // Détection Casque Brut : tour "propre" où le joueur attaque au contact,
             // l'adversaire ne l'attaque pas, et le joueur perd des PV quand même.
             // 12.5% = Épine de Fer/Peau Dure seule | ~17% = Casque Brut | ~29% = les deux
@@ -1149,6 +1159,13 @@ public final class ObservationCollector {
     private static int compteurToxikJoueur = 0;
     private static int compteurToxikAdversaire = 0;
 
+    // Vrai dès que le Ballon du joueur a été touché par une attaque réelle -
+    // voir la détection dans signalerNouveauTour. Utilisé par CalcOverlay
+    // pour forcer l'absence de Ballon, en secours de la lecture directe
+    // depuis Cobblemon qui devrait déjà refléter ça normalement.
+    private static boolean ballonJoueurEclate = false;
+    public static boolean isBallonJoueurEclate() { return ballonJoueurEclate; }
+
     // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,
     // pour détecter un gain de +2/+2 simultané (Vulné-Assurance) précisément CE tour.
     private static int stageAtkAdvDebutTour = 0;
@@ -1286,6 +1303,7 @@ public final class ObservationCollector {
 
     public static void reinitialiser() {
         combatSauvageDetecte = false;
+        ballonJoueurEclate = false;
 
         // Persister les faits du combat avant de tout effacer
         if (nomAdversaireCourant != null) {
