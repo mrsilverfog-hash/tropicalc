@@ -59,6 +59,15 @@ public final class ObservationCollector {
 
     // Objets confirmés par observation (ex: soin de fin de tour ~1/16 => Restes)
     private static final Map<String, String> OBJETS_CONFIRMES = new HashMap<>();
+
+    // Sous-ensemble de OBJETS_CONFIRMES : confirmé PROACTIVEMENT par simple
+    // dominance statistique Smogon (>=80% d'usage), pas par une preuve réelle
+    // en combat - donc révocable si une observation le contredit ensuite
+    // (changement de capacité sans switch, ou dégâts/vitesse incompatibles).
+    // Une confirmation par preuve réelle n'entre jamais dans cet ensemble et
+    // n'est donc jamais révoquée.
+    private static final Set<String> OBJETS_CONFIRMES_PROACTIVEMENT = new HashSet<>();
+
     private static String coupAdversaireTourPrecedent = null;
 
     // Capacités qui soignent leur utilisateur : excluent la confirmation de Restes
@@ -139,6 +148,11 @@ public final class ObservationCollector {
             compteurToxikAdversaire = 0;
             coupVerrouAdversaire = null;   // le verrou Choix tombe au switch
             compteurAbrisAdversaire = 0;
+        } else if (espaceAdversaireDuTour != null && coupAdversaireDuTour != null) {
+            // Pas de switch : une capacité différente de celle du tour
+            // précédent est une preuve certaine que l'objet Choix
+            // proactif était une erreur (Choix verrouille sur un seul coup).
+            tenterRevoquerObjetChoixProactif(adversaire.getEspece(), coupAdversaireDuTour.showdownId());
         }
 
         // Abris consécutifs de l'adversaire (le 2e n'a que ~33% de réussite)
@@ -504,6 +518,7 @@ public final class ObservationCollector {
         boolean objetRetire = OBJETS_RETIRES.contains(espece);
         tenterConfirmerEcharpeChoix(espece, adversaireBase);
         tenterConfirmerEvoluroc(espece, smogon);
+        tenterConfirmerObjetChoixProactivement(espece, smogon);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
@@ -846,6 +861,53 @@ public final class ObservationCollector {
             TALENTS_CONFIRMES.put(adversaire.getEspece(), "Défiant");
         } else if (deltaAtkSpe == 2) {
             TALENTS_CONFIRMES.put(adversaire.getEspece(), "Battant");
+        }
+    }
+
+    /**
+     * Confirme proactivement un objet Choix (Mouchoir/Bandeau/Lunettes) si
+     * c'est le top objet Smogon avec au moins 80% d'usage - seuil élevé
+     * volontairement (contrairement à Évoluroc à 50%) car ces objets
+     * s'appliquent à N'IMPORTE QUEL Pokémon sans condition d'éligibilité,
+     * donc un faux positif aurait un vrai impact sur le calcul. Marquée
+     * comme révocable (OBJETS_CONFIRMES_PROACTIVEMENT) : si une observation
+     * contredit ensuite cette hypothèse (changement de capacité sans switch,
+     * ou dégâts/vitesse incompatibles), la confirmation est retirée et le
+     * calcul repasse sans l'objet.
+     */
+    // Espèces pour lesquelles un objet Choix proactif a été révoqué (preuve
+    // contraire observée) : empêche de re-confirmer le même objet Choix au
+    // prochain appel, SANS bloquer d'autres hypothèses d'objet comme le
+    // ferait OBJETS_RETIRES (qui signifie "aucun objet du tout").
+    private static final Set<String> OBJETS_CHOIX_EXCLUS = new HashSet<>();
+
+    private static void tenterConfirmerObjetChoixProactivement(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
+        if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
+        if (OBJETS_CHOIX_EXCLUS.contains(espece)) return;
+        String topObjet = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+        boolean estObjetChoix = "Mouchoir Choix".equals(topObjet)
+            || "Bandeau Choix".equals(topObjet) || "Lunettes Choix".equals(topObjet);
+        if (estObjetChoix && smogon.topItemUsageFraction() >= 0.80) {
+            OBJETS_CONFIRMES.put(espece, topObjet);
+            OBJETS_CONFIRMES_PROACTIVEMENT.add(espece);
+        }
+    }
+
+    /**
+     * Révoque une confirmation proactive d'objet Choix si elle est contredite :
+     * soit par un changement de capacité du même Pokémon sans switch entre-
+     * temps (preuve certaine - Choix verrouille sur la première capacité
+     * utilisée depuis l'entrée), soit en secours par une future détection
+     * d'impossibilité statistique (dégâts/vitesse incompatibles).
+     */
+    private static void tenterRevoquerObjetChoixProactif(String espece, String coupActuelId) {
+        if (!OBJETS_CONFIRMES_PROACTIVEMENT.contains(espece)) return;
+        if (coupAdversaireTourPrecedent == null || coupActuelId == null) return;
+        if (!coupAdversaireTourPrecedent.equals(coupActuelId)) {
+            OBJETS_CONFIRMES.remove(espece);
+            OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
+            OBJETS_CHOIX_EXCLUS.add(espece);
         }
     }
 
