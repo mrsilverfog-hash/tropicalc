@@ -880,6 +880,18 @@ public final class ObservationCollector {
             // (le poison aurait dû lui retirer des PV, il en gagne 12.5%)
             TALENTS_CONFIRMES.put(adv.getEspece(), "Soin Poison");
             pvPlancherAdv = pvNow;
+        } else if (remontee >= 22.0 && remontee <= 27.0
+                && pvPlancherAdv <= 50.5
+                && !OBJETS_RETIRES.contains(adv.getEspece())
+                && (coupAdversaireDuTour == null
+                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
+                && !"wish".equals(coupAdversaireTourPrecedent)) {
+            // Baie Sitrus (ou équivalente) : restaure 1/4 des PV max, se
+            // déclenche sous 50% PV. Contrairement à Restes, l'objet est
+            // CONSOMMÉ - important pour Sabotage (Knock Off), qui ne doit
+            // plus appliquer son bonus x1.5 une fois la baie mangée.
+            OBJETS_RETIRES.add(adv.getEspece());
+            pvPlancherAdv = pvNow;
         } else if (remontee > 8.0) {
             // Gros soin (Vœu, Soin, drain...) : repartir de ce niveau
             pvPlancherAdv = pvNow;
