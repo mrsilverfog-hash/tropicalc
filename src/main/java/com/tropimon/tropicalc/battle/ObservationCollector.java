@@ -67,6 +67,31 @@ public final class ObservationCollector {
         "absorb", "megadrain", "gigadrain", "leechlife", "drainpunch",
         "hornleech", "drainingkiss", "paraboliccharge", "oblivionwing",
         "dreameater", "bitterblade", "leechseed", "painsplit");
+
+    // Baie de résistance par type - noms confirmés identiques en français
+    // (wiki Cobblemon, Pokémon Trash). Chilan (Normal) fait exception : elle
+    // divise par 2 les dégâts des capacités Normal même sans super efficacité.
+    private static final Map<PokemonType, String> BAIES_RESISTANCE = Map.ofEntries(
+        Map.entry(PokemonType.NORMAL, "Chilan"),
+        Map.entry(PokemonType.FEU, "Occa"),
+        Map.entry(PokemonType.EAU, "Passho"),
+        Map.entry(PokemonType.ELECTRIK, "Wacan"),
+        Map.entry(PokemonType.PLANTE, "Rindo"),
+        Map.entry(PokemonType.GLACE, "Yache"),
+        Map.entry(PokemonType.COMBAT, "Chople"),
+        Map.entry(PokemonType.POISON, "Kebia"),
+        Map.entry(PokemonType.SOL, "Shuca"),
+        Map.entry(PokemonType.VOL, "Coba"),
+        Map.entry(PokemonType.PSY, "Payapa"),
+        Map.entry(PokemonType.INSECTE, "Tanga"),
+        Map.entry(PokemonType.ROCHE, "Charti"),
+        Map.entry(PokemonType.SPECTRE, "Kasib"),
+        Map.entry(PokemonType.DRAGON, "Haban"),
+        Map.entry(PokemonType.TENEBRES, "Colbur"),
+        Map.entry(PokemonType.ACIER, "Babiri"),
+        Map.entry(PokemonType.FEE, "Roseli")
+    );
+
     // Vitesse minimale observée par espèce (déduite de l'ordre d'action)
     private static final Map<String, Integer> VITESSES_MIN_OBSERVEES = new HashMap<>();
     private static final double TOLERANCE_POURCENT = 3.0;
@@ -365,6 +390,12 @@ public final class ObservationCollector {
         double observeMax = perte + TOLERANCE_POURCENT;
         profil.enregistrerObservation(adversaireEtaitAttaquant, adversaire, joueur, capacite, terrainNeutre,
             observeMin, observeMax);
+
+        // Baie de résistance (Occa, Passho, etc.) : le joueur a attaqué
+        // l'adversaire, qui encaisse nettement moins que prévu.
+        if (!adversaireEtaitAttaquant) {
+            tenterConfirmerBaieResistance(adversaire, joueur, capacite, perte, terrainNeutre);
+        }
 
         // --- Détection d'objet par signal fort, distincte du moteur de correction ---
         // Une seule observation nette suffit : les ratios 1.0 / 1.3 / 1.5 sont assez
@@ -683,6 +714,33 @@ public final class ObservationCollector {
      * exclue en vérifiant que l'adversaire n'a pas lui-même joué cette capacité
      * ce tour. Ne couvre pas le cas Contrary (-2/-2 au lieu de +2/+2), plus rare.
      */
+    /**
+     * Baie de résistance (Occa, Passho, etc.) : divise par 2 les dégâts d'un
+     * coup super efficace, consommée immédiatement après. Détectée si les
+     * dégâts réellement subis tombent nettement en dessous même du minimum
+     * attendu (~35-60% de la fourchette normale, cohérent avec une division
+     * par 2 plutôt qu'un simple mauvais roll de dégâts 85-100%).
+     * Chilan (Normal) fait exception : s'applique même sans super efficacité.
+     */
+    private static void tenterConfirmerBaieResistance(Pokemon adversaire, Pokemon joueur,
+            com.tropimon.tropicalc.calc.Move capacite, double perte, Field terrain) {
+        if (OBJETS_CONFIRMES.containsKey(adversaire.getEspece())
+                || OBJETS_RETIRES.contains(adversaire.getEspece())) return;
+
+        boolean estChilan = capacite.getType() == PokemonType.NORMAL;
+        double efficacite = DamageCalculator.calculerEfficaciteType(capacite, adversaire, joueur);
+        if (efficacite <= 1.0 && !estChilan) return;
+
+        DamageCalculator.Resultat r = DamageCalculator.calculer(joueur, adversaire, capacite,
+            terrain, terrain.getEcransAdversaire(), false);
+        if (r.koGaranti || r.pourcentageMin <= 0) return;   // Exclure Fermeté/Ceinture Focus
+
+        if (perte >= r.pourcentageMin * 0.35 && perte <= r.pourcentageMax * 0.6) {
+            String baie = BAIES_RESISTANCE.get(capacite.getType());
+            if (baie != null) OBJETS_RETIRES.add(adversaire.getEspece());
+        }
+    }
+
     private static void tenterConfirmerVulneAssurance(Pokemon adversaire, Pokemon joueur) {
         if (OBJETS_CONFIRMES.containsKey(adversaire.getEspece())
                 || OBJETS_RETIRES.contains(adversaire.getEspece())) return;
