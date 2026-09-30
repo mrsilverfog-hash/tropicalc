@@ -1134,19 +1134,54 @@ public final class ObservationCollector {
         if (message == null) return;
         if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
         String cle = contenu.getKey();
-        if (cle == null || !cle.equals("cobblemon.battle.enditem.airballoon")) return;
+        if (cle == null) return;
 
-        Object[] args = contenu.getArgs();
-        if (args.length == 0) return;
-        String proprietaire = MoveUseTracker.extraireProprietaire(args[0]);
-        Boolean estAdversaire = determinerAttaquant(proprietaire);
-        if (estAdversaire == null) return;
+        if (cle.equals("cobblemon.battle.enditem.airballoon")) {
+            Object[] args = contenu.getArgs();
+            if (args.length == 0) return;
+            String proprietaire = MoveUseTracker.extraireProprietaire(args[0]);
+            Boolean estAdversaire = determinerAttaquant(proprietaire);
+            if (estAdversaire == null) return;
 
-        if (estAdversaire) {
+            if (estAdversaire) {
+                Pokemon adv = BattleStateTracker.getAdversaireActif();
+                if (adv != null) OBJETS_RETIRES.add(adv.getEspece());
+            } else {
+                ballonJoueurEclate = true;
+            }
+            return;
+        }
+
+        if (cle.equals("cobblemon.battle.item.thief")) {
+            // Pickpocket (le nom reste "Pickpocket" en français, confirmé) :
+            // arg0 = voleur (gagne l'objet), arg1 = objet (format brut
+            // "item.cobblemon.rocky_helmet"), arg2 = victime (perd l'objet).
+            // Confirmé par un vrai log (tropicalc-messages-debug.txt) :
+            // l'ordre victime/voleur est l'inverse de enditem.knockoff, où
+            // arg0 est la victime - vérifié avec l'utilisateur pour être sûr.
+            Object[] args = contenu.getArgs();
+            if (args.length < 3) return;
+            String voleur = MoveUseTracker.extraireProprietaire(args[0]);
+            String victime = MoveUseTracker.extraireProprietaire(args[2]);
+            String texteObjet = String.valueOf(args[1]);
+            int pointFinal = texteObjet.lastIndexOf('.');
+            if (pointFinal < 0) return;
+            String showdownId = texteObjet.substring(pointFinal + 1).replace("_", "");
+            String objetFr = ShowdownIdMapper.objet(showdownId);
+            if (objetFr == null) return;
+
+            Boolean victimeEstAdversaire = determinerAttaquant(victime);
+            Boolean voleurEstAdversaire = determinerAttaquant(voleur);
             Pokemon adv = BattleStateTracker.getAdversaireActif();
-            if (adv != null) OBJETS_RETIRES.add(adv.getEspece());
-        } else {
-            ballonJoueurEclate = true;
+            if (adv == null) return;
+
+            if (Boolean.TRUE.equals(victimeEstAdversaire)) {
+                OBJETS_RETIRES.add(adv.getEspece());
+            }
+            if (Boolean.TRUE.equals(voleurEstAdversaire)) {
+                OBJETS_CONFIRMES.put(adv.getEspece(), objetFr);
+                OBJETS_CHOIX_EXCLUS.remove(adv.getEspece());
+            }
         }
     }
 
