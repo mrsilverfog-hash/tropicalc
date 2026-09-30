@@ -117,6 +117,46 @@ public final class ObservationCollector {
         "obstruct", "endure", "trickroom"
     );
 
+    /** Vent Arrière a été lancé par le camp adverse dans ce combat. */
+    private static boolean ventArriereAdversaire = false;
+
+    /**
+     * Nombre d'observations de vitesse exploitables par espèce. Une seule ne
+     * suffit pas à confirmer : la Vive-Griffe fait passer en premier une fois
+     * sur cinq au hasard, indépendamment de la vitesse, et aucun signal client
+     * ne permet de la distinguer. Deux observations indépendantes ramènent ce
+     * risque à 4%, et un vrai Mouchoir Choix se manifeste de toute façon à
+     * chaque tour.
+     */
+    private static final Map<String, Integer> OBSERVATIONS_VITESSE = new HashMap<>();
+
+    /**
+     * Vrai si les deux capacités ont la MEME priorité, donc si l'ordre d'action
+     * ne s'explique que par la vitesse.
+     *
+     * L'ancienne version testait l'appartenance à une liste de capacités
+     * prioritaires écrite à la main. Elle ratait deux choses : les capacités
+     * prioritaires absentes de la liste, et surtout les priorités NÉGATIVES
+     * (Avalanche, Draco-Queue, Hurlement, Contre, Riposte, Vantardise...). Une
+     * capacité à priorité négative côté joueur fait passer l'adversaire en
+     * premier quelle que soit sa vitesse — et le mod en déduisait un Mouchoir
+     * Choix. On lit donc la priorité réelle dans les données Cobblemon, ce qui
+     * couvre les deux sens sans liste à maintenir.
+     */
+    private static boolean prioritesEgales(String coupJoueurId, String coupAdversaireId) {
+        try {
+            MoveTemplate a = Moves.INSTANCE.getByName(coupJoueurId);
+            MoveTemplate b = Moves.INSTANCE.getByName(coupAdversaireId);
+            if (a == null || b == null) return false; // inconnue : on s'abstient
+            return a.getPriority() == b.getPriority();
+        } catch (Throwable e) {
+            // Repli sur l'ancienne liste si la donnée n'est pas accessible
+            return !COUPS_PRIORITAIRES.contains(coupJoueurId)
+                && !COUPS_PRIORITAIRES.contains(coupAdversaireId);
+        }
+    }
+
+
     private static double pvJoueurDebutTour = -1;
     private static double pvAdversaireDebutTour = -1;
     private static MoveUseTracker.CoupDetecte coupJoueurDuTour = null;
@@ -152,7 +192,7 @@ public final class ObservationCollector {
             // Pas de switch : une capacité différente de celle du tour
             // précédent est une preuve certaine que l'objet Choix
             // proactif était une erreur (Choix verrouille sur un seul coup).
-            tenterRevoquerObjetChoixProactif(adversaire.getEspece(), coupAdversaireDuTour.showdownId());
+            tenterRevoquerObjetChoix(adversaire.getEspece(), coupAdversaireDuTour.showdownId());
         }
 
         // Abris consécutifs de l'adversaire (le 2e n'a que ~33% de réussite)
@@ -304,13 +344,18 @@ public final class ObservationCollector {
                 OBJETS_CONFIRMES.put(adversaire.getEspece(), "Orbe Vie");
             }
 
+            // Une observation de vitesse n'est exploitable que si l'ordre
+            // d'action s'explique UNIQUEMENT par la vitesse. Tout le reste doit
+            // etre ecarte, sinon on conclut au Mouchoir Choix pour rien.
             if (Boolean.TRUE.equals(adversaireAAgiEnPremier)
                     && coupJoueurDuTour != null && coupAdversaireDuTour != null
-                    && !COUPS_PRIORITAIRES.contains(coupJoueurDuTour.showdownId())
-                    && !COUPS_PRIORITAIRES.contains(coupAdversaireDuTour.showdownId())
+                    && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
+                    && BoostTracker.getStageAdversaire(Stat.VITESSE) <= 0
+                    && !ventArriereAdversaire
                     && !FieldTracker.isDistorsion()) {
                 int vitesseJoueur = vitesseEffectiveJoueur(joueur);
                 VITESSES_MIN_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur + 1, Math::max);
+                OBSERVATIONS_VITESSE.merge(adversaire.getEspece(), 1, Integer::sum);
             }
 
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
@@ -357,6 +402,14 @@ public final class ObservationCollector {
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
                 ajouterCapaciteAdversaire(adversaire.getEspece(), coup.showdownId(), true);
+
+                // Vent Arrière double la vitesse de TOUT le camp adverse, et
+                // n'est modélisé nulle part dans vitesseEnCombat(). Sans ce
+                // drapeau, la vitesse observée dépasse le maximum théorique et
+                // la détection conclut à tort au Mouchoir Choix.
+                if ("tailwind".equals(coup.showdownId())) {
+                    ventArriereAdversaire = true;
+                }
 
                 // Comptage des PP : Pression (talent du joueur) ajoute 1 PP,
                 // mais seulement si la capacité CIBLE le Pokémon qui a Pression
@@ -678,8 +731,13 @@ public final class ObservationCollector {
      */
     private static void tenterConfirmerEcharpeChoix(String espece, Pokemon adversaireBase) {
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
+        // Un objet Choix déjà démenti par les faits (deux capacités
+        // différentes sans switch) ne doit jamais être reconfirmé.
+        if (OBJETS_CHOIX_EXCLUS.contains(espece)) return;
         int vitesseMinObservee = getVitesseMinObservee(espece);
         if (vitesseMinObservee <= 0) return;
+        // Une seule observation ne suffit pas (Vive-Griffe, voir OBSERVATIONS_VITESSE)
+        if (OBSERVATIONS_VITESSE.getOrDefault(espece, 0) < 2) return;
 
         try {
             Set<String> talentsPossibles = getTalentsReelsEspece(adversaireBase);
@@ -716,6 +774,29 @@ public final class ObservationCollector {
                 double v = com.tropimon.tropicalc.calc.DamageCalculator.vitesseEnCombat(avecPiedVeloce, meteoActuelle);
                 meilleureVitesse = Math.max(meilleureVitesse, v);
             }
+
+            // Boosts de vitesse adverses (Danse Draco, Agilité, Nitrocharge,
+            // Hâte...) : le plafond théorique est construit sans stage, alors
+            // que le Pokémon boosté va légitimement plus vite. Sans ça, tout
+            // adversaire qui se boost devient un porteur de Mouchoir Choix.
+            int stageAdv = BoostTracker.getStageAdversaire(Stat.VITESSE);
+            if (stageAdv > 0) {
+                meilleureVitesse = meilleureVitesse * (2.0 + stageAdv) / 2.0;
+            }
+
+            // Vent Arrière double la vitesse du camp qui l'a lancé pendant
+            // 4 tours. Il n'est pas suivi tour par tour, donc on élargit le
+            // plafond dès qu'il a été utilisé dans ce combat : mieux vaut
+            // rater un Mouchoir Choix que d'en inventer un.
+            if (ventArriereAdversaire) {
+                meilleureVitesse *= 2.0;
+            }
+
+            // Marge de sécurité : on ne conclut qu'au-delà d'un écart net.
+            // Un dépassement de quelques points relève plus probablement d'une
+            // hypothèse manquante au modèle que d'un objet, alors qu'un vrai
+            // Mouchoir Choix apporte +50%.
+            meilleureVitesse *= 1.10;
 
             if (vitesseMinObservee > meilleureVitesse) {
                 OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
@@ -895,14 +976,27 @@ public final class ObservationCollector {
     }
 
     /**
-     * Révoque une confirmation proactive d'objet Choix si elle est contredite :
-     * soit par un changement de capacité du même Pokémon sans switch entre-
-     * temps (preuve certaine - Choix verrouille sur la première capacité
-     * utilisée depuis l'entrée), soit en secours par une future détection
-     * d'impossibilité statistique (dégâts/vitesse incompatibles).
+     * Révoque TOUTE confirmation d'objet Choix contredite par les faits.
+     *
+     * Deux capacités différentes du même Pokémon sans switch entre-temps est
+     * une preuve certaine qu'il ne tient pas d'objet Choix : le verrou impose
+     * la première capacité utilisée depuis l'entrée sur le terrain.
+     *
+     * Ne se limitait au départ qu'à OBJETS_CONFIRMES_PROACTIVEMENT (le taux
+     * d'usage Smogon), laissant intacte une confirmation de
+     * tenterConfirmerEcharpeChoix (fondée sur la vitesse) - or c'est
+     * exactement celle qui peut se tromper si une hypothèse de vitesse manque
+     * au modèle (terrain de course, boost adverse non pris en compte, etc.).
+     * Une preuve certaine doit l'emporter sur n'importe quelle estimation,
+     * quelle qu'en soit la source. Trouvé en portant un fix similaire depuis
+     * randompvp (faux positif réel sur un Pelipper ayant enchaîné Vent Violent
+     * puis Balle Météo).
      */
-    private static void tenterRevoquerObjetChoixProactif(String espece, String coupActuelId) {
-        if (!OBJETS_CONFIRMES_PROACTIVEMENT.contains(espece)) return;
+    private static void tenterRevoquerObjetChoix(String espece, String coupActuelId) {
+        String objet = OBJETS_CONFIRMES.get(espece);
+        boolean estObjetChoix = "Mouchoir Choix".equals(objet)
+            || "Bandeau Choix".equals(objet) || "Lunettes Choix".equals(objet);
+        if (!estObjetChoix) return;
         if (coupAdversaireTourPrecedent == null || coupActuelId == null) return;
         if (!coupAdversaireTourPrecedent.equals(coupActuelId)) {
             OBJETS_CONFIRMES.remove(espece);
@@ -1477,6 +1571,8 @@ public final class ObservationCollector {
         especeJoueurSuivie = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
+        OBSERVATIONS_VITESSE.clear();
+        ventArriereAdversaire = false;
         BoostTracker.reinitialiser();
         TypeTracker.reinitialiser();
         FieldTracker.reinitialiser();
