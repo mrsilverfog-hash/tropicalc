@@ -1230,6 +1230,46 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        if (cle.equals("cobblemon.battle.immune")) {
+            // Confirmation DIRECTE du Ballon, pas une déduction par comportement :
+            // le jeu annonce explicitement l'immunité. Si le coup qui vient
+            // d'être joué est Sol et que la cible n'a aucune autre explication
+            // naturelle (type Vol, Lévitation confirmée), la seule explication
+            // restante est le Ballon. Signalé par l'utilisateur : plus fiable
+            // que d'attendre la preuve indirecte (dégâts nuls, ou l'explosion
+            // ultérieure de l'objet).
+            Object[] args = contenu.getArgs();
+            if (args.length == 0) return;
+            String cible = MoveUseTracker.extraireProprietaire(args[0]);
+            Boolean cibleEstAdversaire = determinerAttaquant(cible);
+            if (cibleEstAdversaire == null) return;
+
+            MoveUseTracker.CoupDetecte coupEnCause = cibleEstAdversaire ? coupJoueurDuTour : coupAdversaireDuTour;
+            if (coupEnCause == null) return;
+
+            try {
+                MoveTemplate template = Moves.INSTANCE.getByName(coupEnCause.showdownId());
+                if (template == null) return;
+                com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
+                if (capacite == null || capacite.getType() != PokemonType.SOL) return;
+
+                // Seul le cas adverse nous intéresse : si c'est MOI qui suis
+                // immunisé, je connais déjà directement mon propre objet réel.
+                if (cibleEstAdversaire) {
+                    Pokemon adv = BattleStateTracker.getAdversaireActif();
+                    if (adv == null) return;
+                    if (adv.getType1() == com.tropimon.tropicalc.calc.PokemonType.VOL
+                            || adv.getType2() == com.tropimon.tropicalc.calc.PokemonType.VOL) return;
+                    if ("Lévitation".equals(getTalentConfirme(adv.getEspece()))) return;
+                    if (!OBJETS_CONFIRMES.containsKey(adv.getEspece())) {
+                        OBJETS_CONFIRMES.put(adv.getEspece(), "Ballon");
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            return;
+        }
+
         if (cle.equals("cobblemon.battle.enditem.airballoon")) {
             Object[] args = contenu.getArgs();
             if (args.length == 0) return;
