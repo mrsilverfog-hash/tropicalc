@@ -213,11 +213,23 @@ public final class CalcOverlay implements HudRenderCallback {
             // calcul plutôt que d'afficher deux scénarios (pas conditionnel).
             boolean estFulgurayon = "electroshot".equals(capacite.getNom());
             if (estFulgurayon) joueur.modifierStage(Stat.ATTAQUE_SPE, 1);
+
+            // Immunité Sol via Ballon : si l'objet n'est qu'ESTIMÉ (pas
+            // confirmé), "immunisé" serait un mensonge présenté comme une
+            // certitude - une mauvaise estimation de pourcentage de dégâts
+            // est gênante, une fausse immunité fait perdre un tour entier.
+            // On calcule donc sans le Ballon tant qu'il n'est pas confirmé,
+            // et on signale le risque réel au lieu de l'ignorer.
+            boolean ballonEstimeNonConfirme = capacite.getType() == com.tropimon.tropicalc.calc.PokemonType.SOL
+                && "Ballon".equals(adversaire.getObjet()) && !objetAdvSur;
+            if (ballonEstimeNonConfirme) adversaire.setObjet(null);
+
             DamageCalculator.Resultat r;
             try {
                 r = DamageCalculator.calculer(joueur, adversaire, capacite, field, field.getEcransAdversaire(), false);
             } finally {
                 if (estFulgurayon) joueur.modifierStage(Stat.ATTAQUE_SPE, -1);
+                if (ballonEstimeNonConfirme) adversaire.setObjet("Ballon");
             }
             String nom = coup.getDisplayName().getString();
             String ligne;
@@ -231,7 +243,9 @@ public final class CalcOverlay implements HudRenderCallback {
                 Stat statDef = frappePhysiqueDef ? Stat.DEFENSE : Stat.DEFENSE_SPE;
                 String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
                 String suffixeBoost = estFulgurayon ? " (+1)" : "";
-                ligne = String.format("%s : %s%.0f%% - %.0f%%%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax, suffixeBoost);
+                String suffixeBallon = ballonEstimeNonConfirme ? " (0% si Ballon)" : "";
+                ligne = String.format("%s : %s%.0f%% - %.0f%%%s%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax, suffixeBoost, suffixeBallon);
+
 
                 // Laser Hasard : 30% de chances de doubler sa puissance (80 -> 160).
                 // Valeur normale, puis entre parenthèses la valeur si ça double.
