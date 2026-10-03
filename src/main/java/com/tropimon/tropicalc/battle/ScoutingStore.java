@@ -54,7 +54,9 @@ public final class ScoutingStore {
         Map.entry("Énergie Turbo", "Énergie Booster"),
         Map.entry("Écharpe Choix", "Mouchoir Choix"),
         Map.entry("Robuste", "Fermeté"),
-        Map.entry("Seigneur Suprême", "Général Suprême")
+        Map.entry("Seigneur Suprême", "Général Suprême"),
+        Map.entry("Bandeau Muscles", "Bandeau Muscle"),
+        Map.entry("Lunettes Savantes", "Lunettes Sages")
     );
 
     private static String migrer(String nom) {

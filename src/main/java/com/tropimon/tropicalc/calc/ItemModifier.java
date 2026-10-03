@@ -85,6 +85,30 @@ public interface ItemModifier {
             }
         });
 
+        // Bandeau Muscle (Muscle Band) : +10% dégâts sur les capacités
+        // physiques uniquement. Confirmé (noms vérifiés avant correction du
+        // mauvais "Bandeau Muscles") : présent dans les candidats du
+        // narrowing depuis le début mais sans aucun effet réel jusqu'ici.
+        m.put("Bandeau Muscle", new ItemModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                    ctx.multiplicateurDegatsFinal *= 1.1;
+                }
+            }
+        });
+
+        // Lunettes Sages (Wise Glasses) : +10% dégâts sur les capacités
+        // spéciales uniquement. Même situation que Bandeau Muscle.
+        m.put("Lunettes Sages", new ItemModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
+                    ctx.multiplicateurDegatsFinal *= 1.1;
+                }
+            }
+        });
+
         // Gant de Boxe (Punching Glove) : +10% dégâts sur les capacités "poing",
         // cumulable avec Poing de Fer (confirmé Bulbapedia). Rend aussi la
         // capacité non-contact en vrai jeu (recul par contact/Casque Brut

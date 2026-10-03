@@ -9,7 +9,7 @@ public final class SetInferenceEngine {
 
     public static final Set<String> OBJETS_OFFENSIFS = Set.of(
         "Bandeau Choix", "Lunettes Choix", "Mouchoir Choix", "Orbe Vie", "Ceinture Pro",
-        "Bandeau Muscles", "Lunettes Savantes", "Gant de Boxe"
+        "Bandeau Muscle", "Lunettes Sages", "Gant de Boxe"
     );
 
     public static final Set<String> TALENTS_OFFENSIFS = Set.of(

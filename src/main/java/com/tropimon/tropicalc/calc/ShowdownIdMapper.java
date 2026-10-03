@@ -193,8 +193,8 @@ public final class ShowdownIdMapper {
         OBJETS.put("wikiberry", "Baie Wiki");
         OBJETS.put("magoberry", "Baie Mago");
         OBJETS.put("airballoon", "Ballon");
-        OBJETS.put("muscleband", "Bandeau Muscles");
-        OBJETS.put("wiseglasses", "Lunettes Savantes");
+        OBJETS.put("muscleband", "Bandeau Muscle");
+        OBJETS.put("wiseglasses", "Lunettes Sages");
         OBJETS.put("lightclay", "Lumargile");
         OBJETS.put("heatrock", "Roche Chaude");
         OBJETS.put("damprock", "Roche Humide");
