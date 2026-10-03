@@ -272,6 +272,14 @@ public final class SwitchOverlayRenderer {
             v *= 2.0;
         }
         if (copie.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        // Toile Gluante (-1 Vitesse à l'entrée) : le texte informatif
+        // "Toile : -1 Vit" existait déjà plus haut, mais cette baisse
+        // n'était jamais appliquée au calcul de vitesse lui-même - un
+        // candidat pouvait donc sembler plus rapide que l'adversaire alors
+        // qu'avec le vrai -1 stage il serait en réalité plus lent.
+        if (FieldTracker.isStickyWebJoueur() && DamageCalculator.estAuSol(copie)) {
+            v *= 2.0 / 3.0;
+        }
         return (int) Math.floor(v);
     }
 
