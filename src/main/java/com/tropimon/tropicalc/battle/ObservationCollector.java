@@ -105,6 +105,11 @@ public final class ObservationCollector {
 
     // Vitesse minimale observée par espèce (déduite de l'ordre d'action)
     private static final Map<String, Integer> VITESSES_MIN_OBSERVEES = new HashMap<>();
+    // Symétrique : si le joueur a prouvé agir avant l'adversaire (mêmes
+    // garde-fous), sa vitesse réelle est plafonnée à vitesseJoueur-1. Sans
+    // ça, une estimation Smogon par défaut peut rester trop haute même
+    // après une preuve inverse claire en combat.
+    private static final Map<String, Integer> VITESSES_MAX_OBSERVEES = new HashMap<>();
     private static final double TOLERANCE_POURCENT = 3.0;
 
     // Coups à priorité augmentée : l'ordre d'action ne reflète pas la vitesse
@@ -119,6 +124,8 @@ public final class ObservationCollector {
 
     /** Vent Arrière a été lancé par le camp adverse dans ce combat. */
     private static boolean ventArriereAdversaire = false;
+    /** Symétrique, pour le camp du joueur. */
+    private static boolean ventArriereJoueur = false;
 
     /**
      * Nombre d'observations de vitesse exploitables par espèce. Une seule ne
@@ -358,6 +365,20 @@ public final class ObservationCollector {
                 OBSERVATIONS_VITESSE.merge(adversaire.getEspece(), 1, Integer::sum);
             }
 
+            // Symétrique : le joueur a agi AVANT l'adversaire. Mêmes
+            // garde-fous (priorité égale, pas de boost positif du joueur,
+            // pas de Vent Arrière de son côté) pour ne pas confondre un
+            // avantage temporaire avec une vraie preuve de vitesse de base.
+            if (Boolean.FALSE.equals(adversaireAAgiEnPremier)
+                    && coupJoueurDuTour != null && coupAdversaireDuTour != null
+                    && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
+                    && BoostTracker.getStageJoueur(Stat.VITESSE) <= 0
+                    && !ventArriereJoueur
+                    && !FieldTracker.isDistorsion()) {
+                int vitesseJoueur = vitesseEffectiveJoueur(joueur);
+                VITESSES_MAX_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur - 1, Math::min);
+            }
+
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
@@ -433,6 +454,13 @@ public final class ObservationCollector {
             if ("saltcure".equals(coup.showdownId())) {
                 adversaireSalaison = true;
             }
+            // Symétrique à ventArriereAdversaire : si c'est MOI qui lance
+            // Vent Arrière, ma propre vitesse double aussi - sans ce
+            // drapeau, une observation "j'agis avant l'adversaire" serait
+            // faussement attribuée à sa lenteur plutôt qu'à mon propre boost.
+            if ("tailwind".equals(coup.showdownId())) {
+                ventArriereJoueur = true;
+            }
         }
     }
 
@@ -449,6 +477,11 @@ public final class ObservationCollector {
     /** Vitesse minimale observée pour une espèce adverse (0 si aucune observation). */
     public static int getVitesseMinObservee(String espece) {
         return VITESSES_MIN_OBSERVEES.getOrDefault(espece, 0);
+    }
+
+    /** Integer.MAX_VALUE = aucun plafond observé (pas de limite réelle connue). */
+    public static int getVitesseMaxObservee(String espece) {
+        return VITESSES_MAX_OBSERVEES.getOrDefault(espece, Integer.MAX_VALUE);
     }
 
     private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
@@ -1611,6 +1644,8 @@ public final class ObservationCollector {
         especeJoueurSuivie = null;
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
+        VITESSES_MAX_OBSERVEES.clear();
+        ventArriereJoueur = false;
         OBSERVATIONS_VITESSE.clear();
         ventArriereAdversaire = false;
         BoostTracker.reinitialiser();

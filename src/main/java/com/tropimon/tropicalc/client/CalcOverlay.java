@@ -173,6 +173,13 @@ public final class CalcOverlay implements HudRenderCallback {
         int vitJoueur = vitesseEffective(joueur);
         int vitAdversaire = Math.max(vitesseEffective(adversaire),
             ObservationCollector.getVitesseMinObservee(adversaireBase.getEspece()));
+        // Symétrique : si le joueur a déjà prouvé être plus rapide dans ce
+        // combat (mêmes garde-fous que pour le plancher ci-dessus), ça
+        // plafonne aussi l'estimation - une estimation Smogon par défaut
+        // peut sinon rester trop haute même après une preuve claire du
+        // contraire observée en combat.
+        vitAdversaire = Math.min(vitAdversaire,
+            ObservationCollector.getVitesseMaxObservee(adversaireBase.getEspece()));
         boolean distorsion = FieldTracker.isDistorsion();
         boolean joueurPremier = distorsion ? vitJoueur < vitAdversaire : vitJoueur > vitAdversaire;
         boolean egalite = vitJoueur == vitAdversaire;
