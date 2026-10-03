@@ -61,6 +61,39 @@ public final class ScoutingStore {
         return nom == null ? null : ANCIENS_NOMS.getOrDefault(nom, nom);
     }
 
+    /**
+     * Capacités Z - interdites en ranked, donc jamais rejouables par la suite.
+     * Si l'une d'elles s'est retrouvée enregistrée comme capacité connue d'une
+     * espèce (lors d'un tournoi où les capacités Z étaient autorisées), elle
+     * doit être retirée : elle ne peut plus jamais réapparaître en ranked et
+     * ne fait qu'encombrer le set scouté avec une fausse capacité.
+     *
+     * Deux groupes, tous deux confirmés par Bulbapedia/Poképédia : les 18
+     * capacités Z offensives génériques (une par type), et les capacités Z
+     * signature propres à un seul Pokémon (ex. Patati-Patattrape/Let's Snuggle
+     * Forever, exclusive à Mimiqui et déclenchée via Câlinerie).
+     *
+     * Limite assumée : ne couvre pas les capacités Z "de statut" (version Z
+     * d'une capacité de statut, qui d'après Bulbapedia garde en principe son
+     * propre nom avec un effet additionnel plutôt qu'un nom distinct) - non
+     * vérifié faute de log montrant ce cas précis utilisé.
+     */
+    private static final Set<String> CAPACITES_Z = Set.of(
+        // Génériques par type (18)
+        "breakneckblitz", "infernooverdrive", "hydrovortex", "bloomdoom",
+        "gigavolthavoc", "subzeroslammer", "alloutpummeling", "aciddownpour",
+        "tectonicrage", "supersonicskystrike", "shatteredpsyche", "savagespinout",
+        "continentalcrush", "neverendingnightmare", "devastatingdrake",
+        "blackholeeclipse", "corkscrewcrash", "twinkletackle",
+        // Signature propres à un seul Pokémon
+        "catastropika", "10000000voltthunderbolt", "stokedsparksurfer",
+        "extremeevoboost", "pulverizingpancake", "genesissupernova",
+        "oceanicoperetta", "letssnuggleforever", "searingsunrazesmash",
+        "menacingmoonrazemaelstrom", "lightthatburnsthesky", "soulstealing7starstrike",
+        "sinisterarrowraid", "maliciousmoonsault", "splinteredstormshards",
+        "clangoroussoulblaze", "guardianofalola"
+    );
+
     private ScoutingStore() {
     }
 
@@ -93,6 +126,9 @@ public final class ScoutingStore {
                     }
                     if (!java.util.Objects.equals(objetMigre, f.objet)) {
                         f.objet = objetMigre;
+                        migrationAppliquee = true;
+                    }
+                    if (f.capacites.removeAll(CAPACITES_Z)) {
                         migrationAppliquee = true;
                     }
                 }
@@ -129,7 +165,11 @@ public final class ScoutingStore {
         if (objet != null) f.objet = objet;
         if (talent != null) f.talent = talent;
         if (chipTalent) f.chipTalent = true;
-        if (capacites != null) f.capacites.addAll(capacites);
+        if (capacites != null) {
+            for (String c : capacites) {
+                if (!CAPACITES_Z.contains(c)) f.capacites.add(c);
+            }
+        }
         sauvegarder();
     }
 }
