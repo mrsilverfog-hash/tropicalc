@@ -57,6 +57,10 @@ public final class SwitchOverlayRenderer {
 
         Pokemon candidat = BattleStateTracker.convertirMembre(membre);
         if (candidat == null) return;
+        // Même sécurité que dans CalcOverlay : sans ça, un candidat pouvait
+        // encore montrer un objet déjà détruit (Ballon, Sabotage) ou pas
+        // encore mis à jour après un vol via Pickpocket.
+        ObservationCollector.appliquerObjetReelJoueur(candidat);
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 

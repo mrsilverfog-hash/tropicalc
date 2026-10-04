@@ -82,11 +82,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (adversaireBase == null || joueur == null || monComplet == null) return;
 
-        // Sécurité pour le Ballon du joueur : voir la détection dans
-        // ObservationCollector.signalerNouveauTour.
-        if (ObservationCollector.isBallonJoueurEclate() && "Ballon".equals(joueur.getObjet())) {
-            joueur.setObjet(null);
-        }
+        // Sécurité pour l'objet réel du joueur (Ballon détruit, Sabotage
+        // subi, vol via Pickpocket) : voir ObservationCollector pour le détail.
+        ObservationCollector.appliquerObjetReelJoueur(joueur);
 
         lignesAffichage.clear();
         iconesAffichage.clear();

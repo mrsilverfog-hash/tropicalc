@@ -302,11 +302,12 @@ public final class ObservationCollector {
             // Symétrique, pour MON propre Ballon. Même si joueur.getObjet()
             // devrait en théorie déjà refléter la vraie destruction de
             // l'objet (lu en direct depuis Cobblemon, pas une estimation),
-            // un flag de secours indépendant évite tout souci si la mise à
-            // jour n'est pas immédiate côté client - forcé dans CalcOverlay.
+            // un suivi de secours évite tout souci si la mise à jour n'est
+            // pas immédiate côté client - appliqué aux DEUX écrans via
+            // appliquerObjetReelJoueur.
             if ("Ballon".equals(joueur.getObjet()) && coupAdversaireDuTour != null
                     && !adversaireNAPasAttaque() && perteJoueur > 0) {
-                ballonJoueurEclate = true;
+                marquerObjetJoueurDetruit(joueur.getEspece());
             }
 
             // Détection Casque Brut : tour "propre" où le joueur attaque au contact,
@@ -1320,7 +1321,27 @@ public final class ObservationCollector {
                 Pokemon adv = BattleStateTracker.getAdversaireActif();
                 if (adv != null) OBJETS_RETIRES.add(adv.getEspece());
             } else {
-                ballonJoueurEclate = true;
+                Pokemon joueurActif = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (joueurActif == null) joueurActif = BattleStateTracker.getJoueurActif();
+                if (joueurActif != null) marquerObjetJoueurDetruit(joueurActif.getEspece());
+            }
+            return;
+        }
+
+        if (cle.equals("cobblemon.battle.enditem.knockoff")) {
+            // Sabotage : arg0 = victime, arg1 = objet, arg2 = attaquant
+            // (ordre inverse de item.thief, confirmé par log plus tôt ce
+            // soir). Le cas adversaire-victime est déjà géré ailleurs
+            // (perteAdversaire dans signalerNouveauTour) ; ce bloc ne
+            // couvre QUE le cas où c'est le joueur qui se fait saboter,
+            // jamais intercepté jusqu'ici.
+            Object[] args = contenu.getArgs();
+            if (args.length == 0) return;
+            String victime = MoveUseTracker.extraireProprietaire(args[0]);
+            if (Boolean.FALSE.equals(determinerAttaquant(victime))) {
+                Pokemon joueurActif = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (joueurActif == null) joueurActif = BattleStateTracker.getJoueurActif();
+                if (joueurActif != null) marquerObjetJoueurDetruit(joueurActif.getEspece());
             }
             return;
         }
@@ -1354,6 +1375,21 @@ public final class ObservationCollector {
             if (Boolean.TRUE.equals(voleurEstAdversaire)) {
                 OBJETS_CONFIRMES.put(adv.getEspece(), objetFr);
                 OBJETS_CHOIX_EXCLUS.remove(adv.getEspece());
+            }
+
+            // Côté joueur, pour le même filet de sécurité que pour le Ballon :
+            // si JE suis le voleur, mon nouvel objet est connu directement
+            // (certitude totale, pas une estimation) ; si je suis la
+            // victime, je n'ai plus d'objet du tout.
+            Pokemon joueurActif2 = BattleStateTracker.getJoueurActifDepuisEquipe();
+            if (joueurActif2 == null) joueurActif2 = BattleStateTracker.getJoueurActif();
+            if (joueurActif2 != null) {
+                if (Boolean.FALSE.equals(voleurEstAdversaire)) {
+                    marquerObjetJoueurConnu(joueurActif2.getEspece(), objetFr);
+                }
+                if (Boolean.FALSE.equals(victimeEstAdversaire)) {
+                    marquerObjetJoueurDetruit(joueurActif2.getEspece());
+                }
             }
         }
     }
@@ -1461,11 +1497,40 @@ public final class ObservationCollector {
     private static int compteurToxikAdversaire = 0;
 
     // Vrai dès que le Ballon du joueur a été touché par une attaque réelle -
-    // voir la détection dans signalerNouveauTour. Utilisé par CalcOverlay
-    // pour forcer l'absence de Ballon, en secours de la lecture directe
-    // depuis Cobblemon qui devrait déjà refléter ça normalement.
-    private static boolean ballonJoueurEclate = false;
-    public static boolean isBallonJoueurEclate() { return ballonJoueurEclate; }
+    // voir la détection dans signalerNouveauTour.
+    //
+    // Généralisé (signalé par l'utilisateur) : le filet de sécurité
+    // spécifique au Ballon n'était appliqué que dans CalcOverlay, jamais
+    // dans SwitchOverlayRenderer - donc l'écran de switch pouvait encore
+    // montrer un objet déjà détruit. Remplacé par un suivi général PAR
+    // ESPÈCE de l'objet réel connu du joueur, couvrant aussi Sabotage subi
+    // et un vol réussi via Pickpocket, appliqué aux DEUX écrans de la même
+    // façon plutôt que de dupliquer un flag par cas.
+    private static final String AUCUN_OBJET = "\0AUCUN_OBJET";
+    private static final Map<String, String> OBJET_REEL_JOUEUR_CONNU = new HashMap<>();
+
+    /** Enregistre que ce membre de l'équipe n'a plus d'objet du tout. */
+    private static void marquerObjetJoueurDetruit(String espece) {
+        if (espece != null) OBJET_REEL_JOUEUR_CONNU.put(espece, AUCUN_OBJET);
+    }
+
+    /** Enregistre le nouvel objet réel connu de ce membre de l'équipe. */
+    private static void marquerObjetJoueurConnu(String espece, String objetFr) {
+        if (espece != null && objetFr != null) OBJET_REEL_JOUEUR_CONNU.put(espece, objetFr);
+    }
+
+    /**
+     * À appliquer sur tout Pokemon du joueur avant affichage (CalcOverlay ET
+     * SwitchOverlayRenderer) : si un changement d'objet a été détecté pour
+     * cette espèce et que Cobblemon n'a pas encore corrigé lui-même son
+     * propre objet rapporté, force la vraie valeur connue à la place.
+     */
+    public static void appliquerObjetReelJoueur(Pokemon p) {
+        if (p == null) return;
+        String connu = OBJET_REEL_JOUEUR_CONNU.get(p.getEspece());
+        if (connu == null) return;
+        p.setObjet(AUCUN_OBJET.equals(connu) ? null : connu);
+    }
 
     // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,
     // pour détecter un gain de +2/+2 simultané (Vulné-Assurance) précisément CE tour.
@@ -1604,7 +1669,7 @@ public final class ObservationCollector {
 
     public static void reinitialiser() {
         combatSauvageDetecte = false;
-        ballonJoueurEclate = false;
+        OBJET_REEL_JOUEUR_CONNU.clear();
 
         // Persister les faits du combat avant de tout effacer
         if (nomAdversaireCourant != null) {
