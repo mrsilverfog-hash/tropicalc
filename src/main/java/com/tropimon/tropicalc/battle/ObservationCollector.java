@@ -15,6 +15,11 @@ import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import com.tropimon.tropicalc.calc.Stat;
 import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
@@ -1430,7 +1435,10 @@ public final class ObservationCollector {
             if (pointFinal < 0) return;
             String showdownId = texteObjet.substring(pointFinal + 1).replace("_", "");
             String objetFr = ShowdownIdMapper.objet(showdownId);
-            if (objetFr == null) return;
+            // L'icône n'a pas besoin du nom français : on garde l'objet volé même
+            // s'il est absent de ShowdownIdMapper.
+            ItemStack stackVole = stackDepuisCleBrute(texteObjet);
+            if (objetFr == null && stackVole.isEmpty()) return;
 
             Boolean victimeEstAdversaire = determinerAttaquant(victime);
             Boolean voleurEstAdversaire = determinerAttaquant(voleur);
@@ -1440,7 +1448,7 @@ public final class ObservationCollector {
             if (Boolean.TRUE.equals(victimeEstAdversaire)) {
                 OBJETS_RETIRES.add(adv.getEspece());
             }
-            if (Boolean.TRUE.equals(voleurEstAdversaire)) {
+            if (Boolean.TRUE.equals(voleurEstAdversaire) && objetFr != null) {
                 OBJETS_CONFIRMES.put(adv.getEspece(), objetFr);
                 OBJETS_CHOIX_EXCLUS.remove(adv.getEspece());
             }
@@ -1454,6 +1462,9 @@ public final class ObservationCollector {
             if (joueurActif2 != null) {
                 if (Boolean.FALSE.equals(voleurEstAdversaire)) {
                     marquerObjetJoueurConnu(joueurActif2.getEspece(), objetFr);
+                    if (!stackVole.isEmpty()) {
+                        OBJET_STACK_JOUEUR.put(cleEspece(joueurActif2.getEspece()), stackVole);
+                    }
                 }
                 if (Boolean.FALSE.equals(victimeEstAdversaire)) {
                     marquerObjetJoueurDetruit(joueurActif2.getEspece());
@@ -1579,7 +1590,44 @@ public final class ObservationCollector {
 
     /** Enregistre que ce membre de l'équipe n'a plus d'objet du tout. */
     private static void marquerObjetJoueurDetruit(String espece) {
-        if (espece != null) OBJET_REEL_JOUEUR_CONNU.put(espece, AUCUN_OBJET);
+        if (espece == null) return;
+        OBJET_REEL_JOUEUR_CONNU.put(espece, AUCUN_OBJET);
+        OBJET_STACK_JOUEUR.put(cleEspece(espece), ItemStack.EMPTY);
+    }
+
+    // Même suivi, mais sous forme de VRAI ItemStack, pour que les icônes du
+    // panneau d'équipe (PvpOverlay) suivent l'objet réel : Cobblemon ne
+    // rafraîchit pas immédiatement l'objet rapporté après un Sabotage subi,
+    // un Ballon éclaté ou un vol. Clé normalisée (minuscules, sans séparateur)
+    // car le panneau utilise le chemin de ressource de l'espèce, pas le
+    // showdownId. ItemStack.EMPTY = objet perdu, pas d'entrée = on fait
+    // confiance à Cobblemon.
+    private static final Map<String, ItemStack> OBJET_STACK_JOUEUR = new HashMap<>();
+
+    private static String cleEspece(String s) {
+        return s == null ? "" : s.toLowerCase().replaceAll("[^a-z0-9]", "");
+    }
+
+    /** "item.cobblemon.rocky_helmet" -> vraie icône de cet objet, EMPTY si inconnu. */
+    private static ItemStack stackDepuisCleBrute(String cleBrute) {
+        try {
+            String[] parties = cleBrute.split("\\.");
+            if (parties.length < 3 || !"item".equals(parties[0])) return ItemStack.EMPTY;
+            Item item = Registries.ITEM.get(Identifier.of(parties[1], parties[2]));
+            return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+        } catch (Throwable e) {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    /**
+     * À appeler par le panneau d'équipe pour chaque Pokémon du joueur :
+     * renvoie l'objet réel connu s'il a changé en combat, sinon celui que
+     * Cobblemon rapporte.
+     */
+    public static ItemStack appliquerStackJoueur(String speciesId, ItemStack parDefaut) {
+        ItemStack connu = OBJET_STACK_JOUEUR.get(cleEspece(speciesId));
+        return connu != null ? connu : parDefaut;
     }
 
     /** Enregistre le nouvel objet réel connu de ce membre de l'équipe. */
@@ -1738,6 +1786,7 @@ public final class ObservationCollector {
     public static void reinitialiser() {
         combatSauvageDetecte = false;
         OBJET_REEL_JOUEUR_CONNU.clear();
+        OBJET_STACK_JOUEUR.clear();
 
         // Persister les faits du combat avant de tout effacer
         if (nomAdversaireCourant != null) {

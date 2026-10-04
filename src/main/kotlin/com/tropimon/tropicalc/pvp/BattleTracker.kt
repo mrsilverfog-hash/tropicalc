@@ -215,7 +215,12 @@ object BattleTracker {
                 ?: p.ability.description
         } catch (_: Exception) { null }
 
-        val heldItem    = try { p.heldItem() } catch (_: Exception) { null } ?: ItemStack.EMPTY
+        val heldItemCobblemon = try { p.heldItem() } catch (_: Exception) { null } ?: ItemStack.EMPTY
+        // Cobblemon ne rafraîchit pas tout de suite l'objet rapporté après un Sabotage
+        // subi, un Ballon éclaté ou un vol : on superpose l'objet réel suivi depuis
+        // les messages du combat. sync() tourne à chaque image, donc immédiat.
+        val heldItem = com.tropimon.tropicalc.battle.ObservationCollector
+            .appliquerStackJoueur(speciesId, heldItemCobblemon)
 
         return TrackedMon(speciesId, aspects, hpPercent, isFainted, statusKey,
                           types, moves, abilityName, abilityDesc, heldItem, isOwn = true)
