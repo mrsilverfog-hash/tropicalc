@@ -526,6 +526,21 @@ public class DamageCalculator {
         return puissance;
     }
 
+    /**
+     * Vitesse en combat, Vent Arrière compris.
+     *
+     * Vent Arrière double la vitesse de TOUT un camp pendant 4 tours. C'est un
+     * effet de côté, pas une propriété du Pokémon : la fonction ne peut pas le
+     * déduire de p seul, le camp doit lui être passé. Les surcharges sans ce
+     * paramètre supposent son absence.
+     */
+    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain,
+                                         boolean ventArriere) {
+        double v = vitesseEnCombat(p, meteo, terrain);
+        if (ventArriere) v = Math.floor(v * 2.0);
+        return v;
+    }
+
     /** Vitesse en combat : stages, Mouchoir Choix, paralysie, talents météo. */
     public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
         double v = p.getStatCalculee(Stat.VITESSE);

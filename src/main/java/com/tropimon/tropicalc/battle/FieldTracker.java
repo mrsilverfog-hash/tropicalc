@@ -185,6 +185,21 @@ public final class FieldTracker {
                     if (allie) { auroraVeilJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { auroraVeilAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
                 }
+                case "tailwind" -> {
+                    // Vent Arrière : x2 vitesse pour tout le camp, 4 tours. Même
+                    // famille de messages que les écrans et les pièges, donc suivi
+                    // par camp avec sa durée réelle plutôt que déduit d'un
+                    // comportement. Nom d'effet non capturé dans les logs
+                    // disponibles : déduit de la convention des autres (reflect,
+                    // lightscreen, stealthrock...), à confirmer en jeu.
+                    if (allie) {
+                        tailwindJoueur = debut;
+                        toursTailwindJoueurRestants = debut ? 4 : 0;
+                    } else {
+                        tailwindAdversaire = debut;
+                        toursTailwindAdversaireRestants = debut ? 4 : 0;
+                    }
+                }
                 case "stealthrock" -> {
                     if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
                 }
@@ -282,6 +297,14 @@ public final class FieldTracker {
     private static int toursEcransAdversaireRestants = 0;
     private static int toursEcransJoueurRestants = 0;
 
+    private static boolean tailwindJoueur = false;
+    private static boolean tailwindAdversaire = false;
+    private static int toursTailwindJoueurRestants = 0;
+    private static int toursTailwindAdversaireRestants = 0;
+
+    public static boolean isTailwindJoueur() { return tailwindJoueur; }
+    public static boolean isTailwindAdversaire() { return tailwindAdversaire; }
+
     public static int getToursMeteoRestants() { return toursMeteoRestants; }
     public static int getToursEcransAdversaireRestants() { return toursEcransAdversaireRestants; }
     public static int getToursEcransJoueurRestants() { return toursEcransJoueurRestants; }
@@ -325,6 +348,8 @@ public final class FieldTracker {
         if (futureSightJoueurTours > 0) futureSightJoueurTours--;
         if (futureSightAdversaireTours > 0) futureSightAdversaireTours--;
         if (toursEcransJoueurRestants > 0) toursEcransJoueurRestants--;
+        if (toursTailwindJoueurRestants > 0 && --toursTailwindJoueurRestants == 0) tailwindJoueur = false;
+        if (toursTailwindAdversaireRestants > 0 && --toursTailwindAdversaireRestants == 0) tailwindAdversaire = false;
         if (toursEcransAdversaireRestants > 0) {
             toursEcransAdversaireRestants--;
             // Le mur dure encore alors que notre hypothèse de départ (5
@@ -374,6 +399,10 @@ public final class FieldTracker {
         toursMeteoRestants = 0;
         toursEcransAdversaireRestants = 0;
         toursEcransJoueurRestants = 0;
+        tailwindJoueur = false;
+        tailwindAdversaire = false;
+        toursTailwindJoueurRestants = 0;
+        toursTailwindAdversaireRestants = 0;
         substituteJoueur = false;
         substituteAdversaire = false;
         futureSightJoueurTours = 0;
@@ -393,9 +422,8 @@ public final class FieldTracker {
      * de côté puis de Pokémon se voyait annoncer des dégâts de pièges qui
      * avaient en réalité déjà basculé chez l'adversaire.
      *
-     * N'échange pas Vent Arrière (non suivi par camp dans ce tracker, juste
-     * un drapeau "a été lancé au moins une fois" côté ObservationCollector)
-     * ni Brume (jamais suivie, très rare en compétitif) - limite assumée.
+     * Vent Arrière est échangé aussi (suivi par camp avec sa durée restante).
+     * Brume n'est jamais suivie, usage très rare en compétitif - limite assumée.
      */
     public static void echangerCotes() {
         boolean tmpB;
@@ -408,6 +436,8 @@ public final class FieldTracker {
         tmpI = spikesJoueur; spikesJoueur = spikesAdversaire; spikesAdversaire = tmpI;
         tmpI = toxicSpikesJoueur; toxicSpikesJoueur = toxicSpikesAdversaire; toxicSpikesAdversaire = tmpI;
         tmpB = stickyWebJoueur; stickyWebJoueur = stickyWebAdversaire; stickyWebAdversaire = tmpB;
+        tmpB = tailwindJoueur; tailwindJoueur = tailwindAdversaire; tailwindAdversaire = tmpB;
+        tmpI = toursTailwindJoueurRestants; toursTailwindJoueurRestants = toursTailwindAdversaireRestants; toursTailwindAdversaireRestants = tmpI;
         // Le "poseur présumé" ne correspond plus au bon écran après
         // l'échange - mieux vaut arrêter d'en déduire Lumargile que de
         // continuer avec une attribution devenue fausse.

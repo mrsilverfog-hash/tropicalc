@@ -127,11 +127,6 @@ public final class ObservationCollector {
         "obstruct", "endure", "trickroom"
     );
 
-    /** Vent Arrière a été lancé par le camp adverse dans ce combat. */
-    private static boolean ventArriereAdversaire = false;
-    /** Symétrique, pour le camp du joueur. */
-    private static boolean ventArriereJoueur = false;
-
     /**
      * Nombre d'observations de vitesse exploitables par espèce. Une seule ne
      * suffit pas à confirmer : la Vive-Griffe fait passer en premier une fois
@@ -363,7 +358,8 @@ public final class ObservationCollector {
                     && coupJoueurDuTour != null && coupAdversaireDuTour != null
                     && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
                     && BoostTracker.getStageAdversaire(Stat.VITESSE) <= 0
-                    && !ventArriereAdversaire
+                    && !FieldTracker.isTailwindAdversaire()
+                    && !FieldTracker.isTailwindJoueur()
                     && !FieldTracker.isDistorsion()) {
                 int vitesseJoueur = vitesseEffectiveJoueur(joueur);
                 VITESSES_MIN_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur + 1, Math::max);
@@ -378,7 +374,8 @@ public final class ObservationCollector {
                     && coupJoueurDuTour != null && coupAdversaireDuTour != null
                     && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
                     && BoostTracker.getStageJoueur(Stat.VITESSE) <= 0
-                    && !ventArriereJoueur
+                    && !FieldTracker.isTailwindJoueur()
+                    && !FieldTracker.isTailwindAdversaire()
                     && !FieldTracker.isDistorsion()) {
                 int vitesseJoueur = vitesseEffectiveJoueur(joueur);
                 VITESSES_MAX_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur - 1, Math::min);
@@ -435,14 +432,6 @@ public final class ObservationCollector {
             if (adversaire != null) {
                 ajouterCapaciteAdversaire(adversaire.getEspece(), coup.showdownId(), true);
 
-                // Vent Arrière double la vitesse de TOUT le camp adverse, et
-                // n'est modélisé nulle part dans vitesseEnCombat(). Sans ce
-                // drapeau, la vitesse observée dépasse le maximum théorique et
-                // la détection conclut à tort au Mouchoir Choix.
-                if ("tailwind".equals(coup.showdownId())) {
-                    ventArriereAdversaire = true;
-                }
-
                 // Comptage des PP : Pression (talent du joueur) ajoute 1 PP,
                 // mais seulement si la capacité CIBLE le Pokémon qui a Pression
                 // (Abri, Soin, Vœu, Piège de Roc etc. ne sont pas affectés)
@@ -464,13 +453,6 @@ public final class ObservationCollector {
             }
             if ("saltcure".equals(coup.showdownId())) {
                 adversaireSalaison = true;
-            }
-            // Symétrique à ventArriereAdversaire : si c'est MOI qui lance
-            // Vent Arrière, ma propre vitesse double aussi - sans ce
-            // drapeau, une observation "j'agis avant l'adversaire" serait
-            // faussement attribuée à sa lenteur plutôt qu'à mon propre boost.
-            if ("tailwind".equals(coup.showdownId())) {
-                ventArriereJoueur = true;
             }
         }
     }
@@ -529,6 +511,7 @@ public final class ObservationCollector {
         else v = v * 2.0 / (2.0 - stage);
         if ("Mouchoir Choix".equals(joueur.getObjet())) v *= 1.5;
         if (joueur.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
+        if (FieldTracker.isTailwindJoueur()) v *= 2.0;
         return (int) Math.floor(v);
     }
 
@@ -875,11 +858,11 @@ public final class ObservationCollector {
                 meilleureVitesse = meilleureVitesse * (2.0 + stageAdv) / 2.0;
             }
 
-            // Vent Arrière double la vitesse du camp qui l'a lancé pendant
-            // 4 tours. Il n'est pas suivi tour par tour, donc on élargit le
-            // plafond dès qu'il a été utilisé dans ce combat : mieux vaut
-            // rater un Mouchoir Choix que d'en inventer un.
-            if (ventArriereAdversaire) {
+            // Vent Arrière est désormais suivi par camp avec sa durée réelle
+            // (FieldTracker), donc on n'élargit le plafond que tant qu'il est
+            // effectivement actif, au lieu de l'élargir pour tout le reste du
+            // combat dès qu'il a été lancé une fois.
+            if (FieldTracker.isTailwindAdversaire()) {
                 meilleureVitesse *= 2.0;
             }
 
@@ -1833,9 +1816,7 @@ public final class ObservationCollector {
         OBJETS_RETIRES.clear();
         VITESSES_MIN_OBSERVEES.clear();
         VITESSES_MAX_OBSERVEES.clear();
-        ventArriereJoueur = false;
         OBSERVATIONS_VITESSE.clear();
-        ventArriereAdversaire = false;
         BoostTracker.reinitialiser();
         TypeTracker.reinitialiser();
         FieldTracker.reinitialiser();

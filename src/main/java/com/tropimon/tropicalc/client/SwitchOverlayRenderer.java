@@ -257,7 +257,10 @@ public final class SwitchOverlayRenderer {
     private static int vitesseEffective(Pokemon p, boolean appliquerStages) {
         if (appliquerStages) {
             Field f = FieldTracker.construireField();
-            return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain());
+            // Cette branche sert à l'ADVERSAIRE (vitesseEffective(adversaire, true)) :
+            // c'est donc SON Vent Arrière qui s'applique, pas le mien.
+            return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain(),
+                FieldTracker.isTailwindAdversaire());
         }
         // Sans stages (candidat qui rentre) : vitesse de base + objet + statut + météo
         Pokemon copie = p;
@@ -284,6 +287,8 @@ public final class SwitchOverlayRenderer {
         if (FieldTracker.isStickyWebJoueur() && DamageCalculator.estAuSol(copie)) {
             v *= 2.0 / 3.0;
         }
+        // Candidat de MON équipe : mon Vent Arrière s'applique dès son entrée.
+        if (FieldTracker.isTailwindJoueur()) v *= 2.0;
         return (int) Math.floor(v);
     }
 
