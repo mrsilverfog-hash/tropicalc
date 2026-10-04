@@ -340,8 +340,7 @@ public final class ObservationCollector {
             if (coupAdversaireDuTour != null
                     && !adversaireNAPasAttaque()
                     && !com.tropimon.tropicalc.calc.MoveFlags.aRecul(coupAdversaireDuTour.showdownId())
-                    && perteAdversaire >= 8.0 && perteAdversaire <= 12.0
-                    && (coupJoueurDuTour == null || joueurNAPasAttaque())
+                    && reculOrbeVieIsole(joueur, adversaire, perteAdversaire)
                     && adversaire.getStatut() == Pokemon.Statut.AUCUN
                     && !adversaireVampigraine
                     && !adversaireSalaison
@@ -468,6 +467,53 @@ public final class ObservationCollector {
             if ("tailwind".equals(coup.showdownId())) {
                 ventArriereJoueur = true;
             }
+        }
+    }
+
+    /**
+     * Vrai si la perte de PV de l'adversaire sur ce tour s'explique par le
+     * recul de l'Orbe Vie (10% des PV max). Porté depuis randompvp (aeadf47).
+     *
+     * Cas simple : le joueur n'a pas attaqué, la perte EST le recul.
+     *
+     * Cas général : le joueur a aussi attaqué, donc la perte observée mélange
+     * ses dégâts et le recul. On soustrait les dégâts prévus pour isoler le
+     * résidu. L'ancienne condition exigeait que le joueur n'attaque pas, ce qui
+     * ne se produit presque jamais : la détection ne se déclenchait quasiment
+     * pas. L'Orbe Vie adverse n'influe pas sur les dégâts que le JOUEUR
+     * inflige, donc aucune circularité.
+     *
+     * Précision propre au ranked : ici le set défensif adverse est ESTIMÉ (pas
+     * fixe comme en random battle), donc cette voie est moins sûre que le
+     * message direct cobblemon.battle.damage.lifeorb, traité plus haut, qui
+     * reste la source principale. Celle-ci sert de secours.
+     */
+    private static boolean reculOrbeVieIsole(Pokemon joueur, Pokemon adversaire, double perteAdversaire) {
+        if (coupJoueurDuTour == null || joueurNAPasAttaque()) {
+            return perteAdversaire >= 8.0 && perteAdversaire <= 12.0;
+        }
+        try {
+            MoveTemplate template = Moves.INSTANCE.getByName(coupJoueurDuTour.showdownId());
+            if (template == null) return false;
+            com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
+            if (capacite == null) return false;
+
+            Pokemon defenseur = construireAdversaireEstime(adversaire);
+            Field terrain = FieldTracker.construireField();
+            DamageCalculator.Resultat prevu = DamageCalculator.calculer(
+                joueur, defenseur, capacite, terrain, terrain.getEcransAdversaire(), false);
+            if (prevu.immunise) {
+                return perteAdversaire >= 8.0 && perteAdversaire <= 12.0;
+            }
+
+            // Résidu possible une fois les dégâts du joueur retirés. Tolérance
+            // un peu plus large que la fenêtre 8-12% du cas simple, le résidu
+            // cumulant l'imprécision des deux mesures.
+            double residuMin = perteAdversaire - prevu.pourcentageMax;
+            double residuMax = perteAdversaire - prevu.pourcentageMin;
+            return residuMin >= 7.0 && residuMax <= 13.5;
+        } catch (Throwable e) {
+            return false;
         }
     }
 
