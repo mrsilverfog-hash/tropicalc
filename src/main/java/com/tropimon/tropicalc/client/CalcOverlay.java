@@ -20,7 +20,6 @@ import com.tropimon.tropicalc.calc.StatHypothesis;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -38,15 +37,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
     private record LigneTexte(String texte, int x, int y, int couleur) {}
     private record LigneIcone(int type, int x, int y) {}   // voir TEXTURES_ICONES pour la liste des types
-    // Icône d'objet RÉEL (pas un dessin custom) : réutilise context.drawItem,
-    // déjà utilisé dans PvpOverlay.kt pour le panneau d'équipe - pas besoin
-    // de créer une texture par objet possible, Minecraft fournit déjà la
-    // vraie icône de n'importe quel ItemStack.
-    private record LigneItemReel(ItemStack stack, int x, int y) {}
 
     private final List<LigneTexte> lignesAffichage = new ArrayList<>();
     private final List<LigneIcone> iconesAffichage = new ArrayList<>();
-    private final List<LigneItemReel> itemsAffichage = new ArrayList<>();
 
     /** Bufférise une ligne de texte au lieu de la dessiner immédiatement : permet de
      *  connaître la taille réelle du contenu AVANT de dessiner le cadre qui l'entoure. */
@@ -95,7 +88,6 @@ public final class CalcOverlay implements HudRenderCallback {
 
         lignesAffichage.clear();
         iconesAffichage.clear();
-        itemsAffichage.clear();
 
         joueur.setCoupsRageFistSubis(ObservationCollector.getCoupsRageFistJoueur(joueur.getEspece()));
 
@@ -161,16 +153,6 @@ public final class CalcOverlay implements HudRenderCallback {
         String titre = BattleStateTracker.joueurEstTransforme()
             ? "TropiCalc [transformé]" : "TropiCalc";
         dessinerTexte(titre, x, y, COULEUR_TITRE);
-        // Icône réelle de mon objet actuel, à côté du titre. On se fie à
-        // joueur.getObjet() (déjà passé par appliquerObjetReelJoueur un peu
-        // plus haut) plutôt qu'à monComplet.heldItem() seul : si un
-        // changement d'objet vient d'être détecté mais que Cobblemon n'a pas
-        // encore mis à jour son propre inventaire rapporté, on préfère ne
-        // rien montrer plutôt que l'icône d'un objet qui n'est plus là.
-        if (joueur.getObjet() != null) {
-            dessinerItemReel(monComplet.heldItem(),
-                x + client.textRenderer.getWidth(titre) + 6, y);
-        }
         y += hauteurLigne + 2;
 
         // Boosts actifs des deux camps, pour vérifier visuellement que le
@@ -690,10 +672,6 @@ public final class CalcOverlay implements HudRenderCallback {
             int droite = (ic.x() - x) + 10;   // icônes affichées à 10px
             largeurContenu = Math.max(largeurContenu, droite);
         }
-        for (LigneItemReel it : itemsAffichage) {
-            int droite = (it.x() - x) + 10;   // mêmes 10px que les autres icônes
-            largeurContenu = Math.max(largeurContenu, droite);
-        }
         int largeurCadre = largeurContenu + 8;
         int hauteurCadre = (y + 4) - yDebutCadre;
 
@@ -706,15 +684,6 @@ public final class CalcOverlay implements HudRenderCallback {
         }
         for (LigneIcone ic : iconesAffichage) {
             context.drawTexture(TEXTURES_ICONES[ic.type()], ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
-        }
-        // Vraies icônes d'objets (16x16 natif, réduites à 10x10 comme le
-        // reste) - même technique que PvpOverlay.kt pour le panneau d'équipe.
-        for (LigneItemReel it : itemsAffichage) {
-            float echelle = 0.625f;   // 16 * 0.625 = 10
-            context.getMatrices().push();
-            context.getMatrices().scale(echelle, echelle, 1f);
-            context.drawItem(it.stack(), (int) (it.x() / echelle), (int) (it.y() / echelle));
-            context.getMatrices().pop();
         }
     }
 
@@ -825,11 +794,6 @@ public final class CalcOverlay implements HudRenderCallback {
     /** Bufférise une icône (par index dans TEXTURES_ICONES) au lieu de la dessiner immédiatement. */
     private void dessinerIcone(int type, int x, int y) {
         iconesAffichage.add(new LigneIcone(type, x, y));
-    }
-
-    /** Bufférise une vraie icône d'objet Minecraft, même raison que dessinerIcone. */
-    private void dessinerItemReel(ItemStack stack, int x, int y) {
-        if (stack != null && !stack.isEmpty()) itemsAffichage.add(new LigneItemReel(stack, x, y));
     }
 
     private void dessinerIconeMur(int x, int y) { dessinerIcone(0, x, y); }
