@@ -401,6 +401,12 @@ public final class ObservationCollector {
     }
 
     public static synchronized void signalerCoupUtilise(MoveUseTracker.CoupDetecte coup) {
+        // Change-Côté : effet symétrique, peu importe qui la joue - un seul
+        // appel suffit, peu importe le camp.
+        if ("courtchange".equals(coup.showdownId())) {
+            FieldTracker.echangerCotes();
+        }
+
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
 
         // Premier coup du tour = camp qui agit en premier

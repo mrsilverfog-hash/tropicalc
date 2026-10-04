@@ -384,4 +384,33 @@ public final class FieldTracker {
         poseurTerrainAdversaire = null;
         correctionChampDuitAppliquee = false;
     }
+
+    /**
+     * Change-Côté (Court Change), capacité signature de Pyrobut (nom vérifié
+     * avant implémentation) : échange TOUS les effets de terrain entre les
+     * deux côtés - murs, pièges d'entrée. Confirmé sur Bulbapedia/Poképédia.
+     * Signalé par l'utilisateur : sans cette fonction, un joueur qui change
+     * de côté puis de Pokémon se voyait annoncer des dégâts de pièges qui
+     * avaient en réalité déjà basculé chez l'adversaire.
+     *
+     * N'échange pas Vent Arrière (non suivi par camp dans ce tracker, juste
+     * un drapeau "a été lancé au moins une fois" côté ObservationCollector)
+     * ni Brume (jamais suivie, très rare en compétitif) - limite assumée.
+     */
+    public static void echangerCotes() {
+        boolean tmpB;
+        tmpB = reflectJoueur; reflectJoueur = reflectAdversaire; reflectAdversaire = tmpB;
+        tmpB = lightScreenJoueur; lightScreenJoueur = lightScreenAdversaire; lightScreenAdversaire = tmpB;
+        tmpB = auroraVeilJoueur; auroraVeilJoueur = auroraVeilAdversaire; auroraVeilAdversaire = tmpB;
+        int tmpI;
+        tmpI = toursEcransJoueurRestants; toursEcransJoueurRestants = toursEcransAdversaireRestants; toursEcransAdversaireRestants = tmpI;
+        tmpB = stealthRockJoueur; stealthRockJoueur = stealthRockAdversaire; stealthRockAdversaire = tmpB;
+        tmpI = spikesJoueur; spikesJoueur = spikesAdversaire; spikesAdversaire = tmpI;
+        tmpI = toxicSpikesJoueur; toxicSpikesJoueur = toxicSpikesAdversaire; toxicSpikesAdversaire = tmpI;
+        tmpB = stickyWebJoueur; stickyWebJoueur = stickyWebAdversaire; stickyWebAdversaire = tmpB;
+        // Le "poseur présumé" ne correspond plus au bon écran après
+        // l'échange - mieux vaut arrêter d'en déduire Lumargile que de
+        // continuer avec une attribution devenue fausse.
+        poseurEcranAdversaire = null;
+    }
 }
