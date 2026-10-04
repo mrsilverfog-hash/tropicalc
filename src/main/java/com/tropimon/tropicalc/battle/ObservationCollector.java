@@ -1270,6 +1270,28 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        if (cle.equals("cobblemon.battle.damage.lifeorb")) {
+            // Recul de l'Orbe Vie annoncé par le jeu lui-même (confirmé en log
+            // réel, les deux camps, arg0 = owned_pokemon(dresseur, espèce)).
+            // C'est la preuve directe : plus rapide et plus sûre que la
+            // déduction par perte de PV (qui exigeait que le joueur n'ait pas
+            // attaqué le même tour, donc ne se déclenchait presque jamais),
+            // et sans le risque de faux positif d'un spread mal estimé.
+            // Seul le cas adverse nous intéresse : mon propre objet est lu
+            // directement. La confirmation écrase toute estimation ou
+            // confirmation proactive précédente (un seul objet par Pokémon).
+            Object[] args = contenu.getArgs();
+            if (args.length == 0) return;
+            String proprietaire = MoveUseTracker.extraireProprietaire(args[0]);
+            if (!Boolean.TRUE.equals(determinerAttaquant(proprietaire))) return;
+            Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv == null) return;
+            OBJETS_CONFIRMES.put(adv.getEspece(), "Orbe Vie");
+            OBJETS_CONFIRMES_PROACTIVEMENT.remove(adv.getEspece());
+            OBJETS_RETIRES.remove(adv.getEspece());
+            return;
+        }
+
         if (cle.equals("cobblemon.battle.immune")) {
             // Confirmation DIRECTE du Ballon, pas une déduction par comportement :
             // le jeu annonce explicitement l'immunité. Si le coup qui vient
