@@ -61,6 +61,7 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        TALENTS.put("earlybird", "Matinal");   // Early Bird, vérifié Poképédia/Bulbapedia
         TALENTS.put("infiltrator", "Infiltration");
         TALENTS.put("stickyhold", "Glu");
         TALENTS.put("mindseye", "Œil Révélateur");

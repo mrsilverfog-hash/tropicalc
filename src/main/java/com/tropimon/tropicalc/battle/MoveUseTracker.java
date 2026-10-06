@@ -82,6 +82,16 @@ public final class MoveUseTracker {
         }
 
         if (CLE_NOUVEAU_TOUR.equals(cle)) {
+            // arg0 = numéro du tour qui commence (vu en log : "arg=13"). Filtré
+            // aux chiffres pour rester robuste si l'argument est un Text.
+            try {
+                Object[] argsTour = contenu.getArgs();
+                if (argsTour.length > 0) {
+                    String chiffres = String.valueOf(argsTour[0]).replaceAll("[^0-9]", "");
+                    if (!chiffres.isEmpty()) ObservationCollector.setNumeroTour(Integer.parseInt(chiffres));
+                }
+            } catch (Exception ignored) {
+            }
             ObservationCollector.signalerNouveauTour();
             return;
         }

@@ -172,6 +172,7 @@ public final class ObservationCollector {
     private static String espaceAdversaireDuTour = null;
 
     public static synchronized void signalerNouveauTour() {
+        mettreAJourRepos();
         Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
         if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
@@ -454,7 +455,80 @@ public final class ObservationCollector {
             if ("saltcure".equals(coup.showdownId())) {
                 adversaireSalaison = true;
             }
+            // Repos : le compteur ne démarre qu'au tour suivant, et seulement si
+            // le Pokémon est vraiment endormi (voir mettreAJourRepos).
+            if ("rest".equals(coup.showdownId())) {
+                Pokemon actif = BattleStateTracker.getJoueurActif();
+                if (actif != null) reposEnAttente = actif.getEspece();
+            }
         }
+    }
+
+    // ---------------------------------------------------------------------
+    // Compteur de Repos (Pokémon du joueur)
+    //
+    // Mécanique (Bulbapedia/Poképédia, gén. 6+) : après le tour où il lance
+    // Repos, le Pokémon dort 2 tours puis se réveille et agit au 3e. Avec
+    // Matinal, un seul tour de sommeil. Le compteur avance sur les tours où le
+    // Pokémon TENTE d'agir (Blabla Dodo/Ronflement compris), pas sur les tours
+    // passés hors du terrain, et il n'est pas remis à zéro quand il sort.
+    // Modélisé comme Showdown : compteur 3 au départ, -1 par tentative (-2 avec
+    // Matinal), il agit à la tentative qui le fait tomber à 0.
+    // ---------------------------------------------------------------------
+    private record EtatRepos(int compteur, int pas) {}
+    private static final Map<String, EtatRepos> COMPTEUR_REPOS = new HashMap<>();
+    private static String reposEnAttente = null;
+    private static String especeActiveDebutTour = null;
+    private static int numeroTour = 0;
+
+    public static void setNumeroTour(int n) { numeroTour = n; }
+    public static int getNumeroTour() { return numeroTour; }
+
+    private static void mettreAJourRepos() {
+        // Statut lu côté combat (mis à jour en direct), pas depuis l'équipe.
+        Pokemon actif = BattleStateTracker.getJoueurActif();
+        String espece = actif != null ? actif.getEspece() : null;
+        boolean endormi = actif != null && actif.getStatut() == Pokemon.Statut.SOMMEIL;
+
+        // 1. Le tour écoulé compte-t-il comme une tentative d'action ? Oui si le
+        //    Pokémon endormi était sur le terrain au début du tour et y est encore
+        //    (pas de switch), ou s'il a utilisé une capacité (Blabla Dodo qui
+        //    lance Demi-Tour, par exemple).
+        if (especeActiveDebutTour != null) {
+            EtatRepos etat = COMPTEUR_REPOS.get(especeActiveDebutTour);
+            if (etat != null && (especeActiveDebutTour.equals(espece) || coupJoueurDuTour != null)) {
+                int restant = etat.compteur() - etat.pas();
+                if (restant <= 0) COMPTEUR_REPOS.remove(especeActiveDebutTour);
+                else COMPTEUR_REPOS.put(especeActiveDebutTour, new EtatRepos(restant, etat.pas()));
+            }
+        }
+
+        // 2. Repos lancé au tour écoulé : on ne démarre que s'il a vraiment
+        //    endormi (Repos échoue à PV pleins, sous Champ Électrifié/Brumeux,
+        //    avec Insomnie...). Jamais de redémarrage si un compteur existe déjà
+        //    (Repos tiré par Blabla Dodo échoue).
+        if (reposEnAttente != null) {
+            if (reposEnAttente.equals(espece) && endormi && !COMPTEUR_REPOS.containsKey(espece)) {
+                COMPTEUR_REPOS.put(espece, new EtatRepos(3, "Matinal".equals(actif.getTalent()) ? 2 : 1));
+            }
+            reposEnAttente = null;
+        }
+
+        // 3. Réveil anticipé (Baie Maron, Baie Prine, Hydratation, Mue, Glas de
+        //    Soin...) : plus endormi = plus de compteur.
+        if (espece != null && !endormi) COMPTEUR_REPOS.remove(espece);
+
+        especeActiveDebutTour = espece;
+    }
+
+    /**
+     * Nombre de tours, celui qui commence compris, avant que ce Pokémon agisse
+     * à nouveau : 1 = il se réveille et agit ce tour-ci. -1 = pas de Repos suivi.
+     */
+    public static int getToursAvantReveilRepos(String espece) {
+        EtatRepos e = espece == null ? null : COMPTEUR_REPOS.get(espece);
+        if (e == null) return -1;
+        return (e.compteur() + e.pas() - 1) / e.pas();
     }
 
     /**
@@ -1770,6 +1844,10 @@ public final class ObservationCollector {
         combatSauvageDetecte = false;
         OBJET_REEL_JOUEUR_CONNU.clear();
         OBJET_STACK_JOUEUR.clear();
+        COMPTEUR_REPOS.clear();
+        reposEnAttente = null;
+        especeActiveDebutTour = null;
+        numeroTour = 0;
 
         // Persister les faits du combat avant de tout effacer
         if (nomAdversaireCourant != null) {

@@ -167,6 +167,30 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
+        // Compteur de Repos : quand mon Pokémon se réveille exactement.
+        int toursRepos = ObservationCollector.getToursAvantReveilRepos(joueur.getEspece());
+        if (toursRepos < 0) {
+            // Le compteur est indexé par l'espèce lue côté combat : repli au cas où
+            // la lecture depuis l'équipe l'écrirait autrement (forme régionale...).
+            Pokemon actifCombat = BattleStateTracker.getJoueurActif();
+            if (actifCombat != null) toursRepos = ObservationCollector.getToursAvantReveilRepos(actifCombat.getEspece());
+        }
+        if (toursRepos > 0) {
+            int tour = ObservationCollector.getNumeroTour();
+            String ligneRepos;
+            if (toursRepos == 1) {
+                ligneRepos = "Repos : se réveille et agit ce tour"
+                    + (tour > 0 ? " (tour " + tour + ")" : "");
+            } else {
+                int dort = toursRepos - 1;
+                ligneRepos = "Repos : dort encore " + dort + " tour" + (dort > 1 ? "s" : "")
+                    + (tour > 0 ? ", agit au tour " + (tour + toursRepos - 1)
+                                : ", agit dans " + toursRepos + " tours");
+            }
+            dessinerTexte(ligneRepos, x, y, toursRepos == 1 ? COULEUR_REVELE : COULEUR_DANGER);
+            y += hauteurLigne;
+        }
+
         // Vitesses effectives (Distorsion inverse la priorité)
         int vitJoueur = vitesseEffective(joueur, true);
         int vitAdversaire = Math.max(vitesseEffective(adversaire, false),
