@@ -102,9 +102,9 @@ public final class SetInferenceEngine {
         hypothese.nombreObservations++;
     }
 
-    private enum NatureBoost { BOOSTEE, NEUTRE, BAISSEE }
+    public enum NatureBoost { BOOSTEE, NEUTRE, BAISSEE }
 
-    private static Pokemon construirePokemonHypothetique(Pokemon base, Stat statCible, int ev,
+    public static Pokemon construirePokemonHypothetique(Pokemon base, Stat statCible, int ev,
                                                            NatureBoost natureBoost, String objet, String talent) {
         Pokemon.Builder b = Pokemon.builder(base.getEspece(), base.getNiveau(), base.getType1(), base.getType2())
             .statBase(Stat.PV, base.getStatBase(Stat.PV))

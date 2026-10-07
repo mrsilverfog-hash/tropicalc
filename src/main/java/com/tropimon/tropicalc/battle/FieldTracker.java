@@ -303,6 +303,11 @@ public final class FieldTracker {
     private static int toursTailwindAdversaireRestants = 0;
 
     public static boolean isTailwindJoueur() { return tailwindJoueur; }
+
+    /** Protection=1, Mur Lumière=2, Voile Aurore=4 : pour savoir si mes écrans ont bougé pendant un tour. */
+    public static int signatureEcransJoueur() {
+        return (reflectJoueur ? 1 : 0) | (lightScreenJoueur ? 2 : 0) | (auroraVeilJoueur ? 4 : 0);
+    }
     public static boolean isTailwindAdversaire() { return tailwindAdversaire; }
 
     public static int getToursMeteoRestants() { return toursMeteoRestants; }

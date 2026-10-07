@@ -173,6 +173,20 @@ public final class ObservationCollector {
 
     public static synchronized void signalerNouveauTour() {
         mettreAJourRepos();
+        stageAtkAdvTourEcoule = stageAtkAdvDebutTour;
+        stageAtkSpeAdvTourEcoule = stageAtkSpeAdvDebutTour;
+        stageDefJoueurTourEcoule = stageDefJoueurDebutTour;
+        stageDefSpeJoueurTourEcoule = stageDefSpeJoueurDebutTour;
+        meteoTourEcoule = meteoDebutTour;
+        terrainTourEcoule = terrainDebutTour;
+        ecransJoueurTourEcoule = ecransJoueurDebutTour;
+        try {
+            Field etat = FieldTracker.construireField();
+            meteoDebutTour = etat.getMeteo();
+            terrainDebutTour = etat.getTerrain();
+        } catch (Exception ignored) {
+        }
+        ecransJoueurDebutTour = FieldTracker.signatureEcransJoueur();
         Pokemon joueur = BattleStateTracker.getJoueurActifDepuisEquipe();
         if (joueur == null) joueur = BattleStateTracker.getJoueurActif();
         Pokemon adversaire = BattleStateTracker.getAdversaireActif();
@@ -224,6 +238,8 @@ public final class ObservationCollector {
         stageDefAdvDebutTour = BoostTracker.getStageAdversaire(Stat.DEFENSE);
         stageDefSpeAdvDebutTour = BoostTracker.getStageAdversaire(Stat.DEFENSE_SPE);
         stageVitAdvDebutTour = BoostTracker.getStageAdversaire(Stat.VITESSE);
+        stageDefJoueurDebutTour = BoostTracker.getStageJoueur(Stat.DEFENSE);
+        stageDefSpeJoueurDebutTour = BoostTracker.getStageJoueur(Stat.DEFENSE_SPE);
 
         // Compteurs Toxik : +1 par tour passé empoisonné gravement (reset au switch/soin)
         if (joueur.getStatut() == Pokemon.Statut.POISON_GRAVE) compteurToxikJoueur++;
@@ -273,6 +289,8 @@ public final class ObservationCollector {
                 espaceAdversaireDuTour = adversaire.getEspece();
                 coupJoueurDuTour = null;
                 coupAdversaireDuTour = null;
+                critCeTour = false;
+                multiCoupsCeTour = false;
                 adversaireAAgiEnPremier = null;
                 return;
             }
@@ -398,6 +416,8 @@ public final class ObservationCollector {
         }
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
+        critCeTour = false;
+        multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
 
         tenterAppliquerHerbeBlanche(joueur, adversaire);
@@ -658,8 +678,9 @@ public final class ObservationCollector {
         }
 
         // --- Détection d'objet par signal fort, distincte du moteur de correction ---
-        // Une seule observation nette suffit : les ratios 1.0 / 1.3 / 1.5 sont assez
-        // séparés pour ne pas se confondre avec le bruit normal des rolls (85-100%).
+        // Bandeau/Lunettes Choix par excès de dégâts reçus : voir les garde-fous
+        // dans detecterObjetOffensifParSignal (borne haute sans objet, état du
+        // début de tour, tours avec critique ou multi-coups ignorés).
         try {
             detecterObjetOffensifParSignal(adversaireEtaitAttaquant, perte, adversaire, joueur,
                 capacite, template, terrainNeutre);
@@ -1401,6 +1422,15 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        if (cle.equals("cobblemon.battle.crit")) {
+            critCeTour = true;
+            return;
+        }
+        if (cle.equals("cobblemon.battle.hit_count")) {
+            multiCoupsCeTour = true;
+            return;
+        }
+
         if (cle.equals("cobblemon.battle.fainted")) {
             // Un K.O., annoncé par le jeu avec dresseur et espèce (vu 61 fois en
             // log, les deux camps). Seule source fiable pour l'adversaire :
@@ -1746,6 +1776,25 @@ public final class ObservationCollector {
     // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,
     // pour détecter un gain de +2/+2 simultané (Vulné-Assurance) précisément CE tour.
     private static int stageAtkAdvDebutTour = 0;
+    // Copies prises au tout début de signalerNouveauTour, avant que les
+    // instantanés "DebutTour" soient réécrits pour le nouveau tour : ce sont
+    // les valeurs du tour qu'on est en train d'analyser.
+    private static int stageAtkAdvTourEcoule = 0;
+    private static int stageAtkSpeAdvTourEcoule = 0;
+    private static int stageDefJoueurDebutTour = 0;
+    private static int stageDefSpeJoueurDebutTour = 0;
+    private static int stageDefJoueurTourEcoule = 0;
+    private static int stageDefSpeJoueurTourEcoule = 0;
+    private static Field.Meteo meteoDebutTour = null;
+    private static Field.Meteo meteoTourEcoule = null;
+    private static Field.TypeTerrain terrainDebutTour = null;
+    private static Field.TypeTerrain terrainTourEcoule = null;
+    private static int ecransJoueurDebutTour = 0;
+    private static int ecransJoueurTourEcoule = 0;
+    // Messages du tour (le message crit n'a pas d'argument : on ne sait pas
+    // qui l'a subi, donc tout tour avec un critique est ignoré).
+    private static boolean critCeTour = false;
+    private static boolean multiCoupsCeTour = false;
     private static int stageAtkSpeAdvDebutTour = 0;
 
     // Snapshots supplémentaires pour Défiant/Battant (une autre stat baisse,
@@ -1784,43 +1833,59 @@ public final class ObservationCollector {
                                                         Pokemon adversaire, Pokemon joueur,
                                                         com.tropimon.tropicalc.calc.Move capacite,
                                                         MoveTemplate template, Field terrainNeutre) {
+        // Bandeau Choix / Lunettes Choix déduits d'un excès de dégâts REÇUS,
+        // quand l'adversaire ne perd pas de vie (l'Orbe Vie, elle, est
+        // annoncée par le jeu via damage.lifeorb et confirmée à part).
+        //
+        // Réécrit : l'ancienne version sortait dès que l'adversaire agissait en
+        // premier (return inconditionnel de la branche Mouchoir Choix, qui
+        // ignorait en plus la priorité et fait doublon avec la détection de
+        // vitesse durcie), ignorait mes écrans, utilisait les stages de FIN de
+        // tour (Draco Météore baisse l'Atq. Spé APRÈS le coup : faux x2), et
+        // comparait au milieu d'un seul set estimé (set défensif estimé contre
+        // vrai set offensif = faux objet).
+        //
+        // Principe : borne HAUTE sans objet (252 EV, nature favorable, talent
+        // le plus offensif possible de l'espèce). On ne conclut au Choix que si
+        // la perte dépasse ce qu'un objet x1.2 (type, Ceinture Pro) pourrait
+        // expliquer, tout en restant sous le plafond d'un Choix x1.5. Un faux
+        // positif reste rattrapé par la révocation au changement de capacité.
+        if (!adversaireEtaitAttaquant) return;
         String espece = adversaire.getEspece();
-        if (OBJETS_CONFIRMES.containsKey(espece)) return;   // déjà un fait connu, rien à chercher
-        if (capacite.isMultiCoups()) return;                 // trop de variance
-        if (!"physical".equalsIgnoreCase(String.valueOf(template.getDamageCategory().getName()))
-            && !"special".equalsIgnoreCase(String.valueOf(template.getDamageCategory().getName()))) return;
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
+                || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
+        if (capacite.isMultiCoups() || multiCoupsCeTour || critCeTour) return;
+        boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        if (!physique && capacite.getCategorie() != com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE) return;
+        String nomCap = capacite.getNom();
+        // Puissance liée à une stat qu'on ne fait pas varier ici (Défense,
+        // Vitesse) ou à un compte qu'on ne maîtrise pas : on s'abstient.
+        if ("bodypress".equals(nomCap) || "electroball".equals(nomCap) || "lastrespects".equals(nomCap)) return;
 
-        // --- 1. Écharpe/Mouchoir Choix : l'adversaire agit avant alors que
-        //     sa vitesse MAX possible (sans objet) ne le permettrait pas ---
-        if (adversaireEtaitAttaquant && Boolean.TRUE.equals(adversaireAAgiEnPremier)
-                && joueur.getStatut() != Pokemon.Statut.PARALYSIE
-                && adversaire.getStatut() != Pokemon.Statut.PARALYSIE
-                && !FieldTracker.isDistorsion()) {
-            int vitesseMaxSansObjet = (int) Math.floor(
-                ((2 * adversaire.getStatBase(Stat.VITESSE) + 31 + 63) * adversaire.getNiveau()) / 100.0 + 5) * 11 / 10;
-            int vitesseJoueurReelle = joueur.getStatCalculee(Stat.VITESSE);
-            int stageJoueur = joueur.getStage(Stat.VITESSE);
-            double mult = stageJoueur >= 0 ? (2.0 + stageJoueur) / 2.0 : 2.0 / (2.0 - stageJoueur);
-            vitesseJoueurReelle = (int) (vitesseJoueurReelle * mult);
-            if (vitesseMaxSansObjet < vitesseJoueurReelle) {
-                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
-            }
-            return;
+        // Terrain, météo et mes écrans doivent être les mêmes qu'au début du
+        // tour : s'ils ont changé (pluie finie en fin de tour, écran posé
+        // après le coup), on ne sait pas lesquels s'appliquaient au coup.
+        if (meteoTourEcoule != terrainNeutre.getMeteo() || terrainTourEcoule != terrainNeutre.getTerrain()
+                || ecransJoueurTourEcoule != FieldTracker.signatureEcransJoueur()) return;
+
+        // Stage offensif au moment du coup = celui du début du tour. Un boost
+        // apparu pendant le tour a pu précéder le coup : ordre inconnu.
+        Stat statAtk = physique ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
+        int stageAtk = physique ? stageAtkAdvTourEcoule : stageAtkSpeAdvTourEcoule;
+        if (BoostTracker.getStageAdversaire(statAtk) > stageAtk) return;
+        boolean frappeDef = physique || "psyshock".equals(nomCap) || "psystrike".equals(nomCap)
+            || "secretsword".equals(nomCap);
+        Stat statDef = frappeDef ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        int stageDef = frappeDef ? stageDefJoueurTourEcoule : stageDefSpeJoueurTourEcoule;
+        if (BoostTracker.getStageJoueur(statDef) != stageDef) return;
+
+        // Défenseur : mon objet réel (Veste de Combat sabotée...) et mes stages.
+        appliquerObjetReelJoueur(joueur);
+        for (Stat st : Stat.values()) {
+            if (st != Stat.PV) joueur.setStage(st, BoostTracker.getStageJoueur(st));
         }
 
-        // Pour le reste (dégâts), seuls les coups de l'ADVERSAIRE nous renseignent
-        // sur SON objet offensif
-        if (!adversaireEtaitAttaquant) return;
-
-        // Prédiction de référence SANS objet (le set estimé peut déjà en supposer un)
-        Pokemon attaquantSansObjet = construireAdversaireEstime(adversaire);
-        attaquantSansObjet.setObjet(null);
-        DamageCalculator.Resultat sansObjet = DamageCalculator.calculer(
-            attaquantSansObjet, joueur, capacite, terrainNeutre, null, false);
-        if (sansObjet.immunise) return;
-        double milieuSansObjet = (sansObjet.pourcentageMin + sansObjet.pourcentageMax) / 2.0;
-        if (milieuSansObjet < 2.0) return;   // trop petit pour être fiable
-
+        // Perte due au coup seul : on retire les résiduels de fin de tour.
         double perteCoup = perte;
         try {
             com.tropimon.tropicalc.calc.ResidualProjector.Projection proj =
@@ -1832,29 +1897,45 @@ public final class ObservationCollector {
         } catch (Exception ignored) {
         }
 
-        boolean critProbable = perteCoup > sansObjet.pourcentageMax * 1.65;
-        if (critProbable) return;   // coup critique probable : rien à conclure
-
-        double ratio = perteCoup / milieuSansObjet;
-
-        // --- 2. Bandeau/Lunettes Choix : ratio net proche de x1.5 ---
-        if (ratio >= 1.4 && ratio <= 1.65) {
-            String objet = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
-                ? "Bandeau Choix" : "Lunettes Choix";
-            OBJETS_CONFIRMES.put(espece, objet);
-            return;
+        // Borne haute SANS objet, sur tous les talents possibles de l'espèce
+        // (ou le talent confirmé).
+        Pokemon base = construireAdversaireEstime(adversaire);
+        Set<String> talents = new HashSet<>();
+        String talentConfirme = TALENTS_CONFIRMES.get(espece);
+        if (talentConfirme != null) {
+            talents.add(talentConfirme);
+        } else {
+            Set<String> reels = getTalentsReelsEspece(adversaire);
+            if (reels != null) talents.addAll(reels);
+            if (base.getTalent() != null) talents.add(base.getTalent());
         }
+        if (talents.isEmpty()) talents.add(StatHypothesis.AUCUN);
 
-        // --- 3. Orbe Vie : ratio net proche de x1.3 ET l'attaquant perd bien
-        //     ~10% de ses PV max sur ce même tour (le recul de l'Orbe Vie).
-        //     Exclu si le joueur a aussi attaqué ce tour (ambiguïté : le recul
-        //     pourrait être une riposte plutôt que l'Orbe Vie). ---
-        if (ratio >= 1.2 && ratio < 1.4 && coupJoueurDuTour == null && pvAdversaireDebutTour >= 0) {
-            double recul = pvAdversaireDebutTour - adversaire.getPourcentagePv();
-            if (recul >= 7.0 && recul <= 13.0) {
-                OBJETS_CONFIRMES.put(espece, "Orbe Vie");
+        double maxSansObjet = 0;
+        for (String talent : talents) {
+            Pokemon h = com.tropimon.tropicalc.calc.SetInferenceEngine.construirePokemonHypothetique(
+                base, statAtk, 252, com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BOOSTEE,
+                StatHypothesis.AUCUN, talent);
+            for (Stat st : Stat.values()) {
+                if (st != Stat.PV) h.setStage(st, BoostTracker.getStageAdversaire(st));
             }
+            h.setStage(statAtk, stageAtk);
+            DamageCalculator.Resultat r = DamageCalculator.calculer(
+                h, joueur, capacite, terrainNeutre, terrainNeutre.getEcransJoueur(), false);
+            if (r.immunise) return;
+            maxSansObjet = Math.max(maxSansObjet, r.pourcentageMax);
         }
+        if (maxSansObjet < 3.0) return;   // coup trop faible pour être lisible
+
+        // Ce qu'un objet "faible" peut expliquer : x1.2 (objets de type,
+        // Ceinture Pro), x1.3 si Garde Magik possible (Orbe Vie sans recul).
+        double seuilObjetFaible = talents.contains("Garde Magik") ? 1.3 : 1.2;
+        double marge = 1.03;
+        double margeAbs = 1.0;
+        if (perteCoup <= maxSansObjet * seuilObjetFaible * marge + margeAbs) return;
+        if (perteCoup > maxSansObjet * 1.5 * marge + margeAbs) return;   // au-delà d'un Choix : autre cause
+
+        OBJETS_CONFIRMES.put(espece, physique ? "Bandeau Choix" : "Lunettes Choix");
     }
 
     private static boolean adversaireNAPasAttaque() {
@@ -1885,6 +1966,11 @@ public final class ObservationCollector {
         COMPTEUR_REPOS.clear();
         KO_ADVERSAIRE.clear();
         KO_JOUEUR.clear();
+        meteoDebutTour = null;
+        terrainDebutTour = null;
+        ecransJoueurDebutTour = 0;
+        stageDefJoueurDebutTour = 0;
+        stageDefSpeJoueurDebutTour = 0;
         reposEnAttente = null;
         especeActiveDebutTour = null;
         numeroTour = 0;
@@ -1942,6 +2028,8 @@ public final class ObservationCollector {
         pvAdversaireDebutTour = -1;
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
+        critCeTour = false;
+        multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
         espaceAdversaireDuTour = null;
     }
