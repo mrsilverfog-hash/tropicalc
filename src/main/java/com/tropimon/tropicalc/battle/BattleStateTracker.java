@@ -49,7 +49,10 @@ public final class BattleStateTracker {
             if (!side.getActors().contains(acteurJoueur)) {
                 for (ClientBattleActor acteur : side.getActors()) {
                     Pokemon p = premierActif(acteur);
-                    if (p != null) return p;
+                    if (p != null) {
+                        p.setCampAdverse(true);
+                        return p;
+                    }
                 }
             }
         }

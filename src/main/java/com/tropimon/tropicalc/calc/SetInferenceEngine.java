@@ -124,6 +124,7 @@ public final class SetInferenceEngine {
         b.nature(natureChoisie);
 
         Pokemon p = b.build();
+        p.setCampAdverse(base.isCampAdverse());
         p.setStatut(base.getStatut());
         p.setPvActuels(base.getPvActuels());
         for (Stat s : Stat.values()) {

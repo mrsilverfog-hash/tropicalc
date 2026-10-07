@@ -343,23 +343,37 @@ public interface AbilityModifier {
         m.put("Général Suprême", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                // +10% par coéquipier KO (max +50%, 5 coéquipiers). Le
-                // porteur peut être le joueur ou l'adversaire : on compare
-                // l'espèce de l'attaquant à celle du joueur actif pour
-                // savoir de quelle équipe compter les KO.
+                // Puissance augmentée selon les coéquipiers déjà K.O. dans
+                // l'équipe du PORTEUR, plafonnée à 5. Ratios exacts du jeu
+                // (Showdown) : 4096 / 4506 / 4915 / 5325 / 5734 / 6144 sur 4096.
+                //
+                // Camp lu sur la marque posée à la construction, plus deviné
+                // par l'espèce du Pokémon actif : cette devinette comptait mes
+                // K.O. pour un Scalpereur adverse en miroir, et ceux de
+                // l'adversaire pour un Scalpereur de mon banc (écran de switch).
+                //
+                // Adversaire : K.O. comptés depuis cobblemon.battle.fainted
+                // (Cobblemon ne fournit pas son équipe complète côté client,
+                // l'ancienne lecture renvoyait toujours 0). Joueur : le plus
+                // grand des deux comptes (équipe complète, messages).
                 try {
-                    Pokemon joueurActif = com.tropimon.tropicalc.battle.BattleStateTracker.getJoueurActifDepuisEquipe();
-                    boolean estJoueur = joueurActif != null
-                        && joueurActif.getEspece().equalsIgnoreCase(ctx.attaquant.getEspece());
-                    java.util.List<com.cobblemon.mod.common.pokemon.Pokemon> equipe = estJoueur
-                        ? com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeJoueur()
-                        : com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeAdversaire();
-                    if (equipe == null) return;
-                    int koCount = 0;
-                    for (com.cobblemon.mod.common.pokemon.Pokemon p : equipe) {
-                        if (p != null && p.isFainted()) koCount++;
+                    int koCount;
+                    if (ctx.attaquant.isCampAdverse()) {
+                        koCount = com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoAdversaire();
+                    } else {
+                        koCount = com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoJoueur();
+                        java.util.List<com.cobblemon.mod.common.pokemon.Pokemon> equipe =
+                            com.tropimon.tropicalc.battle.BattleStateTracker.getEquipeJoueur();
+                        if (equipe != null) {
+                            int koEquipe = 0;
+                            for (com.cobblemon.mod.common.pokemon.Pokemon p : equipe) {
+                                if (p != null && p.isFainted()) koEquipe++;
+                            }
+                            koCount = Math.max(koCount, koEquipe);
+                        }
                     }
-                    ctx.multiplicateurDegatsFinal *= 1.0 + Math.min(5, koCount) * 0.1;
+                    final double[] ratios = {4096, 4506, 4915, 5325, 5734, 6144};
+                    ctx.multiplicateurDegatsFinal *= ratios[Math.max(0, Math.min(5, koCount))] / 4096.0;
                 } catch (Exception ignored) {
                 }
             }

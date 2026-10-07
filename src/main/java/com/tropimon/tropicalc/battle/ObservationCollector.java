@@ -590,6 +590,28 @@ public final class ObservationCollector {
     }
 
     /** Vitesse minimale observée pour une espèce adverse (0 si aucune observation). */
+    // K.O. par camp, comptés depuis cobblemon.battle.fainted (une espèce = un
+    // K.O. : la clause d'espèce interdit les doublons dans une équipe).
+    private static final Set<String> KO_ADVERSAIRE = new HashSet<>();
+    private static final Set<String> KO_JOUEUR = new HashSet<>();
+    public static int getNombreKoAdversaire() { return KO_ADVERSAIRE.size(); }
+    public static int getNombreKoJoueur() { return KO_JOUEUR.size(); }
+
+    /** owned_pokemon(dresseur, translation{cobblemon.species.X.name}) -> "X". */
+    private static String especeDepuisArgument(Object arg) {
+        if (!(arg instanceof Text texte) || !(texte.getContent() instanceof TranslatableTextContent contenuArg)) return null;
+        for (Object sous : contenuArg.getArgs()) {
+            if (sous instanceof Text t && t.getContent() instanceof TranslatableTextContent c) {
+                String k = c.getKey();
+                if (k != null && k.startsWith("cobblemon.species.")) {
+                    String s = k.substring("cobblemon.species.".length());
+                    return s.endsWith(".name") ? s.substring(0, s.length() - 5) : s;
+                }
+            }
+        }
+        return null;
+    }
+
     public static int getVitesseMinObservee(String espece) {
         return VITESSES_MIN_OBSERVEES.getOrDefault(espece, 0);
     }
@@ -851,6 +873,7 @@ public final class ObservationCollector {
             }
         }
 
+        p.setCampAdverse(true);
         return p;
     }
 
@@ -1378,6 +1401,21 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        if (cle.equals("cobblemon.battle.fainted")) {
+            // Un K.O., annoncé par le jeu avec dresseur et espèce (vu 61 fois en
+            // log, les deux camps). Seule source fiable pour l'adversaire :
+            // Cobblemon ne fournit pas son équipe complète côté client, donc
+            // Général Suprême adverse comptait toujours 0 K.O.
+            Object[] args = contenu.getArgs();
+            if (args.length == 0) return;
+            Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (adverse == null) return;
+            Set<String> cible = adverse ? KO_ADVERSAIRE : KO_JOUEUR;
+            String espece = especeDepuisArgument(args[0]);
+            cible.add(espece != null ? espece : "ko#" + cible.size());
+            return;
+        }
+
         if (cle.equals("cobblemon.battle.damage.lifeorb")) {
             // Recul de l'Orbe Vie annoncé par le jeu lui-même (confirmé en log
             // réel, les deux camps, arg0 = owned_pokemon(dresseur, espèce)).
@@ -1845,6 +1883,8 @@ public final class ObservationCollector {
         OBJET_REEL_JOUEUR_CONNU.clear();
         OBJET_STACK_JOUEUR.clear();
         COMPTEUR_REPOS.clear();
+        KO_ADVERSAIRE.clear();
+        KO_JOUEUR.clear();
         reposEnAttente = null;
         especeActiveDebutTour = null;
         numeroTour = 0;

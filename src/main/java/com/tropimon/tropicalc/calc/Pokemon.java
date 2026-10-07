@@ -48,6 +48,14 @@ public class Pokemon {
     private int pvMaxOverride = 0;
     public void setPvMaxOverride(int pv) { this.pvMaxOverride = pv; }
 
+    // Camp du Pokémon, posé là où un Pokémon ADVERSE est construit
+    // (getAdversaireActif, construireAdversaireEstime, hypothèses du narrowing).
+    // Sert aux effets qui dépendent de l'équipe du porteur (Général Suprême) :
+    // deviner le camp par l'espèce échoue en miroir et pour un Pokémon du banc.
+    private boolean campAdverse = false;
+    public boolean isCampAdverse() { return campAdverse; }
+    public void setCampAdverse(boolean v) { this.campAdverse = v; }
+
     /** Corrections mesurées sur les dégâts réels (1.0 = aucune). */
     private final Map<Stat, Double> correctionsObservees = new EnumMap<>(Stat.class);
 
