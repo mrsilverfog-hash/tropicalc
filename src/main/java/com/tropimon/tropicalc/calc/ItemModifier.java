@@ -109,6 +109,41 @@ public interface ItemModifier {
             }
         });
 
+        // Objets améliorant un type : x1.2 sur la puissance des capacités de
+        // ce type (ratio exact du jeu, 4915/4096). Absents jusqu'ici : un
+        // Scalpereur aux Lunettes Noires tapait 20% plus fort que prévu.
+        String[][] objetsDeType = {
+            {"Aimant", "ELECTRIK"},
+            {"Bec Pointu", "VOL"},
+            {"Ceinture Noire", "COMBAT"},
+            {"Charbon", "FEU"},
+            {"Croc Dragon", "DRAGON"},
+            {"Cuillère Tordue", "PSY"},
+            {"Eau Mystique", "EAU"},
+            {"Glace Éternelle", "GLACE"},
+            {"Graine Miracle", "PLANTE"},
+            {"Lunettes Noires", "TENEBRES"},
+            {"Peau Métal", "ACIER"},
+            {"Pic Venin", "POISON"},
+            {"Pierre Dure", "ROCHE"},
+            {"Poudre Argentée", "INSECTE"},
+            {"Rune Sort", "SPECTRE"},
+            {"Sable Doux", "SOL"},
+            {"Mouchoir Soie", "NORMAL"},
+            {"Plume Enchantée", "FEE"},
+        };
+        for (String[] o : objetsDeType) {
+            final PokemonType typeBooste = PokemonType.valueOf(o[1]);
+            m.put(o[0], new ItemModifier() {
+                @Override
+                public void appliquerCoteAttaquant(ModifierContext ctx) {
+                    if (ctx.capacite.getType() == typeBooste) {
+                        ctx.multiplicateurDegatsFinal *= 4915.0 / 4096.0;
+                    }
+                }
+            });
+        }
+
         // Gant de Boxe (Punching Glove) : +10% dégâts sur les capacités "poing",
         // cumulable avec Poing de Fer (confirmé Bulbapedia). Rend aussi la
         // capacité non-contact en vrai jeu (recul par contact/Casque Brut

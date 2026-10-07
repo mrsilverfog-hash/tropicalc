@@ -196,6 +196,25 @@ public final class ShowdownIdMapper {
         OBJETS.put("airballoon", "Ballon");
         OBJETS.put("muscleband", "Bandeau Muscle");
         OBJETS.put("wiseglasses", "Lunettes Sages");
+        // Objets améliorant un type (x1.2), noms vérifiés sur Poképédia
+        OBJETS.put("magnet", "Aimant");
+        OBJETS.put("sharpbeak", "Bec Pointu");
+        OBJETS.put("blackbelt", "Ceinture Noire");
+        OBJETS.put("charcoal", "Charbon");
+        OBJETS.put("dragonfang", "Croc Dragon");
+        OBJETS.put("twistedspoon", "Cuillère Tordue");
+        OBJETS.put("mysticwater", "Eau Mystique");
+        OBJETS.put("nevermeltice", "Glace Éternelle");
+        OBJETS.put("miracleseed", "Graine Miracle");
+        OBJETS.put("blackglasses", "Lunettes Noires");
+        OBJETS.put("metalcoat", "Peau Métal");
+        OBJETS.put("poisonbarb", "Pic Venin");
+        OBJETS.put("hardstone", "Pierre Dure");
+        OBJETS.put("silverpowder", "Poudre Argentée");
+        OBJETS.put("spelltag", "Rune Sort");
+        OBJETS.put("softsand", "Sable Doux");
+        OBJETS.put("silkscarf", "Mouchoir Soie");
+        OBJETS.put("fairyfeather", "Plume Enchantée");
         OBJETS.put("lightclay", "Lumargile");
         OBJETS.put("heatrock", "Roche Chaude");
         OBJETS.put("damprock", "Roche Humide");
