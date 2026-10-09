@@ -174,6 +174,26 @@ public final class ObservationCollector {
     public static synchronized void signalerNouveauTour() {
         mettreAJourRepos();
         stageAtkAdvTourEcoule = stageAtkAdvDebutTour;
+        stageVitAdvTourEcoule = stageVitAdvDebutTour;
+        stageVitJoueurTourEcoule = stageVitJoueurDebutTour;
+        tailwindJoueurTourEcoule = tailwindJoueurDebutTour;
+        tailwindAdvTourEcoule = tailwindAdvDebutTour;
+        distorsionTourEcoule = distorsionDebutTour;
+        statutJoueurTourEcoule = statutJoueurDebutTour;
+        statutAdvTourEcoule = statutAdvDebutTour;
+        especeJoueurTourEcoule = especeJoueurDebutTour;
+        stageVitJoueurDebutTour = BoostTracker.getStageJoueur(Stat.VITESSE);
+        tailwindJoueurDebutTour = FieldTracker.isTailwindJoueur();
+        tailwindAdvDebutTour = FieldTracker.isTailwindAdversaire();
+        distorsionDebutTour = FieldTracker.isDistorsion();
+        try {
+            Pokemon jDebut = BattleStateTracker.getJoueurActif();
+            Pokemon aDebut = BattleStateTracker.getAdversaireActif();
+            statutJoueurDebutTour = jDebut != null ? jDebut.getStatut() : null;
+            especeJoueurDebutTour = jDebut != null ? jDebut.getEspece() : null;
+            statutAdvDebutTour = aDebut != null ? aDebut.getStatut() : null;
+        } catch (Exception ignored) {
+        }
         stageAtkSpeAdvTourEcoule = stageAtkSpeAdvDebutTour;
         stageDefJoueurTourEcoule = stageDefJoueurDebutTour;
         stageDefSpeJoueurTourEcoule = stageDefSpeJoueurDebutTour;
@@ -290,6 +310,9 @@ public final class ObservationCollector {
                 coupJoueurDuTour = null;
                 coupAdversaireDuTour = null;
                 critCeTour = false;
+                prioriteObjetCeTour = false;
+                degatsAnnexesJoueurCeTour = false;
+                attaqueDiffereeCeTour = false;
                 multiCoupsCeTour = false;
                 adversaireAAgiEnPremier = null;
                 return;
@@ -370,35 +393,9 @@ public final class ObservationCollector {
                 OBJETS_CONFIRMES.put(adversaire.getEspece(), "Orbe Vie");
             }
 
-            // Une observation de vitesse n'est exploitable que si l'ordre
-            // d'action s'explique UNIQUEMENT par la vitesse. Tout le reste doit
-            // etre ecarte, sinon on conclut au Mouchoir Choix pour rien.
-            if (Boolean.TRUE.equals(adversaireAAgiEnPremier)
-                    && coupJoueurDuTour != null && coupAdversaireDuTour != null
-                    && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
-                    && BoostTracker.getStageAdversaire(Stat.VITESSE) <= 0
-                    && !FieldTracker.isTailwindAdversaire()
-                    && !FieldTracker.isTailwindJoueur()
-                    && !FieldTracker.isDistorsion()) {
-                int vitesseJoueur = vitesseEffectiveJoueur(joueur);
-                VITESSES_MIN_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur + 1, Math::max);
-                OBSERVATIONS_VITESSE.merge(adversaire.getEspece(), 1, Integer::sum);
-            }
-
-            // Symétrique : le joueur a agi AVANT l'adversaire. Mêmes
-            // garde-fous (priorité égale, pas de boost positif du joueur,
-            // pas de Vent Arrière de son côté) pour ne pas confondre un
-            // avantage temporaire avec une vraie preuve de vitesse de base.
-            if (Boolean.FALSE.equals(adversaireAAgiEnPremier)
-                    && coupJoueurDuTour != null && coupAdversaireDuTour != null
-                    && prioritesEgales(coupJoueurDuTour.showdownId(), coupAdversaireDuTour.showdownId())
-                    && BoostTracker.getStageJoueur(Stat.VITESSE) <= 0
-                    && !FieldTracker.isTailwindJoueur()
-                    && !FieldTracker.isTailwindAdversaire()
-                    && !FieldTracker.isDistorsion()) {
-                int vitesseJoueur = vitesseEffectiveJoueur(joueur);
-                VITESSES_MAX_OBSERVEES.merge(adversaire.getEspece(), vitesseJoueur - 1, Math::min);
-            }
+            // Vitesse : ordre d'action du tour écoulé, évalué avec l'état du
+            // DÉBUT de ce tour (stages, météo, champ, Vent Arrière, statut).
+            observerVitesse(adversaire, joueur);
 
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
@@ -417,6 +414,9 @@ public final class ObservationCollector {
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
         critCeTour = false;
+        prioriteObjetCeTour = false;
+        degatsAnnexesJoueurCeTour = false;
+        attaqueDiffereeCeTour = false;
         multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
 
@@ -598,6 +598,191 @@ public final class ObservationCollector {
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Vitesse : Mouchoir Choix par impossibilité, plancher/plafond affichés.
+    //
+    // Preuve uniquement par la vitesse, jamais par le verrou de capacité.
+    // Si l'adversaire a agi avant moi à priorité égale, sa vitesse était au
+    // moins égale à la mienne (égalité possible : pas de +1). Si même son
+    // MAXIMUM sans objet (252 EV, nature +Vit, meilleur talent possible,
+    // stage, météo, champ et Vent Arrière du début du tour) reste sous ma
+    // vitesse, seul un Mouchoir Choix l'explique. Une seule observation
+    // suffit : Vive-Griffe et Tir Vif sont annoncés par le jeu et écartés.
+    // ---------------------------------------------------------------------
+    private static void observerVitesse(Pokemon adversaire, Pokemon joueur) {
+        if (coupJoueurDuTour == null || coupAdversaireDuTour == null || adversaireAAgiEnPremier == null) return;
+        if (prioriteObjetCeTour || distorsionTourEcoule) return;
+        // Le même Pokémon de chaque côté du début à la fin du tour, sinon
+        // l'ordre observé ne concerne pas celui qu'on regarde (Demi-Tour...).
+        String espece = adversaire.getEspece();
+        if (!espece.equals(espaceAdversaireDuTour)) return;
+        if (joueurAChangeCeTour()) return;
+
+        String idJ = coupJoueurDuTour.showdownId();
+        String idA = coupAdversaireDuTour.showdownId();
+        if (!prioritesEgales(idJ, idA)) return;
+        if (prioriteModifiee(idA, talentsBrutsPossibles(adversaire))) return;
+        if (prioriteModifiee(idJ, talentBrutJoueur(joueur))) return;
+
+        double vJoueur = vitesseJoueurTourEcoule(joueur);
+        if (vJoueur <= 0) return;
+
+        if (Boolean.TRUE.equals(adversaireAAgiEnPremier)) {
+            // Plancher affiché : seulement si sa vitesse n'était pas gonflée.
+            if (stageVitAdvTourEcoule <= 0 && !tailwindAdvTourEcoule) {
+                VITESSES_MIN_OBSERVEES.merge(espece, (int) vJoueur, Math::max);
+            }
+            if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
+                    || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
+            double plafond = plafondVitesseSansObjet(adversaire);
+            // 2% de marge pour les arrondis de mon modèle ; un Mouchoir fait +50%.
+            if (plafond > 0 && vJoueur > plafond * 1.02) {
+                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+            }
+        } else {
+            // J'ai agi avant : sa vitesse était au plus égale à la mienne.
+            // Plafond affiché valable seulement si elle n'était pas réduite
+            // à ce moment (stage négatif, paralysie) ni ralentie par un talent.
+            Set<String> bruts = talentsBrutsPossibles(adversaire);
+            if (stageVitAdvTourEcoule < 0 || statutAdvTourEcoule == Pokemon.Statut.PARALYSIE
+                    || bruts.contains("stall") || bruts.contains("myceliummight")) return;
+            VITESSES_MAX_OBSERVEES.merge(espece, (int) vJoueur, Math::min);
+        }
+    }
+
+    /** Mon Pokémon actif n'est plus celui du début du tour (même source de lecture). */
+    private static boolean joueurAChangeCeTour() {
+        if (especeJoueurTourEcoule == null) return false;
+        Pokemon actif = BattleStateTracker.getJoueurActif();
+        return actif == null || !especeJoueurTourEcoule.equals(actif.getEspece());
+    }
+
+    /** Ma vitesse réelle au début du tour écoulé (stage, statut, météo, champ, Vent Arrière). */
+    private static double vitesseJoueurTourEcoule(Pokemon joueur) {
+        appliquerObjetReelJoueur(joueur);
+        int stageAvant = joueur.getStage(Stat.VITESSE);
+        Pokemon.Statut statutAvant = joueur.getStatut();
+        try {
+            joueur.setStage(Stat.VITESSE, stageVitJoueurTourEcoule);
+            if (statutJoueurTourEcoule != null) joueur.setStatut(statutJoueurTourEcoule);
+            Field etat = FieldTracker.construireField();
+            Field.Meteo meteo = meteoTourEcoule != null ? meteoTourEcoule : etat.getMeteo();
+            Field.TypeTerrain terrain = terrainTourEcoule != null ? terrainTourEcoule : etat.getTerrain();
+            return DamageCalculator.vitesseEnCombat(joueur, meteo, terrain, tailwindJoueurTourEcoule);
+        } catch (Exception e) {
+            return -1;
+        } finally {
+            joueur.setStage(Stat.VITESSE, stageAvant);
+            joueur.setStatut(statutAvant);
+        }
+    }
+
+    /** Vitesse maximale de l'adversaire SANS objet, dans l'état du début du tour écoulé. */
+    private static double plafondVitesseSansObjet(Pokemon adversaire) {
+        try {
+            Pokemon base = construireAdversaireEstime(adversaire);
+            Field etat = FieldTracker.construireField();
+            Field.Meteo meteo = meteoTourEcoule != null ? meteoTourEcoule : etat.getMeteo();
+            Field.TypeTerrain terrain = terrainTourEcoule != null ? terrainTourEcoule : etat.getTerrain();
+
+            Set<String> talents = new HashSet<>();
+            String confirme = TALENTS_CONFIRMES.get(adversaire.getEspece());
+            if (confirme != null) {
+                talents.add(confirme);
+            } else {
+                Set<String> reels = getTalentsReelsEspece(adversaire);
+                if (reels != null) talents.addAll(reels);
+                talents.add("");   // aucun talent de vitesse
+            }
+            double meilleur = 0;
+            for (String talent : talents) {
+                Pokemon.Builder b = Pokemon.builder(adversaire.getEspece(), base.getNiveau(),
+                        base.getType1(), base.getType2())
+                    .statBase(Stat.VITESSE, base.getStatBase(Stat.VITESSE))
+                    .iv(Stat.VITESSE, 31)
+                    .ev(Stat.VITESSE, 252)
+                    .nature(Nature.TIMIDE);
+                if (!talent.isEmpty()) b.talent(talent);
+                Pokemon p = b.build();
+                p.setStage(Stat.VITESSE, stageVitAdvTourEcoule);
+                p.setStatut(statutAdvTourEcoule != null ? statutAdvTourEcoule : adversaire.getStatut());
+                meilleur = Math.max(meilleur,
+                    DamageCalculator.vitesseEnCombat(p, meteo, terrain, tailwindAdvTourEcoule));
+            }
+            // Effets de vitesse que le calcul ne modélise pas : on élargit.
+            Set<String> bruts = talentsBrutsPossibles(adversaire);
+            if (bruts.contains("unburden")) meilleur *= 2.0;            // Allège après objet consommé
+            if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) meilleur *= 1.5; // Énergie Booster
+            if (bruts.contains("surgesurfer") && terrain == Field.TypeTerrain.ELECTRIQUE) meilleur *= 2.0;
+            return meilleur;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    /** Priorité donnée par un talent ou un champ, invisible dans les données de la capacité. */
+    private static boolean prioriteModifiee(String idCoup, Set<String> talentsBruts) {
+        try {
+            if ("grassyglide".equals(idCoup) && terrainTourEcoule == Field.TypeTerrain.HERBU) return true;
+            MoveTemplate t = Moves.INSTANCE.getByName(idCoup);
+            if (t == null) return true;
+            boolean statut = "status".equalsIgnoreCase(t.getDamageCategory().getName());
+            String type = t.getElementalType().getName();
+            if (talentsBruts.contains("prankster") && statut) return true;
+            if (talentsBruts.contains("galewings") && "flying".equalsIgnoreCase(type)) return true;
+            if (talentsBruts.contains("triage") && COUPS_SOIN_OU_DRAIN.contains(idCoup)) return true;
+            if (talentsBruts.contains("stall") || talentsBruts.contains("myceliummight")) return true;
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    /**
+     * Talents possibles de l'espèce en identifiants Showdown bruts, y compris
+     * ceux que ShowdownIdMapper ne traduit pas (Entêtement, Filature...) : les
+     * garde-fous en ont besoin justement parce que le calcul les ignore.
+     * Réduit au talent confirmé quand il est connu.
+     */
+    private static Set<String> talentsBrutsPossibles(Pokemon adversaire) {
+        Set<String> r = new HashSet<>();
+        try {
+            Species espece = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(adversaire.getEspece());
+            if (espece == null) return r;
+            String confirme = TALENTS_CONFIRMES.get(adversaire.getEspece());
+            for (var a : espece.getAbilities()) {
+                String id = a.getTemplate().getName().toLowerCase().replaceAll("[^a-z0-9]", "");
+                if (confirme != null && !confirme.equals(ShowdownIdMapper.talent(id))) continue;
+                r.add(id);
+            }
+        } catch (Exception ignored) {
+        }
+        return r;
+    }
+
+    private static Set<String> talentBrutJoueur(Pokemon joueur) {
+        Set<String> r = new HashSet<>();
+        String t = joueur.getTalent();
+        if (t == null) return r;
+        for (String id : new String[] {"prankster", "galewings", "triage", "stall", "myceliummight"}) {
+            if (t.equals(ShowdownIdMapper.talent(id))) r.add(id);
+        }
+        return r;
+    }
+
+    // Capacités à puissance conditionnelle que le calcul ne modélise pas :
+    // leur écart avec la prévision ne dit rien de l'objet.
+    private static final Set<String> PUISSANCE_NON_MODELISEE = Set.of(
+        "avalanche", "revenge", "payback", "brine", "venoshock", "assurance",
+        "stompingtantrum", "temperflare", "lashout", "retaliate", "expandingforce",
+        "risingvoltage", "psyblade", "collisioncourse", "electrodrift", "terrainpulse",
+        "barbbarrage", "infernalparade", "smellingsalts", "wakeupslap", "round",
+        "echoedvoice", "furycutter", "rollout", "iceball", "trumpcard", "punishment",
+        "beatup", "fling", "naturalgift", "present", "magnitude", "spitup", "foulplay",
+        "photongeyser", "terablast", "shellsidearm", "ragingbull", "futuresight",
+        "doomdesire", "bodypress", "electroball", "lastrespects", "pursuit", "hiddenpower",
+        "tripleaxel", "triplekick", "populationbomb", "ragefist");
+
     private static int vitesseEffectiveJoueur(Pokemon joueur) {
         double v = joueur.getStatCalculee(Stat.VITESSE);
         int stage = BoostTracker.getStageJoueur(Stat.VITESSE);
@@ -760,9 +945,7 @@ public final class ObservationCollector {
         ProfilAdversaire profil = PROFILS.get(espece);
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
         boolean objetRetire = OBJETS_RETIRES.contains(espece);
-        tenterConfirmerEcharpeChoix(espece, adversaireBase);
         tenterConfirmerEvoluroc(espece, smogon);
-        tenterConfirmerObjetChoixProactivement(espece, smogon);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
             adversaireBase.getType1(), adversaireBase.getType2());
@@ -921,81 +1104,6 @@ public final class ObservationCollector {
      * dans ce cas, l'écharpe est la seule explication restante, pas
      * juste la plus probable.
      */
-    private static void tenterConfirmerEcharpeChoix(String espece, Pokemon adversaireBase) {
-        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
-        // Un objet Choix déjà démenti par les faits (deux capacités
-        // différentes sans switch) ne doit jamais être reconfirmé.
-        if (OBJETS_CHOIX_EXCLUS.contains(espece)) return;
-        int vitesseMinObservee = getVitesseMinObservee(espece);
-        if (vitesseMinObservee <= 0) return;
-        // Une seule observation ne suffit pas (Vive-Griffe, voir OBSERVATIONS_VITESSE)
-        if (OBSERVATIONS_VITESSE.getOrDefault(espece, 0) < 2) return;
-
-        try {
-            Set<String> talentsPossibles = getTalentsReelsEspece(adversaireBase);
-            com.tropimon.tropicalc.calc.Field.Meteo meteoActuelle =
-                FieldTracker.construireField().getMeteo();
-
-            double meilleureVitesse = 0;
-            String[] talentsAEssayer = {null, "Chlorophylle", "Glissade", "Baigne Sable", "Chasse-Neige"};
-            for (String talent : talentsAEssayer) {
-                if (talent != null && (talentsPossibles == null || !talentsPossibles.contains(talent))) continue;
-                Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
-                        adversaireBase.getType1(), adversaireBase.getType2())
-                    .statBase(Stat.VITESSE, adversaireBase.getStatBase(Stat.VITESSE))
-                    .iv(Stat.VITESSE, 31)
-                    .ev(Stat.VITESSE, 252)
-                    .nature(Nature.TIMIDE);
-                if (talent != null) b.talent(talent);
-                double v = com.tropimon.tropicalc.calc.DamageCalculator.vitesseEnCombat(b.build(), meteoActuelle);
-                meilleureVitesse = Math.max(meilleureVitesse, v);
-            }
-            // Pied Véloce seulement si un statut est réellement actif
-            // maintenant (sinon le talent ne ferait rien)
-            if (talentsPossibles != null && talentsPossibles.contains("Pied Véloce")
-                    && adversaireBase.getStatut() != Pokemon.Statut.AUCUN) {
-                Pokemon avecPiedVeloce = Pokemon.builder(espece, adversaireBase.getNiveau(),
-                        adversaireBase.getType1(), adversaireBase.getType2())
-                    .statBase(Stat.VITESSE, adversaireBase.getStatBase(Stat.VITESSE))
-                    .iv(Stat.VITESSE, 31)
-                    .ev(Stat.VITESSE, 252)
-                    .nature(Nature.TIMIDE)
-                    .talent("Pied Véloce")
-                    .build();
-                avecPiedVeloce.setStatut(adversaireBase.getStatut());
-                double v = com.tropimon.tropicalc.calc.DamageCalculator.vitesseEnCombat(avecPiedVeloce, meteoActuelle);
-                meilleureVitesse = Math.max(meilleureVitesse, v);
-            }
-
-            // Boosts de vitesse adverses (Danse Draco, Agilité, Nitrocharge,
-            // Hâte...) : le plafond théorique est construit sans stage, alors
-            // que le Pokémon boosté va légitimement plus vite. Sans ça, tout
-            // adversaire qui se boost devient un porteur de Mouchoir Choix.
-            int stageAdv = BoostTracker.getStageAdversaire(Stat.VITESSE);
-            if (stageAdv > 0) {
-                meilleureVitesse = meilleureVitesse * (2.0 + stageAdv) / 2.0;
-            }
-
-            // Vent Arrière est désormais suivi par camp avec sa durée réelle
-            // (FieldTracker), donc on n'élargit le plafond que tant qu'il est
-            // effectivement actif, au lieu de l'élargir pour tout le reste du
-            // combat dès qu'il a été lancé une fois.
-            if (FieldTracker.isTailwindAdversaire()) {
-                meilleureVitesse *= 2.0;
-            }
-
-            // Marge de sécurité : on ne conclut qu'au-delà d'un écart net.
-            // Un dépassement de quelques points relève plus probablement d'une
-            // hypothèse manquante au modèle que d'un objet, alors qu'un vrai
-            // Mouchoir Choix apporte +50%.
-            meilleureVitesse *= 1.10;
-
-            if (vitesseMinObservee > meilleureVitesse) {
-                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
-            }
-        } catch (Exception ignored) {
-        }
-    }
 
     /**
      * Confirme Évoluroc si Smogon montre une dominance TRÈS forte (≥80%)
@@ -1422,6 +1530,24 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
+            prioriteObjetCeTour = true;
+            return;
+        }
+        if (cle.contains("futuresight") || cle.contains("doomdesire")) {
+            attaqueDiffereeCeTour = true;
+        }
+        if (cle.startsWith("cobblemon.battle.damage.")
+                && DEGATS_ANNEXES.contains(cle.substring("cobblemon.battle.damage.".length()))) {
+            // arg0 = le Pokémon qui perd les PV (vu en log pour lifeorb, recoil,
+            // rockyhelmet). Pas de return : damage.lifeorb est traité plus bas.
+            Object[] argsDeg = contenu.getArgs();
+            if (argsDeg.length > 0 && Boolean.FALSE.equals(
+                    determinerAttaquant(MoveUseTracker.extraireProprietaire(argsDeg[0])))) {
+                degatsAnnexesJoueurCeTour = true;
+            }
+        }
+
         if (cle.equals("cobblemon.battle.crit")) {
             critCeTour = true;
             return;
@@ -1795,6 +1921,28 @@ public final class ObservationCollector {
     // qui l'a subi, donc tout tour avec un critique est ignoré).
     private static boolean critCeTour = false;
     private static boolean multiCoupsCeTour = false;
+    // Vive-Griffe, Tir Vif, Baie Chérim : l'ordre du tour ne dit rien de la vitesse.
+    private static boolean prioriteObjetCeTour = false;
+    // Perte de PV du joueur qui ne vient pas du coup adverse (Orbe Vie, recul,
+    // Casque Brut, Peau Dure...) : la perte mesurée ne mesure plus le coup.
+    private static boolean degatsAnnexesJoueurCeTour = false;
+    // Prescience / Carnareket qui frappe : dégâts sans lien avec le coup du tour.
+    private static boolean attaqueDiffereeCeTour = false;
+    private static final Set<String> DEGATS_ANNEXES = Set.of(
+        "lifeorb", "recoil", "rockyhelmet", "roughskin", "ironbarbs", "spikyshield",
+        "confusion", "mindblown", "steelbeam", "struggle", "curse", "chloroblast",
+        "bellydrum", "highjumpkick", "jumpkick", "crash", "explosion", "jabocaberry",
+        "rowapberry", "powder", "burningbulwark");
+
+    // État au début du tour en cours (DebutTour) et du tour qu'on analyse (TourEcoule).
+    private static int stageVitJoueurDebutTour = 0, stageVitJoueurTourEcoule = 0;
+    private static int stageVitAdvTourEcoule = 0;
+    private static boolean tailwindJoueurDebutTour = false, tailwindJoueurTourEcoule = false;
+    private static boolean tailwindAdvDebutTour = false, tailwindAdvTourEcoule = false;
+    private static boolean distorsionDebutTour = false, distorsionTourEcoule = false;
+    private static Pokemon.Statut statutJoueurDebutTour = null, statutJoueurTourEcoule = null;
+    private static Pokemon.Statut statutAdvDebutTour = null, statutAdvTourEcoule = null;
+    private static String especeJoueurDebutTour = null, especeJoueurTourEcoule = null;
     private static int stageAtkSpeAdvDebutTour = 0;
 
     // Snapshots supplémentaires pour Défiant/Battant (une autre stat baisse,
@@ -1855,6 +2003,13 @@ public final class ObservationCollector {
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
                 || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
         if (capacite.isMultiCoups() || multiCoupsCeTour || critCeTour) return;
+        // Ma perte de PV doit venir du coup seul.
+        if (degatsAnnexesJoueurCeTour || attaqueDiffereeCeTour) return;
+        // Même Pokémon de chaque côté que celui qui a commencé le tour : sinon
+        // la perte compare deux Pokémon différents (switch, Demi-Tour).
+        if (!espece.equals(espaceAdversaireDuTour)) return;
+        if (joueurAChangeCeTour()) return;
+        if (PUISSANCE_NON_MODELISEE.contains(capacite.getNom())) return;
         boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
         if (!physique && capacite.getCategorie() != com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE) return;
         String nomCap = capacite.getNom();
@@ -1920,6 +2075,9 @@ public final class ObservationCollector {
                 if (st != Stat.PV) h.setStage(st, BoostTracker.getStageAdversaire(st));
             }
             h.setStage(statAtk, stageAtk);
+            // Statut du début du tour : une brûlure reçue APRÈS le coup ne
+            // doit pas faire croire à un coup physique deux fois trop fort.
+            if (statutAdvTourEcoule != null) h.setStatut(statutAdvTourEcoule);
             DamageCalculator.Resultat r = DamageCalculator.calculer(
                 h, joueur, capacite, terrainNeutre, terrainNeutre.getEcransJoueur(), false);
             if (r.immunise) return;
@@ -1927,9 +2085,27 @@ public final class ObservationCollector {
         }
         if (maxSansObjet < 3.0) return;   // coup trop faible pour être lisible
 
-        // Ce qu'un objet "faible" peut expliquer : x1.2 (objets de type,
-        // Ceinture Pro), x1.3 si Garde Magik possible (Orbe Vie sans recul).
-        double seuilObjetFaible = talents.contains("Garde Magik") ? 1.3 : 1.2;
+        // Ce qu'autre chose qu'un Choix peut expliquer : x1.2 (objets de type,
+        // Ceinture Pro), et les talents que le calcul ne modélise pas, avec
+        // leur bonus maximal quand leur condition peut être remplie.
+        double seuilObjetFaible = 1.2;
+        Set<String> bruts = talentsBrutsPossibles(adversaire);
+        PokemonType typeCap = capacite.getType();
+        if (bruts.contains("magicguard") || bruts.contains("sheerforce")) seuilObjetFaible = Math.max(seuilObjetFaible, 1.3); // Orbe Vie sans recul
+        if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) seuilObjetFaible = Math.max(seuilObjetFaible, 1.3); // Énergie Booster
+        if (bruts.contains("punkrock")) seuilObjetFaible = Math.max(seuilObjetFaible, 1.3);
+        if (bruts.contains("analytic") && Boolean.FALSE.equals(adversaireAAgiEnPremier)) seuilObjetFaible = Math.max(seuilObjetFaible, 1.3);
+        if (bruts.contains("rivalry") || bruts.contains("neuroforce")) seuilObjetFaible = Math.max(seuilObjetFaible, 1.25);
+        if (bruts.contains("orichalcumpulse") || bruts.contains("hadronengine")) seuilObjetFaible = Math.max(seuilObjetFaible, 1.34);
+        // Bonus x1.5 ou plus : impossible à distinguer d'un Choix, on s'abstient.
+        if (physique && bruts.contains("gorillatactics")) return;
+        if (!physique && bruts.contains("solarpower")) return;
+        if (bruts.contains("megalauncher") || bruts.contains("steelworker") || bruts.contains("steelyspirit")
+                || bruts.contains("flashfire") || bruts.contains("electromorphosis") || bruts.contains("windpower")) return;
+        // Talents qui changent le type des capacités Normal : prévision fausse.
+        if (typeCap == PokemonType.NORMAL && (bruts.contains("aerilate") || bruts.contains("pixilate")
+                || bruts.contains("refrigerate") || bruts.contains("galvanize") || bruts.contains("normalize"))) return;
+        if (bruts.contains("liquidvoice")) return;
         double marge = 1.03;
         double margeAbs = 1.0;
         if (perteCoup <= maxSansObjet * seuilObjetFaible * marge + margeAbs) return;
@@ -2029,6 +2205,9 @@ public final class ObservationCollector {
         coupJoueurDuTour = null;
         coupAdversaireDuTour = null;
         critCeTour = false;
+        prioriteObjetCeTour = false;
+        degatsAnnexesJoueurCeTour = false;
+        attaqueDiffereeCeTour = false;
         multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
         espaceAdversaireDuTour = null;
