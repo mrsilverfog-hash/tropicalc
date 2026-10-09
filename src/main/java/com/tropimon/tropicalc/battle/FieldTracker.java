@@ -98,6 +98,10 @@ public final class FieldTracker {
     /** Même principe que poseurEcranAdversaire, mais pour le terrain (peut être posé par n'importe quel camp). */
     private static String poseurTerrainAdversaire = null;
     private static boolean correctionChampDuitAppliquee = false;
+    // Messages de tour reçus depuis le début du champ en cours, et durée
+    // supposée au départ (5, ou 8 si Champ'Duit déjà connu).
+    private static int toursDepuisDebutTerrain = 0;
+    private static int dureeTerrainInitiale = 5;
 
     public static int getToursTerrainRestants() { return toursTerrainRestants; }
 
@@ -265,7 +269,10 @@ public final class FieldTracker {
                 toursTerrainRestants = 0;
             } else {
                 toursTerrainRestants = dureeTerrain();
-                capturerPoseurTerrain();
+                dureeTerrainInitiale = toursTerrainRestants;
+                toursDepuisDebutTerrain = 0;
+                Object[] argsTerrain = contenu.getArgs();
+                capturerPoseurTerrain(argsTerrain.length > 0 ? argsTerrain[0] : null);
             }
         }
     }
@@ -339,9 +346,20 @@ public final class FieldTracker {
         }
     }
 
-    private static void capturerPoseurTerrain() {
+    /**
+     * Le message fieldstart désigne le poseur (owned_pokemon(dresseur, espèce),
+     * vu en log). L'ancienne version attribuait TOUJOURS le champ à
+     * l'adversaire actif, y compris quand c'était mon Wimessir qui le posait.
+     * Poseur inconnu ou dans mon camp : aucun Champ'Duit ne sera déduit.
+     */
+    private static void capturerPoseurTerrain(Object argPoseur) {
         correctionChampDuitAppliquee = false;
+        poseurTerrainAdversaire = null;
         try {
+            if (argPoseur == null) return;
+            Boolean adverse = ObservationCollector.determinerAttaquant(
+                MoveUseTracker.extraireProprietaire(argPoseur));
+            if (!Boolean.TRUE.equals(adverse)) return;
             com.tropimon.tropicalc.calc.Pokemon adv = BattleStateTracker.getAdversaireActif();
             if (adv != null) poseurTerrainAdversaire = adv.getEspece();
         } catch (Exception ignored) {
@@ -372,13 +390,21 @@ public final class FieldTracker {
                 correctionArgilePouvoirAppliquee = true;
             }
         }
-        if (toursTerrainRestants > 0) {
-            toursTerrainRestants--;
-            // Même logique que Lumargile ci-dessus, pour Champ'Duit sur le terrain.
-            if (toursTerrainRestants == 0 && terrainActif != Field.TypeTerrain.AUCUN && !correctionChampDuitAppliquee) {
-                toursTerrainRestants = 3;
-                ObservationCollector.confirmerObjetDirect(poseurTerrainAdversaire, "Champ'Duit");
+        if (terrainActif != Field.TypeTerrain.AUCUN) {
+            toursDepuisDebutTerrain++;
+            // Jamais 0 tant que le champ est actif : la fin réelle arrive par
+            // le message fieldend, pas par ce compte.
+            if (toursTerrainRestants > 1) toursTerrainRestants--;
+
+            // Champ'Duit : preuve seulement quand le champ survit à un 6e
+            // message de tour. Les logs montrent qu'un champ normal posé entre
+            // deux tours (talent à l'entrée) voit passer 5 messages de tour
+            // avant sa fin : l'ancien compte (5, -1 par message, conclusion à 0)
+            // concluait donc au Champ'Duit sur TOUS les champs normaux.
+            if (toursDepuisDebutTerrain >= 6 && dureeTerrainInitiale < 8 && !correctionChampDuitAppliquee) {
                 correctionChampDuitAppliquee = true;
+                toursTerrainRestants = Math.max(1, 8 - toursDepuisDebutTerrain);
+                ObservationCollector.confirmerObjetDirect(poseurTerrainAdversaire, "Champ'Duit");
             }
         }
     }
@@ -417,6 +443,8 @@ public final class FieldTracker {
         toursTerrainRestants = 0;
         poseurTerrainAdversaire = null;
         correctionChampDuitAppliquee = false;
+        toursDepuisDebutTerrain = 0;
+        dureeTerrainInitiale = 5;
     }
 
     /**

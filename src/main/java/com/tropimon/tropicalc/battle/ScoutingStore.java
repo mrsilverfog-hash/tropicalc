@@ -135,6 +135,28 @@ public final class ScoutingStore {
                     }
                 }
             }
+            // Purge unique des Champ'Duit enregistrés : tous venaient d'une
+            // déduction fausse (compte de tours décalé d'un tour, champ
+            // attribué à l'adversaire même posé par le joueur). Un faux objet
+            // confirmé bloquait ensuite la détection du vrai (Bandeau Choix).
+            // Fichier témoin pour ne la faire qu'une fois et garder les futurs
+            // Champ'Duit, désormais prouvés.
+            try {
+                Path temoin = FabricLoader.getInstance().getConfigDir()
+                    .resolve("tropicalc-scouting-purge-champduit.done");
+                if (!Files.exists(temoin)) {
+                    for (Map<String, Faits> parEspece : donnees.values()) {
+                        for (Faits f : parEspece.values()) {
+                            if ("Champ'Duit".equals(f.objet)) {
+                                f.objet = null;
+                                migrationAppliquee = true;
+                            }
+                        }
+                    }
+                    Files.writeString(temoin, "ok");
+                }
+            } catch (Exception ignored) {
+            }
             if (migrationAppliquee) {
                 sauvegarder();
             }
