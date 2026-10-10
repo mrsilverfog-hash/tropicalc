@@ -1,0 +1,262 @@
+jar: /home/runner/.gradle/caches/modules-2/files-2.1/maven.modrinth/MdwFAVRL/kF7CvxTo/f192cda3fdfec0f20d1dee1887ec1b9e77b1618c/MdwFAVRL-kF7CvxTo.jar
+===== com.cobblemon.mod.common.client.battle.ClientBattle
+Compiled from "ClientBattle.java"
+public final class com.cobblemon.mod.common.client.battle.ClientBattle {
+  public com.cobblemon.mod.common.client.battle.ClientBattle(java.util.UUID, com.cobblemon.mod.common.battles.BattleFormat);
+  public final java.util.UUID getBattleId();
+  public final com.cobblemon.mod.common.battles.BattleFormat getBattleFormat();
+  public final boolean getMinimised();
+  public final void setMinimised(boolean);
+  public final boolean getSpectating();
+  public final void setSpectating(boolean);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleSide getSide1();
+  public final com.cobblemon.mod.common.client.battle.ClientBattleSide getSide2();
+  public final com.cobblemon.mod.common.client.battle.ClientBattleActor getWildActor();
+  public final void setWildActor(com.cobblemon.mod.common.client.battle.ClientBattleActor);
+  public final com.cobblemon.mod.common.api.pokedex.PokedexEntryProgress getKnowledge();
+  public final void setKnowledge(com.cobblemon.mod.common.api.pokedex.PokedexEntryProgress);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleSide[] getSides();
+  public final java.util.List<com.cobblemon.mod.common.client.battle.SingleActionRequest> getPendingActionRequests();
+  public final void setPendingActionRequests(java.util.List<com.cobblemon.mod.common.client.battle.SingleActionRequest>);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleMessageQueue getMessages();
+  public final boolean getMustChoose();
+  public final void setMustChoose(boolean);
+  public final com.cobblemon.mod.common.client.battle.SingleActionRequest getFirstUnansweredRequest();
+  public final com.cobblemon.mod.common.client.battle.SingleActionRequest getLastAnsweredRequest();
+  public final void cancelLastAnsweredRequest();
+  public final void checkForFinishedChoosing();
+  public final kotlin.Pair<com.cobblemon.mod.common.client.battle.ClientBattleActor, com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon> getPokemonFromPNX(java.lang.String);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleActor getParticipatingActor(java.util.UUID);
+  public final boolean isPvW();
+  public final com.cobblemon.mod.common.client.battle.ClientBattleActor findWildActor();
+}
+===== com.cobblemon.mod.common.client.battle.ClientBattlePokemon
+Compiled from "ClientBattlePokemon.java"
+public final class com.cobblemon.mod.common.client.battle.ClientBattlePokemon {
+  public com.cobblemon.mod.common.client.battle.ClientBattleActor actor;
+  public com.cobblemon.mod.common.client.battle.ClientBattlePokemon(java.util.UUID, net.minecraft.class_5250, com.cobblemon.mod.common.api.pokemon.PokemonProperties, java.util.Set<java.lang.String>, float, float, boolean, com.cobblemon.mod.common.pokemon.status.PersistentStatus, java.util.Map<com.cobblemon.mod.common.api.pokemon.stats.Stat, java.lang.Integer>);
+  public final java.util.UUID getUuid();
+  public final net.minecraft.class_5250 getDisplayName();
+  public final void setDisplayName(net.minecraft.class_5250);
+  public final com.cobblemon.mod.common.api.pokemon.PokemonProperties getProperties();
+  public final void setProperties(com.cobblemon.mod.common.api.pokemon.PokemonProperties);
+  public final float getHpValue();
+  public final void setHpValue(float);
+  public final float getMaxHp();
+  public final void setMaxHp(float);
+  public final boolean isHpFlat();
+  public final void setHpFlat(boolean);
+  public final com.cobblemon.mod.common.pokemon.status.PersistentStatus getStatus();
+  public final void setStatus(com.cobblemon.mod.common.pokemon.status.PersistentStatus);
+  public final java.util.Map<com.cobblemon.mod.common.api.pokemon.stats.Stat, java.lang.Integer> getStatChanges();
+  public final void setStatChanges(java.util.Map<com.cobblemon.mod.common.api.pokemon.stats.Stat, java.lang.Integer>);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleActor getActor();
+  public final void setActor(com.cobblemon.mod.common.client.battle.ClientBattleActor);
+  public final com.cobblemon.mod.common.pokemon.Species getSpecies();
+  public final int getLevel();
+  public final com.cobblemon.mod.common.pokemon.Gender getGender();
+  public final com.cobblemon.mod.common.client.render.models.blockbench.FloatingState getState();
+  public final void setState(com.cobblemon.mod.common.client.render.models.blockbench.FloatingState);
+  public final void updateAspects(java.util.Set<java.lang.String>);
+}
+===== com.cobblemon.mod.common.client.battle.ClientBattleActor
+Compiled from "ClientBattleActor.java"
+public final class com.cobblemon.mod.common.client.battle.ClientBattleActor {
+  public com.cobblemon.mod.common.client.battle.ClientBattleSide side;
+  public com.cobblemon.mod.common.client.battle.ClientBattleActor(java.lang.String, net.minecraft.class_5250, java.util.UUID, com.cobblemon.mod.common.api.battles.model.actor.ActorType);
+  public final java.lang.String getShowdownId();
+  public final net.minecraft.class_5250 getDisplayName();
+  public final java.util.UUID getUuid();
+  public final com.cobblemon.mod.common.api.battles.model.actor.ActorType getType();
+  public final com.cobblemon.mod.common.client.battle.ClientBattleSide getSide();
+  public final void setSide(com.cobblemon.mod.common.client.battle.ClientBattleSide);
+  public final java.util.List<com.cobblemon.mod.common.pokemon.Pokemon> getPokemon();
+  public final void setPokemon(java.util.List<com.cobblemon.mod.common.pokemon.Pokemon>);
+  public final java.util.List<com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon> getActivePokemon();
+}
+===== com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon
+Compiled from "ActiveClientBattlePokemon.java"
+public final class com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon implements com.cobblemon.mod.common.battles.Targetable {
+  public com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon(com.cobblemon.mod.common.client.battle.ClientBattleActor, com.cobblemon.mod.common.client.battle.ClientBattlePokemon);
+  public final com.cobblemon.mod.common.client.battle.ClientBattleActor getActor();
+  public final com.cobblemon.mod.common.client.battle.ClientBattlePokemon getBattlePokemon();
+  public final void setBattlePokemon(com.cobblemon.mod.common.client.battle.ClientBattlePokemon);
+  public final java.util.concurrent.ConcurrentLinkedQueue<com.cobblemon.mod.common.client.battle.animations.TileAnimation> getAnimations();
+  public final void setAnimations(java.util.concurrent.ConcurrentLinkedQueue<com.cobblemon.mod.common.client.battle.animations.TileAnimation>);
+  public final float getXDisplacement();
+  public final void setXDisplacement(float);
+  public final float getInvisibleX();
+  public final void setInvisibleX(float);
+  public final com.cobblemon.mod.common.client.battle.ClientBallDisplay getBallCapturing();
+  public final void setBallCapturing(com.cobblemon.mod.common.client.battle.ClientBallDisplay);
+  public java.util.List<com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon> getAllActivePokemon();
+  public java.util.List<com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon> getActorPokemon();
+  public java.lang.Iterable<com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon> getSidePokemon();
+  public java.lang.String getActorShowdownId();
+  public com.cobblemon.mod.common.battles.BattleFormat getFormat();
+  public boolean isAllied(com.cobblemon.mod.common.battles.Targetable);
+  public boolean hasPokemon();
+  public final int getHue();
+  public final void animate(float);
+  public java.lang.String getPNX();
+  public java.util.List<com.cobblemon.mod.common.battles.Targetable> getAdjacent();
+  public com.cobblemon.mod.common.battles.Targetable getOppositeOpponent();
+  public java.util.List<com.cobblemon.mod.common.battles.Targetable> getAdjacentAllies();
+  public java.util.List<com.cobblemon.mod.common.battles.Targetable> getAdjacentOpponents();
+  public java.lang.String getSignedDigitRelativeTo(com.cobblemon.mod.common.battles.Targetable);
+  public int getDigitRelativeTo(com.cobblemon.mod.common.battles.Targetable);
+  public int getDigit(boolean);
+  public char getLetter();
+  public java.util.List<com.cobblemon.mod.common.battles.Targetable> getMultiTargetList(com.cobblemon.mod.common.battles.MoveTarget);
+  public java.lang.Iterable getAllActivePokemon();
+  public java.lang.Iterable getActorPokemon();
+}
+===== com.cobblemon.mod.common.battles.ShowdownActionRequest
+Compiled from "ShowdownActionRequest.java"
+public final class com.cobblemon.mod.common.battles.ShowdownActionRequest {
+  public com.cobblemon.mod.common.battles.ShowdownActionRequest(boolean, java.util.List<com.cobblemon.mod.common.battles.ShowdownMoveset>, java.util.List<java.lang.Boolean>, boolean, com.cobblemon.mod.common.battles.ShowdownSide);
+  public com.cobblemon.mod.common.battles.ShowdownActionRequest(boolean, java.util.List, java.util.List, boolean, com.cobblemon.mod.common.battles.ShowdownSide, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public final boolean getWait();
+  public final void setWait(boolean);
+  public final java.util.List<com.cobblemon.mod.common.battles.ShowdownMoveset> getActive();
+  public final void setActive(java.util.List<com.cobblemon.mod.common.battles.ShowdownMoveset>);
+  public final java.util.List<java.lang.Boolean> getForceSwitch();
+  public final void setForceSwitch(java.util.List<java.lang.Boolean>);
+  public final boolean getNoCancel();
+  public final void setNoCancel(boolean);
+  public final com.cobblemon.mod.common.battles.ShowdownSide getSide();
+  public final void setSide(com.cobblemon.mod.common.battles.ShowdownSide);
+  public final <T, E extends com.cobblemon.mod.common.battles.Targetable> java.util.List<T> iterate(java.util.List<? extends E>, kotlin.jvm.functions.Function3<? super E, ? super com.cobblemon.mod.common.battles.ShowdownMoveset, ? super java.lang.Boolean, ? extends T>);
+  public final void saveToBuffer(net.minecraft.class_9129);
+  public final com.cobblemon.mod.common.battles.ShowdownActionRequest loadFromBuffer(net.minecraft.class_9129);
+  public final void sanitize(com.cobblemon.mod.common.api.battles.model.PokemonBattle, com.cobblemon.mod.common.api.battles.model.actor.BattleActor);
+  public com.cobblemon.mod.common.battles.ShowdownActionRequest();
+}
+===== com.cobblemon.mod.common.battles.ShowdownMoveset
+Compiled from "ShowdownMoveset.java"
+public final class com.cobblemon.mod.common.battles.ShowdownMoveset {
+  public java.util.List<com.cobblemon.mod.common.battles.InBattleMove> moves;
+  public com.cobblemon.mod.common.battles.ShowdownMoveset();
+  public final java.util.List<com.cobblemon.mod.common.battles.InBattleMove> getMoves();
+  public final void setMoves(java.util.List<com.cobblemon.mod.common.battles.InBattleMove>);
+  public final boolean getTrapped();
+  public final void setTrapped(boolean);
+  public final boolean getCanMegaEvo();
+  public final void setCanMegaEvo(boolean);
+  public final boolean getCanUltraBurst();
+  public final void setCanUltraBurst(boolean);
+  public final java.util.List<com.cobblemon.mod.common.battles.InBattleGimmickMove> getCanZMove();
+  public final void setCanZMove(java.util.List<com.cobblemon.mod.common.battles.InBattleGimmickMove>);
+  public final boolean getCanDynamax();
+  public final void setCanDynamax(boolean);
+  public final java.util.List<com.cobblemon.mod.common.battles.InBattleGimmickMove> getMaxMoves();
+  public final void setMaxMoves(java.util.List<com.cobblemon.mod.common.battles.InBattleGimmickMove>);
+  public final java.lang.String getCanTerastallize();
+  public final void setCanTerastallize(java.lang.String);
+  public final java.util.List<com.cobblemon.mod.common.battles.ShowdownMoveset$Gimmick> getPendingGimmickUsedThisTurn();
+  public final void saveToBuffer(net.minecraft.class_9129);
+  public final com.cobblemon.mod.common.battles.ShowdownMoveset loadFromBuffer(net.minecraft.class_9129);
+  public final boolean hasActiveGimmick();
+  public final java.util.List<com.cobblemon.mod.common.battles.ShowdownMoveset$Gimmick> getGimmicks();
+  public final kotlin.Unit setGimmickMapping();
+  public final void blockGimmick(com.cobblemon.mod.common.battles.ShowdownMoveset$Gimmick);
+}
+===== com.cobblemon.mod.common.battles.InBattleMove
+Compiled from "InBattleMove.java"
+public final class com.cobblemon.mod.common.battles.InBattleMove {
+  public static final com.cobblemon.mod.common.battles.InBattleMove$Companion Companion;
+  public java.lang.String id;
+  public java.lang.String move;
+  public com.cobblemon.mod.common.battles.InBattleMove();
+  public final java.lang.String getId();
+  public final void setId(java.lang.String);
+  public final java.lang.String getMove();
+  public final void setMove(java.lang.String);
+  public final int getPp();
+  public final void setPp(int);
+  public final int getMaxpp();
+  public final void setMaxpp(int);
+  public final com.cobblemon.mod.common.battles.MoveTarget getTarget();
+  public final void setTarget(com.cobblemon.mod.common.battles.MoveTarget);
+  public final boolean getDisabled();
+  public final void setDisabled(boolean);
+  public final com.cobblemon.mod.common.battles.InBattleGimmickMove getGimmickMove();
+  public final void setGimmickMove(com.cobblemon.mod.common.battles.InBattleGimmickMove);
+  public final java.util.List<com.cobblemon.mod.common.battles.Targetable> getTargets(com.cobblemon.mod.common.battles.ActiveBattlePokemon);
+  public final boolean canBeUsed();
+  public final boolean mustBeUsed();
+  public final void saveToBuffer(net.minecraft.class_9129);
+  static {};
+}
+===== com.cobblemon.mod.common.client.battle.SingleActionRequest
+Compiled from "SingleActionRequest.java"
+public final class com.cobblemon.mod.common.client.battle.SingleActionRequest {
+  public static final com.cobblemon.mod.common.client.battle.SingleActionRequest$Companion Companion;
+  public com.cobblemon.mod.common.client.battle.SingleActionRequest(com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon, com.cobblemon.mod.common.battles.ShowdownSide, com.cobblemon.mod.common.battles.ShowdownMoveset, boolean, boolean);
+  public final com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon getActivePokemon();
+  public final com.cobblemon.mod.common.battles.ShowdownSide getSide();
+  public final com.cobblemon.mod.common.battles.ShowdownMoveset getMoveSet();
+  public final boolean getForceSwitch();
+  public final boolean getCanCancel();
+  public final com.cobblemon.mod.common.battles.ShowdownActionResponse getResponse();
+  public final void setResponse(com.cobblemon.mod.common.battles.ShowdownActionResponse);
+  static {};
+}
+      340  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request.png
+      127  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_arrows.png
+      377  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_double.png
+      428  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_multi.png
+      201  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_multi_overlay_opponent.png
+      169  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_multi_overlay_partner.png
+      253  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_multi_overlay_partner_leave.png
+      172  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_overlay.png
+      452  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_royal.png
+      238  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_royal_overlay.png
+      352  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_single.png
+      407  1980-01-01 00:00   assets/cobblemon/textures/gui/interact/request/battle_request_triple.png
+     1509  1980-01-01 00:00   com/cobblemon/mod/common/api/moves/MoveSet$Companion.class
+    22859  1980-01-01 00:00   com/cobblemon/mod/common/api/moves/MoveSet.class
+     2495  1980-01-01 00:00   com/cobblemon/mod/common/battles/InBattleMove$Companion.class
+     5692  1980-01-01 00:00   com/cobblemon/mod/common/battles/InBattleMove.class
+     1030  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownActionRequest$WhenMappings.class
+    12756  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownActionRequest.class
+     2637  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMoveset$Gimmick.class
+     1000  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMoveset$WhenMappings.class
+    17511  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMoveset.class
+     1848  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMovesetAdapter$MovesetExclusionStrategy.class
+     1266  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMovesetAdapter$deserialize$1$maxMovesToken$1.class
+     3952  1980-01-01 00:00   com/cobblemon/mod/common/battles/ShowdownMovesetAdapter.class
+     5933  1980-01-01 00:00   com/cobblemon/mod/common/battles/TeamManager$TeamRequest.class
+     5786  1980-01-01 00:00   com/cobblemon/mod/common/battles/interpreter/instructions/RequestInstruction.class
+     4121  1980-01-01 00:00   com/cobblemon/mod/common/client/battle/ClientTeamRequest.class
+     4275  1980-01-01 00:00   com/cobblemon/mod/common/client/battle/SingleActionRequest$Companion.class
+     3252  1980-01-01 00:00   com/cobblemon/mod/common/client/battle/SingleActionRequest.class
+        0  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/
+     6592  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleConfigureGUI$BattleTypeTile.class
+     6156  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleConfigureGUI$Companion.class
+    28788  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleConfigureGUI.class
+     1189  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleRequestButton$Companion.class
+     5944  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleRequestButton.class
+     1307  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleRequestNavigationButton$Companion.class
+     6056  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleRequestNavigationButton.class
+     1347  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleResponseButton$Companion.class
+     5546  1980-01-01 00:00   com/cobblemon/mod/common/client/gui/interact/battleRequest/BattleResponseButton.class
+     4676  1980-01-01 00:00   com/cobblemon/mod/common/client/net/battle/BattleQueueRequestHandler.class
+     2823  1980-01-01 00:00   com/cobblemon/mod/common/client/net/battle/TeamRequestExpiredHandler.class
+     3060  1980-01-01 00:00   com/cobblemon/mod/common/client/net/battle/TeamRequestNotificationHandler.class
+     3532  1980-01-01 00:00   com/cobblemon/mod/common/datafixer/fix/MovesetJsonFix.class
+     1600  1980-01-01 00:00   com/cobblemon/mod/common/datafixer/fix/RaisedPPStagesFix$processPPStages$moveSetJson$1.class
+     2237  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/BattleQueueRequestPacket$Companion.class
+     4291  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/BattleQueueRequestPacket.class
+     2005  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/TeamRequestExpiredPacket$Companion.class
+     4625  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/TeamRequestExpiredPacket.class
+     2112  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/TeamRequestNotificationPacket$Companion.class
+     5225  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/battle/TeamRequestNotificationPacket.class
+     3187  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/pokemon/update/MoveSetUpdatePacket$Companion.class
+     3717  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/client/pokemon/update/MoveSetUpdatePacket.class
+     1899  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/server/battle/BattleTeamRequestPacket$Companion.class
+     4093  1980-01-01 00:00   com/cobblemon/mod/common/net/messages/server/battle/BattleTeamRequestPacket.class
+     3589  1980-01-01 00:00   com/cobblemon/mod/common/net/serverhandling/battle/TeamRequestHandler.class
+     3658  1980-01-01 00:00   com/cobblemon/mod/common/net/serverhandling/battle/TeamRequestResponseHandler.class
+     1015  1980-01-01 00:00   com/cobblemon/mod/common/pokemon/requirements/MoveSetRequirement$Companion.class
+     3978  1980-01-01 00:00   com/cobblemon/mod/common/pokemon/requirements/MoveSetRequirement.class
