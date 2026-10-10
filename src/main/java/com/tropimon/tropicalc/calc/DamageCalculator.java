@@ -542,6 +542,56 @@ public class DamageCalculator {
                 // Triple Axel : 20+40+60, affiché comme total
                 puissance = 120;
             }
+            case "brine" -> {
+                // Saumure : x2 si la cible a 50 % de ses PV ou moins
+                if (defenseur.getPvActuels() * 2 <= defenseur.getPvMax()) puissance *= 2;
+            }
+            case "venoshock", "barbbarrage" -> {
+                // Choc Venin / Multi-Toxik : x2 si la cible est empoisonnée
+                Pokemon.Statut s = defenseur.getStatut();
+                if (s == Pokemon.Statut.POISON || s == Pokemon.Statut.POISON_GRAVE) puissance *= 2;
+            }
+            case "infernalparade" -> {
+                // Cortège Funèbre : x2 si la cible a un statut (comme Châtiment)
+                if (defenseur.getStatut() != Pokemon.Statut.AUCUN) puissance *= 2;
+            }
+            case "avalanche", "revenge", "payback" -> {
+                // Avalanche / Vendetta / Représailles : x2 si l'attaquant agit
+                // APRÈS la cible (supposé : la cible attaque). Ordre déduit de la
+                // vitesse, inversé sous Distorsion - même hypothèse que Prise de Bec.
+                double vitAtt = vitesseEnCombat(attaquant, meteo);
+                double vitDef = vitesseEnCombat(defenseur, meteo);
+                boolean distorsion = com.tropimon.tropicalc.battle.FieldTracker.isDistorsion();
+                boolean apres = distorsion ? vitAtt > vitDef : vitAtt < vitDef;
+                if (apres) puissance *= 2;
+            }
+            case "lastrespects" -> {
+                // Hommage Posthume : 50 + 50 par coéquipier K.O. (dans l'équipe du lanceur)
+                int ko = attaquant.isCampAdverse()
+                    ? com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoAdversaire()
+                    : com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoJoueur();
+                puissance = Math.min(300, 50 + 50 * Math.max(0, ko));
+            }
+            case "risingvoltage" -> {
+                // Monte-Tension : x2 sous Champ Électrifié si la cible touche le sol
+                if (ctx.terrain.getTerrain() == Field.TypeTerrain.ELECTRIQUE && estAuSol(defenseur)) puissance *= 2;
+            }
+            case "expandingforce" -> {
+                // Vaste Pouvoir : x1.5 sous Champ Psychique si le lanceur touche le sol
+                if (ctx.terrain.getTerrain() == Field.TypeTerrain.PSYCHIQUE && estAuSol(attaquant)) {
+                    puissance = puissance * 3 / 2;
+                }
+            }
+            case "mistyexplosion" -> {
+                // Explo-Brume : x1.5 sous Champ Brumeux si le lanceur touche le sol
+                if (ctx.terrain.getTerrain() == Field.TypeTerrain.BRUMEUX && estAuSol(attaquant)) {
+                    puissance = puissance * 3 / 2;
+                }
+            }
+            case "psyblade" -> {
+                // Lame Psychique : x1.5 sous Champ Électrifié
+                if (ctx.terrain.getTerrain() == Field.TypeTerrain.ELECTRIQUE) puissance = puissance * 3 / 2;
+            }
             case "eruption", "waterspout", "dragonenergy" -> {
                 // Éruption / Giclédo / Draco-Énergie : 150 x PV restants / PV max
                 int pvMax = Math.max(1, attaquant.getPvMax());
@@ -729,6 +779,11 @@ public class DamageCalculator {
         if (efficacite > 1.0) {
             if ("Ceinture Pro".equals(attaquant.getObjet())) {
                 ctx.multiplicateurDegatsFinal *= 1.2;
+            }
+            // Turbo-Charge / Électro-Dérive : x1.33 sur un coup super efficace
+            String nomCap = ctx.capacite.getNom();
+            if ("collisioncourse".equals(nomCap) || "electrodrift".equals(nomCap)) {
+                ctx.multiplicateurDegatsFinal *= 5461.0 / 4096.0;
             }
             if ("Cérébro-Force".equals(attaquant.getTalent())) {
                 ctx.multiplicateurDegatsFinal *= 5120.0 / 4096.0;

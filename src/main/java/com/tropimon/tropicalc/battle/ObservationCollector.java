@@ -910,15 +910,15 @@ public final class ObservationCollector {
     // Capacités à puissance conditionnelle que le calcul ne modélise pas :
     // leur écart avec la prévision ne dit rien de l'objet.
     private static final Set<String> PUISSANCE_NON_MODELISEE = Set.of(
-        "avalanche", "revenge", "payback", "brine", "venoshock", "assurance",
-        "stompingtantrum", "temperflare", "lashout", "retaliate", "expandingforce",
-        "risingvoltage", "psyblade", "collisioncourse", "electrodrift", "terrainpulse",
-        "barbbarrage", "infernalparade", "smellingsalts", "wakeupslap", "round",
-        "echoedvoice", "furycutter", "rollout", "iceball", "trumpcard", "punishment",
-        "beatup", "fling", "naturalgift", "present", "magnitude", "spitup", "foulplay",
-        "photongeyser", "terablast", "shellsidearm", "ragingbull", "futuresight",
-        "doomdesire", "bodypress", "electroball", "lastrespects", "pursuit", "hiddenpower",
-        "tripleaxel", "triplekick", "populationbomb", "ragefist");
+        // Doublées selon l'ordre réel du tour, que le calcul ne fait que supposer
+        "avalanche", "revenge", "payback", "assurance", "stompingtantrum", "temperflare",
+        "lashout", "retaliate", "pursuit", "furycutter", "rollout", "iceball", "echoedvoice",
+        "round", "ragefist",
+        // Autres puissances non calculées ou trop variables
+        "smellingsalts", "wakeupslap", "trumpcard", "punishment", "beatup", "fling",
+        "naturalgift", "present", "magnitude", "spitup", "foulplay", "photongeyser",
+        "terablast", "shellsidearm", "ragingbull", "futuresight", "doomdesire", "bodypress",
+        "electroball", "hiddenpower", "terrainpulse", "tripleaxel", "triplekick", "populationbomb")
 
     // ---------------------------------------------------------------------
     // Bandeau Choix / Lunettes Choix : coup reçu trop fort.
