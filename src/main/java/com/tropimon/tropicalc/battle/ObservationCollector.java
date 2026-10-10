@@ -2932,6 +2932,46 @@ public final class ObservationCollector {
         return s == null ? "" : s.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 
+    /**
+     * Icône de l'objet d'un adversaire pour le panneau d'équipe : seulement
+     * un objet CONFIRMÉ (jamais une estimation ni un objet probable), et rien
+     * une fois l'objet perdu.
+     */
+    public static synchronized ItemStack stackObjetAdverse(String speciesId) {
+        String cle = cleEspece(speciesId);
+        for (Map.Entry<String, String> e : OBJETS_CONFIRMES.entrySet()) {
+            if (cleEspece(e.getKey()).equals(cle) && !OBJETS_RETIRES.contains(e.getKey())) {
+                return stackDepuisNomFr(e.getValue());
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    // Objets du jeu indexés par id sans "_" ("choiceband" -> Bandeau Choix)
+    private static Map<String, Item> ITEMS_PAR_ID = null;
+
+    private static ItemStack stackDepuisNomFr(String objetFr) {
+        try {
+            String id = ShowdownIdMapper.idObjet(objetFr);
+            if (id == null) return ItemStack.EMPTY;
+            if (ITEMS_PAR_ID == null) {
+                Map<String, Item> m = new HashMap<>();
+                for (Identifier ident : Registries.ITEM.getIds()) {
+                    String ns = ident.getNamespace();
+                    if (!"cobblemon".equals(ns) && !"minecraft".equals(ns)) continue;
+                    // cobblemon prioritaire en cas de doublon
+                    String k = ident.getPath().replace("_", "");
+                    if ("cobblemon".equals(ns) || !m.containsKey(k)) m.put(k, Registries.ITEM.get(ident));
+                }
+                ITEMS_PAR_ID = m;
+            }
+            Item item = ITEMS_PAR_ID.get(id);
+            return item == null || item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+        } catch (Throwable t) {
+            return ItemStack.EMPTY;
+        }
+    }
+
     /** "item.cobblemon.rocky_helmet" -> vraie icône de cet objet, EMPTY si inconnu. */
     private static ItemStack stackDepuisCleBrute(String cleBrute) {
         try {

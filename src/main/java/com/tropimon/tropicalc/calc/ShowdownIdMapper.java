@@ -272,6 +272,15 @@ public final class ShowdownIdMapper {
         return TALENTS.get(normaliser(showdownId));
     }
 
+    /** Id Showdown d'un objet depuis son nom français ("Bandeau Choix" -> "choiceband"), ou null. */
+    public static String idObjet(String objetFr) {
+        if (objetFr == null) return null;
+        for (Map.Entry<String, String> e : OBJETS.entrySet()) {
+            if (objetFr.equals(e.getValue())) return e.getKey();
+        }
+        return null;
+    }
+
     public static String objet(String showdownId) {
         return OBJETS.get(normaliser(showdownId));
     }

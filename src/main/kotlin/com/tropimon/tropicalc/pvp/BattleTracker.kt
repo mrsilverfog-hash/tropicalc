@@ -241,8 +241,12 @@ object BattleTracker {
             val statusKey = opponentStatus[key]
             val types     = resolveTypes(pvp.speciesId, pvp.aspects)
 
+            // Objet adverse : icône seulement quand il est confirmé en combat
+            val objetConnu = try {
+                com.tropimon.tropicalc.battle.ObservationCollector.stackObjetAdverse(pvp.speciesId)
+            } catch (_: Throwable) { ItemStack.EMPTY }
             TrackedMon(pvp.speciesId, pvp.aspects, hpPercent, isFainted, statusKey,
-                       types, emptyList(), null, null, ItemStack.EMPTY, isOwn = false)
+                       types, emptyList(), null, null, objetConnu, isOwn = false)
         }
     }
 
