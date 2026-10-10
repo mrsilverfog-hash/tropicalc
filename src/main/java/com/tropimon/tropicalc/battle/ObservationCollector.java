@@ -389,22 +389,12 @@ public final class ObservationCollector {
                 OBJETS_RETIRES.add(adversaire.getEspece());
             }
 
-            // Ballon : explose dès qu'une attaque touche RÉELLEMENT le porteur
-            // (jamais sur les dégâts indirects - confusion, brûlure, poison,
-            // sable, Piège de Roc - vérifié sur Poképédia). perteAdversaire > 0
-            // exclut déjà naturellement le cas d'immunité Sol non consommée
-            // (une capacité Sol contre un Ballon intact inflige 0 dégât - le
-            // Ballon n'éclate d'ailleurs pas dans ce cas précis, confirmé).
-            // IMPORTANT : adversaire ici est l'objet BRUT (BattleStateTracker),
-            // qui ne connaît pas l'objet estimé/confirmé - il faut reconstruire
-            // l'estimation pour savoir si "Ballon" est vraiment ce qu'on pense
-            // qu'il tient, sinon cette condition ne se déclenche quasiment
-            // jamais en pratique.
-            if ("Ballon".equals(construireAdversaireEstime(adversaire).getObjet())
-                    && coupJoueurDuTour != null
-                    && !joueurNAPasAttaque() && perteAdversaire > 0) {
-                OBJETS_RETIRES.add(adversaire.getEspece());
-            }
+            // Ballon adverse : plus de déduction "Ballon estimé + touché =
+            // Ballon éclaté". Elle marquait "objet retiré" sur des Pokémon
+            // qui n'avaient jamais eu de Ballon (Gromago, estimé Ballon par
+            // Smogon, touché par Boutefeu). Le jeu annonce le Ballon à
+            // l'entrée et son éclatement (enditem.airballoon) : ce sont les
+            // seules sources utilisées, voir traiterMessageObjet.
 
             // Symétrique, pour MON propre Ballon. Même si joueur.getObjet()
             // devrait en théorie déjà refléter la vraie destruction de
@@ -1355,8 +1345,8 @@ public final class ObservationCollector {
         if (adv == null || moi == null) return;
         Pokemon e = construireAdversaireEstime(adv);
         String espece = adv.getEspece();
-        String source = OBJETS_CONFIRMES.containsKey(espece) ? "confirmé"
-            : OBJETS_RETIRES.contains(espece) ? "retiré" : "estimé";
+        String source = OBJETS_RETIRES.contains(espece) ? "retiré"
+            : OBJETS_CONFIRMES.containsKey(espece) ? "confirmé" : "estimé";
         appliquerObjetReelJoueur(moi);
         MessageDebugLogger.analyse("TOUR " + numeroTour + " | adv " + (nomAdversaireCourant != null ? nomAdversaireCourant + ":" : "")
             + espece + " " + pct(adv.getPourcentagePv()) + " objet " + e.getObjet() + " (" + source + ") talent "
@@ -1748,8 +1738,8 @@ public final class ObservationCollector {
             b.ev(Stat.DEFENSE_SPE, top.spdEv());
             b.ev(Stat.VITESSE, top.speEv());
             b.nature(ShowdownIdMapper.nature(top.natureShowdownId()));
-            if (!objetRetire && objetConfirme == null && !smogon.topItemsShowdownId().isEmpty()) {
-                String fr = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+            if (!objetRetire && objetConfirme == null) {
+                String fr = objetSmogonProbable(espece, smogon);
                 if (fr != null) b.objet(fr);
             }
             if (!smogon.topAbilitiesShowdownId().isEmpty()) {
@@ -1775,11 +1765,17 @@ public final class ObservationCollector {
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
                 if (objetEstime != null) {
                     b.objet(objetEstime);
-                    // Rendu visible ("Objet confirmé"), pas juste appliqué
-                    // silencieusement au calcul : le narrowing a déjà éliminé
-                    // tous les autres candidats testés, même niveau de
-                    // confiance que le calcul qui s'en sert depuis toujours.
-                    OBJETS_CONFIRMES.put(espece, objetEstime);
+                    // Confirmé seulement si les dégâts ont éliminé "aucun
+                    // objet" (voir extraireObjetUnique) : l'objet restant est
+                    // alors le seul à expliquer les dégâts observés.
+                    confirmerObjet(espece, objetEstime, "dégâts inexplicables sans cet objet ("
+                        + profil.getNbObservations() + " coups mesurés)");
+                    // (fonction appelée à chaque image : une ligne seulement
+                    // quand la confirmation vient réellement d'être posée)
+                    if (objetEstime.equals(OBJETS_CONFIRMES.get(espece))) {
+                        MessageDebugLogger.analyse("OBJET " + espece + " : " + objetEstime
+                            + " confirmé par élimination (" + profil.getNbObservations() + " coups mesurés)");
+                    }
                 }
             }
 
@@ -1926,8 +1922,12 @@ public final class ObservationCollector {
         if (r.koGaranti || r.pourcentageMin <= 0) return;   // Exclure Fermeté/Ceinture Focus
 
         if (perte >= r.pourcentageMin * 0.35 && perte <= r.pourcentageMax * 0.6) {
+            // Supposition seulement (dégâts plus faibles que prévu) : plus de
+            // "objet retiré" sur cette base. Une baie mangée est annoncée par
+            // le jeu (enditem), traitée dans traiterMessageObjet.
             String baie = BAIES_RESISTANCE.get(capacite.getType());
-            if (baie != null) OBJETS_RETIRES.add(adversaire.getEspece());
+            if (baie != null) MessageDebugLogger.analyse("OBJET " + adversaire.getEspece()
+                + " : dégâts faibles, " + baie + " possible (non confirmé)");
         }
     }
 
@@ -2085,7 +2085,17 @@ public final class ObservationCollector {
         }
     }
 
+    /**
+     * L'objet que les dégâts imposent, ou null.
+     *
+     * Tant que "aucun objet" reste possible, les dégâts ne prouvent rien : un
+     * objet sans effet sur cette stat (Grosses Bottes, Restes...) donne
+     * exactement les mêmes dégâts que pas d'objet, et survivait donc seul à
+     * l'élimination. C'est ce qui "confirmait" des Grosses Bottes sur un
+     * Pyrobut alors que les dégâts disaient seulement "pas d'objet offensif".
+     */
     private static String extraireObjetUnique(StatHypothesis hyp) {
+        if (hyp.objetsPossibles.contains(StatHypothesis.AUCUN)) return null;
         Set<String> s = new HashSet<>(hyp.objetsPossibles);
         s.remove(StatHypothesis.AUCUN);
         return s.size() == 1 ? s.iterator().next() : null;
@@ -2131,17 +2141,28 @@ public final class ObservationCollector {
     private static String especePlancherAdv = null;
     private static double pvPlancherAdv = -1;
 
+    // Vrai une fois l'état remis à zéro hors combat : tick() tourne à chaque
+    // image, et la remise à zéro (avec sa ligne "NOUVEAU COMBAT") était
+    // refaite des dizaines de fois par seconde entre deux combats - 25 000
+    // lignes en 25 minutes, le journal débordait et perdait les combats.
+    private static boolean etatVide = false;
+
     public static void tick() {
         if (!BattleStateTracker.estEnCombat()) {
-            reinitialiser();
+            if (!etatVide) {
+                reinitialiser();
+                etatVide = true;
+            }
             return;
         }
+        etatVide = false;
 
         // Détection Restes : les PV adverses remontent de ~1/16 depuis leur point bas.
         // Contrairement au delta net par tour, ceci voit le soin même si le joueur
         // a infligé des dégâts le même tour.
         Pokemon adv = BattleStateTracker.getAdversaireActif();
         if (adv == null) return;
+        ENTREE_ADVERSAIRE_MS.putIfAbsent(adv.getEspece(), System.currentTimeMillis());
         double pvNow = adv.getPourcentagePv();
 
         if (!adv.getEspece().equals(especePlancherAdv)) {
@@ -2286,6 +2307,55 @@ public final class ObservationCollector {
             : "Champ'Duit".equals(objetFr) ? "champ prolongé au-delà de 5 tours" : null);
     }
 
+    // Adversaires dont le jeu a annoncé le Ballon à l'entrée
+    private static final Set<String> BALLON_ANNONCE = new HashSet<>();
+    // Moment (ms) où chaque espèce adverse a été vue active pour la première fois
+    private static final Map<String, Long> ENTREE_ADVERSAIRE_MS = new HashMap<>();
+    // Délai laissé au jeu pour annoncer le Ballon (les messages défilent
+    // environ toutes les 1,5 s)
+    private static final long DELAI_ANNONCE_BALLON_MS = 6000;
+
+    private static boolean mentionneBallon(String cle, Object[] args) {
+        if (cle.contains("airballoon") || cle.contains("air_balloon")) return true;
+        if (!cle.startsWith("cobblemon.battle.item")) return false;
+        for (Object a : args) {
+            String t = String.valueOf(a).toLowerCase().replaceAll("[^a-z]", "");
+            if (t.contains("airballoon")) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Vrai si cette espèce adverse est entrée depuis assez longtemps sans que
+     * le jeu annonce de Ballon : elle n'en a pas.
+     */
+    private static boolean ballonExclu(String espece) {
+        if (BALLON_ANNONCE.contains(espece)) return false;
+        Long entree = ENTREE_ADVERSAIRE_MS.get(espece);
+        return entree != null && System.currentTimeMillis() - entree > DELAI_ANNONCE_BALLON_MS;
+    }
+
+    /** Objet le plus joué sur Smogon, hors Ballon quand le jeu ne l'a pas annoncé. */
+    private static String objetSmogonProbable(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
+        if (smogon == null) return null;
+        for (String id : smogon.topItemsShowdownId()) {
+            String fr = ShowdownIdMapper.objet(id);
+            if (fr == null) continue;
+            if ("Ballon".equals(fr) && ballonExclu(espece)) continue;
+            return fr;
+        }
+        return null;
+    }
+
+    /** L'adversaire a perdu son objet (annoncé par le jeu). */
+    private static void marquerObjetAdversairePerdu(String espece, String detail) {
+        OBJETS_RETIRES.add(espece);
+        OBJETS_CONFIRMES.remove(espece);
+        OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
+        RAISONS_OBJET.remove(espece);
+        MessageDebugLogger.analyse("OBJET " + espece + " : perdu, annoncé par le jeu (enditem." + detail + ")");
+    }
+
     /**
      * Intercepte les messages "cobblemon.battle.enditem.XXX" - confirmé par
      * un vrai log (tropicalc-messages-debug.txt, combat contre Ratdeglingo,
@@ -2405,6 +2475,33 @@ public final class ObservationCollector {
             } catch (Exception ignored) {
             }
             return;
+        }
+
+        // Perte d'objet annoncée par le jeu (enditem.X : Ballon éclaté, baie
+        // mangée, Carte Rouge, Herbe Blanche, Sabotage...). arg0 = celui qui
+        // perd l'objet. Pas de return : les cas particuliers suivent.
+        if (cle.startsWith("cobblemon.battle.enditem.")) {
+            Object[] argsFin = contenu.getArgs();
+            if (argsFin.length > 0 && Boolean.TRUE.equals(
+                    determinerAttaquant(MoveUseTracker.extraireProprietaire(argsFin[0])))) {
+                Pokemon adv = BattleStateTracker.getAdversaireActif();
+                if (adv != null) marquerObjetAdversairePerdu(adv.getEspece(),
+                    cle.substring("cobblemon.battle.enditem.".length()));
+            }
+        } else if (mentionneBallon(cle, contenu.getArgs())) {
+            // Le jeu annonce le Ballon à l'entrée du porteur ("X flotte grâce
+            // à son Ballon") : preuve directe.
+            Object[] argsBallon = contenu.getArgs();
+            if (argsBallon.length > 0 && Boolean.TRUE.equals(
+                    determinerAttaquant(MoveUseTracker.extraireProprietaire(argsBallon[0])))) {
+                Pokemon adv = BattleStateTracker.getAdversaireActif();
+                if (adv != null) {
+                    BALLON_ANNONCE.add(adv.getEspece());
+                    OBJETS_RETIRES.remove(adv.getEspece());
+                    confirmerObjet(adv.getEspece(), "Ballon", "Ballon annoncé par le jeu à l'entrée");
+                    MessageDebugLogger.analyse("OBJET " + adv.getEspece() + " : Ballon annoncé (" + cle + ")");
+                }
+            }
         }
 
         if (cle.equals("cobblemon.battle.enditem.airballoon")) {
@@ -2786,6 +2883,8 @@ public final class ObservationCollector {
         KO_JOUEUR.clear();
         RAISONS_OBJET.clear();
         OBJETS_ANNULES.clear();
+        BALLON_ANNONCE.clear();
+        ENTREE_ADVERSAIRE_MS.clear();
         coupRecu = null;
         coupDonne = null;
         coupRecuTourEcoule = null;
