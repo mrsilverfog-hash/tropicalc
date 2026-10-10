@@ -61,6 +61,29 @@ public final class ShowdownIdMapper {
         NATURES.put("quirky", Nature.BIZARRE);
 
         TALENTS.put("levitate", "Lévitation");
+        // Talents offensifs/défensifs ajoutés, noms vérifiés sur Pokébip
+        TALENTS.put("overgrow", "Engrais");
+        TALENTS.put("blaze", "Brasier");
+        TALENTS.put("torrent", "Torrent");
+        TALENTS.put("swarm", "Essaim");
+        TALENTS.put("reckless", "Téméraire");
+        TALENTS.put("megalauncher", "Méga Blaster");
+        TALENTS.put("gorillatactics", "Entêtement");
+        TALENTS.put("solarpower", "Force Soleil");
+        TALENTS.put("sniper", "Sniper");
+        TALENTS.put("aerilate", "Peau Céleste");
+        TALENTS.put("pixilate", "Peau Féérique");
+        TALENTS.put("refrigerate", "Peau Gelée");
+        TALENTS.put("galvanize", "Peau Électrique");
+        TALENTS.put("normalize", "Normalise");
+        TALENTS.put("steelworker", "Expert Acier");
+        TALENTS.put("steelyspirit", "Boost Acier");
+        TALENTS.put("punkrock", "Punk Rock");
+        TALENTS.put("neuroforce", "Cérébro-Force");
+        TALENTS.put("heatproof", "Ignifugé");
+        TALENTS.put("liquidvoice", "Hydrata-Son");
+        TALENTS.put("marvelscale", "Écaille Spéciale");
+        TALENTS.put("grasspelt", "Toison Herbue");
         TALENTS.put("earlybird", "Matinal");   // Early Bird, vérifié Poképédia/Bulbapedia
         TALENTS.put("infiltrator", "Infiltration");
         TALENTS.put("stickyhold", "Glu");
@@ -112,7 +135,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("thickfat", "Isograisse");
         TALENTS.put("filter", "Filtre");
         TALENTS.put("solidrock", "Solide Roc");
-        TALENTS.put("multiscale", "Multi-écailles");
+        TALENTS.put("multiscale", "Multiécaille");
         TALENTS.put("shadowshield", "Spectro-Bouclier");
         TALENTS.put("unaware", "Lucidité");
         TALENTS.put("adaptability", "Adaptabilité");
@@ -120,9 +143,9 @@ public final class ShowdownIdMapper {
         TALENTS.put("hustle", "Agitation");
         TALENTS.put("technician", "Technicien");
         TALENTS.put("ironfist", "Poing de Fer");
-        TALENTS.put("strongjaw", "Mâchoire Brute");
+        TALENTS.put("strongjaw", "Prognathe");
         TALENTS.put("sandforce", "Force Sable");
-        TALENTS.put("tintedlens", "Verres Teintés");
+        TALENTS.put("tintedlens", "Lentiteintée");
         TALENTS.put("download", "Télécharge");
         TALENTS.put("regenerator", "Régé-Force");
         TALENTS.put("intimidate", "Intimidation");
@@ -139,7 +162,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("naturalcure", "Médic Nature");
         TALENTS.put("serenegrace", "Grâce Sereine");
         TALENTS.put("trace", "Calque");
-        TALENTS.put("analytic", "Analytique");
+        TALENTS.put("analytic", "Analyste");
         TALENTS.put("imposter", "Imposteur");
         TALENTS.put("prankster", "Farceur");
         TALENTS.put("unburden", "Allège");

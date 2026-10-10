@@ -1414,36 +1414,21 @@ public final class ObservationCollector {
         double s = 1.0;
         if (bruts.contains("magicguard") || bruts.contains("sheerforce")) s = Math.max(s, 1.3);
         if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) s = Math.max(s, 1.3);
-        if (bruts.contains("punkrock")) s = Math.max(s, 1.3);
         if (bruts.contains("analytic")) s = Math.max(s, 1.3);
-        if (bruts.contains("rivalry") || bruts.contains("neuroforce")) s = Math.max(s, 1.25);
+        if (bruts.contains("rivalry")) s = Math.max(s, 1.25);   // dépend du sexe, inconnu
         if (bruts.contains("orichalcumpulse") || bruts.contains("hadronengine")) s = Math.max(s, 1.34);
         return s;
     }
 
     private static double seuilAutreQueChoix(Set<String> bruts, com.tropimon.tropicalc.calc.Move capacite,
                                               boolean physique, double pvAttaquantPct) {
-        PokemonType type = capacite.getType();
-        if (physique && bruts.contains("gorillatactics")) return -1;
-        if (!physique && bruts.contains("solarpower")) return -1;
-        if (bruts.contains("megalauncher") || bruts.contains("steelworker") || bruts.contains("steelyspirit")
-                || bruts.contains("flashfire") || bruts.contains("electromorphosis") || bruts.contains("windpower")
-                || bruts.contains("liquidvoice")) return -1;
-        if (type == PokemonType.NORMAL && (bruts.contains("aerilate") || bruts.contains("pixilate")
-                || bruts.contains("refrigerate") || bruts.contains("galvanize") || bruts.contains("normalize"))) return -1;
-        // Engrais / Brasier / Torrent / Essaim : x1.5 sous 1/3 des PV (non modélisés).
-        if (pvAttaquantPct <= 34.0 && ((type == PokemonType.PLANTE && bruts.contains("overgrow"))
-                || (type == PokemonType.FEU && bruts.contains("blaze"))
-                || (type == PokemonType.EAU && bruts.contains("torrent"))
-                || (type == PokemonType.INSECTE && bruts.contains("swarm")))) return -1;
-        double s = 1.2;
-        if (bruts.contains("magicguard") || bruts.contains("sheerforce")) s = Math.max(s, 1.3);
-        if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) s = Math.max(s, 1.3);
-        if (bruts.contains("punkrock")) s = Math.max(s, 1.3);
-        if (bruts.contains("analytic")) s = Math.max(s, 1.3);
-        if (bruts.contains("rivalry") || bruts.contains("neuroforce")) s = Math.max(s, 1.25);
-        if (bruts.contains("orichalcumpulse") || bruts.contains("hadronengine")) s = Math.max(s, 1.34);
-        return s;
+        // Seuls restent ici les talents x1.5 que le calcul NE modélise PAS
+        // (Torche activée, Électrogenèse, Énergie Éolienne) : indiscernables
+        // d'un Choix. Entêtement, Force Soleil, Méga Blaster, Expert/Boost Acier,
+        // Engrais & co, les Peau ... et Hydrata-Son sont désormais calculés,
+        // donc inclus dans le maximum sans objet.
+        if (bruts.contains("flashfire") || bruts.contains("electromorphosis") || bruts.contains("windpower")) return -1;
+        return 1.0;
     }
 
     private static int vitesseEffectiveJoueur(Pokemon joueur) {

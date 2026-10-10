@@ -31,7 +31,18 @@ public interface AbilityModifier {
         "sing", "supersonic", "growl", "snarl", "uproar",
         "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
         "relicsong", "round", "chatter", "grasswhistle", "metalsound",
-        "perishsong", "partingshot", "echoedvoice");
+        "perishsong", "partingshot", "echoedvoice", "torchsong", "overdrive",
+        "alluringvoice", "psychicnoise", "clangingscales", "snore", "nobleroar", "howl", "healbell");
+
+    // Capacités "pulsation / aura" (Méga Blaster)
+    static final java.util.Set<String> CAPACITES_PULSATION = java.util.Set.of(
+        "aurasphere", "darkpulse", "dragonpulse", "waterpulse", "originpulse", "terrainpulse", "healpulse");
+
+    // Capacités à contrecoup ou à chute (Téméraire)
+    static final java.util.Set<String> CAPACITES_RECUL = java.util.Set.of(
+        "bravebird", "doubleedge", "flareblitz", "headsmash", "volttackle", "woodhammer", "wildcharge",
+        "headlongrush", "wavecrash", "takedown", "submission", "headcharge", "lightofruin",
+        "highjumpkick", "jumpkick", "axekick", "supercellslam", "chloroblast");
 
     Map<String, AbilityModifier> REGISTRE = construireRegistre();
 
@@ -40,6 +51,19 @@ public interface AbilityModifier {
             return null;
         }
         return REGISTRE.get(nomTalent);
+    }
+
+    /** x1.5 sur la stat offensive pour les capacités du type, à 1/3 des PV ou moins. */
+    private static AbilityModifier boostSousUnTiers(PokemonType type) {
+        return new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == type
+                        && ctx.attaquant.getPvActuels() * 3 <= ctx.attaquant.getPvMax()) {
+                    ctx.multiplicateurAttaque *= 1.5;
+                }
+            }
+        };
     }
 
     private static Map<String, AbilityModifier> construireRegistre() {
@@ -112,7 +136,7 @@ public interface AbilityModifier {
                 }
             }
         };
-        m.put("Multi-écailles", demiDegatsPleinePv);
+        m.put("Multiécaille", demiDegatsPleinePv);
         m.put("Spectro-Bouclier", demiDegatsPleinePv);
 
         m.put("Lucidité", new AbilityModifier() {
@@ -168,6 +192,118 @@ public interface AbilityModifier {
             }
         });
 
+        // --- Talents ajoutés (effets génération 9, valeurs de Showdown) ---
+
+        // Engrais / Brasier / Torrent / Essaim : x1.5 sur l'Attaque ou l'Attaque
+        // Spé pour les capacités du type, à 1/3 des PV ou moins.
+        m.put("Engrais", boostSousUnTiers(PokemonType.PLANTE));
+        m.put("Brasier", boostSousUnTiers(PokemonType.FEU));
+        m.put("Torrent", boostSousUnTiers(PokemonType.EAU));
+        m.put("Essaim", boostSousUnTiers(PokemonType.INSECTE));
+
+        // Téméraire : x1.2 sur les capacités à contrecoup ou à chute.
+        m.put("Téméraire", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (CAPACITES_RECUL.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 4915.0 / 4096.0;
+            }
+        });
+
+        // Méga Blaster : x1.5 sur les capacités pulsation / aura.
+        m.put("Méga Blaster", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (CAPACITES_PULSATION.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 1.5;
+            }
+        });
+
+        // Entêtement : Attaque x1.5 (capacités physiques).
+        m.put("Entêtement", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) ctx.multiplicateurAttaque *= 1.5;
+            }
+        });
+
+        // Force Soleil : Attaque Spé x1.5 sous le soleil.
+        m.put("Force Soleil", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                Field.Meteo me = ctx.terrain.getMeteo();
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE
+                        && (me == Field.Meteo.SOLEIL || me == Field.Meteo.SOLEIL_INTENSE)) {
+                    ctx.multiplicateurAttaque *= 1.5;
+                }
+            }
+        });
+
+        // Sniper : un coup critique fait x2.25 au lieu de x1.5.
+        m.put("Sniper", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.critique) ctx.multiplicateurDegatsFinal *= 1.5;
+            }
+        });
+
+        // Expert Acier : x1.5 sur les capacités Acier. Boost Acier : idem.
+        AbilityModifier acier = new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.ACIER) ctx.multiplicateurAttaque *= 1.5;
+            }
+        };
+        m.put("Expert Acier", acier);
+        m.put("Boost Acier", acier);
+
+        // Punk Rock : capacités sonores x1.3 en attaque, x0.5 en défense.
+        m.put("Punk Rock", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 5325.0 / 4096.0;
+            }
+
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 0.5;
+            }
+        });
+
+        // Ignifugé : dégâts Feu divisés par 2.
+        m.put("Ignifugé", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.FEU) ctx.multiplicateurDegatsFinal *= 0.5;
+            }
+        });
+
+        // Écaille Spéciale : Défense x1.5 sous un statut.
+        m.put("Écaille Spéciale", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
+                        && ctx.defenseur.getStatut() != Pokemon.Statut.AUCUN) {
+                    ctx.multiplicateurDefense *= 1.5;
+                }
+            }
+        });
+
+        // Toison Herbue : Défense x1.5 sous Champ Herbu.
+        m.put("Toison Herbue", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
+                        && ctx.terrain.getTerrain() == Field.TypeTerrain.HERBU) {
+                    ctx.multiplicateurDefense *= 1.5;
+                }
+            }
+        });
+
+        // Peau Céleste/Féérique/Gelée/Électrique, Normalise, Hydrata-Son : le
+        // changement de type et le x1.2 sont appliqués dans DamageCalculator
+        // (capaciteApresTalent), avant le calcul du type et du STAB.
+        // Cérébro-Force : x1.25 sur un coup super efficace, dans
+        // DamageCalculator.appliquerModificateursConditionnels.
+
         m.put("Technicien", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
@@ -186,7 +322,7 @@ public interface AbilityModifier {
             }
         });
 
-        m.put("Mâchoire Brute", new AbilityModifier() {
+        m.put("Prognathe", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.isMorsure()) {
@@ -207,7 +343,7 @@ public interface AbilityModifier {
             }
         });
 
-        m.put("Verres Teintés", new AbilityModifier() {
+        m.put("Lentiteintée", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
             }

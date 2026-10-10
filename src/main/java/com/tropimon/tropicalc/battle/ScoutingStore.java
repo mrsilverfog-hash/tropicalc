@@ -56,7 +56,11 @@ public final class ScoutingStore {
         Map.entry("Robuste", "Fermeté"),
         Map.entry("Seigneur Suprême", "Général Suprême"),
         Map.entry("Bandeau Muscles", "Bandeau Muscle"),
-        Map.entry("Lunettes Savantes", "Lunettes Sages")
+        Map.entry("Lunettes Savantes", "Lunettes Sages"),
+        Map.entry("Mâchoire Brute", "Prognathe"),
+        Map.entry("Analytique", "Analyste"),
+        Map.entry("Verres Teintés", "Lentiteintée"),
+        Map.entry("Multi-écailles", "Multiécaille")
     );
 
     private static String migrer(String nom) {

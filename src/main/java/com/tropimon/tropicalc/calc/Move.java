@@ -67,6 +67,20 @@ public class Move {
     public boolean isRampant() { return rampant; }
     public boolean estCapaciteDeStatut() { return categorie == Categorie.STATUT; }
 
+    /** Même capacité avec un autre type et une autre puissance (talents qui changent le type). */
+    public Move copieAvec(PokemonType nouveauType, int nouvellePuissance) {
+        Builder b = builder(nom, nouveauType, categorie).puissance(nouvellePuissance)
+            .precision(precision).prioritee(prioritee).ratioCritique(ratioCritique)
+            .multiCoups(coupsMin, coupsMax).poing(poing).morsure(morsure);
+        if (contact) b.contact();
+        if (son) b.son();
+        if (pulsation) b.pulsation();
+        if (tranchant) b.tranchant();
+        if (bombe) b.bombe();
+        if (rampant) b.rampant();
+        return b.build();
+    }
+
     public static Builder builder(String nom, PokemonType type, Categorie categorie) {
         return new Builder(nom, type, categorie);
     }

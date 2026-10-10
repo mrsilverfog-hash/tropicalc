@@ -104,6 +104,7 @@ public class DamageCalculator {
 
         // Ball'Météo : change de type et double de puissance selon la météo
         capacite = capaciteEffective(capacite, terrain);
+        capacite = capaciteApresTalent(capacite, attaquant);
 
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
 
@@ -377,6 +378,31 @@ public class DamageCalculator {
      * Transforme la capacité si son type dépend du contexte.
      * Ball'Météo : Feu/Eau/Roche/Glace et puissance 100 selon la météo.
      */
+    /**
+     * Talents qui changent le type d'une capacité avant tout calcul (type,
+     * STAB, efficacité) : Peau Céleste/Féérique/Gelée/Électrique (Normal ->
+     * Vol/Fée/Glace/Électrik, x1.2), Normalise (tout -> Normal, x1.2),
+     * Hydrata-Son (sonores -> Eau, sans bonus).
+     */
+    private static Move capaciteApresTalent(Move capacite, Pokemon attaquant) {
+        String t = attaquant.getTalent();
+        if (t == null || capacite.getPuissanceDeBase() <= 0) return capacite;
+        int bonus = (int) Math.round(capacite.getPuissanceDeBase() * 4915.0 / 4096.0);
+        PokemonType peau = switch (t) {
+            case "Peau Céleste" -> PokemonType.VOL;
+            case "Peau Féérique" -> PokemonType.FEE;
+            case "Peau Gelée" -> PokemonType.GLACE;
+            case "Peau Électrique" -> PokemonType.ELECTRIK;
+            default -> null;
+        };
+        if (peau != null && capacite.getType() == PokemonType.NORMAL) return capacite.copieAvec(peau, bonus);
+        if ("Normalise".equals(t)) return capacite.copieAvec(PokemonType.NORMAL, bonus);
+        if ("Hydrata-Son".equals(t) && AbilityModifier.CAPACITES_SON.contains(capacite.getNom())) {
+            return capacite.copieAvec(PokemonType.EAU, capacite.getPuissanceDeBase());
+        }
+        return capacite;
+    }
+
     private static Move capaciteEffective(Move capacite, Field terrain) {
         if (!"weatherball".equals(capacite.getNom())) return capacite;
         PokemonType nouveauType = switch (terrain.getMeteo()) {
@@ -704,12 +730,15 @@ public class DamageCalculator {
             if ("Ceinture Pro".equals(attaquant.getObjet())) {
                 ctx.multiplicateurDegatsFinal *= 1.2;
             }
+            if ("Cérébro-Force".equals(attaquant.getTalent())) {
+                ctx.multiplicateurDegatsFinal *= 5120.0 / 4096.0;
+            }
             String talentDef = defenseur.getTalent();
             if ("Filtre".equals(talentDef) || "Solide Roc".equals(talentDef) || "Prisme-Armure".equals(talentDef)) {
                 ctx.multiplicateurDegatsFinal *= 0.75;
             }
         } else if (efficacite > 0.0 && efficacite < 1.0) {
-            if ("Verres Teintés".equals(attaquant.getTalent())) {
+            if ("Lentiteintée".equals(attaquant.getTalent())) {
                 ctx.multiplicateurDegatsFinal *= 2.0;
             }
         }
