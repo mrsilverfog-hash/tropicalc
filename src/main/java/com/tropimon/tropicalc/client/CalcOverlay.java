@@ -34,12 +34,22 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_TITRE = 0xFFD700;
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
+    private static final int COULEUR_GRIS = 0xAAAAAA;
 
     private record LigneTexte(String texte, int x, int y, int couleur) {}
     private record LigneIcone(int type, int x, int y) {}   // voir TEXTURES_ICONES pour la liste des types
 
     private final List<LigneTexte> lignesAffichage = new ArrayList<>();
     private final List<LigneIcone> iconesAffichage = new ArrayList<>();
+
+    /** "dort encore 2 tours, agit au tour 15" / "se réveille et agit ce tour (tour 15)". */
+    private static String texteRepos(int tours) {
+        int tour = ObservationCollector.getNumeroTour();
+        if (tours == 1) return "se réveille et agit ce tour" + (tour > 0 ? " (tour " + tour + ")" : "");
+        int dort = tours - 1;
+        return "dort encore " + dort + " tour" + (dort > 1 ? "s" : "")
+            + (tour > 0 ? ", agit au tour " + (tour + tours - 1) : ", agit dans " + tours + " tours");
+    }
 
     /** Bufférise une ligne de texte au lieu de la dessiner immédiatement : permet de
      *  connaître la taille réelle du contenu AVANT de dessiner le cadre qui l'entoure. */
@@ -176,18 +186,17 @@ public final class CalcOverlay implements HudRenderCallback {
             if (actifCombat != null) toursRepos = ObservationCollector.getToursAvantReveilRepos(actifCombat.getEspece());
         }
         if (toursRepos > 0) {
-            int tour = ObservationCollector.getNumeroTour();
-            String ligneRepos;
-            if (toursRepos == 1) {
-                ligneRepos = "Repos : se réveille et agit ce tour"
-                    + (tour > 0 ? " (tour " + tour + ")" : "");
-            } else {
-                int dort = toursRepos - 1;
-                ligneRepos = "Repos : dort encore " + dort + " tour" + (dort > 1 ? "s" : "")
-                    + (tour > 0 ? ", agit au tour " + (tour + toursRepos - 1)
-                                : ", agit dans " + toursRepos + " tours");
-            }
-            dessinerTexte(ligneRepos, x, y, toursRepos == 1 ? COULEUR_REVELE : COULEUR_DANGER);
+            dessinerTexte("Repos : " + texteRepos(toursRepos), x, y, toursRepos == 1 ? COULEUR_REVELE : COULEUR_DANGER);
+            y += hauteurLigne;
+        }
+        // Même compteur pour l'adversaire. Couleurs inversées : son réveil est
+        // une menace pour moi.
+        int toursReposAdv = ObservationCollector.getToursAvantReveilReposAdversaire(adversaireBase.getEspece());
+        if (toursReposAdv > 0) {
+            String matinal = ObservationCollector.isReposAdversaireMatinalPossible(adversaireBase.getEspece())
+                && toursReposAdv > 1 ? " (un tour plus tôt si Matinal)" : "";
+            dessinerTexte("Repos adv. : " + texteRepos(toursReposAdv) + matinal, x, y,
+                toursReposAdv == 1 ? COULEUR_KO : COULEUR_REVELE);
             y += hauteurLigne;
         }
 
@@ -216,11 +225,20 @@ public final class CalcOverlay implements HudRenderCallback {
         // connu, pour anticiper le pire cas de priorité.
         String objetAdversaire = adversaire.getObjet();
         boolean mouchoirDejaPris = "Mouchoir Choix".equals(objetAdversaire);
+        int largeurVitesse = client.textRenderer.getWidth(texteVitesse);
         if (!mouchoirDejaPris) {
+            // Sa vitesse maximale SANS objet (252 EV, nature +Vitesse, meilleur
+            // talent, état actuel) : si tu es au-dessus et qu'il te dépasse sans
+            // priorité, c'est forcément un Mouchoir.
+            int vitMax = ObservationCollector.vitesseMaxSansObjetActuelle(adversaireBase);
+            if (vitMax > 0) {
+                String texteMax = " max " + vitMax;
+                dessinerTexte(texteMax, x + largeurVitesse, y, COULEUR_GRIS);
+                largeurVitesse += client.textRenderer.getWidth(texteMax);
+            }
             int vitMouchoir = (int) Math.floor(vitAdversaire * 1.5);
             String texteMouchoir = String.format(" (%d)", vitMouchoir);
-            int largeur = client.textRenderer.getWidth(texteVitesse);
-            dessinerTexte(texteMouchoir, x + largeur, y, COULEUR_MOUCHOIR);
+            dessinerTexte(texteMouchoir, x + largeurVitesse, y, COULEUR_MOUCHOIR);
         }
         y += hauteurLigne;
 
@@ -678,13 +696,20 @@ public final class CalcOverlay implements HudRenderCallback {
             String objetConfirme = ObservationCollector.getObjetConfirme(especeAdv);
             boolean objetRetire = ObservationCollector.estObjetConfirme(especeAdv) && objetConfirme == null;
             if (objetConfirme != null) {
-                dessinerTexte("Objet confirmé : " + objetConfirme, x, y, COULEUR_REVELE);
+                String raison = ObservationCollector.getRaisonObjet(especeAdv);
+                dessinerTexte("Objet confirmé : " + objetConfirme + " ✓"
+                    + (raison != null ? " (" + raison + ")" : "")
+                    + " [" + com.tropimon.tropicalc.ModToggle.nomToucheAnnuler() + " : annuler]",
+                    x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             } else if (objetRetire) {
                 dessinerTexte("Objet confirmé : aucun (retiré)", x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             }
         }
+
+        // Lignes trop longues : coupées et les suivantes décalées vers le bas.
+        y += couperLignesTropLongues(client, x, hauteurLigne);
 
         // --- Cadre adaptatif : taille calculée sur le contenu réellement bufferisé ---
         int largeurContenu = 0;
@@ -709,6 +734,67 @@ public final class CalcOverlay implements HudRenderCallback {
         for (LigneIcone ic : iconesAffichage) {
             context.drawTexture(TEXTURES_ICONES[ic.type()], ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
         }
+    }
+
+    /**
+     * Coupe les lignes plus larges que l'écran (ou 300 px) aux espaces et décale
+     * vers le bas tout ce qui suit (texte et icônes). Renvoie la hauteur ajoutée.
+     */
+    private int couperLignesTropLongues(MinecraftClient client, int x, int hauteurLigne) {
+        int largeurMax = Math.min(300, client.getWindow().getScaledWidth() - x - 12);
+        if (largeurMax < 80) return 0;
+        // Lignes supplémentaires nécessaires pour chaque hauteur d'origine.
+        java.util.TreeMap<Integer, Integer> extras = new java.util.TreeMap<>();
+        java.util.Map<LigneTexte, List<String>> morceaux = new java.util.IdentityHashMap<>();
+        for (LigneTexte l : lignesAffichage) {
+            int dispo = largeurMax - (l.x() - x);
+            if (client.textRenderer.getWidth(l.texte()) <= dispo || dispo < 40) continue;
+            List<String> parts = new ArrayList<>();
+            StringBuilder courant = new StringBuilder();
+            for (String mot : l.texte().split(" ")) {
+                String essai = courant.length() == 0 ? mot : courant + " " + mot;
+                if (courant.length() > 0 && client.textRenderer.getWidth(essai) > dispo) {
+                    parts.add(courant.toString());
+                    courant = new StringBuilder("  " + mot);   // retrait des lignes de suite
+                } else {
+                    courant = new StringBuilder(essai);
+                }
+            }
+            if (courant.length() > 0) parts.add(courant.toString());
+            if (parts.size() > 1) {
+                morceaux.put(l, parts);
+                extras.merge(l.y(), parts.size() - 1, Math::max);
+            }
+        }
+        if (extras.isEmpty()) return 0;
+        java.util.function.IntUnaryOperator decalage = yOrig -> {
+            int d = 0;
+            for (var e : extras.headMap(yOrig, false).entrySet()) d += e.getValue() * hauteurLigne;
+            return d;
+        };
+        List<LigneTexte> nouvelles = new ArrayList<>();
+        for (LigneTexte l : lignesAffichage) {
+            int y0 = l.y() + decalage.applyAsInt(l.y());
+            List<String> parts = morceaux.get(l);
+            if (parts == null) {
+                nouvelles.add(new LigneTexte(l.texte(), l.x(), y0, l.couleur()));
+            } else {
+                for (int i = 0; i < parts.size(); i++) {
+                    nouvelles.add(new LigneTexte(parts.get(i), l.x(), y0 + i * hauteurLigne, l.couleur()));
+                }
+            }
+        }
+        lignesAffichage.clear();
+        lignesAffichage.addAll(nouvelles);
+        List<LigneIcone> icones = new ArrayList<>();
+        for (LigneIcone ic : iconesAffichage) {
+            icones.add(new LigneIcone(ic.type(), ic.x(), ic.y() + decalage.applyAsInt(ic.y())));
+        }
+        iconesAffichage.clear();
+        iconesAffichage.addAll(icones);
+        int total = 0;
+        for (int v : extras.values()) total += v * hauteurLigne;
+        return total;
     }
 
     /** Contour rectangulaire simple, 1px, style cohérent avec le panneau PvP. */

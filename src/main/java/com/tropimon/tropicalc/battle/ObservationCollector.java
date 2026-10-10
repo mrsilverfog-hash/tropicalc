@@ -63,7 +63,57 @@ public final class ObservationCollector {
     private static final Set<String> OBJETS_RETIRES = new HashSet<>();
 
     // Objets confirmés par observation (ex: soin de fin de tour ~1/16 => Restes)
-    private static final Map<String, String> OBJETS_CONFIRMES = new HashMap<>();
+    private static final Map<String, String> OBJETS_CONFIRMES = new HashMap<>() {
+        // Une confirmation annulée à la main (touche) ne peut plus revenir
+        // pendant le combat, quel que soit le détecteur qui la reproduirait.
+        @Override
+        public String put(String espece, String objet) {
+            Set<String> annules = OBJETS_ANNULES == null ? null : OBJETS_ANNULES.get(espece);
+            if (annules != null && annules.contains(objet)) return get(espece);
+            return super.put(espece, objet);
+        }
+    };
+    // Pourquoi chaque objet a été confirmé (affiché dans le HUD).
+    private static final Map<String, String> RAISONS_OBJET = new HashMap<>();
+    // Confirmations annulées par le joueur pour ce combat : espèce -> objets refusés.
+    private static final Map<String, Set<String>> OBJETS_ANNULES = new HashMap<>();
+
+    /** Confirme un objet et retient pourquoi (affiché dans le HUD). */
+    private static void confirmerObjet(String espece, String objet, String raison) {
+        if (espece == null || objet == null) return;
+        Set<String> annules = OBJETS_ANNULES.get(espece);
+        if (annules != null && annules.contains(objet)) return;
+        OBJETS_CONFIRMES.put(espece, objet);
+        if (raison != null) RAISONS_OBJET.put(espece, raison);
+        else RAISONS_OBJET.remove(espece);
+    }
+
+    public static String getRaisonObjet(String espece) {
+        return RAISONS_OBJET.get(espece);
+    }
+
+    /**
+     * Annule la confirmation d'objet de l'adversaire actif (touche dédiée).
+     * Renvoie le message à afficher au joueur.
+     */
+    public static synchronized String annulerConfirmationAdversaire() {
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        if (adv == null) return "Aucun adversaire en combat";
+        String espece = adv.getEspece();
+        String objet = OBJETS_CONFIRMES.remove(espece);
+        RAISONS_OBJET.remove(espece);
+        if (objet != null) {
+            OBJETS_ANNULES.computeIfAbsent(espece, k -> new HashSet<>()).add(objet);
+            OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
+            MessageDebugLogger.analyse("ANNULATION par le joueur : " + objet + " sur " + espece);
+            return "Confirmation annulée : " + objet + " (" + espece + ")";
+        }
+        if (OBJETS_RETIRES.remove(espece)) {
+            MessageDebugLogger.analyse("ANNULATION par le joueur : objet retiré sur " + espece);
+            return "Annulé : " + espece + " n'est plus considéré sans objet";
+        }
+        return "Aucun objet confirmé sur " + espece;
+    }
 
     // Sous-ensemble de OBJETS_CONFIRMES : confirmé PROACTIVEMENT par simple
     // dominance statistique Smogon (>=80% d'usage), pas par une preuve réelle
@@ -454,6 +504,10 @@ public final class ObservationCollector {
 
         if (Boolean.TRUE.equals(estAdversaire)) {
             coupAdversaireDuTour = coup;
+            if ("rest".equals(coup.showdownId())) {
+                Pokemon a = BattleStateTracker.getAdversaireActif();
+                if (a != null) reposEnAttenteAdv = a.getEspece();
+            }
             if ("leechseed".equals(coup.showdownId())) {
                 joueurVampigraine = true;
             }
@@ -513,6 +567,12 @@ public final class ObservationCollector {
     private record EtatRepos(int compteur, int pas) {}
     private static final Map<String, EtatRepos> COMPTEUR_REPOS = new HashMap<>();
     private static String reposEnAttente = null;
+    // Même compteur côté adversaire. matinalPossible : talent inconnu mais
+    // Matinal possible chez l'espèce (un tour de sommeil en moins).
+    private static final Map<String, EtatRepos> COMPTEUR_REPOS_ADV = new HashMap<>();
+    private static final Set<String> REPOS_ADV_MATINAL_POSSIBLE = new HashSet<>();
+    private static String reposEnAttenteAdv = null;
+    private static String especeAdvActiveDebutTour = null;
     private static String especeActiveDebutTour = null;
     private static int numeroTour = 0;
 
@@ -554,6 +614,43 @@ public final class ObservationCollector {
         if (espece != null && !endormi) COMPTEUR_REPOS.remove(espece);
 
         especeActiveDebutTour = espece;
+
+        // --- Même chose pour l'adversaire ---
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        String especeAdv = adv != null ? adv.getEspece() : null;
+        boolean advEndormi = adv != null && adv.getStatut() == Pokemon.Statut.SOMMEIL;
+        if (especeAdvActiveDebutTour != null) {
+            EtatRepos etat = COMPTEUR_REPOS_ADV.get(especeAdvActiveDebutTour);
+            if (etat != null && (especeAdvActiveDebutTour.equals(especeAdv) || coupAdversaireDuTour != null)) {
+                int restant = etat.compteur() - etat.pas();
+                if (restant <= 0) COMPTEUR_REPOS_ADV.remove(especeAdvActiveDebutTour);
+                else COMPTEUR_REPOS_ADV.put(especeAdvActiveDebutTour, new EtatRepos(restant, etat.pas()));
+            }
+        }
+        if (reposEnAttenteAdv != null) {
+            if (reposEnAttenteAdv.equals(especeAdv) && advEndormi && !COMPTEUR_REPOS_ADV.containsKey(especeAdv)) {
+                String talent = TALENTS_CONFIRMES.get(especeAdv);
+                boolean matinal = "Matinal".equals(talent);
+                COMPTEUR_REPOS_ADV.put(especeAdv, new EtatRepos(3, matinal ? 2 : 1));
+                Set<String> reels = getTalentsReelsEspece(adv);
+                if (talent == null && reels != null && reels.contains("Matinal")) REPOS_ADV_MATINAL_POSSIBLE.add(especeAdv);
+                else REPOS_ADV_MATINAL_POSSIBLE.remove(especeAdv);
+            }
+            reposEnAttenteAdv = null;
+        }
+        if (especeAdv != null && !advEndormi) COMPTEUR_REPOS_ADV.remove(especeAdv);
+        especeAdvActiveDebutTour = especeAdv;
+    }
+
+    /** Comme getToursAvantReveilRepos, pour l'adversaire. -1 = pas de Repos suivi. */
+    public static int getToursAvantReveilReposAdversaire(String espece) {
+        EtatRepos e = espece == null ? null : COMPTEUR_REPOS_ADV.get(espece);
+        if (e == null) return -1;
+        return (e.compteur() + e.pas() - 1) / e.pas();
+    }
+
+    public static boolean isReposAdversaireMatinalPossible(String espece) {
+        return REPOS_ADV_MATINAL_POSSIBLE.contains(espece);
     }
 
     /**
@@ -704,7 +801,8 @@ public final class ObservationCollector {
         log.append(" | son max sans objet ").append((int) plafond).append(" (stage ").append(stageVitAdvTourEcoule)
             .append(tailwindAdvTourEcoule ? ", Vent Arrière" : "").append(')');
         if (plafond > 0 && vJoueur > plafond * 1.02) {   // 2 % pour les arrondis
-            OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+            confirmerObjet(espece, "Mouchoir Choix", "plus rapide que toi (" + (int) vJoueur
+                + ") ; max sans objet " + (int) plafond);
             log.append(" | => Mouchoir Choix CONFIRMÉ (impossible sans objet)");
             return;
         }
@@ -716,7 +814,8 @@ public final class ObservationCollector {
         log.append(" | Smogon : ").append(pct(rapides * 100)).append(" des sets m'atteignent sans objet, Mouchoir ")
             .append(mouchoir < 0 ? "inconnu" : pct(mouchoir * 100));
         if (rapides < 0.05 && mouchoir >= 0.05 && mouchoir >= 3 * rapides) {
-            OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+            confirmerObjet(espece, "Mouchoir Choix", "plus rapide que toi (" + (int) vJoueur + ") ; "
+                + Math.round(rapides * 100) + " % des sets Smogon y arrivent sans objet");
             log.append(" | => Mouchoir Choix CONFIRMÉ (Smogon)");
         } else {
             log.append(" | explicable sans Mouchoir");
@@ -816,11 +915,34 @@ public final class ObservationCollector {
 
     /** Vitesse maximale de l'adversaire SANS objet, dans l'état du début du tour écoulé. */
     private static double plafondVitesseSansObjet(Pokemon adversaire, int evVitesse, Nature nature) {
+        Field etat = FieldTracker.construireField();
+        return plafondVitesseSansObjet(adversaire, evVitesse, nature, stageVitAdvTourEcoule,
+            statutAdvTourEcoule != null ? statutAdvTourEcoule : adversaire.getStatut(),
+            meteoTourEcoule != null ? meteoTourEcoule : etat.getMeteo(),
+            terrainTourEcoule != null ? terrainTourEcoule : etat.getTerrain(),
+            tailwindAdvTourEcoule);
+    }
+
+    /**
+     * Vitesse maximale de l'adversaire actif SANS objet, dans l'état actuel
+     * (stage, statut, météo, champ, Vent Arrière) : 252 EV, nature +Vitesse,
+     * talent le plus rapide possible. Affichée dans le HUD à côté de
+     * l'estimation : s'il te dépasse alors que tu es au-dessus, c'est un
+     * Mouchoir (hors priorité). -1 si incalculable.
+     */
+    public static int vitesseMaxSansObjetActuelle(Pokemon adversaireBase) {
+        if (adversaireBase == null) return -1;
+        Field etat = FieldTracker.construireField();
+        return (int) plafondVitesseSansObjet(adversaireBase, 252, Nature.TIMIDE,
+            BoostTracker.getStageAdversaire(Stat.VITESSE), adversaireBase.getStatut(),
+            etat.getMeteo(), etat.getTerrain(), FieldTracker.isTailwindAdversaire());
+    }
+
+    private static double plafondVitesseSansObjet(Pokemon adversaire, int evVitesse, Nature nature,
+                                                  int stage, Pokemon.Statut statut, Field.Meteo meteo,
+                                                  Field.TypeTerrain terrain, boolean ventArriere) {
         try {
             Pokemon base = construireAdversaireEstime(adversaire);
-            Field etat = FieldTracker.construireField();
-            Field.Meteo meteo = meteoTourEcoule != null ? meteoTourEcoule : etat.getMeteo();
-            Field.TypeTerrain terrain = terrainTourEcoule != null ? terrainTourEcoule : etat.getTerrain();
 
             Set<String> talents = new HashSet<>();
             String confirme = TALENTS_CONFIRMES.get(adversaire.getEspece());
@@ -841,10 +963,10 @@ public final class ObservationCollector {
                     .nature(nature);
                 if (!talent.isEmpty()) b.talent(talent);
                 Pokemon p = b.build();
-                p.setStage(Stat.VITESSE, stageVitAdvTourEcoule);
-                p.setStatut(statutAdvTourEcoule != null ? statutAdvTourEcoule : adversaire.getStatut());
+                p.setStage(Stat.VITESSE, stage);
+                if (statut != null) p.setStatut(statut);
                 meilleur = Math.max(meilleur,
-                    DamageCalculator.vitesseEnCombat(p, meteo, terrain, tailwindAdvTourEcoule));
+                    DamageCalculator.vitesseEnCombat(p, meteo, terrain, ventArriere));
             }
             // Effets de vitesse que le calcul ne modélise pas : on élargit.
             Set<String> bruts = talentsBrutsPossibles(adversaire);
@@ -1356,7 +1478,14 @@ public final class ObservationCollector {
         // la même règle reste valable, elle ne peut que rater un Choix.
         if (perte > plancher && perte <= plafond) {
             String objet = physique ? "Bandeau Choix" : "Lunettes Choix";
-            OBJETS_CONFIRMES.put(espece, objet);
+            String nomCapacite;
+            try {
+                nomCapacite = template.getDisplayName().getString();
+            } catch (Exception e) {
+                nomCapacite = cr.idCoup;
+            }
+            confirmerObjet(espece, objet, nomCapacite + " : " + (cr.ko ? ">= " : "") + Math.round(perte)
+                + " % > " + Math.round(max) + " % max sans objet" + (cr.ko ? " (K.O.)" : ""));
             return log.append(" | => ").append(objet).append(" CONFIRMÉ").toString();
         }
         return log.append(perte > plafond ? " | au-dessus d'un Choix : autre cause" : " | explicable sans Choix").toString();
@@ -2153,8 +2282,8 @@ public final class ObservationCollector {
      * Lumargile) plutôt que d'un message explicite du jeu.
      */
     public static void confirmerObjetDirect(String espece, String objetFr) {
-        if (espece == null || objetFr == null) return;
-        OBJETS_CONFIRMES.put(espece, objetFr);
+        confirmerObjet(espece, objetFr, "Lumargile".equals(objetFr) ? "écran prolongé au-delà de 5 tours"
+            : "Champ'Duit".equals(objetFr) ? "champ prolongé au-delà de 5 tours" : null);
     }
 
     /**
@@ -2232,7 +2361,7 @@ public final class ObservationCollector {
             if (!Boolean.TRUE.equals(determinerAttaquant(proprietaire))) return;
             Pokemon adv = BattleStateTracker.getAdversaireActif();
             if (adv == null) return;
-            OBJETS_CONFIRMES.put(adv.getEspece(), "Orbe Vie");
+            confirmerObjet(adv.getEspece(), "Orbe Vie", "recul d'Orbe Vie annoncé par le jeu");
             OBJETS_CONFIRMES_PROACTIVEMENT.remove(adv.getEspece());
             OBJETS_RETIRES.remove(adv.getEspece());
             return;
@@ -2270,7 +2399,7 @@ public final class ObservationCollector {
                             || adv.getType2() == com.tropimon.tropicalc.calc.PokemonType.VOL) return;
                     if ("Lévitation".equals(getTalentConfirme(adv.getEspece()))) return;
                     if (!OBJETS_CONFIRMES.containsKey(adv.getEspece())) {
-                        OBJETS_CONFIRMES.put(adv.getEspece(), "Ballon");
+                        confirmerObjet(adv.getEspece(), "Ballon", "immunité Sol annoncée par le jeu");
                     }
                 }
             } catch (Exception ignored) {
@@ -2344,7 +2473,7 @@ public final class ObservationCollector {
                 OBJETS_RETIRES.add(adv.getEspece());
             }
             if (Boolean.TRUE.equals(voleurEstAdversaire) && objetFr != null) {
-                OBJETS_CONFIRMES.put(adv.getEspece(), objetFr);
+                confirmerObjet(adv.getEspece(), objetFr, "volé avec Pickpocket");
                 OBJETS_CHOIX_EXCLUS.remove(adv.getEspece());
             }
 
@@ -2649,8 +2778,14 @@ public final class ObservationCollector {
         OBJET_REEL_JOUEUR_CONNU.clear();
         OBJET_STACK_JOUEUR.clear();
         COMPTEUR_REPOS.clear();
+        COMPTEUR_REPOS_ADV.clear();
+        REPOS_ADV_MATINAL_POSSIBLE.clear();
+        reposEnAttenteAdv = null;
+        especeAdvActiveDebutTour = null;
         KO_ADVERSAIRE.clear();
         KO_JOUEUR.clear();
+        RAISONS_OBJET.clear();
+        OBJETS_ANNULES.clear();
         coupRecu = null;
         coupDonne = null;
         coupRecuTourEcoule = null;

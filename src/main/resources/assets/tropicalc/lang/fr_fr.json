@@ -1,4 +1,5 @@
 {
   "key.tropicalc.toggle": "Activer/désactiver TropiCalc",
-  "key.categories.tropicalc": "TropiCalc"
+  "key.categories.tropicalc": "TropiCalc",
+  "key.tropicalc.annuler_objet": "Annuler l'objet confirmé de l'adversaire"
 }
