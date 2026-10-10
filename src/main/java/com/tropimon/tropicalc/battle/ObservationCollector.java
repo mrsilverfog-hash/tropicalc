@@ -387,6 +387,8 @@ public final class ObservationCollector {
                 adversaireAAgiEnPremier = null;
         especeAdvActeur = null;
         especeJoueurActeur = null;
+        reculOrbeVieAdvCeTour = false;
+        coupAdvRateCeTour = false;
                 return;
             }
 
@@ -459,10 +461,15 @@ public final class ObservationCollector {
             // DÉBUT de ce tour (stages, météo, champ, Vent Arrière, statut).
             observerVitesse(adversaire, joueur);
 
-            if (coupAdversaireDuTour != null && perteJoueur >= 0.5) {
+            tenterExclureOrbeVie(adversaire, perteJoueur);
+
+            // Morphing : stats, types et talent copiés, les calculs ne
+            // correspondent plus au vrai Pokémon - aucune observation.
+            boolean morphing = estTransforme(false, joueur.getEspece()) || estTransforme(true, adversaire.getEspece());
+            if (coupAdversaireDuTour != null && perteJoueur >= 0.5 && !morphing) {
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
-            if (coupJoueurDuTour != null && perteAdversaire >= 0.5) {
+            if (coupJoueurDuTour != null && perteAdversaire >= 0.5 && !morphing) {
                 enregistrerObservation(false, perteAdversaire, adversaire, joueur, coupJoueurDuTour);
             }
         }
@@ -483,6 +490,8 @@ public final class ObservationCollector {
         adversaireAAgiEnPremier = null;
         especeAdvActeur = null;
         especeJoueurActeur = null;
+        reculOrbeVieAdvCeTour = false;
+        coupAdvRateCeTour = false;
 
         tenterAppliquerHerbeBlanche(joueur, adversaire);
     }
@@ -741,6 +750,11 @@ public final class ObservationCollector {
             + " / moi " + joueur.getEspece() + " " + coupJoueurDuTour.showdownId() + " | "
             + (Boolean.TRUE.equals(adversaireAAgiEnPremier) ? "il a agi avant" : "j'ai agi avant") + " | ";
         if (prioriteObjetCeTour) { MessageDebugLogger.analyse(debut + "Vive-Griffe/Tir Vif : ignoré"); return; }
+        if (estTransforme(true, adversaire.getEspece()) || estTransforme(false, joueur.getEspece())
+                || estTransforme(false, especeJoueurActeur)) {
+            MessageDebugLogger.analyse(debut + "Morphing : ignoré");
+            return;
+        }
         if (distorsionTourEcoule) { MessageDebugLogger.analyse(debut + "Distorsion : ignoré"); return; }
         // Le même Pokémon de chaque côté du début à la fin du tour, sinon
         // l'ordre observé ne concerne pas celui qu'on regarde (Demi-Tour...).
@@ -1130,6 +1144,78 @@ public final class ObservationCollector {
         String x = a.toLowerCase().replaceAll("[^a-z0-9]", "");
         String y = b.toLowerCase().replaceAll("[^a-z0-9]", "");
         return x.startsWith(y) || y.startsWith(x);
+    }
+
+    // --- Objet reçu en cours de séjour (Pickpocket, Tour de Magie...) ---
+    // Le verrou Choix repart de zéro : la capacité utilisée AVANT d'avoir
+    // l'objet ne compte pas (le Tinkaton qui vole un Bandeau Choix après un
+    // Bluff, puis utilise Sabotage, n'avait pas "deux capacités sous Choix").
+    private static void objetAdversaireRecu(String espece) {
+        OBJETS_RETIRES.remove(espece);
+        OBJETS_CHOIX_EXCLUS.remove(espece);
+        PREUVE_PAS_CHOIX.remove(espece);
+        OBJETS_PROBABLES.remove(espece);
+        ORBE_VIE_EXCLUE.remove(espece);
+        if (espece != null && espece.equals(especeSejourAdv)) premierCoupSejourAdv = null;
+    }
+
+    // --- Pas d'Orbe Vie : il m'a touché sans que le jeu annonce le recul ---
+    private static boolean reculOrbeVieAdvCeTour = false;
+    // Son coup a raté, échoué, ou a été bloqué (Abri, immunité)
+    private static boolean coupAdvRateCeTour = false;
+    private static final Set<String> ORBE_VIE_EXCLUE = new HashSet<>();
+
+    private static void tenterExclureOrbeVie(Pokemon adversaire, double perteJoueur) {
+        String espece = adversaire.getEspece();
+        if (ORBE_VIE_EXCLUE.contains(espece) || reculOrbeVieAdvCeTour || coupAdvRateCeTour) return;
+        if ("Orbe Vie".equals(OBJETS_CONFIRMES.get(espece))) return;
+        if (coupAdversaireDuTour == null || adversaireNAPasAttaque() || perteJoueur < 0.5) return;
+        if (!espece.equals(espaceAdversaireDuTour) || FieldTracker.joueurAUnClone()) return;
+        // Le coup doit être celui qui m'a touché (pas un dégât annexe)
+        CoupRecu cr = coupRecuTourEcoule;
+        if (cr == null || cr.clone || !coupAdversaireDuTour.showdownId().equals(cr.idCoup)) return;
+        MoveTemplate t = Moves.INSTANCE.getByName(cr.idCoup);
+        if (t == null || "status".equalsIgnoreCase(t.getDamageCategory().getName())) return;
+        // Garde Magik : pas de recul ; Sans Limite : pas de recul sur ses coups à effet
+        Set<String> bruts = talentsBrutsPossibles(adversaire);
+        if (bruts.contains("magicguard") || bruts.contains("sheerforce")) return;
+        if (estTransforme(true, espece)) return;
+        ORBE_VIE_EXCLUE.add(espece);
+        if ("Orbe Vie".equals(OBJETS_PROBABLES.get(espece))) OBJETS_PROBABLES.remove(espece);
+        ProfilAdversaire profil = PROFILS.get(espece);
+        if (profil != null) {
+            for (StatHypothesis h : new StatHypothesis[]{profil.attaque, profil.attaqueSpe, profil.defense, profil.defenseSpe}) {
+                h.objetsPossibles.remove("Orbe Vie");
+            }
+        }
+        MessageDebugLogger.analyse("OBJET " + espece + " : pas d'Orbe Vie (" + cr.idCoup
+            + " m'a touché sans recul annoncé)");
+    }
+
+    // --- Morphing (Métamorph, Imposteur) : "moi:espèce" / "adv:espèce" ---
+    private static final Set<String> TRANSFORMES = new HashSet<>();
+
+    private static boolean estTransforme(boolean campAdverse, String espece) {
+        return espece != null && TRANSFORMES.contains((campAdverse ? "adv:" : "moi:") + espece);
+    }
+
+    private static void suivreMorphingEtRates(String cle, Object[] args) {
+        if (cle.equals("cobblemon.battle.transform") && args.length > 0) {
+            Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (adverse == null) return;
+            Pokemon p = adverse ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+            if (p != null && TRANSFORMES.add((adverse ? "adv:" : "moi:") + p.getEspece())) {
+                MessageDebugLogger.analyse("MORPHING " + p.getEspece() + (adverse ? " (adverse)" : " (moi)")
+                    + " : mesures ignorées tant qu'il reste sur le terrain");
+            }
+        } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
+            TRANSFORMES.removeIf(k -> k.startsWith("adv:"));
+        } else if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            TRANSFORMES.removeIf(k -> k.startsWith("moi:"));
+        } else if (dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
+                || cle.equals("cobblemon.battle.immune") || cle.startsWith("cobblemon.battle.activate.protect"))) {
+            coupAdvRateCeTour = true;
+        }
     }
 
     // --- Torche activée : x1,5 sur l'Attaque des capacités Feu ---
@@ -1565,6 +1651,9 @@ public final class ObservationCollector {
     private static String analyserCoupRecu(CoupRecu cr) {
         StringBuilder log = new StringBuilder();
         if (cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
+        if (estTransforme(true, cr.especeAttaquant) || estTransforme(false, cr.especeDefenseur)) {
+            return "Morphing en cours : ignoré";
+        }
         if (cr.clone) return "touché sur un Clone";
 
         MoveTemplate template = Moves.INSTANCE.getByName(cr.idCoup);
@@ -2539,6 +2628,7 @@ public final class ObservationCollector {
             if (fr == null) continue;
             if ("Ballon".equals(fr) && ballonExclu(espece)) continue;
             if (fr.endsWith(" Choix") && OBJETS_CHOIX_EXCLUS.contains(espece)) continue;
+            if ("Orbe Vie".equals(fr) && ORBE_VIE_EXCLUE.contains(espece)) continue;
             return fr;
         }
         return null;
@@ -2571,6 +2661,7 @@ public final class ObservationCollector {
         suivreCoupRecu(cle, contenu.getArgs());
         suivreVerrouChoix(cle, contenu.getArgs());
         suivreTorche(cle, contenu.getArgs());
+        suivreMorphingEtRates(cle, contenu.getArgs());
 
         if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
             prioriteObjetCeTour = true;
@@ -2628,6 +2719,7 @@ public final class ObservationCollector {
             if (args.length == 0) return;
             String proprietaire = MoveUseTracker.extraireProprietaire(args[0]);
             if (!Boolean.TRUE.equals(determinerAttaquant(proprietaire))) return;
+            reculOrbeVieAdvCeTour = true;
             Pokemon adv = BattleStateTracker.getAdversaireActif();
             if (adv == null) return;
             confirmerObjet(adv.getEspece(), "Orbe Vie", "recul d'Orbe Vie annoncé par le jeu");
@@ -2770,8 +2862,8 @@ public final class ObservationCollector {
                 OBJETS_RETIRES.add(adv.getEspece());
             }
             if (Boolean.TRUE.equals(voleurEstAdversaire) && objetFr != null) {
+                objetAdversaireRecu(adv.getEspece());
                 confirmerObjet(adv.getEspece(), objetFr, "volé avec Pickpocket");
-                OBJETS_CHOIX_EXCLUS.remove(adv.getEspece());
             }
 
             // Côté joueur, pour le même filet de sécurité que pour le Ballon :
@@ -3135,6 +3227,10 @@ public final class ObservationCollector {
         BALLON_ANNONCE.clear();
         ENTREE_ADVERSAIRE_MS.clear();
         PREUVE_PAS_CHOIX.clear();
+        ORBE_VIE_EXCLUE.clear();
+        TRANSFORMES.clear();
+        reculOrbeVieAdvCeTour = false;
+        coupAdvRateCeTour = false;
         TORCHE_ACTIVE.clear();
         OBJETS_PROBABLES.clear();
         OBJETS_CHOIX_EXCLUS.clear();
@@ -3215,6 +3311,8 @@ public final class ObservationCollector {
         adversaireAAgiEnPremier = null;
         especeAdvActeur = null;
         especeJoueurActeur = null;
+        reculOrbeVieAdvCeTour = false;
+        coupAdvRateCeTour = false;
         espaceAdversaireDuTour = null;
     }
 
