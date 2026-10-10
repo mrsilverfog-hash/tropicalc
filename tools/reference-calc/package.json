@@ -1,0 +1,8 @@
+{
+  "name": "tropicalc-reference-calc",
+  "private": true,
+  "description": "Génère les cas de référence Showdown pour les tests du calcul de dégâts",
+  "dependencies": {
+    "@smogon/calc": "0.12.0"
+  }
+}

@@ -95,18 +95,44 @@ public class DamageCalculator {
     private static final java.util.Set<String> ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN =
         java.util.Set.of("meowscarada", "cinderace", "greninja");
 
+    /**
+     * Capacités qui font toujours un coup critique (Tour de Magie, Poing
+     * Obscur, Torrent de Coups, Yama Arashi, Souffle Glacé).
+     */
+    private static final java.util.Set<String> CAPACITES_TOUJOURS_CRITIQUES = java.util.Set.of(
+        "flowertrick", "wickedblow", "surgingstrikes", "stormthrow", "frostbreath");
+
+    /**
+     * Calcul de dégâts, étape par étape comme le jeu (formule de Showdown,
+     * vérifiée par les tests contre le calculateur officiel) :
+     * puissance -> attaque -> défense -> dégâts de base -> météo -> critique
+     * -> 16 jets -> STAB -> efficacité -> brûlure -> modificateurs finaux.
+     * Chaque étape a son propre arrondi ; voir ModifierContext.
+     */
     public static Resultat calculer(Pokemon attaquant, Pokemon defenseur, Move capacite,
                                      Field terrain, Field.Ecrans ecransDefenseur, boolean critique) {
 
         if (capacite.estCapaciteDeStatut()) {
             return Resultat.sansDegats();
         }
+        if (CAPACITES_TOUJOURS_CRITIQUES.contains(capacite.getNom())) {
+            critique = true;
+        }
 
         // Ball'Météo : change de type et double de puissance selon la météo
         capacite = capaciteEffective(capacite, terrain);
+        Move avantTalent = capacite;
         capacite = capaciteApresTalent(capacite, attaquant);
+        // Peau Céleste/Féérique/Gelée/Électrique, Normalise : x1,2 sur la puissance
+        boolean bonusPeau = capacite != avantTalent && !"Hydrata-Son".equals(attaquant.getTalent());
 
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
+
+        // Puissance de la capacité avant modificateurs. Calculée en premier :
+        // Technicien en dépend, et Façade pose ignorerPenaliteBrulure.
+        int puissance = puissanceEffective(capacite, attaquant, defenseur, ctx, terrain.getMeteo());
+        ctx.puissanceBase = puissance;
+        if (bonusPeau) ctx.puissance(ModifierContext.ORDRE_PEAU, 4915);
 
         AbilityModifier talentAttaquant = AbilityModifier.pour(attaquant.getTalent());
         if (talentAttaquant != null) talentAttaquant.appliquerCoteAttaquant(ctx);
@@ -129,66 +155,49 @@ public class DamageCalculator {
         // Talents "de Ruine" (Gen 9) : réduisent une stat de -25% chez TOUS
         // les Pokémon sur le terrain SAUF leur porteur. Portée globale, donc
         // le porteur peut être l'attaquant OU le défenseur de ce calcul —
-        // seul celui qui NE porte PAS le talent est affecté (le porteur
-        // s'exclut lui-même). Chaque Ruine ne touche QUE sa propre stat
-        // (physique/spéciale) pour éviter un cumul erroné avec sa jumelle
-        // si les deux sont actives simultanément sur le terrain.
+        // seul celui qui NE porte PAS le talent est affecté.
         boolean physique = capacite.getCategorie() == Move.Categorie.PHYSIQUE;
         // Choc Psy/Frappe Psy/Lame Ointe : catégorie SPÉCIALE mais utilisent
-        // la Défense PHYSIQUE du défenseur. Épée du Fléau (qui réduit la
-        // Défense) doit donc s'appliquer même si la capacité est spéciale -
-        // seul le routage DÉFENSIF en tient compte (Tablettes/Perles restent
-        // indexées sur la catégorie standard : les cas Tricherie et Choc
-        // Pied, où la stat OFFENSIVE réelle diverge aussi de la catégorie,
-        // sont une limite connue non corrigée ici).
-        String nomPourRuine = capacite.getNom();
+        // la Défense PHYSIQUE du défenseur : Épée du Fléau s'applique alors.
+        String nomCapacite = capacite.getNom();
         boolean statDefUtiliseeEstPhysique = physique
-            || "psyshock".equals(nomPourRuine) || "psystrike".equals(nomPourRuine)
-            || "secretsword".equals(nomPourRuine);
+            || "psyshock".equals(nomCapacite) || "psystrike".equals(nomCapacite)
+            || "secretsword".equals(nomCapacite);
 
-        // Épée du Fléau (Chien-Pao) : -25% Défense de tous sauf le porteur.
         if (statDefUtiliseeEstPhysique) {
-            boolean attEpee = "Épée du Fléau".equals(attaquant.getTalent());
-            boolean defEpee = "Épée du Fléau".equals(defenseur.getTalent());
-            if (attEpee && !defEpee) ctx.multiplicateurDefense *= 0.75;
+            // Épée du Fléau (Chien-Pao) : -25% Défense de tous sauf le porteur.
+            if ("Épée du Fléau".equals(attaquant.getTalent()) && !"Épée du Fléau".equals(defenseur.getTalent())) {
+                ctx.defense(ModifierContext.ORDRE_FLEAU, 3072);
+            }
         } else {
-            // Perles du Fléau (Chi-Yu) : -25% Défense Spéciale de tous sauf
-            // le porteur (nom vérifié sur Poképédia, la stat concernée est
-            // bien la Défense Spéciale, pas l'Attaque Spéciale).
-            boolean attPerles = "Perles du Fléau".equals(attaquant.getTalent());
-            boolean defPerles = "Perles du Fléau".equals(defenseur.getTalent());
-            if (attPerles && !defPerles) ctx.multiplicateurDefense *= 0.75;
+            // Perles du Fléau (Chi-Yu) : -25% Défense Spéciale de tous sauf le porteur.
+            if ("Perles du Fléau".equals(attaquant.getTalent()) && !"Perles du Fléau".equals(defenseur.getTalent())) {
+                ctx.defense(ModifierContext.ORDRE_FLEAU, 3072);
+            }
         }
-
-        // Tablettes du Fléau (Wo-Chien) : -25% Attaque de tous sauf le porteur.
         if (physique) {
-            boolean attTablettes = "Tablettes du Fléau".equals(attaquant.getTalent());
-            boolean defTablettes = "Tablettes du Fléau".equals(defenseur.getTalent());
-            if (defTablettes && !attTablettes) ctx.multiplicateurAttaque *= 0.75;
+            // Tablettes du Fléau (Wo-Chien) : -25% Attaque de tous sauf le porteur.
+            if ("Tablettes du Fléau".equals(defenseur.getTalent()) && !"Tablettes du Fléau".equals(attaquant.getTalent())) {
+                ctx.attaque(ModifierContext.ORDRE_FLEAU, 3072);
+            }
         } else {
-            // Urne du Fléau (Ting-Lu) : -25% Attaque Spéciale de tous sauf
-            // le porteur (nom vérifié sur Poképédia, la stat concernée est
-            // bien l'Attaque Spéciale, pas la Défense Spéciale).
-            boolean attUrne = "Urne du Fléau".equals(attaquant.getTalent());
-            boolean defUrne = "Urne du Fléau".equals(defenseur.getTalent());
-            if (defUrne && !attUrne) ctx.multiplicateurAttaque *= 0.75;
+            // Urne du Fléau (Ting-Lu) : -25% Attaque Spéciale de tous sauf le porteur.
+            if ("Urne du Fléau".equals(defenseur.getTalent()) && !"Urne du Fléau".equals(attaquant.getTalent())) {
+                ctx.attaque(ModifierContext.ORDRE_FLEAU, 3072);
+            }
         }
 
-        // Aura Sombre / Aura Fée (Yveltal/Xerneas) : +33% dégâts du type
-        // correspondant pour TOUS les Pokémon sur le terrain (portée globale,
-        // comme les Ruines), inversé en -25% si l'un des deux actifs a Aura
-        // Brisée (Aura Break neutralise et inverse les deux auras à la fois).
+        // Aura Sombre / Aura Fée (Yveltal/Xerneas) : x5448/4096 sur la
+        // puissance du type pour tous, x0,75 si l'un des deux a Aura Brisée.
         boolean auraSombreActive = "Aura Sombre".equals(attaquant.getTalent())
             || "Aura Sombre".equals(defenseur.getTalent());
         boolean auraFeeActive = "Aura Fée".equals(attaquant.getTalent())
             || "Aura Fée".equals(defenseur.getTalent());
         boolean auraBrisee = "Aura Brisée".equals(attaquant.getTalent())
             || "Aura Brisée".equals(defenseur.getTalent());
-        if (auraSombreActive && capacite.getType() == PokemonType.TENEBRES) {
-            ctx.multiplicateurDegatsFinal *= auraBrisee ? 0.75 : 1.33;
-        }
-        if (auraFeeActive && capacite.getType() == PokemonType.FEE) {
-            ctx.multiplicateurDegatsFinal *= auraBrisee ? 0.75 : 1.33;
+        if ((auraSombreActive && capacite.getType() == PokemonType.TENEBRES)
+                || (auraFeeActive && capacite.getType() == PokemonType.FEE)) {
+            ctx.puissance(ModifierContext.ORDRE_AURA, auraBrisee ? 3072 : 5448);
         }
 
         if (ctx.immuniteType) return Resultat.immunise();
@@ -204,77 +213,71 @@ public class DamageCalculator {
             return Resultat.depuis(d, defenseur, efficacite, capacite);
         }
 
-        appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
-
-        // Puissance effective : gère Sabotage, Gyroball, Boule Élek, Châtiment,
-        // Façade, Balayage, Nœud Herbe, Tacle Lourd, Tacle Feu.
-        // Doit être calculée AVANT les stats : Façade pose ignorerPenaliteBrulure.
-        int puissance = puissanceEffective(capacite, attaquant, defenseur, ctx, terrain.getMeteo());
         if (puissance <= 0) {
             return Resultat.sansDegats();
         }
 
-        Stat statOffensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
-        // Body Press utilise la Défense de l'attaquant
-        if ("bodypress".equals(capacite.getNom())) {
+        appliquerModificateursConditionnels(ctx, efficacite, attaquant, defenseur);
+
+        // Champs : x1,3 sur le type du champ si le lanceur touche le sol ;
+        // Brumeux (Dragon) et Herbu (Séisme...) x0,5 si la cible touche le sol.
+        if (estAuSol(attaquant) && terrain.multiplicateurTerrain(capacite.getType()) > 1.0) {
+            ctx.puissance(ModifierContext.ORDRE_CHAMP, 5325);
+        }
+        if (multiplicateurTerrainDefensif(terrain, capacite, defenseur) < 1.0) {
+            ctx.puissance(ModifierContext.ORDRE_CHAMP_DEFENSEUR, 2048);
+        }
+
+        // Écrans : x0,5, ignorés par un critique et par Infiltration
+        boolean infiltration = "Infiltration".equals(attaquant.getTalent());
+        if (!critique && !infiltration && ecransDefenseur != null
+                && ecransDefenseur.multiplicateur(capacite.getCategorie()) < 1.0) {
+            ctx.degatsFinal(ModifierContext.ORDRE_ECRANS, 2048);
+        }
+
+        int puissanceFinale = (int) Math.max(1,
+            ModifierContext.arrondiJeu(puissance * (double) ctx.chainePuissance() / 4096.0));
+
+        Stat statOffensive = physique ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
+        // Big Splash utilise la Défense de l'attaquant
+        if ("bodypress".equals(nomCapacite)) {
             statOffensive = Stat.DEFENSE;
         }
-        Stat statDefensive = capacite.getCategorie() == Move.Categorie.PHYSIQUE ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        Stat statDefensive = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
         // Choc Psy / Frappe Psy / Lame Ointe : capacités spéciales frappant la Défense physique
         // (contourne aussi le boost Déf. Spé. des types Roche sous tempête de sable)
-        String nomCapacite = capacite.getNom();
         if ("psyshock".equals(nomCapacite) || "psystrike".equals(nomCapacite)
             || "secretsword".equals(nomCapacite)) {
             statDefensive = Stat.DEFENSE;
         }
 
-        int statA = calculerStatOffensiveEffective(attaquant, capacite, ctx, statOffensive, critique);
+        // Tricherie : l'Attaque du DÉFENSEUR (avec ses stages), mais les
+        // modificateurs (objet, talent) et la brûlure restent ceux du lanceur.
+        Pokemon sourceAttaque = "foulplay".equals(nomCapacite) ? defenseur : attaquant;
+        int statA = calculerStatOffensiveEffective(sourceAttaque, attaquant, ctx, statOffensive, critique);
         int statD = calculerStatDefensiveEffective(defenseur, terrain, ctx, statDefensive, critique);
 
-        // Tricherie : utilise l'Attaque du DÉFENSEUR (avec ses stages, sans son objet
-        // ni son talent), mais la brûlure de l'attaquant s'applique quand même
-        if ("foulplay".equals(nomCapacite)) {
-            int atk = defenseur.getStatCalculee(Stat.ATTAQUE);
-            int stage = defenseur.getStage(Stat.ATTAQUE);
-            if (critique && stage < 0) stage = 0;
-            double mult = stage >= 0 ? (2.0 + stage) / 2.0 : 2.0 / (2.0 - stage);
-            atk = (int) (atk * mult);
-            if (attaquant.getStatut() == Pokemon.Statut.BRULURE && !ctx.ignorerPenaliteBrulure) {
-                atk = (int) (atk * 0.5);
-            }
-            statA = atk;
-        }
-
         int niveauTerme = (2 * attaquant.getNiveau()) / 5 + 2;
-        long base = ((long) niveauTerme * puissance * statA) / Math.max(1, statD);
+        long base = ((long) niveauTerme * puissanceFinale * statA) / Math.max(1, statD);
         base = base / 50 + 2;
 
-        double stab = calculerSTAB(attaquant, capacite, ctx);
         double meteo = terrain.multiplicateurMeteo(capacite.getType());
-        double champTerrain = estAuSol(attaquant) ? terrain.multiplicateurTerrain(capacite.getType()) : 1.0;
-        double champTerrainDef = multiplicateurTerrainDefensif(terrain, capacite, defenseur);
-        // Infiltration : ignore Reflet/Mur Lumière/Voile Aurore de la cible,
-        // comme les critiques le font déjà
-        boolean infiltration = "Infiltration".equals(attaquant.getTalent());
-        double ecrans = (!critique && !infiltration && ecransDefenseur != null)
-            ? ecransDefenseur.multiplicateur(capacite.getCategorie())
-            : 1.0;
-        double critMult = critique ? 1.5 : 1.0;
+        if (meteo == 0.0) return Resultat.sansDegats();   // Feu sous pluie battante, Eau sous soleil intense
+        if (meteo != 1.0) base = ModifierContext.arrondiJeu(base * (meteo > 1.0 ? 6144 : 2048) / 4096.0);
+        if (critique) base = (long) Math.floor(base * 1.5);
+
+        int stab = (int) Math.round(calculerSTAB(attaquant, capacite, ctx) * 4096);
+        boolean brulure = attaquant.getStatut() == Pokemon.Statut.BRULURE && physique
+            && !ctx.ignorerPenaliteBrulure;
+        int modFinal = ctx.chaineFinale();
 
         int[] degats = new int[16];
-        // Le jeu regroupe écrans, terrain et objets/talents (Ceinture Pro,
-        // Filtre, Orbe Vie...) en UNE seule étape "other", arrondie une fois —
-        // pas trois arrondis séquentiels, qui grignoteraient des dégâts en trop.
-        double autre = ecrans * champTerrain * champTerrainDef * ctx.multiplicateurDegatsFinal;
         for (int i = 0; i < 16; i++) {
-            double alea = (85 + i) / 100.0;
-            long d = base;
-            d = appliquerEtFloor(d, meteo);
-            d = appliquerEtFloor(d, critMult);
-            d = appliquerEtFloor(d, alea);
-            d = appliquerEtFloor(d, stab);
-            d = appliquerEtFloor(d, efficacite);
-            d = appliquerEtFloor(d, autre);
+            long d = (base * (85 + i)) / 100;
+            double apresStab = stab != 4096 ? d * stab / 4096.0 : d;
+            d = (long) Math.floor(ModifierContext.arrondiJeu(apresStab) * efficacite);
+            if (brulure) d = d / 2;
+            d = ModifierContext.arrondiJeu(Math.max(1, d * (double) modFinal / 4096.0));
             degats[i] = (int) Math.max(1, d);
         }
 
@@ -352,10 +355,6 @@ public class DamageCalculator {
         return coupsEffectifs(capacite, attaquant)[1];
     }
 
-    private static long appliquerEtFloor(long valeur, double multiplicateur) {
-        return (long) Math.floor(valeur * multiplicateur);
-    }
-
     /**
      * Capacités à dégâts fixes. Retourne null si la capacité n'en est pas une.
      * Riposte et Voile Miroir dépendent des dégâts reçus (imprévisibles), donc exclus.
@@ -387,7 +386,6 @@ public class DamageCalculator {
     private static Move capaciteApresTalent(Move capacite, Pokemon attaquant) {
         String t = attaquant.getTalent();
         if (t == null || capacite.getPuissanceDeBase() <= 0) return capacite;
-        int bonus = (int) Math.round(capacite.getPuissanceDeBase() * 4915.0 / 4096.0);
         PokemonType peau = switch (t) {
             case "Peau Céleste" -> PokemonType.VOL;
             case "Peau Féérique" -> PokemonType.FEE;
@@ -395,8 +393,12 @@ public class DamageCalculator {
             case "Peau Électrique" -> PokemonType.ELECTRIK;
             default -> null;
         };
-        if (peau != null && capacite.getType() == PokemonType.NORMAL) return capacite.copieAvec(peau, bonus);
-        if ("Normalise".equals(t)) return capacite.copieAvec(PokemonType.NORMAL, bonus);
+        // Le x1,2 n'est pas appliqué ici : calculer() l'ajoute à la chaîne de
+        // puissance quand la capacité a été transformée.
+        if (peau != null && capacite.getType() == PokemonType.NORMAL) {
+            return capacite.copieAvec(peau, capacite.getPuissanceDeBase());
+        }
+        if ("Normalise".equals(t)) return capacite.copieAvec(PokemonType.NORMAL, capacite.getPuissanceDeBase());
         if ("Hydrata-Son".equals(t) && AbilityModifier.CAPACITES_SON.contains(capacite.getNom())) {
             return capacite.copieAvec(PokemonType.EAU, capacite.getPuissanceDeBase());
         }
@@ -438,7 +440,7 @@ public class DamageCalculator {
             }
             case "knockoff" -> {
                 // Sabotage : x1.5 si le défenseur tient un objet
-                if (defenseur.getObjet() != null) puissance = (int) (puissance * 1.5);
+                if (defenseur.getObjet() != null) ctx.puissance(ModifierContext.ORDRE_CAPACITE, 6144);
             }
             case "ragefist" -> {
                 // Poing de Colère : +50 par capacité offensive réellement
@@ -451,9 +453,10 @@ public class DamageCalculator {
                 Pokemon.Statut s = attaquant.getStatut();
                 if (s == Pokemon.Statut.BRULURE || s == Pokemon.Statut.POISON
                     || s == Pokemon.Statut.POISON_GRAVE || s == Pokemon.Statut.PARALYSIE) {
-                    puissance *= 2;
-                    ctx.ignorerPenaliteBrulure = true;
+                    ctx.puissance(ModifierContext.ORDRE_CAPACITE, 8192);
                 }
+                // Façade ignore la division par 2 de la brûlure dans tous les cas
+                ctx.ignorerPenaliteBrulure = true;
             }
             case "hex" -> {
                 // Châtiment : x2 si le défenseur a un statut
@@ -544,10 +547,17 @@ public class DamageCalculator {
             }
             case "brine" -> {
                 // Saumure : x2 si la cible a 50 % de ses PV ou moins
-                if (defenseur.getPvActuels() * 2 <= defenseur.getPvMax()) puissance *= 2;
+                if (defenseur.getPvActuels() * 2 <= defenseur.getPvMax()) ctx.puissance(ModifierContext.ORDRE_CAPACITE, 8192);
             }
-            case "venoshock", "barbbarrage" -> {
-                // Choc Venin / Multi-Toxik : x2 si la cible est empoisonnée
+            case "venoshock" -> {
+                // Choc Venin : x2 si la cible est empoisonnée
+                Pokemon.Statut s = defenseur.getStatut();
+                if (s == Pokemon.Statut.POISON || s == Pokemon.Statut.POISON_GRAVE) {
+                    ctx.puissance(ModifierContext.ORDRE_CAPACITE, 8192);
+                }
+            }
+            case "barbbarrage" -> {
+                // Multi-Toxik : puissance doublée si la cible est empoisonnée
                 Pokemon.Statut s = defenseur.getStatut();
                 if (s == Pokemon.Statut.POISON || s == Pokemon.Statut.POISON_GRAVE) puissance *= 2;
             }
@@ -579,13 +589,13 @@ public class DamageCalculator {
             case "expandingforce" -> {
                 // Vaste Pouvoir : x1.5 sous Champ Psychique si le lanceur touche le sol
                 if (ctx.terrain.getTerrain() == Field.TypeTerrain.PSYCHIQUE && estAuSol(attaquant)) {
-                    puissance = puissance * 3 / 2;
+                    ctx.puissance(ModifierContext.ORDRE_CAPACITE, 6144);
                 }
             }
             case "mistyexplosion" -> {
                 // Explo-Brume : x1.5 sous Champ Brumeux si le lanceur touche le sol
                 if (ctx.terrain.getTerrain() == Field.TypeTerrain.BRUMEUX && estAuSol(attaquant)) {
-                    puissance = puissance * 3 / 2;
+                    ctx.puissance(ModifierContext.ORDRE_CAPACITE, 6144);
                 }
             }
             case "psyblade" -> {
@@ -685,29 +695,35 @@ public class DamageCalculator {
         return meilleure;
     }
 
-    /** Multiplicateur Protosynthèse/Moteur Quark applicable à une stat donnée (offense/défense). */
-    private static double multiplicateurParadox(Pokemon p, Stat stat, Field terrain) {
-        // Pouls Orichalque (Attaque physique fixe, soleil) / Moteur Hadron
-        // (Attaque Spéciale fixe, terrain électrique) : contrairement à
-        // Protosynthèse/Moteur Quark, ils boostent TOUJOURS la même stat,
-        // pas nécessairement la plus haute du Pokémon. Ratio officiel exact
-        // 5461/4096 (~33,3%), pas un simple +30%.
+    /**
+     * Modificateur Protosynthèse / Moteur Quark (et Pouls Orichalque / Moteur
+     * Hadron) applicable à une stat offensive ou défensive, en 4096e.
+     * 4096 = aucun effet.
+     */
+    private static int modParadoxe(Pokemon p, Stat stat, Field terrain) {
+        // Pouls Orichalque (Attaque, soleil) / Moteur Hadron (Attaque
+        // Spéciale, Champ Électrifié) : toujours la même stat, x5461/4096.
         String talent = p.getTalent();
         boolean soleilActif = terrain.getMeteo() == Field.Meteo.SOLEIL
             || terrain.getMeteo() == Field.Meteo.SOLEIL_INTENSE;
         if ("Pouls Orichalque".equals(talent) && stat == Stat.ATTAQUE && soleilActif) {
-            return 5461.0 / 4096.0;
+            return 5461;
         }
         if ("Moteur Hadron".equals(talent) && stat == Stat.ATTAQUE_SPE
                 && terrain.getTerrain() == Field.TypeTerrain.ELECTRIQUE) {
-            return 5461.0 / 4096.0;
+            return 5461;
         }
+        if (stat == Stat.VITESSE || stat != statLaPlusHaute(p)) return 4096;
+        if (!estBoostParadox(p, terrain.getMeteo(), terrain.getTerrain())) return 4096;
+        // Protosynthèse / Moteur Quark : x5325/4096 (~1,3) sur la stat la
+        // plus haute hors Vitesse (la Vitesse, x1,5, est gérée à part).
+        return 5325;
+    }
 
-        if (stat != statLaPlusHaute(p)) return 1.0;
-        if (!estBoostParadox(p, terrain.getMeteo(), terrain.getTerrain())) return 1.0;
-        // Ratio officiel exact : 5461/4096 (~33,3%) pour les stats hors
-        // Vitesse, 6144/4096 (1.5 exact) pour la Vitesse.
-        return stat == Stat.VITESSE ? 1.5 : 5461.0 / 4096.0;
+    private static int ordreParadoxe(Pokemon p) {
+        String t = p.getTalent();
+        return "Pouls Orichalque".equals(t) || "Moteur Hadron".equals(t)
+            ? ModifierContext.ORDRE_ORICHALQUE : ModifierContext.ORDRE_PARADOXE;
     }
 
     /** Poids en hectogrammes, modifié par Heavy Metal, Light Metal et Pierrallégée. */
@@ -778,79 +794,78 @@ public class DamageCalculator {
                                                               Pokemon attaquant, Pokemon defenseur) {
         if (efficacite > 1.0) {
             if ("Ceinture Pro".equals(attaquant.getObjet())) {
-                ctx.multiplicateurDegatsFinal *= 1.2;
+                ctx.degatsFinal(ModifierContext.ORDRE_OBJET, 4915);
             }
             // Turbo-Charge / Électro-Dérive : x1.33 sur un coup super efficace
             String nomCap = ctx.capacite.getNom();
             if ("collisioncourse".equals(nomCap) || "electrodrift".equals(nomCap)) {
-                ctx.multiplicateurDegatsFinal *= 5461.0 / 4096.0;
+                ctx.puissance(ModifierContext.ORDRE_CAPACITE, 5461);
             }
             if ("Cérébro-Force".equals(attaquant.getTalent())) {
-                ctx.multiplicateurDegatsFinal *= 5120.0 / 4096.0;
+                ctx.degatsFinal(ModifierContext.ORDRE_TALENT_FINAL, 5120);
             }
             String talentDef = defenseur.getTalent();
             if ("Filtre".equals(talentDef) || "Solide Roc".equals(talentDef) || "Prisme-Armure".equals(talentDef)) {
-                ctx.multiplicateurDegatsFinal *= 0.75;
+                ctx.degatsFinal(ModifierContext.ORDRE_FILTRE, 3072);
             }
         } else if (efficacite > 0.0 && efficacite < 1.0) {
             if ("Lentiteintée".equals(attaquant.getTalent())) {
-                ctx.multiplicateurDegatsFinal *= 2.0;
+                ctx.degatsFinal(ModifierContext.ORDRE_TALENT_FINAL, 8192);
             }
         }
     }
 
-    private static int calculerStatOffensiveEffective(Pokemon attaquant, Move capacite, ModifierContext ctx,
+    /**
+     * Stat offensive : stat de base avec stages (un critique ignore les
+     * stages négatifs), Agitation à part, puis la chaîne des modificateurs
+     * d'attaque arrondie une fois. La brûlure n'est PAS appliquée ici : le
+     * jeu divise les dégâts, pas l'Attaque.
+     *
+     * @param source Pokémon dont on lit la stat (le défenseur pour Tricherie)
+     */
+    private static int calculerStatOffensiveEffective(Pokemon source, Pokemon attaquant, ModifierContext ctx,
                                                         Stat stat, boolean critique) {
-        int base = attaquant.getStatCalculee(stat);
-        int stage = attaquant.getStage(stat);
-
-        if (ctx.ignorerStagesAttaquant) {
-            stage = 0;
-        } else if (critique && stage < 0) {
+        int stage = source.getStage(stat);
+        if (ctx.ignorerStagesAttaquant || (critique && stage < 0)) {
             stage = 0;
         }
+        long valeur = appliquerStage(source.getStatCalculee(stat), stage);
+        if (ctx.agitation) valeur = ModifierContext.arrondiJeu(valeur * 3 / 2.0);
 
-        double valeur = appliquerStage(base, stage);
-        valeur *= ctx.multiplicateurAttaque;
-        valeur *= multiplicateurParadox(attaquant, stat, ctx.terrain);
+        int paradoxe = modParadoxe(attaquant, stat, ctx.terrain);
+        if (paradoxe != 4096) ctx.attaque(ordreParadoxe(attaquant), paradoxe);
 
-        if (stat == Stat.ATTAQUE && attaquant.getStatut() == Pokemon.Statut.BRULURE && !ctx.ignorerPenaliteBrulure) {
-            valeur *= 0.5;
-        }
-
-        return (int) Math.floor(valeur);
+        return (int) Math.max(1, ModifierContext.arrondiJeu(valeur * (double) ctx.chaineAttaque() / 4096.0));
     }
 
     private static int calculerStatDefensiveEffective(Pokemon defenseur, Field terrain, ModifierContext ctx,
                                                         Stat stat, boolean critique) {
-        int base = defenseur.getStatCalculee(stat);
         int stage = defenseur.getStage(stat);
-
-        if (ctx.ignorerStagesDefenseur) {
-            stage = 0;
-        } else if (critique && stage > 0) {
+        if (ctx.ignorerStagesDefenseur || (critique && stage > 0)) {
             stage = 0;
         }
+        long valeur = appliquerStage(defenseur.getStatCalculee(stat), stage);
 
-        double valeur = appliquerStage(base, stage);
-        valeur *= ctx.multiplicateurDefense;
-        valeur *= multiplicateurParadox(defenseur, stat, terrain);
-
+        // Sable : Déf. Spé. x1,5 des Roche ; Neige : Défense x1,5 des Glace
         if (terrain.getMeteo() == Field.Meteo.SABLE && stat == Stat.DEFENSE_SPE
             && defenseur.possedeType(PokemonType.ROCHE)) {
-            valeur *= 1.5;
+            valeur = ModifierContext.arrondiJeu(valeur * 3 / 2.0);
         }
         if (terrain.getMeteo() == Field.Meteo.NEIGE && stat == Stat.DEFENSE
             && defenseur.possedeType(PokemonType.GLACE)) {
-            valeur *= 1.5;
+            valeur = ModifierContext.arrondiJeu(valeur * 3 / 2.0);
         }
 
-        return (int) Math.floor(valeur);
+        int paradoxe = modParadoxe(defenseur, stat, terrain);
+        if (paradoxe != 4096) ctx.defense(ModifierContext.ORDRE_PARADOXE, paradoxe);
+
+        return (int) Math.max(1, ModifierContext.arrondiJeu(valeur * (double) ctx.chaineDefense() / 4096.0));
     }
 
-    private static double appliquerStage(int statBase, int stage) {
-        if (stage >= 0) return statBase * (2.0 + stage) / 2.0;
-        return statBase * 2.0 / (2.0 - stage);
+    /** Stat modifiée par les stages, arrondie vers le bas comme dans le jeu. */
+    private static long appliquerStage(int statBase, int stage) {
+        if (stage >= 0) return (long) statBase * (2 + stage) / 2;
+        return (long) statBase * 2 / (2 - stage);
     }
 
     private static double calculerSTAB(Pokemon attaquant, Move capacite, ModifierContext ctx) {

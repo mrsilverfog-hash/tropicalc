@@ -60,7 +60,7 @@ public interface AbilityModifier {
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getType() == type
                         && ctx.attaquant.getPvActuels() * 3 <= ctx.attaquant.getPvMax()) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         };
@@ -91,7 +91,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.SPECTRE) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_DEFENSEUR, 2048);
                 }
             }
         });
@@ -114,7 +114,7 @@ public interface AbilityModifier {
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 PokemonType t = ctx.capacite.getType();
                 if (t == PokemonType.FEU || t == PokemonType.GLACE) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_DEFENSEUR, 2048);
                 }
             }
         });
@@ -132,7 +132,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.defenseur.getPvActuels() == ctx.defenseur.getPvMax()) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.degatsFinal(ModifierContext.ORDRE_MULTIECAILLE, 2048);
                 }
             }
         };
@@ -166,9 +166,9 @@ public interface AbilityModifier {
                 int defSpeAdverse = ctx.defenseur.getStatCalculee(Stat.DEFENSE_SPE);
                 boolean boostAtk = defAdverse < defSpeAdverse;
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE && boostAtk) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 } else if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE && !boostAtk) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -176,8 +176,12 @@ public interface AbilityModifier {
         m.put("Cran", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (ctx.attaquant.getStatut() != Pokemon.Statut.AUCUN) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                // Attaque x1,5 sous un statut, capacités physiques seulement
+                // (l'Attaque Spéciale n'est pas concernée) ; annule la
+                // division par 2 de la brûlure.
+                if (ctx.attaquant.getStatut() != Pokemon.Statut.AUCUN
+                        && ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                     ctx.ignorerPenaliteBrulure = true;
                 }
             }
@@ -187,7 +191,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.agitation = true;
                 }
             }
         });
@@ -205,7 +209,7 @@ public interface AbilityModifier {
         m.put("Téméraire", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (CAPACITES_RECUL.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 4915.0 / 4096.0;
+                if (CAPACITES_RECUL.contains(ctx.capacite.getNom())) ctx.puissance(ModifierContext.ORDRE_POING_DE_FER, 4915);
             }
         });
 
@@ -213,7 +217,7 @@ public interface AbilityModifier {
         m.put("Méga Blaster", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (CAPACITES_PULSATION.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 1.5;
+                if (CAPACITES_PULSATION.contains(ctx.capacite.getNom())) ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
             }
         });
 
@@ -221,7 +225,7 @@ public interface AbilityModifier {
         m.put("Entêtement", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) ctx.multiplicateurAttaque *= 1.5;
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
             }
         });
 
@@ -232,7 +236,7 @@ public interface AbilityModifier {
                 Field.Meteo me = ctx.terrain.getMeteo();
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE
                         && (me == Field.Meteo.SOLEIL || me == Field.Meteo.SOLEIL_INTENSE)) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -241,30 +245,35 @@ public interface AbilityModifier {
         m.put("Sniper", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (ctx.critique) ctx.multiplicateurDegatsFinal *= 1.5;
+                if (ctx.critique) ctx.degatsFinal(ModifierContext.ORDRE_TALENT_FINAL, 6144);
             }
         });
 
         // Expert Acier : x1.5 sur les capacités Acier. Boost Acier : idem.
-        AbilityModifier acier = new AbilityModifier() {
+        // Expert Acier agit sur l'Attaque, Boost Acier sur la puissance.
+        m.put("Expert Acier", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (ctx.capacite.getType() == PokemonType.ACIER) ctx.multiplicateurAttaque *= 1.5;
+                if (ctx.capacite.getType() == PokemonType.ACIER) ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
             }
-        };
-        m.put("Expert Acier", acier);
-        m.put("Boost Acier", acier);
+        });
+        m.put("Boost Acier", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() == PokemonType.ACIER) ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
+            }
+        });
 
         // Punk Rock : capacités sonores x1.3 en attaque, x0.5 en défense.
         m.put("Punk Rock", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 5325.0 / 4096.0;
+                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.puissance(ModifierContext.ORDRE_GRIFFE_DURE, 5325);
             }
 
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.multiplicateurDegatsFinal *= 0.5;
+                if (CAPACITES_SON.contains(ctx.capacite.getNom())) ctx.degatsFinal(ModifierContext.ORDRE_BOULE_DE_POILS, 2048);
             }
         });
 
@@ -272,7 +281,7 @@ public interface AbilityModifier {
         m.put("Ignifugé", new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                if (ctx.capacite.getType() == PokemonType.FEU) ctx.multiplicateurDegatsFinal *= 0.5;
+                if (ctx.capacite.getType() == PokemonType.FEU) ctx.attaque(ModifierContext.ORDRE_TALENT_DEFENSEUR, 2048);
             }
         });
 
@@ -282,7 +291,7 @@ public interface AbilityModifier {
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
                         && ctx.defenseur.getStatut() != Pokemon.Statut.AUCUN) {
-                    ctx.multiplicateurDefense *= 1.5;
+                    ctx.defense(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -293,7 +302,7 @@ public interface AbilityModifier {
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
                         && ctx.terrain.getTerrain() == Field.TypeTerrain.HERBU) {
-                    ctx.multiplicateurDefense *= 1.5;
+                    ctx.defense(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -307,8 +316,8 @@ public interface AbilityModifier {
         m.put("Technicien", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                if (ctx.capacite.getPuissanceDeBase() > 0 && ctx.capacite.getPuissanceDeBase() <= 60) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                if (ctx.puissanceBase > 0 && ctx.puissanceBase <= 60) {
+                    ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
                 }
             }
         });
@@ -317,7 +326,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.isPoing()) {
-                    ctx.multiplicateurDegatsFinal *= 1.2;
+                    ctx.puissance(ModifierContext.ORDRE_POING_DE_FER, 4915);
                 }
             }
         });
@@ -326,7 +335,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.isMorsure()) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
                 }
             }
         });
@@ -337,7 +346,7 @@ public interface AbilityModifier {
                 if (ctx.terrain.getMeteo() == Field.Meteo.SABLE) {
                     PokemonType t = ctx.capacite.getType();
                     if (t == PokemonType.ROCHE || t == PokemonType.SOL || t == PokemonType.ACIER) {
-                        ctx.multiplicateurDegatsFinal *= 1.3;
+                        ctx.puissance(ModifierContext.ORDRE_GRIFFE_DURE, 5325);
                     }
                 }
             }
@@ -353,7 +362,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
-                    ctx.multiplicateurAttaque *= 2.0;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 8192);
                 }
             }
         };
@@ -364,7 +373,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (com.tropimon.tropicalc.calc.ContactMoves.estContact(ctx.capacite.getNom())) {
-                    ctx.multiplicateurDegatsFinal *= 1.3;
+                    ctx.puissance(ModifierContext.ORDRE_GRIFFE_DURE, 5325);
                 }
             }
         });
@@ -374,7 +383,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.DRAGON) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -383,7 +392,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (com.tropimon.tropicalc.calc.MoveFlags.estTranchant(ctx.capacite.getNom())) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
                 }
             }
         });
@@ -392,7 +401,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.ROCHE) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
                 }
             }
         });
@@ -402,7 +411,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.ELECTRIK) {
-                    ctx.multiplicateurDegatsFinal *= 1.3;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 5325);
                 }
             }
         });
@@ -411,7 +420,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (SecondaryEffectMoves.aEffetSecondaire(ctx.capacite.getNom())) {
-                    ctx.multiplicateurDegatsFinal *= 1.3;
+                    ctx.puissance(ModifierContext.ORDRE_GRIFFE_DURE, 5325);
                 }
             }
         });
@@ -420,7 +429,7 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.degatsFinal(ModifierContext.ORDRE_BOULE_DE_POILS, 2048);
                 }
             }
         });
@@ -432,7 +441,7 @@ public interface AbilityModifier {
                 // multiplicateur final) — sans effet sur Choc Pied qui
                 // utilise la Défense de l'ATTAQUANT, jamais celle-ci.
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
-                    ctx.multiplicateurDefense *= 2.0;
+                    ctx.defense(ModifierContext.ORDRE_TALENT_ATTAQUANT, 8192);
                 }
             }
         });
@@ -441,10 +450,10 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (com.tropimon.tropicalc.calc.ContactMoves.estContact(ctx.capacite.getNom())) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.degatsFinal(ModifierContext.ORDRE_BOULE_DE_POILS, 2048);
                 }
                 if (ctx.capacite.getType() == PokemonType.FEU) {
-                    ctx.multiplicateurDegatsFinal *= 2.0;
+                    ctx.degatsFinal(ModifierContext.ORDRE_POILS_FEU, 8192);
                 }
             }
         });
@@ -455,7 +464,7 @@ public interface AbilityModifier {
                 if (ctx.capacite.getType() == PokemonType.EAU) {
                     ctx.immuniteType = true;   // absorbe et soigne (hors calcul de dégâts)
                 } else if (ctx.capacite.getType() == PokemonType.FEU) {
-                    ctx.multiplicateurDegatsFinal *= 1.25;
+                    ctx.puissance(ModifierContext.ORDRE_PEAU_SECHE, 5120);
                 }
             }
         });
@@ -464,14 +473,14 @@ public interface AbilityModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.EAU) {
-                    ctx.multiplicateurDegatsFinal *= 2.0;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 8192);
                 }
             }
 
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getType() == PokemonType.FEU) {
-                    ctx.multiplicateurDegatsFinal *= 0.5;
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_DEFENSEUR, 2048);
                 }
             }
         });
@@ -508,8 +517,8 @@ public interface AbilityModifier {
                             koCount = Math.max(koCount, koEquipe);
                         }
                     }
-                    final double[] ratios = {4096, 4506, 4915, 5325, 5734, 6144};
-                    ctx.multiplicateurDegatsFinal *= ratios[Math.max(0, Math.min(5, koCount))] / 4096.0;
+                    final int[] ratios = {4096, 4506, 4915, 5325, 5734, 6144};
+                    ctx.puissance(ModifierContext.ORDRE_GENERAL, ratios[Math.max(0, Math.min(5, koCount))]);
                 } catch (Exception ignored) {
                 }
             }
@@ -521,7 +530,7 @@ public interface AbilityModifier {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
                         && (ctx.attaquant.getStatut() == Pokemon.Statut.POISON
                             || ctx.attaquant.getStatut() == Pokemon.Statut.POISON_GRAVE)) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
                 }
             }
         });
@@ -531,7 +540,7 @@ public interface AbilityModifier {
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE
                         && ctx.attaquant.getStatut() == Pokemon.Statut.BRULURE) {
-                    ctx.multiplicateurDegatsFinal *= 1.5;
+                    ctx.puissance(ModifierContext.ORDRE_TECHNICIEN, 6144);
                 }
             }
         });

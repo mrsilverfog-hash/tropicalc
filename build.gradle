@@ -36,6 +36,22 @@ dependencies {
     // Cobblemon via le Maven de Modrinth : maven.modrinth:<id-projet>:<id-version>
     // MdwFAVRL = Cobblemon, kF7CvxTo = version 1.7.3 ~ Fabric ~ 1.21.1
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
+
+    // Tests du calcul de dégâts (comparaison avec le calculateur Showdown)
+    testImplementation platform("org.junit:junit-bom:5.11.4")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "com.google.code.gson:gson:2.11.0"
+}
+
+test {
+    useJUnitPlatform()
+    // Détail complet des écarts dans le journal du build GitHub
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showStandardStreams = false
+    }
 }
 
 processResources {

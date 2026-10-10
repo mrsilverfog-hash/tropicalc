@@ -31,7 +31,7 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_OBJET, 6144);
                 }
             }
         });
@@ -41,16 +41,16 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
-                    ctx.multiplicateurAttaque *= 1.5;
+                    ctx.attaque(ModifierContext.ORDRE_OBJET, 6144);
                 }
             }
         });
 
-        // Orbe Vie (Life Orb) : dégâts finaux x1.3 (le recul de 10% PV n'est pas géré ici)
+        // Orbe Vie (Life Orb) : dégâts finaux x5324/4096 (le recul de 10% PV n'est pas géré ici)
         m.put("Orbe Vie", new ItemModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
-                ctx.multiplicateurDegatsFinal *= 1.3;
+                ctx.degatsFinal(ModifierContext.ORDRE_OBJET, 5324);
             }
         });
 
@@ -70,7 +70,7 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
-                    ctx.multiplicateurDefense *= 1.5;
+                    ctx.defense(ModifierContext.ORDRE_OBJET, 6144);
                 }
             }
         });
@@ -81,7 +81,7 @@ public interface ItemModifier {
         m.put("Évoluroc", new ItemModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                ctx.multiplicateurDefense *= 1.5;
+                ctx.defense(ModifierContext.ORDRE_OBJET, 6144);
             }
         });
 
@@ -93,7 +93,7 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
-                    ctx.multiplicateurDegatsFinal *= 1.1;
+                    ctx.puissance(ModifierContext.ORDRE_OBJET, 4505);
                 }
             }
         });
@@ -104,7 +104,7 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
-                    ctx.multiplicateurDegatsFinal *= 1.1;
+                    ctx.puissance(ModifierContext.ORDRE_OBJET, 4505);
                 }
             }
         });
@@ -138,7 +138,7 @@ public interface ItemModifier {
                 @Override
                 public void appliquerCoteAttaquant(ModifierContext ctx) {
                     if (ctx.capacite.getType() == typeBooste) {
-                        ctx.multiplicateurDegatsFinal *= 4915.0 / 4096.0;
+                        ctx.puissance(ModifierContext.ORDRE_OBJET, 4915);
                     }
                 }
             });
@@ -152,7 +152,7 @@ public interface ItemModifier {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
                 if (com.tropimon.tropicalc.calc.MoveFlags.estPoing(ctx.capacite.getNom())) {
-                    ctx.multiplicateurDegatsFinal *= 1.1;
+                    ctx.puissance(ModifierContext.ORDRE_OBJET, 4506);
                 }
             }
         });

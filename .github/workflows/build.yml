@@ -38,27 +38,18 @@ jobs:
           git rm -rf --cached . > /dev/null 2>&1 || true
           git add -f build-output.log
           git commit -q -m "log de build $GITHUB_SHA"
-          git push -f origin ci-log 2>&1 | tee build-output.log; exit ${PIPESTATUS[0]}
+          git push -f origin ci-log
         shell: bash
 
       - name: Publier les erreurs dans le résumé
         if: failure()
         run: |
           echo '```' >> $GITHUB_STEP_SUMMARY
-          grep -E "e: |error:|FAILED|What went wrong|Caused by|Could not" build-output.log | head -40 >> $GITHUB_STEP_SUMMARY
+          grep -E "e: |error:|FAILED|What went wrong|Caused by|Could not|Écart|Showdown  :|TropiCalc :" build-output.log | head -60 >> $GITHUB_STEP_SUMMARY || true
           echo '---- tail ----' >> $GITHUB_STEP_SUMMARY
-          tail -30 build-output.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY 2>&1 | tee build-output.log; exit ${PIPESTATUS[0]}
+          tail -30 build-output.log >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
         shell: bash
-
-      - name: Publier les erreurs dans le résumé
-        if: failure()
-        run: |
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          grep -E "e: |error:|FAILED|What went wrong|Caused by|Could not" build-output.log | head -40 >> $GITHUB_STEP_SUMMARY
-          echo '---- tail ----' >> $GITHUB_STEP_SUMMARY
-          tail -30 build-output.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
