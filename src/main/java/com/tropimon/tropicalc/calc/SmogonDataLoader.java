@@ -49,6 +49,27 @@ public final class SmogonDataLoader {
     private static final Map<Map<String, SmogonPokemonData>, Map<String, Map<String, Double>>> USAGE_OBJETS =
         new IdentityHashMap<>();
 
+    // Répartition COMPLÈTE des réglages de vitesse (nature + EV Vitesse) par
+    // espèce, regroupés : clé "nature/EV", valeur = fraction 0-1.
+    private static final Map<Map<String, SmogonPokemonData>, Map<String, Map<String, Double>>> USAGE_VITESSE =
+        new IdentityHashMap<>();
+
+    /** Réglages de vitesse joués par cette espèce ("nature/EV" -> fraction), ou null si inconnue. */
+    public static Map<String, Double> reglagesVitesse(String especeShowdownId) {
+        String id = normaliser(especeShowdownId);
+        synchronized (USAGE_OBJETS) {
+            if (charge && DONNEES.containsKey(id)) {
+                Map<String, Map<String, Double>> u = USAGE_VITESSE.get(DONNEES);
+                if (u != null && u.get(id) != null) return u.get(id);
+            }
+            if (chargeUbers && DONNEES_UBERS.containsKey(id)) {
+                Map<String, Map<String, Double>> u = USAGE_VITESSE.get(DONNEES_UBERS);
+                if (u != null) return u.get(id);
+            }
+        }
+        return null;
+    }
+
     /** Part d'un objet chez cette espèce selon Smogon, ou -1 si l'espèce est inconnue. */
     public static double fractionObjet(String especeShowdownId, String objetShowdownId) {
         String id = normaliser(especeShowdownId);
@@ -152,6 +173,7 @@ public final class SmogonDataLoader {
         if (data == null) return;
         cible.clear();
         Map<String, Map<String, Double>> usages = new HashMap<>();
+        Map<String, Map<String, Double>> vitesses = new HashMap<>();
         for (Map.Entry<String, JsonElement> entree : data.entrySet()) {
             String nomPokemon = normaliser(entree.getKey());
             JsonObject pkData = entree.getValue().getAsJsonObject();
@@ -178,9 +200,26 @@ public final class SmogonDataLoader {
                     usages.put(nomPokemon, brut);
                 }
             }
+            JsonObject spreads = pkData.getAsJsonObject("Spreads");
+            if (spreads != null) {
+                double total = 0;
+                Map<String, Double> parReglage = new HashMap<>();
+                for (Map.Entry<String, JsonElement> e : spreads.entrySet()) {
+                    ParsedSpread s = parserSpread(e.getKey(), e.getValue().getAsDouble());
+                    if (s == null) continue;
+                    total += s.poids();
+                    parReglage.merge(s.natureShowdownId() + "/" + s.speEv(), s.poids(), Double::sum);
+                }
+                if (total > 0) {
+                    final double t = total;
+                    parReglage.replaceAll((k, v) -> v / t);
+                    vitesses.put(nomPokemon, parReglage);
+                }
+            }
         }
         synchronized (USAGE_OBJETS) {
             USAGE_OBJETS.put(cible, usages);
+            USAGE_VITESSE.put(cible, vitesses);
         }
     }
 

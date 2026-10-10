@@ -639,9 +639,17 @@ public final class ObservationCollector {
             }
             if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
                     || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
-            double plafond = plafondVitesseSansObjet(adversaire);
+            double plafond = plafondVitesseSansObjet(adversaire, 252, Nature.TIMIDE);
             // 2% de marge pour les arrondis de mon modèle ; un Mouchoir fait +50%.
             if (plafond > 0 && vJoueur > plafond * 1.02) {
+                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+                return;
+            }
+            // Plus tôt, avec Smogon : si presque aucun réglage de vitesse joué par
+            // cette espèce ne lui permet d'aller aussi vite que moi sans objet,
+            // et que le Mouchoir est courant chez elle, c'est un Mouchoir.
+            if (proportionReglagesAssezRapides(adversaire, vJoueur) < 0.05
+                    && SmogonDataLoader.fractionObjet(espece, "choicescarf") >= 0.10) {
                 OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
             }
         } else {
@@ -682,8 +690,35 @@ public final class ObservationCollector {
         }
     }
 
+    /**
+     * Part des réglages Smogon (nature + EV Vitesse) qui, SANS objet et dans
+     * l'état du début du tour écoulé, permettent d'aller au moins aussi vite
+     * que moi. 1.0 (prudence) si l'espèce est inconnue de Smogon.
+     */
+    private static double proportionReglagesAssezRapides(Pokemon adversaire, double vJoueur) {
+        Map<String, Double> reglages = SmogonDataLoader.reglagesVitesse(adversaire.getEspece());
+        if (reglages == null || reglages.isEmpty()) return 1.0;
+        double part = 0;
+        // Plusieurs réglages donnent la même vitesse : un seul calcul par réglage.
+        for (Map.Entry<String, Double> r : reglages.entrySet()) {
+            String[] k = r.getKey().split("/");
+            if (k.length != 2) continue;
+            int ev;
+            try {
+                ev = Integer.parseInt(k[1]);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            double v = plafondVitesseSansObjet(adversaire, ev, ShowdownIdMapper.nature(k[0]));
+            if (v < 0) return 1.0;
+            // Même marge que pour le maximum absolu.
+            if (v * 1.02 >= vJoueur) part += r.getValue();
+        }
+        return part;
+    }
+
     /** Vitesse maximale de l'adversaire SANS objet, dans l'état du début du tour écoulé. */
-    private static double plafondVitesseSansObjet(Pokemon adversaire) {
+    private static double plafondVitesseSansObjet(Pokemon adversaire, int evVitesse, Nature nature) {
         try {
             Pokemon base = construireAdversaireEstime(adversaire);
             Field etat = FieldTracker.construireField();
@@ -705,8 +740,8 @@ public final class ObservationCollector {
                         base.getType1(), base.getType2())
                     .statBase(Stat.VITESSE, base.getStatBase(Stat.VITESSE))
                     .iv(Stat.VITESSE, 31)
-                    .ev(Stat.VITESSE, 252)
-                    .nature(Nature.TIMIDE);
+                    .ev(Stat.VITESSE, evVitesse)
+                    .nature(nature);
                 if (!talent.isEmpty()) b.talent(talent);
                 Pokemon p = b.build();
                 p.setStage(Stat.VITESSE, stageVitAdvTourEcoule);
