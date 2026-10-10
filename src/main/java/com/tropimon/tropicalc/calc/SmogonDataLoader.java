@@ -43,6 +43,29 @@ public final class SmogonDataLoader {
      * deviner des sets manuels un par un pour chaque espèce concernée.
      */
     private static final Map<String, SmogonPokemonData> DONNEES_UBERS = new HashMap<>();
+
+    // Répartition COMPLÈTE des objets par espèce (fraction 0-1), une table par
+    // format chargé (même priorité que getDonnees : OU puis Ubers).
+    private static final Map<Map<String, SmogonPokemonData>, Map<String, Map<String, Double>>> USAGE_OBJETS =
+        new IdentityHashMap<>();
+
+    /** Part d'un objet chez cette espèce selon Smogon, ou -1 si l'espèce est inconnue. */
+    public static double fractionObjet(String especeShowdownId, String objetShowdownId) {
+        String id = normaliser(especeShowdownId);
+        Map<String, Double> parObjet = null;
+        synchronized (USAGE_OBJETS) {
+            if (charge && DONNEES.containsKey(id)) {
+                Map<String, Map<String, Double>> u = USAGE_OBJETS.get(DONNEES);
+                if (u != null) parObjet = u.get(id);
+            }
+            if (parObjet == null && chargeUbers && DONNEES_UBERS.containsKey(id)) {
+                Map<String, Map<String, Double>> u = USAGE_OBJETS.get(DONNEES_UBERS);
+                if (u != null) parObjet = u.get(id);
+            }
+        }
+        if (parObjet == null) return -1;
+        return parObjet.getOrDefault(normaliser(objetShowdownId), 0.0);
+    }
     private static volatile boolean chargeUbers = false;
 
     /**
@@ -128,6 +151,7 @@ public final class SmogonDataLoader {
         JsonObject data = root.getAsJsonObject("data");
         if (data == null) return;
         cible.clear();
+        Map<String, Map<String, Double>> usages = new HashMap<>();
         for (Map.Entry<String, JsonElement> entree : data.entrySet()) {
             String nomPokemon = normaliser(entree.getKey());
             JsonObject pkData = entree.getValue().getAsJsonObject();
@@ -137,6 +161,26 @@ public final class SmogonDataLoader {
             List<String> topMoves = extraireTop(pkData.getAsJsonObject("Moves"), 5);
             double topItemFraction = fractionDuTop(pkData.getAsJsonObject("Items"));
             cible.put(nomPokemon, new SmogonPokemonData(topItems, topAbilities, topSpreads, topMoves, topItemFraction));
+            JsonObject items = pkData.getAsJsonObject("Items");
+            if (items != null) {
+                double total = 0;
+                Map<String, Double> brut = new HashMap<>();
+                for (Map.Entry<String, JsonElement> e : items.entrySet()) {
+                    String nom = normaliser(e.getKey());
+                    if (nom.isEmpty() || nom.equals("noitem") || nom.equals("nothing")) continue;
+                    double poids = e.getValue().getAsDouble();
+                    total += poids;
+                    brut.merge(nom, poids, Double::sum);
+                }
+                if (total > 0) {
+                    final double t = total;
+                    brut.replaceAll((k, v) -> v / t);
+                    usages.put(nomPokemon, brut);
+                }
+            }
+        }
+        synchronized (USAGE_OBJETS) {
+            USAGE_OBJETS.put(cible, usages);
         }
     }
 

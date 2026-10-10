@@ -950,6 +950,12 @@ public final class ObservationCollector {
         Set<String> bruts = talentsBrutsPossibles(cr.attaquant);
         double seuil = seuilAutreQueChoix(bruts, capacite, physique, cr.pvAttaquantPct);
         if (seuil < 0) return;
+        // Les x1.2 (objet du type de l'attaque, Ceinture Pro si super efficace)
+        // sont-ils plausibles chez cette espèce ? Si Smogon les donne quasi
+        // absents et le Choix courant, tout dépassement du maximum sans objet
+        // suffit : on tranche dès le premier coup au lieu d'exiger x1.2 de marge.
+        // L'Orbe Vie est déjà exclue : le jeu annonce son recul (damage.lifeorb).
+        seuil = Math.max(seuilTalents(bruts), seuilObjets(espece, capacite, physique, cr.defenseur));
 
         // Maximum SANS objet : 252 EV, nature favorable, meilleur talent possible,
         // dans l'état exact du moment du coup.
@@ -998,6 +1004,60 @@ public final class ObservationCollector {
      * (objets de type et Ceinture Pro x1.2, talents non modélisés), ou -1 si
      * un talent possible donne x1.5 ou plus : indiscernable, on s'abstient.
      */
+    private static final Map<PokemonType, String> OBJET_DU_TYPE = Map.ofEntries(
+        Map.entry(PokemonType.ELECTRIK, "magnet"), Map.entry(PokemonType.VOL, "sharpbeak"),
+        Map.entry(PokemonType.COMBAT, "blackbelt"), Map.entry(PokemonType.FEU, "charcoal"),
+        Map.entry(PokemonType.DRAGON, "dragonfang"), Map.entry(PokemonType.PSY, "twistedspoon"),
+        Map.entry(PokemonType.EAU, "mysticwater"), Map.entry(PokemonType.GLACE, "nevermeltice"),
+        Map.entry(PokemonType.PLANTE, "miracleseed"), Map.entry(PokemonType.TENEBRES, "blackglasses"),
+        Map.entry(PokemonType.ACIER, "metalcoat"), Map.entry(PokemonType.POISON, "poisonbarb"),
+        Map.entry(PokemonType.ROCHE, "hardstone"), Map.entry(PokemonType.INSECTE, "silverpowder"),
+        Map.entry(PokemonType.SPECTRE, "spelltag"), Map.entry(PokemonType.SOL, "softsand"),
+        Map.entry(PokemonType.NORMAL, "silkscarf"), Map.entry(PokemonType.FEE, "fairyfeather"));
+    private static final Map<PokemonType, String> PLAQUE_DU_TYPE = Map.ofEntries(
+        Map.entry(PokemonType.ELECTRIK, "zapplate"), Map.entry(PokemonType.VOL, "skyplate"),
+        Map.entry(PokemonType.COMBAT, "fistplate"), Map.entry(PokemonType.FEU, "flameplate"),
+        Map.entry(PokemonType.DRAGON, "dracoplate"), Map.entry(PokemonType.PSY, "mindplate"),
+        Map.entry(PokemonType.EAU, "splashplate"), Map.entry(PokemonType.GLACE, "icicleplate"),
+        Map.entry(PokemonType.PLANTE, "meadowplate"), Map.entry(PokemonType.TENEBRES, "dreadplate"),
+        Map.entry(PokemonType.ACIER, "ironplate"), Map.entry(PokemonType.POISON, "toxicplate"),
+        Map.entry(PokemonType.ROCHE, "stoneplate"), Map.entry(PokemonType.INSECTE, "insectplate"),
+        Map.entry(PokemonType.SPECTRE, "spookyplate"), Map.entry(PokemonType.SOL, "earthplate"),
+        Map.entry(PokemonType.FEE, "pixieplate"));
+
+    /** Seuil côté objets : 1.2 par défaut, 1.0 si Smogon rend les x1.2 invraisemblables. */
+    private static double seuilObjets(String espece, com.tropimon.tropicalc.calc.Move capacite,
+                                      boolean physique, Pokemon defenseur) {
+        double choix = SmogonDataLoader.fractionObjet(espece, physique ? "choiceband" : "choicespecs");
+        if (choix < 0.10) return 1.2;   // espèce inconnue (-1) ou Choix rare : prudence
+        PokemonType type = capacite.getType();
+        double x12 = 0;
+        String objType = OBJET_DU_TYPE.get(type);
+        String plaque = PLAQUE_DU_TYPE.get(type);
+        if (objType != null) x12 += SmogonDataLoader.fractionObjet(espece, objType);
+        if (plaque != null) x12 += SmogonDataLoader.fractionObjet(espece, plaque);
+        try {
+            if (type.efficaciteContre(defenseur.getType1(), defenseur.getType2()) > 1.0) {
+                x12 += SmogonDataLoader.fractionObjet(espece, "expertbelt");
+            }
+        } catch (Exception e) {
+            return 1.2;
+        }
+        return x12 < 0.05 ? 1.0 : 1.2;
+    }
+
+    /** Seuil côté talents non modélisés (1.0 = aucun). */
+    private static double seuilTalents(Set<String> bruts) {
+        double s = 1.0;
+        if (bruts.contains("magicguard") || bruts.contains("sheerforce")) s = Math.max(s, 1.3);
+        if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) s = Math.max(s, 1.3);
+        if (bruts.contains("punkrock")) s = Math.max(s, 1.3);
+        if (bruts.contains("analytic")) s = Math.max(s, 1.3);
+        if (bruts.contains("rivalry") || bruts.contains("neuroforce")) s = Math.max(s, 1.25);
+        if (bruts.contains("orichalcumpulse") || bruts.contains("hadronengine")) s = Math.max(s, 1.34);
+        return s;
+    }
+
     private static double seuilAutreQueChoix(Set<String> bruts, com.tropimon.tropicalc.calc.Move capacite,
                                               boolean physique, double pvAttaquantPct) {
         PokemonType type = capacite.getType();
