@@ -177,7 +177,9 @@ public final class ObservationCollector {
             analyserCoupRecu();
         } catch (Exception ignored) {
         }
+        coupRecuTourEcoule = coupRecu;
         coupRecu = null;
+        joueurBloqueCeTour = false;
         stageAtkAdvTourEcoule = stageAtkAdvDebutTour;
         stageVitAdvTourEcoule = stageVitAdvDebutTour;
         stageVitJoueurTourEcoule = stageVitJoueurDebutTour;
@@ -615,7 +617,11 @@ public final class ObservationCollector {
     // suffit : Vive-Griffe et Tir Vif sont annoncés par le jeu et écartés.
     // ---------------------------------------------------------------------
     private static void observerVitesse(Pokemon adversaire, Pokemon joueur) {
-        if (coupJoueurDuTour == null || coupAdversaireDuTour == null || adversaireAAgiEnPremier == null) return;
+        if (coupJoueurDuTour == null) {
+            observerVitesseSansMonAction(adversaire);
+            return;
+        }
+        if (coupAdversaireDuTour == null || adversaireAAgiEnPremier == null) return;
         if (prioriteObjetCeTour || distorsionTourEcoule) return;
         // Le même Pokémon de chaque côté du début à la fin du tour, sinon
         // l'ordre observé ne concerne pas celui qu'on regarde (Demi-Tour...).
@@ -633,25 +639,7 @@ public final class ObservationCollector {
         if (vJoueur <= 0) return;
 
         if (Boolean.TRUE.equals(adversaireAAgiEnPremier)) {
-            // Plancher affiché : seulement si sa vitesse n'était pas gonflée.
-            if (stageVitAdvTourEcoule <= 0 && !tailwindAdvTourEcoule) {
-                VITESSES_MIN_OBSERVEES.merge(espece, (int) vJoueur, Math::max);
-            }
-            if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
-                    || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
-            double plafond = plafondVitesseSansObjet(adversaire, 252, Nature.TIMIDE);
-            // 2% de marge pour les arrondis de mon modèle ; un Mouchoir fait +50%.
-            if (plafond > 0 && vJoueur > plafond * 1.02) {
-                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
-                return;
-            }
-            // Plus tôt, avec Smogon : si presque aucun réglage de vitesse joué par
-            // cette espèce ne lui permet d'aller aussi vite que moi sans objet,
-            // et que le Mouchoir est courant chez elle, c'est un Mouchoir.
-            if (proportionReglagesAssezRapides(adversaire, vJoueur) < 0.05
-                    && SmogonDataLoader.fractionObjet(espece, "choicescarf") >= 0.10) {
-                OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
-            }
+            conclureAdversairePlusRapide(adversaire, vJoueur);
         } else {
             // J'ai agi avant : sa vitesse était au plus égale à la mienne.
             // Plafond affiché valable seulement si elle n'était pas réduite
@@ -661,6 +649,68 @@ public final class ObservationCollector {
                     || bruts.contains("stall") || bruts.contains("myceliummight")) return;
             VITESSES_MAX_OBSERVEES.merge(espece, (int) vJoueur, Math::min);
         }
+    }
+
+    /**
+     * L'adversaire a été au moins aussi rapide que moi (vJoueur = ma vitesse) :
+     * plancher affiché, puis Mouchoir si aucune version sans objet ne l'explique.
+     */
+    private static void conclureAdversairePlusRapide(Pokemon adversaire, double vJoueur) {
+        String espece = adversaire.getEspece();
+        // Plancher affiché : seulement si sa vitesse n'était pas gonflée.
+        if (stageVitAdvTourEcoule <= 0 && !tailwindAdvTourEcoule) {
+            VITESSES_MIN_OBSERVEES.merge(espece, (int) vJoueur, Math::max);
+        }
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)
+                || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
+        // 1. Même sa version la plus rapide sans objet (252 EV, nature +Vitesse,
+        //    meilleur talent) est plus lente que moi : certain.
+        double plafond = plafondVitesseSansObjet(adversaire, 252, Nature.TIMIDE);
+        if (plafond > 0 && vJoueur > plafond * 1.02) {   // 2 % pour les arrondis
+            OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+            return;
+        }
+        // 2. Presque aucun réglage de vitesse joué par cette espèce (Smogon) ne
+        //    m'atteint sans objet, et le Mouchoir y est nettement plus courant
+        //    que ces réglages rapides : Mouchoir.
+        double rapides = proportionReglagesAssezRapides(adversaire, vJoueur);
+        double mouchoir = SmogonDataLoader.fractionObjet(espece, "choicescarf");
+        if (rapides < 0.05 && mouchoir >= 0.05 && mouchoir >= 3 * rapides) {
+            OBJETS_CONFIRMES.put(espece, "Mouchoir Choix");
+        }
+    }
+
+    /**
+     * Tour où je n'ai pas agi parce que son coup m'a mis K.O. ou fait
+     * tressaillir : il a forcément agi avant moi. Le cas typique du Mouchoir
+     * (revenge kill), ignoré jusqu'ici faute de coup de ma part.
+     *
+     * Valable seulement si : c'est le Pokémon qui a commencé le tour qui a été
+     * touché ; il n'a pas été empêché d'agir avant (sommeil, paralysie,
+     * recharge, confusion) ; aucune de mes capacités n'a une priorité plus
+     * basse que la sienne (sinon j'ai pu choisir une capacité lente) ; pas de
+     * priorité cachée, Vive-Griffe, Distorsion.
+     */
+    private static void observerVitesseSansMonAction(Pokemon adversaire) {
+        CoupRecu cr = coupRecuTourEcoule;
+        if (cr == null || !(cr.ko || cr.tressailli) || cr.joueurBloqueAvant) return;
+        if (prioriteObjetCeTour || distorsionTourEcoule) return;
+        if (!memeEspece(cr.especeAttaquant, adversaire.getEspece())
+                || !adversaire.getEspece().equals(espaceAdversaireDuTour)) return;
+        if (especeJoueurTourEcoule == null || !memeEspece(cr.especeDefenseur, especeJoueurTourEcoule)) return;
+        if (cr.prioriteMinJoueur == Integer.MIN_VALUE) return;
+        try {
+            MoveTemplate t = Moves.INSTANCE.getByName(cr.idCoup);
+            if (t == null || cr.prioriteMinJoueur < t.getPriority()) return;
+        } catch (Exception e) {
+            return;
+        }
+        if (prioriteModifiee(cr.idCoup, talentsBrutsPossibles(adversaire))) return;
+        Set<String> mesTalents = talentBrutJoueur(cr.defenseur);
+        if (mesTalents.contains("stall") || mesTalents.contains("myceliummight")) return;
+
+        double vJoueur = vitesseJoueurTourEcoule(cr.defenseur);
+        if (vJoueur > 0) conclureAdversairePlusRapide(adversaire, vJoueur);
     }
 
     /** Mon Pokémon actif n'est plus celui du début du tour (même source de lecture). */
@@ -850,10 +900,15 @@ public final class ObservationCollector {
         Field etat;
         boolean clone;
         boolean crit, multiCoups, ko, invalide;
+        boolean tressailli;          // cant.flinch sur le Pokémon touché après le coup
+        boolean joueurBloqueAvant;   // je n'ai pas pu agir AVANT son coup (sommeil, paralysie, recharge...)
+        int prioriteMinJoueur = Integer.MIN_VALUE;  // priorité la plus basse parmi mes capacités
         double correctionPv = 0;    // PV rendus (+) ou perdus (-) après le coup
     }
     private static CoupRecu coupRecu = null;
+    private static CoupRecu coupRecuTourEcoule = null;   // conservé pour observerVitesse
     private static boolean dernierCoupEstAdverse = false;
+    private static boolean joueurBloqueCeTour = false;   // avant le coup adverse
 
     // Capacités du joueur qui changent ses propres PV sans message de dégâts.
     private static final Set<String> COUPS_COUT_PV = Set.of(
@@ -889,6 +944,16 @@ public final class ObservationCollector {
             }
             return;
         }
+        // Avant le coup adverse : mon Pokémon a-t-il été empêché d'agir à son
+        // tour (il était alors PLUS rapide) ? Endormi, gelé, paralysé, recharge,
+        // dégâts de confusion... Dans ce cas, ne pas avoir agi ne prouve rien.
+        if (coupRecu == null && args.length > 0
+                && Boolean.FALSE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))
+                && ((cle.startsWith("cobblemon.status.") && cle.endsWith(".is"))
+                    || cle.startsWith("cobblemon.battle.cant.") || cle.equals("cobblemon.battle.recharge")
+                    || cle.startsWith("cobblemon.battle.damage.") || cle.contains("confusion"))) {
+            joueurBloqueCeTour = true;
+        }
         CoupRecu cr = coupRecu;
         if (cr == null) return;
         Boolean surMoi = args.length > 0
@@ -901,6 +966,8 @@ public final class ObservationCollector {
             if (dernierCoupEstAdverse) cr.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
             if (surDefenseur) cr.ko = true;
+        } else if (cle.equals("cobblemon.battle.cant.flinch")) {
+            if (surDefenseur) cr.tressailli = true;
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surDefenseur) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -952,6 +1019,18 @@ public final class ObservationCollector {
         cr.pvAvant = defCombat.getPourcentagePv();
         cr.etat = FieldTracker.construireField();
         cr.clone = FieldTracker.joueurAUnClone();
+        cr.joueurBloqueAvant = joueurBloqueCeTour;
+        try {
+            com.cobblemon.mod.common.pokemon.Pokemon complet = BattleStateTracker.getPokemonCompletJoueur();
+            if (complet != null && memeEspece(complet.getSpecies().showdownId(), defCombat.getEspece())) {
+                int min = Integer.MAX_VALUE;
+                for (var m : complet.getMoveSet().getMoves()) {
+                    if (m != null) min = Math.min(min, m.getTemplate().getPriority());
+                }
+                if (min != Integer.MAX_VALUE) cr.prioriteMinJoueur = min;
+            }
+        } catch (Throwable ignored) {
+        }
         coupRecu = cr;
     }
 
@@ -2338,6 +2417,8 @@ public final class ObservationCollector {
         KO_ADVERSAIRE.clear();
         KO_JOUEUR.clear();
         coupRecu = null;
+        coupRecuTourEcoule = null;
+        joueurBloqueCeTour = false;
         dernierCoupEstAdverse = false;
         meteoDebutTour = null;
         terrainDebutTour = null;
