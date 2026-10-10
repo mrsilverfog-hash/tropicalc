@@ -622,40 +622,42 @@ public class DamageCalculator {
      */
     public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain,
                                          boolean ventArriere) {
-        double v = vitesseEnCombat(p, meteo, terrain);
-        if (ventArriere) v = Math.floor(v * 2.0);
-        return v;
-    }
+        // Formule du jeu (Showdown, vérifiée par les tests) : stat avec
+        // stages arrondie, puis Vent Arrière, talent et objet enchaînés en
+        // 4096e avec un seul arrondi, puis la paralysie (x0,5 vers le bas).
+        long v = appliquerStage(p.getStatCalculee(Stat.VITESSE), p.getStage(Stat.VITESSE));
+        java.util.List<Integer> mods = new java.util.ArrayList<>();
+        if (ventArriere) mods.add(8192);
 
-    /** Vitesse en combat : stages, Mouchoir Choix, paralysie, talents météo. */
-    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
-        double v = p.getStatCalculee(Stat.VITESSE);
-        int stage = p.getStage(Stat.VITESSE);
-        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
-        else v = v * 2.0 / (2.0 - stage);
-        if ("Mouchoir Choix".equals(p.getObjet())) v *= 1.5;
-        // Talents doublant la vitesse sous leur météo
         String talent = p.getTalent();
         boolean soleil = meteo == Field.Meteo.SOLEIL || meteo == Field.Meteo.SOLEIL_INTENSE;
         boolean pluie = meteo == Field.Meteo.PLUIE || meteo == Field.Meteo.PLUIE_INTENSE;
-        if (("Chlorophylle".equals(talent) && soleil)
-            || ("Glissade".equals(talent) && pluie)
-            || ("Baigne Sable".equals(talent) && meteo == Field.Meteo.SABLE)
-            || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)) {
-            v *= 2.0;
-        }
-        if (Stat.VITESSE == statLaPlusHaute(p) && estBoostParadox(p, meteo, terrain)) {
-            v *= 1.5;
-        }
-        // Pied Véloce (Quick Feet) : +50% sous n'importe quel statut, et
-        // ignore le malus de paralysie habituel (sinon net une pénalité)
         boolean piedVeloce = "Pied Véloce".equals(talent) && p.getStatut() != Pokemon.Statut.AUCUN;
-        if (piedVeloce) {
-            v *= 1.5;
-        } else if (p.getStatut() == Pokemon.Statut.PARALYSIE) {
-            v *= 0.5;
+        if (("Chlorophylle".equals(talent) && soleil)
+                || ("Glissade".equals(talent) && pluie)
+                || ("Baigne Sable".equals(talent) && meteo == Field.Meteo.SABLE)
+                || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)) {
+            mods.add(8192);
+        } else if (piedVeloce) {
+            // Pied Véloce : +50 % sous un statut, et ignore le malus de paralysie
+            mods.add(6144);
+        } else if (Stat.VITESSE == statLaPlusHaute(p) && estBoostParadox(p, meteo, terrain)) {
+            mods.add(6144);
         }
-        return Math.floor(v);
+        if ("Mouchoir Choix".equals(p.getObjet())) mods.add(6144);
+
+        long m = 4096;
+        for (int mod : mods) m = (m * mod + 2048) >> 12;
+        m = Math.max(410, Math.min(131172, m));
+        v = ModifierContext.arrondiJeu(v * (double) m / 4096.0);
+
+        if (p.getStatut() == Pokemon.Statut.PARALYSIE && !piedVeloce) v = v * 50 / 100;
+        return Math.max(0, v);
+    }
+
+    /** Vitesse en combat sans Vent Arrière. */
+    public static double vitesseEnCombat(Pokemon p, Field.Meteo meteo, Field.TypeTerrain terrain) {
+        return vitesseEnCombat(p, meteo, terrain, false);
     }
 
     // Compatibilité : ancien appel sans terrain (Moteur Quark alors ignoré)

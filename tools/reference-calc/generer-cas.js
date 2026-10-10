@@ -174,6 +174,8 @@ const CAS = [
     ['Bandeau + Griffe Dure + Sabotage', ['Meowscarada', { ...ATK, ability: 'Tough Claws', item: 'Choice Band' }], ['Great Tusk', { ...PHYS_DEF, item: 'Leftovers' }], 'Knock Off'],
     ['Orbe Vie + Technicien', ['Scizor', { ...ATK, ability: 'Technician', item: 'Life Orb' }], ['Great Tusk', PHYS_DEF], 'Bullet Punch'],
     ['Gant de Boxe + Poing de Fer', ['Iron Hands', { ...ATK, ability: 'Iron Fist', item: 'Punching Glove' }], ['Corviknight', PHYS_DEF], 'Thunder Punch'],
+    ['Analyste contre plus rapide', ['Magnezone', { ...SPA, ability: 'Analytic' }], ['Dragapult', SPEC_DEF], 'Flash Cannon'],
+    ['Analyste contre plus lent', ['Magnezone', { ...SPA, ability: 'Analytic' }], ['Toxapex', { ...SPEC_DEF, ability: 'Regenerator' }], 'Flash Cannon'],
     ['Protection + Orbe Vie', ['Garchomp', { ...ATK, item: 'Life Orb' }], ['Great Tusk', PHYS_DEF], 'Earthquake', { field: { defenderSide: { isReflect: true } } }],
     ['Ombre Nocturne', ['Dusclops', PHYS_DEF], ['Great Tusk', PHYS_DEF], 'Night Shade'],
 ];
@@ -248,6 +250,59 @@ for (const [nom, [espA, setA], [espD, setD], nomCapacite, options = {}] of CAS) 
         description: (() => { try { return r.desc(); } catch (e) { return ''; } })(),
     });
 }
+
+// ---------------------------------------------------------------------
+// Vitesse : même principe, comparée à getFinalSpeed de Showdown.
+// [nom, espèce, set, options] ; options : { weather, terrain, tailwind }
+// ---------------------------------------------------------------------
+const { getFinalSpeed } = require('@smogon/calc/dist/mechanics/util');
+const SCARF = { nature: 'Jolly', evs: { spe: 252, atk: 252 }, item: 'Choice Scarf' };
+const RAPIDE = { nature: 'Timid', evs: { spe: 252, spa: 252 } };
+const CAS_VITESSE = [
+    ['Neutre 0 EV', 'Garchomp', { nature: 'Adamant', evs: { atk: 252, hp: 252 } }],
+    ['252 EV nature +Vit', 'Garchomp', { nature: 'Jolly', evs: { spe: 252 } }],
+    ['Nature -Vit, 0 IV', 'Ferrothorn', { nature: 'Relaxed', evs: { hp: 252 }, ivs: { spe: 0 } }],
+    ['Mouchoir Choix', 'Garchomp', SCARF],
+    ['Mouchoir + stage +1', 'Garchomp', { ...SCARF, boosts: { spe: 1 } }],
+    ['Stage +1 valeur impaire', 'Volcarona', { nature: 'Modest', evs: { spe: 252 }, boosts: { spe: 1 } }],
+    ['Stage +2', 'Dragonite', { nature: 'Adamant', evs: { spe: 252 }, boosts: { spe: 2 } }],
+    ['Stage -1', 'Gholdengo', { ...RAPIDE, boosts: { spe: -1 } }],
+    ['Stage -2', 'Kingambit', { nature: 'Adamant', evs: { spe: 4 }, boosts: { spe: -2 } }],
+    ['Paralysie', 'Dragapult', { ...RAPIDE, status: 'par' }],
+    ['Paralysie + Mouchoir', 'Dragapult', { ...RAPIDE, item: 'Choice Scarf', status: 'par' }],
+    ['Paralysie + stage +1', 'Cinderace', { nature: 'Jolly', evs: { spe: 252 }, status: 'par', boosts: { spe: 1 } }],
+    ['Vent Arrière', 'Gholdengo', RAPIDE, { tailwind: true }],
+    ['Vent Arrière + Mouchoir', 'Gholdengo', { ...RAPIDE, item: 'Choice Scarf' }, { tailwind: true }],
+    ['Vent Arrière + paralysie', 'Gholdengo', { ...RAPIDE, status: 'par' }, { tailwind: true }],
+    ['Chlorophylle soleil', 'Venusaur', { nature: 'Modest', evs: { spe: 252 }, ability: 'Chlorophyll' }, { weather: 'Sun' }],
+    ['Glissade pluie', 'Barraskewda', { nature: 'Adamant', evs: { spe: 252 }, ability: 'Swift Swim' }, { weather: 'Rain' }],
+    ['Baigne Sable', 'Excadrill', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Sand Rush' }, { weather: 'Sand' }],
+    ['Chasse-Neige', 'Beartic', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Slush Rush' }, { weather: 'Snow' }],
+    ['Glissade + Mouchoir + Vent Arrière', 'Kingdra', { ...RAPIDE, ability: 'Swift Swim', item: 'Choice Scarf' }, { weather: 'Rain', tailwind: true }],
+    ['Pied Véloce sous statut', 'Ursaring', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Quick Feet', status: 'par' }],
+    ['Proto-Synthèse Vitesse', 'Flutter Mane', { nature: 'Timid', evs: { spe: 252, hp: 252 } }, { weather: 'Sun' }],
+    ['Moteur Quark Vitesse', 'Iron Bundle', { nature: 'Timid', evs: { spe: 252, spa: 252 } }, { terrain: 'Electric' }],
+    ['Proto-Synthèse hors Vitesse', 'Great Tusk', { nature: 'Jolly', evs: { atk: 252, spe: 252 } }, { weather: 'Sun' }],
+    ['Niveau 50 Mouchoir', 'Dragapult', { ...RAPIDE, item: 'Choice Scarf' }, { niveau: 50 }],
+];
+
+const sortieVitesse = [];
+for (const [nom, espece, set, options = {}] of CAS_VITESSE) {
+    const p = construire(espece, set, options.niveau || 100);
+    const champ = new Field({ weather: options.weather, terrain: options.terrain,
+        attackerSide: { isTailwind: !!options.tailwind } });
+    sortieVitesse.push({
+        nom,
+        pokemon: decrire(p, set),
+        meteo: options.weather ? META[options.weather] : 'AUCUNE',
+        champ: options.terrain ? CHAMPS[options.terrain] : 'AUCUN',
+        ventArriere: !!options.tailwind,
+        vitesseAttendue: getFinalSpeed(gen, p, champ, champ.attackerSide),
+    });
+}
+const fichierVitesse = path.join(__dirname, '..', '..', 'src', 'test', 'resources', 'cas-vitesse-showdown.json');
+fs.writeFileSync(fichierVitesse, JSON.stringify(sortieVitesse, null, 1) + '\n');
+console.log(`${sortieVitesse.length} cas de vitesse écrits dans ${fichierVitesse}`);
 
 const fichier = path.join(__dirname, '..', '..', 'src', 'test', 'resources', 'cas-reference-showdown.json');
 fs.mkdirSync(path.dirname(fichier), { recursive: true });

@@ -262,34 +262,20 @@ public final class SwitchOverlayRenderer {
             return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain(),
                 FieldTracker.isTailwindAdversaire());
         }
-        // Sans stages (candidat qui rentre) : vitesse de base + objet + statut + météo
-        Pokemon copie = p;
-        double v = copie.getStatCalculee(Stat.VITESSE);
-        if ("Mouchoir Choix".equals(copie.getObjet())) v *= 1.5;
-        String talent = copie.getTalent();
-        var meteo = FieldTracker.construireField().getMeteo();
-        boolean soleil = meteo == com.tropimon.tropicalc.calc.Field.Meteo.SOLEIL
-            || meteo == com.tropimon.tropicalc.calc.Field.Meteo.SOLEIL_INTENSE;
-        boolean pluie = meteo == com.tropimon.tropicalc.calc.Field.Meteo.PLUIE
-            || meteo == com.tropimon.tropicalc.calc.Field.Meteo.PLUIE_INTENSE;
-        if (("Chlorophylle".equals(talent) && soleil)
-            || ("Glissade".equals(talent) && pluie)
-            || ("Baigne Sable".equals(talent) && meteo == com.tropimon.tropicalc.calc.Field.Meteo.SABLE)
-            || ("Chasse-Neige".equals(talent) && meteo == com.tropimon.tropicalc.calc.Field.Meteo.NEIGE)) {
-            v *= 2.0;
+        // Candidat de mon équipe qui entre : aucun stage, sauf Toile Gluante
+        // (-1 Vitesse à l'entrée s'il touche le sol). Même calcul que partout
+        // ailleurs (formule du jeu, testée contre Showdown) : objet, talents
+        // météo, Proto-Synthèse, paralysie, et mon Vent Arrière.
+        Field f = FieldTracker.construireField();
+        int stageAvant = p.getStage(Stat.VITESSE);
+        try {
+            boolean toile = FieldTracker.isStickyWebJoueur() && DamageCalculator.estAuSol(p);
+            p.setStage(Stat.VITESSE, toile ? -1 : 0);
+            return (int) DamageCalculator.vitesseEnCombat(p, f.getMeteo(), f.getTerrain(),
+                FieldTracker.isTailwindJoueur());
+        } finally {
+            p.setStage(Stat.VITESSE, stageAvant);
         }
-        if (copie.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
-        // Toile Gluante (-1 Vitesse à l'entrée) : le texte informatif
-        // "Toile : -1 Vit" existait déjà plus haut, mais cette baisse
-        // n'était jamais appliquée au calcul de vitesse lui-même - un
-        // candidat pouvait donc sembler plus rapide que l'adversaire alors
-        // qu'avec le vrai -1 stage il serait en réalité plus lent.
-        if (FieldTracker.isStickyWebJoueur() && DamageCalculator.estAuSol(copie)) {
-            v *= 2.0 / 3.0;
-        }
-        // Candidat de MON équipe : mon Vent Arrière s'applique dès son entrée.
-        if (FieldTracker.isTailwindJoueur()) v *= 2.0;
-        return (int) Math.floor(v);
     }
 
     private static com.tropimon.tropicalc.calc.Move convertirCapacite(Move coup) {

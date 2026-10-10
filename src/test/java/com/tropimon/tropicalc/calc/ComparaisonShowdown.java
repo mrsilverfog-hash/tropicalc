@@ -162,6 +162,38 @@ public final class ComparaisonShowdown {
         }
     }
 
+    public static final String RESSOURCE_VITESSE = "/cas-vitesse-showdown.json";
+
+    public static List<Cas> chargerCasVitesse() {
+        try (InputStream in = ComparaisonShowdown.class.getResourceAsStream(RESSOURCE_VITESSE)) {
+            if (in == null) throw new IllegalStateException("Ressource introuvable : " + RESSOURCE_VITESSE);
+            JsonArray tableau = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonArray();
+            List<Cas> cas = new ArrayList<>();
+            for (JsonElement e : tableau) {
+                JsonObject o = e.getAsJsonObject();
+                cas.add(new Cas(o.get("nom").getAsString(), o));
+            }
+            return cas;
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /** Vitesse en combat de TropiCalc contre getFinalSpeed de Showdown ; null si identique. */
+    public static String verifierVitesse(Cas cas) {
+        JsonObject o = cas.donnees();
+        Pokemon p = construirePokemon(o.getAsJsonObject("pokemon"));
+        int obtenue = (int) DamageCalculator.vitesseEnCombat(p,
+            Field.Meteo.valueOf(o.get("meteo").getAsString()),
+            Field.TypeTerrain.valueOf(o.get("champ").getAsString()),
+            o.get("ventArriere").getAsBoolean());
+        int attendue = o.get("vitesseAttendue").getAsInt();
+        if (obtenue == attendue) return null;
+        StringBuilder sb = new StringBuilder("\n  Showdown : " + attendue + ", TropiCalc : " + obtenue);
+        ecartsDeStats(sb, "Pokémon", p, o.getAsJsonObject("pokemon"));
+        return sb.toString();
+    }
+
     /** Lancement sans JUnit : affiche les écarts, code de sortie 1 s'il y en a. */
     public static void main(String[] args) {
         int echecs = 0;
@@ -179,6 +211,22 @@ public final class ComparaisonShowdown {
             }
         }
         System.out.println((tous.size() - echecs) + "/" + tous.size() + " cas identiques à Showdown");
+        int echecsVitesse = 0;
+        List<Cas> vitesses = chargerCasVitesse();
+        for (Cas cas : vitesses) {
+            String ecart;
+            try {
+                ecart = verifierVitesse(cas);
+            } catch (Throwable t) {
+                ecart = "\n  Exception : " + t;
+            }
+            if (ecart != null) {
+                echecsVitesse++;
+                System.out.println("ÉCART VITESSE : " + cas.nom() + ecart);
+            }
+        }
+        System.out.println((vitesses.size() - echecsVitesse) + "/" + vitesses.size() + " vitesses identiques à Showdown");
+        echecs += echecsVitesse;
         if (echecs > 0) System.exit(1);
     }
 }

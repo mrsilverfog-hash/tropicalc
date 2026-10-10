@@ -17740,6 +17740,288 @@
   "description": "252+ Atk Punching Glove Iron Fist Iron Hands Thunder Punch vs. 252 HP / 252+ Def Corviknight: 264-312 (66 - 78%) -- guaranteed 2HKO"
  },
  {
+  "nom": "Analyste contre plus rapide",
+  "attaquant": {
+   "espece": "magnezone",
+   "niveau": 100,
+   "types": [
+    "electric",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 70,
+    "def": 115,
+    "spa": 130,
+    "spd": 90,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "analytic",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 282,
+   "poidsKg": 180,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 158,
+    "def": 266,
+    "spa": 394,
+    "spd": 216,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "clearbody",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 380,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 380,
+    "atk": 248,
+    "def": 187,
+    "spa": 236,
+    "spd": 273,
+    "spe": 320
+   }
+  },
+  "capacite": {
+   "id": "flashcannon",
+   "type": "steel",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   162,
+   165,
+   166,
+   168,
+   169,
+   172,
+   174,
+   175,
+   178,
+   180,
+   181,
+   183,
+   186,
+   187,
+   189,
+   192
+  ],
+  "description": "252+ SpA Analytic Magnezone Flash Cannon vs. 252 HP / 252+ SpD Dragapult: 162-192 (42.6 - 50.5%) -- 1.2% chance to 2HKO"
+ },
+ {
+  "nom": "Analyste contre plus lent",
+  "attaquant": {
+   "espece": "magnezone",
+   "niveau": 100,
+   "types": [
+    "electric",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 70,
+    "def": 115,
+    "spa": 130,
+    "spd": 90,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "analytic",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 282,
+   "poidsKg": 180,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 158,
+    "def": 266,
+    "spa": 394,
+    "spd": 216,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "toxapex",
+   "niveau": 100,
+   "types": [
+    "poison",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 63,
+    "def": 152,
+    "spa": 53,
+    "spd": 142,
+    "spe": 35
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "regenerator",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 304,
+   "poidsKg": 14.5,
+   "statsShowdown": {
+    "hp": 304,
+    "atk": 145,
+    "def": 341,
+    "spa": 142,
+    "spd": 421,
+    "spe": 106
+   }
+  },
+  "capacite": {
+   "id": "flashcannon",
+   "type": "steel",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   40,
+   41,
+   41,
+   42,
+   42,
+   42,
+   43,
+   43,
+   44,
+   45,
+   45,
+   45,
+   46,
+   46,
+   47,
+   48
+  ],
+  "description": "252+ SpA Magnezone Flash Cannon vs. 252 HP / 252+ SpD Toxapex: 40-48 (13.1 - 15.7%) -- possible 7HKO"
+ },
+ {
   "nom": "Protection + Orbe Vie",
   "attaquant": {
    "espece": "garchomp",

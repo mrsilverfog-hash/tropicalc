@@ -1132,6 +1132,39 @@ public final class ObservationCollector {
         return x.startsWith(y) || y.startsWith(x);
     }
 
+    // --- Torche activée : x1,5 sur l'Attaque des capacités Feu ---
+    // Activée en absorbant une capacité Feu, jusqu'à la sortie du terrain.
+    // "adv:espèce" ou "moi:espèce".
+    private static final Set<String> TORCHE_ACTIVE = new HashSet<>();
+
+    /** Vrai si le jeu a annoncé l'activation de Torche de ce Pokémon (encore sur le terrain). */
+    public static boolean isTorcheActive(boolean campAdverse, String espece) {
+        return espece != null && TORCHE_ACTIVE.contains((campAdverse ? "adv:" : "moi:") + espece);
+    }
+
+    private static void activerTorche(Boolean estAdversaire) {
+        if (estAdversaire == null) return;
+        Pokemon p = estAdversaire ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+        if (p == null) return;
+        if (TORCHE_ACTIVE.add((estAdversaire ? "adv:" : "moi:") + p.getEspece())) {
+            MessageDebugLogger.analyse("TALENT " + p.getEspece() + (estAdversaire ? " (adverse)" : " (moi)")
+                + " : Torche activée, capacités Feu x1,5");
+        }
+    }
+
+    private static void suivreTorche(String cle, Object[] args) {
+        if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
+            TORCHE_ACTIVE.removeIf(k -> k.startsWith("adv:"));
+        } else if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            TORCHE_ACTIVE.removeIf(k -> k.startsWith("moi:"));
+        } else if (cle.startsWith("cobblemon.battle.dragged_out")) {
+            // Camp non lu ici : prudence, on oublie les deux
+            TORCHE_ACTIVE.clear();
+        } else if (cle.startsWith("cobblemon.battle.start.") && cle.contains("flashfire") && args.length > 0) {
+            activerTorche(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])));
+        }
+    }
+
     // --- Verrou Choix : deux capacités différentes sur le même séjour ---
     // Un objet Choix bloque son porteur sur la première capacité utilisée
     // depuis son entrée. Deux capacités différentes sans sortie entre les
@@ -1712,17 +1745,6 @@ public final class ObservationCollector {
         // donc inclus dans le maximum sans objet.
         if (bruts.contains("flashfire") || bruts.contains("electromorphosis") || bruts.contains("windpower")) return -1;
         return 1.0;
-    }
-
-    private static int vitesseEffectiveJoueur(Pokemon joueur) {
-        double v = joueur.getStatCalculee(Stat.VITESSE);
-        int stage = BoostTracker.getStageJoueur(Stat.VITESSE);
-        if (stage >= 0) v = v * (2.0 + stage) / 2.0;
-        else v = v * 2.0 / (2.0 - stage);
-        if ("Mouchoir Choix".equals(joueur.getObjet())) v *= 1.5;
-        if (joueur.getStatut() == Pokemon.Statut.PARALYSIE) v *= 0.5;
-        if (FieldTracker.isTailwindJoueur()) v *= 2.0;
-        return (int) Math.floor(v);
     }
 
     /** Vitesse minimale observée pour une espèce adverse (0 si aucune observation). */
@@ -2548,6 +2570,7 @@ public final class ObservationCollector {
 
         suivreCoupRecu(cle, contenu.getArgs());
         suivreVerrouChoix(cle, contenu.getArgs());
+        suivreTorche(cle, contenu.getArgs());
 
         if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
             prioriteObjetCeTour = true;
@@ -2785,6 +2808,9 @@ public final class ObservationCollector {
     public static void confirmerTalentParMessage(String proprietaire, String talentAnglais) {
         try {
             Boolean estAdversaire = determinerAttaquant(proprietaire);
+            if (talentAnglais != null && "flashfire".equals(talentAnglais.toLowerCase().replaceAll("[^a-z]", ""))) {
+                activerTorche(estAdversaire);
+            }
             if (!Boolean.TRUE.equals(estAdversaire)) return;
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire == null) return;
@@ -3069,6 +3095,7 @@ public final class ObservationCollector {
         BALLON_ANNONCE.clear();
         ENTREE_ADVERSAIRE_MS.clear();
         PREUVE_PAS_CHOIX.clear();
+        TORCHE_ACTIVE.clear();
         OBJETS_PROBABLES.clear();
         OBJETS_CHOIX_EXCLUS.clear();
         especeSejourAdv = null;

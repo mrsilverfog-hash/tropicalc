@@ -1,0 +1,1523 @@
+[
+ {
+  "nom": "Neutre 0 EV",
+  "pokemon": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 240
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 240
+ },
+ {
+  "nom": "252 EV nature +Vit",
+  "pokemon": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 357,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 357,
+    "atk": 296,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 333
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 333
+ },
+ {
+  "nom": "Nature -Vit, 0 IV",
+  "pokemon": {
+   "espece": "ferrothorn",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 74,
+    "atk": 94,
+    "def": 131,
+    "spa": 54,
+    "spd": 116,
+    "spe": 20
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 0
+   },
+   "nature": "relaxed",
+   "talent": "ironbarbs",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 352,
+   "poidsKg": 110,
+   "statsShowdown": {
+    "hp": 352,
+    "atk": 224,
+    "def": 327,
+    "spa": 144,
+    "spd": 268,
+    "spe": 40
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 40
+ },
+ {
+  "nom": "Mouchoir Choix",
+  "pokemon": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "sandveil",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 357,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 357,
+    "atk": 359,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 333
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 499
+ },
+ {
+  "nom": "Mouchoir + stage +1",
+  "pokemon": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "sandveil",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 1
+   },
+   "statut": "",
+   "pvActuels": 357,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 357,
+    "atk": 359,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 333
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 748
+ },
+ {
+  "nom": "Stage +1 valeur impaire",
+  "pokemon": {
+   "espece": "volcarona",
+   "niveau": 100,
+   "types": [
+    "bug",
+    "fire"
+   ],
+   "statsBase": {
+    "hp": 85,
+    "atk": 60,
+    "def": 65,
+    "spa": 135,
+    "spd": 105,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "flamebody",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 1
+   },
+   "statut": "",
+   "pvActuels": 311,
+   "poidsKg": 46,
+   "statsShowdown": {
+    "hp": 311,
+    "atk": 140,
+    "def": 166,
+    "spa": 336,
+    "spd": 246,
+    "spe": 299
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 448
+ },
+ {
+  "nom": "Stage +2",
+  "pokemon": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "innerfocus",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 2
+   },
+   "statut": "",
+   "pvActuels": 323,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 323,
+    "atk": 334,
+    "def": 226,
+    "spa": 212,
+    "spd": 236,
+    "spe": 259
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 518
+ },
+ {
+  "nom": "Stage -1",
+  "pokemon": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": -1
+   },
+   "statut": "",
+   "pvActuels": 315,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 315,
+    "atk": 140,
+    "def": 226,
+    "spa": 365,
+    "spd": 218,
+    "spe": 293
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 195
+ },
+ {
+  "nom": "Stage -2",
+  "pokemon": {
+   "espece": "kingambit",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 135,
+    "def": 120,
+    "spa": 60,
+    "spd": 85,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 4
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "defiant",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": -2
+   },
+   "statut": "",
+   "pvActuels": 341,
+   "poidsKg": 120,
+   "statsShowdown": {
+    "hp": 341,
+    "atk": 336,
+    "def": 276,
+    "spa": 140,
+    "spd": 206,
+    "spe": 137
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 68
+ },
+ {
+  "nom": "Paralysie",
+  "pokemon": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "clearbody",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 317,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 317,
+    "atk": 248,
+    "def": 186,
+    "spa": 299,
+    "spd": 186,
+    "spe": 421
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 210
+ },
+ {
+  "nom": "Paralysie + Mouchoir",
+  "pokemon": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "clearbody",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 317,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 317,
+    "atk": 248,
+    "def": 186,
+    "spa": 299,
+    "spd": 186,
+    "spe": 421
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 315
+ },
+ {
+  "nom": "Paralysie + stage +1",
+  "pokemon": {
+   "espece": "cinderace",
+   "niveau": 100,
+   "types": [
+    "fire"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 116,
+    "def": 75,
+    "spa": 65,
+    "spd": 75,
+    "spe": 119
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "blaze",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 1
+   },
+   "statut": "par",
+   "pvActuels": 301,
+   "poidsKg": 33,
+   "statsShowdown": {
+    "hp": 301,
+    "atk": 268,
+    "def": 186,
+    "spa": 149,
+    "spd": 186,
+    "spe": 370
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 277
+ },
+ {
+  "nom": "Vent Arrière",
+  "pokemon": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 315,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 315,
+    "atk": 140,
+    "def": 226,
+    "spa": 365,
+    "spd": 218,
+    "spe": 293
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": true,
+  "vitesseAttendue": 586
+ },
+ {
+  "nom": "Vent Arrière + Mouchoir",
+  "pokemon": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "goodasgold",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 315,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 315,
+    "atk": 140,
+    "def": 226,
+    "spa": 365,
+    "spd": 218,
+    "spe": 293
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": true,
+  "vitesseAttendue": 879
+ },
+ {
+  "nom": "Vent Arrière + paralysie",
+  "pokemon": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 315,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 315,
+    "atk": 140,
+    "def": 226,
+    "spa": 365,
+    "spd": 218,
+    "spe": 293
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": true,
+  "vitesseAttendue": 293
+ },
+ {
+  "nom": "Chlorophylle soleil",
+  "pokemon": {
+   "espece": "venusaur",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "poison"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 82,
+    "def": 83,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "chlorophyll",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 301,
+   "poidsKg": 100,
+   "statsShowdown": {
+    "hp": 301,
+    "atk": 180,
+    "def": 202,
+    "spa": 259,
+    "spd": 236,
+    "spe": 259
+   }
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 518
+ },
+ {
+  "nom": "Glissade pluie",
+  "pokemon": {
+   "espece": "barraskewda",
+   "niveau": 100,
+   "types": [
+    "water"
+   ],
+   "statsBase": {
+    "hp": 61,
+    "atk": 123,
+    "def": 60,
+    "spa": 60,
+    "spd": 50,
+    "spe": 136
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "swiftswim",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 263,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 263,
+    "atk": 310,
+    "def": 156,
+    "spa": 140,
+    "spd": 136,
+    "spe": 371
+   }
+  },
+  "meteo": "PLUIE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 742
+ },
+ {
+  "nom": "Baigne Sable",
+  "pokemon": {
+   "espece": "excadrill",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 110,
+    "atk": 135,
+    "def": 60,
+    "spa": 50,
+    "spd": 65,
+    "spe": 88
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "sandrush",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 361,
+   "poidsKg": 40.4,
+   "statsShowdown": {
+    "hp": 361,
+    "atk": 306,
+    "def": 156,
+    "spa": 122,
+    "spd": 166,
+    "spe": 302
+   }
+  },
+  "meteo": "SABLE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 604
+ },
+ {
+  "nom": "Chasse-Neige",
+  "pokemon": {
+   "espece": "beartic",
+   "niveau": 100,
+   "types": [
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 130,
+    "def": 80,
+    "spa": 70,
+    "spd": 80,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "slushrush",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 331,
+   "poidsKg": 260,
+   "statsShowdown": {
+    "hp": 331,
+    "atk": 296,
+    "def": 196,
+    "spa": 158,
+    "spd": 196,
+    "spe": 218
+   }
+  },
+  "meteo": "NEIGE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 436
+ },
+ {
+  "nom": "Glissade + Mouchoir + Vent Arrière",
+  "pokemon": {
+   "espece": "kingdra",
+   "niveau": 100,
+   "types": [
+    "water",
+    "dragon"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 95,
+    "def": 95,
+    "spa": 95,
+    "spd": 95,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "swiftswim",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 291,
+   "poidsKg": 152,
+   "statsShowdown": {
+    "hp": 291,
+    "atk": 203,
+    "def": 226,
+    "spa": 289,
+    "spd": 226,
+    "spe": 295
+   }
+  },
+  "meteo": "PLUIE",
+  "champ": "AUCUN",
+  "ventArriere": true,
+  "vitesseAttendue": 1770
+ },
+ {
+  "nom": "Pied Véloce sous statut",
+  "pokemon": {
+   "espece": "ursaring",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 90,
+    "atk": 130,
+    "def": 75,
+    "spa": 75,
+    "spd": 75,
+    "spe": 55
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "quickfeet",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 321,
+   "poidsKg": 125.8,
+   "statsShowdown": {
+    "hp": 321,
+    "atk": 296,
+    "def": 186,
+    "spa": 167,
+    "spd": 186,
+    "spe": 229
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 343
+ },
+ {
+  "nom": "Proto-Synthèse Vitesse",
+  "pokemon": {
+   "espece": "fluttermane",
+   "niveau": 100,
+   "types": [
+    "ghost",
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 55,
+    "atk": 55,
+    "def": 55,
+    "spa": 135,
+    "spd": 135,
+    "spe": 135
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 314,
+   "poidsKg": 4,
+   "statsShowdown": {
+    "hp": 314,
+    "atk": 131,
+    "def": 146,
+    "spa": 306,
+    "spd": 306,
+    "spe": 405
+   }
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 607
+ },
+ {
+  "nom": "Moteur Quark Vitesse",
+  "pokemon": {
+   "espece": "ironbundle",
+   "niveau": 100,
+   "types": [
+    "ice",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 56,
+    "atk": 80,
+    "def": 114,
+    "spa": 124,
+    "spd": 60,
+    "spe": 136
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "quarkdrive",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 253,
+   "poidsKg": 11,
+   "statsShowdown": {
+    "hp": 253,
+    "atk": 176,
+    "def": 264,
+    "spa": 347,
+    "spd": 156,
+    "spe": 408
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "ELECTRIQUE",
+  "ventArriere": false,
+  "vitesseAttendue": 612
+ },
+ {
+  "nom": "Proto-Synthèse hors Vitesse",
+  "pokemon": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 371,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 371,
+    "atk": 361,
+    "def": 298,
+    "spa": 127,
+    "spd": 142,
+    "spe": 300
+   }
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 300
+ },
+ {
+  "nom": "Niveau 50 Mouchoir",
+  "pokemon": {
+   "espece": "dragapult",
+   "niveau": 50,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "clearbody",
+   "objet": "choicescarf",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 163,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 163,
+    "atk": 126,
+    "def": 95,
+    "spa": 152,
+    "spd": 95,
+    "spe": 213
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 319
+ }
+]

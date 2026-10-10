@@ -76,7 +76,29 @@ public interface AbilityModifier {
         m.put("Absorb'Eau", immuniteContre(PokemonType.EAU));
         m.put("Absorb'Volt", immuniteContre(PokemonType.ELECTRIK));
         m.put("Lavabo", immuniteContre(PokemonType.EAU));
-        m.put("Torche", immuniteContre(PokemonType.FEU));
+        // Torche : immunité Feu en défense ; une fois activée (le jeu
+        // l'annonce en absorbant une capacité Feu), Attaque x1,5 sur ses
+        // capacités Feu jusqu'à sa sortie.
+        AbilityModifier immuniteFeu = immuniteContre(PokemonType.FEU);
+        m.put("Torche", new AbilityModifier() {
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                immuniteFeu.appliquerCoteDefenseur(ctx);
+            }
+
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getType() != PokemonType.FEU) return;
+                try {
+                    if (com.tropimon.tropicalc.battle.ObservationCollector.isTorcheActive(
+                            ctx.attaquant.isCampAdverse(), ctx.attaquant.getEspece())) {
+                        ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
+                    }
+                } catch (Throwable ignored) {
+                    // hors jeu (tests) : pas d'état de combat
+                }
+            }
+        });
         m.put("Paratonnerre", immuniteContre(PokemonType.ELECTRIK));
         m.put("Herbivore", immuniteContre(PokemonType.PLANTE));
 
@@ -312,6 +334,21 @@ public interface AbilityModifier {
         // (capaciteApresTalent), avant le calcul du type et du STAB.
         // Cérébro-Force : x1.25 sur un coup super efficace, dans
         // DamageCalculator.appliquerModificateursConditionnels.
+
+        // Analyste : x1,3 sur la puissance quand le porteur agit après la
+        // cible. Ordre déduit de la vitesse comme dans le calculateur
+        // Showdown (agit en premier seulement s'il est strictement plus rapide).
+        m.put("Analyste", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                Field.Meteo me = ctx.terrain.getMeteo();
+                Field.TypeTerrain te = ctx.terrain.getTerrain();
+                if (DamageCalculator.vitesseEnCombat(ctx.attaquant, me, te)
+                        <= DamageCalculator.vitesseEnCombat(ctx.defenseur, me, te)) {
+                    ctx.puissance(ModifierContext.ORDRE_GRIFFE_DURE, 5325);
+                }
+            }
+        });
 
         m.put("Technicien", new AbilityModifier() {
             @Override

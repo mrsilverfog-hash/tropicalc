@@ -28,4 +28,13 @@ class DamageCalculatorShowdownTest {
                 if (ecart != null) fail("Écart avec Showdown pour « " + cas.nom() + " »" + ecart);
             }));
     }
+
+    @TestFactory
+    Stream<DynamicTest> vitesseIdentiqueAShowdown() {
+        return ComparaisonShowdown.chargerCasVitesse().stream()
+            .map(cas -> DynamicTest.dynamicTest("Vitesse : " + cas.nom(), () -> {
+                String ecart = ComparaisonShowdown.verifierVitesse(cas);
+                if (ecart != null) fail("Écart de vitesse avec Showdown pour « " + cas.nom() + " »" + ecart);
+            }));
+    }
 }
