@@ -1094,18 +1094,47 @@ public final class ObservationCollector {
         return x.startsWith(y) || y.startsWith(x);
     }
 
+    /**
+     * Clé de traduction d'un argument de message ("cobblemon.move.earthquake",
+     * "item.cobblemon.choice_band"), qu'il arrive comme texte traduisible ou
+     * comme chaîne.
+     */
+    static String cleDepuisArgument(Object arg) {
+        if (arg == null) return null;
+        if (arg instanceof Text t && t.getContent() instanceof TranslatableTextContent c) return c.getKey();
+        String brut = String.valueOf(arg);
+        int k = brut.indexOf("key='");
+        if (k >= 0) {
+            int fin = brut.indexOf('\'', k + 5);
+            if (fin > k) return brut.substring(k + 5, fin);
+        }
+        return brut;
+    }
+
+    /**
+     * Id Showdown de la capacité ("earthquake") depuis l'argument du message.
+     *
+     * L'argument est un texte traduisible (clé "cobblemon.move.earthquake"),
+     * pas une chaîne : couper son affichage au dernier point donnait
+     * "earthquakeargs" (la fin de "', args=[]}"), une capacité inconnue. Toute
+     * l'analyse des coups reçus (détection Bandeau/Lunettes par les dégâts)
+     * concluait donc "capacité inconnue".
+     */
+    static String idCapaciteDepuisArgument(Object arg) {
+        String cle = cleDepuisArgument(arg);
+        if (cle == null) return null;
+        int i = cle.lastIndexOf('.');
+        String id = (i >= 0 ? cle.substring(i + 1) : cle).toLowerCase().replaceAll("[^a-z0-9]", "");
+        return id.isEmpty() ? null : id;
+    }
+
     private static void suivreCoupRecu(String cle, Object[] args) {
         boolean coup = cle.equals("cobblemon.battle.used_move_on") || cle.equals("cobblemon.battle.used_move");
         if (coup) {
             Boolean adverse = args.length > 0
                 ? determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])) : null;
             dernierCoupEstAdverse = Boolean.TRUE.equals(adverse);
-            String idCoup = null;
-            if (args.length > 1) {
-                String brut = String.valueOf(args[1]);
-                int i = brut.lastIndexOf('.');
-                idCoup = (i >= 0 ? brut.substring(i + 1) : brut).toLowerCase().replaceAll("[^a-z0-9]", "");
-            }
+            String idCoup = args.length > 1 ? idCapaciteDepuisArgument(args[1]) : null;
             if (Boolean.FALSE.equals(adverse) && coupRecu != null && idCoup != null
                     && COUPS_COUT_PV.contains(idCoup)) {
                 coupRecu.invalide = true;
@@ -2551,7 +2580,8 @@ public final class ObservationCollector {
             if (args.length < 3) return;
             String voleur = MoveUseTracker.extraireProprietaire(args[0]);
             String victime = MoveUseTracker.extraireProprietaire(args[2]);
-            String texteObjet = String.valueOf(args[1]);
+            String texteObjet = cleDepuisArgument(args[1]);   // "item.cobblemon.rocky_helmet"
+            if (texteObjet == null) return;
             int pointFinal = texteObjet.lastIndexOf('.');
             if (pointFinal < 0) return;
             String showdownId = texteObjet.substring(pointFinal + 1).replace("_", "");
