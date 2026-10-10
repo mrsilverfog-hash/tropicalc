@@ -64,6 +64,16 @@ public final class SwitchOverlayRenderer {
 
         Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
 
+        // Métamorph avec Imposteur : il entre déjà transformé en l'adversaire
+        // en face (stats, types, talent et boosts copiés ; ses PV, son objet).
+        boolean imposteur = "Imposteur".equals(candidat.getTalent());
+        if (imposteur) {
+            candidat = ObservationCollector.construireMorphing(candidat, adversaireBase);
+            for (Stat s : Stat.values()) {
+                if (s != Stat.PV) candidat.setStage(s, BoostTracker.getStageAdversaire(s));
+            }
+        }
+
         // Seuls les boosts adverses restent actifs après un switch
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
@@ -118,16 +128,26 @@ public final class SwitchOverlayRenderer {
             couleurs.add(pvApres <= 0 ? COULEUR_KO : (degatsPieges >= 25 ? 0xFFAA00 : COULEUR_TEXTE));
         }
 
-        // Ses attaques
-        lignes.add("Ses attaques :");
+        // Ses attaques (Imposteur : celles de l'adversaire, connues ou Smogon, "?")
+        lignes.add(imposteur ? "Ses attaques (copiées, probables) :" : "Ses attaques :");
         couleurs.add(COULEUR_TITRE);
-        for (Move coup : membre.getMoveSet()) {
-            if (coup == null) continue;
-            com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
+        List<Object[]> attaques = new ArrayList<>();
+        if (imposteur) {
+            for (String id : CalcOverlay.capacitesProbables(adversaireBase.getEspece())) {
+                MoveTemplate t = Moves.INSTANCE.getByName(id);
+                if (t != null) attaques.add(new Object[]{t.getDisplayName().getString() + " ?", convertirTemplate(t)});
+            }
+        } else {
+            for (Move coup : membre.getMoveSet()) {
+                if (coup != null) attaques.add(new Object[]{coup.getDisplayName().getString(), convertirCapacite(coup)});
+            }
+        }
+        for (Object[] attaque : attaques) {
+            com.tropimon.tropicalc.calc.Move capacite = (com.tropimon.tropicalc.calc.Move) attaque[1];
             if (capacite == null || capacite.estCapaciteDeStatut()) continue;
 
             DamageCalculator.Resultat r = DamageCalculator.calculer(candidat, adversaire, capacite, field, field.getEcransAdversaire(), false);
-            String nom = coup.getDisplayName().getString();
+            String nom = (String) attaque[0];
             if (r.immunise) {
                 lignes.add(nom + " : immunisé");
                 couleurs.add(COULEUR_TEXTE);

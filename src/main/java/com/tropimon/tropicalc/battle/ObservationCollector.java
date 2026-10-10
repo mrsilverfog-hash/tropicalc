@@ -465,7 +465,7 @@ public final class ObservationCollector {
 
             // Morphing : stats, types et talent copiés, les calculs ne
             // correspondent plus au vrai Pokémon - aucune observation.
-            boolean morphing = estTransforme(false, joueur.getEspece()) || estTransforme(true, adversaire.getEspece());
+            boolean morphing = joueurTransforme() || estTransforme(true, adversaire.getEspece());
             if (coupAdversaireDuTour != null && perteJoueur >= 0.5 && !morphing) {
                 enregistrerObservation(true, perteJoueur, adversaire, joueur, coupAdversaireDuTour);
             }
@@ -750,8 +750,7 @@ public final class ObservationCollector {
             + " / moi " + joueur.getEspece() + " " + coupJoueurDuTour.showdownId() + " | "
             + (Boolean.TRUE.equals(adversaireAAgiEnPremier) ? "il a agi avant" : "j'ai agi avant") + " | ";
         if (prioriteObjetCeTour) { MessageDebugLogger.analyse(debut + "Vive-Griffe/Tir Vif : ignoré"); return; }
-        if (estTransforme(true, adversaire.getEspece()) || estTransforme(false, joueur.getEspece())
-                || estTransforme(false, especeJoueurActeur)) {
+        if (estTransforme(true, adversaire.getEspece()) || joueurTransforme()) {
             MessageDebugLogger.analyse(debut + "Morphing : ignoré");
             return;
         }
@@ -1195,8 +1194,49 @@ public final class ObservationCollector {
     // --- Morphing (Métamorph, Imposteur) : "moi:espèce" / "adv:espèce" ---
     private static final Set<String> TRANSFORMES = new HashSet<>();
 
+    /** Mon Pokémon actif est transformé (Morphing vu, ou espèce de combat différente de sa fiche). */
+    private static boolean joueurTransforme() {
+        if (TRANSFORMES.stream().anyMatch(k -> k.startsWith("moi:"))) return true;
+        try {
+            return BattleStateTracker.joueurEstTransforme();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static boolean estTransforme(boolean campAdverse, String espece) {
         return espece != null && TRANSFORMES.contains((campAdverse ? "adv:" : "moi:") + espece);
+    }
+
+    // Mon Métamorph : la cible copiée (instantané au moment du Morphing,
+    // valable même si l'adversaire change ensuite de Pokémon) et ses
+    // capacités copiées, lues dans le menu d'attaque du jeu.
+    private static Pokemon cibleMorphingJoueur = null;
+    private static List<String> capacitesMorphing = new ArrayList<>();
+
+    /** La cible copiée par mon Métamorph, ou null (pas de Morphing vu). */
+    public static Pokemon getCibleMorphingJoueur() {
+        return cibleMorphingJoueur;
+    }
+
+    /** Capacités copiées par mon Métamorph (id Showdown), vide si pas encore lues. */
+    public static List<String> getCapacitesMorphing() {
+        return capacitesMorphing;
+    }
+
+    /**
+     * Métamorph transformé : stats (EV et nature compris), types et talent de
+     * la cible telle qu'estimée (31 IV, set Smogon ou mieux si observé), mais
+     * PV, objet et statut de Métamorph - c'est ce que copie Morphing.
+     */
+    public static Pokemon construireMorphing(Pokemon metamorph, Pokemon cibleBase) {
+        Pokemon copie = construireAdversaireEstime(cibleBase);
+        copie.setCampAdverse(false);
+        copie.setPvMaxOverride(metamorph.getPvMax());
+        copie.setPvActuels(metamorph.getPvActuels());
+        copie.setStatut(metamorph.getStatut());
+        copie.setObjet(metamorph.getObjet());
+        return copie;
     }
 
     private static void suivreMorphingEtRates(String cle, Object[] args) {
@@ -1204,14 +1244,25 @@ public final class ObservationCollector {
             Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
             if (adverse == null) return;
             Pokemon p = adverse ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+            if (!adverse) {
+                // Morphing copie aussi les boosts de la cible
+                cibleMorphingJoueur = BattleStateTracker.getAdversaireActif();
+                for (Stat st : Stat.values()) {
+                    if (st != Stat.PV) BoostTracker.forcerStageJoueur(st, BoostTracker.getStageAdversaire(st));
+                }
+                capacitesMorphing = new ArrayList<>();
+            }
             if (p != null && TRANSFORMES.add((adverse ? "adv:" : "moi:") + p.getEspece())) {
                 MessageDebugLogger.analyse("MORPHING " + p.getEspece() + (adverse ? " (adverse)" : " (moi)")
+                    + (!adverse && cibleMorphingJoueur != null ? " en " + cibleMorphingJoueur.getEspece() : "")
                     + " : mesures ignorées tant qu'il reste sur le terrain");
             }
         } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
             TRANSFORMES.removeIf(k -> k.startsWith("adv:"));
         } else if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
             TRANSFORMES.removeIf(k -> k.startsWith("moi:"));
+            cibleMorphingJoueur = null;
+            capacitesMorphing = new ArrayList<>();
         } else if (dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
                 || cle.equals("cobblemon.battle.immune") || cle.startsWith("cobblemon.battle.activate.protect"))) {
             coupAdvRateCeTour = true;
@@ -1651,7 +1702,7 @@ public final class ObservationCollector {
     private static String analyserCoupRecu(CoupRecu cr) {
         StringBuilder log = new StringBuilder();
         if (cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
-        if (estTransforme(true, cr.especeAttaquant) || estTransforme(false, cr.especeDefenseur)) {
+        if (estTransforme(true, cr.especeAttaquant) || joueurTransforme()) {
             return "Morphing en cours : ignoré";
         }
         if (cr.clone) return "touché sur un Clone";
@@ -2442,6 +2493,19 @@ public final class ObservationCollector {
         }
         etatVide = false;
 
+        // Capacités copiées par mon Métamorph : lues dans le menu d'attaque
+        // dès qu'il est disponible, gardées tant qu'il reste transformé.
+        try {
+            if (BattleStateTracker.joueurEstTransforme()) {
+                List<String> ids = BattleStateTracker.getCapacitesRequeteJoueur();
+                if (ids != null && !ids.isEmpty() && !ids.contains("transform") && !ids.equals(capacitesMorphing)) {
+                    capacitesMorphing = new ArrayList<>(ids);
+                    MessageDebugLogger.analyse("MORPHING capacités copiées : " + ids);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         // Détection Restes : les PV adverses remontent de ~1/16 depuis leur point bas.
         // Contrairement au delta net par tour, ceci voit le soin même si le joueur
         // a infligé des dégâts le même tour.
@@ -3229,6 +3293,8 @@ public final class ObservationCollector {
         PREUVE_PAS_CHOIX.clear();
         ORBE_VIE_EXCLUE.clear();
         TRANSFORMES.clear();
+        cibleMorphingJoueur = null;
+        capacitesMorphing = new ArrayList<>();
         reculOrbeVieAdvCeTour = false;
         coupAdvRateCeTour = false;
         TORCHE_ACTIVE.clear();

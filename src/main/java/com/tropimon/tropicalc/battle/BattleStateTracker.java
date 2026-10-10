@@ -95,6 +95,38 @@ public final class BattleStateTracker {
         return false;
     }
 
+    /**
+     * Capacités du menu d'attaque (requête d'action du jeu) de MON Pokémon
+     * actif, en id Showdown. Pour un Métamorph transformé, ce sont les
+     * capacités copiées. null si aucune requête pour ce Pokémon.
+     */
+    public static List<String> getCapacitesRequeteJoueur() {
+        try {
+            ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+            ClientBattleActor acteur = getActeurJoueur();
+            if (battle == null || acteur == null || acteur.getActivePokemon().isEmpty()) return null;
+            ClientBattlePokemon actif = acteur.getActivePokemon().get(0).getBattlePokemon();
+            if (actif == null) return null;
+            List<com.cobblemon.mod.common.client.battle.SingleActionRequest> requetes = battle.getPendingActionRequests();
+            if (requetes == null) return null;
+            for (com.cobblemon.mod.common.client.battle.SingleActionRequest r : requetes) {
+                // La requête doit concerner ce Pokémon (pas celui du tour d'avant)
+                ActiveClientBattlePokemon concerne = r.getActivePokemon();
+                if (concerne == null || concerne.getBattlePokemon() == null
+                        || !actif.getUuid().equals(concerne.getBattlePokemon().getUuid())) continue;
+                com.cobblemon.mod.common.battles.ShowdownMoveset ms = r.getMoveSet();
+                if (ms == null || ms.getMoves() == null) continue;
+                List<String> ids = new java.util.ArrayList<>();
+                for (com.cobblemon.mod.common.battles.InBattleMove m : ms.getMoves()) {
+                    if (m != null && m.getId() != null) ids.add(m.getId().toLowerCase().replaceAll("[^a-z0-9]", ""));
+                }
+                if (!ids.isEmpty()) return ids;
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
     /** Le Pokémon adverse dont les capacités sont copiées quand on est transformé. */
     public static com.cobblemon.mod.common.pokemon.Pokemon getSourceTransformation() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();

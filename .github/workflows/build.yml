@@ -29,38 +29,6 @@ jobs:
         run: ./gradlew build 2>&1 | tee build-output.log; exit ${PIPESTATUS[0]}
         shell: bash
 
-      - name: Inspection temporaire des classes de combat Cobblemon
-        if: always()
-        run: |
-          JAR=""
-          for j in $(find ~/.gradle .gradle -name '*.jar' 2>/dev/null); do
-            if unzip -l "$j" 2>/dev/null | grep -q 'com/cobblemon/mod/common/client/battle/ClientBattle.class'; then JAR="$j"; break; fi
-          done
-          echo "jar: $JAR" > inspection.txt
-          for c in com.cobblemon.mod.common.client.battle.ClientBattle \
-                   com.cobblemon.mod.common.client.battle.ClientBattlePokemon \
-                   com.cobblemon.mod.common.client.battle.ClientBattleActor \
-                   com.cobblemon.mod.common.client.battle.ActiveClientBattlePokemon \
-                   com.cobblemon.mod.common.battles.ShowdownActionRequest \
-                   com.cobblemon.mod.common.battles.ShowdownMoveset \
-                   com.cobblemon.mod.common.battles.InBattleMove \
-                   com.cobblemon.mod.common.client.battle.SingleActionRequest; do
-            echo "===== $c" >> inspection.txt
-            javap -cp "$JAR" "$c" >> inspection.txt 2>&1 || true
-          done
-          unzip -l "$JAR" | grep -i "battle.*Request\|Moveset\|InBattleMove" >> inspection.txt || true
-          git config user.name ci-log
-          git config user.email ci@log
-          git stash -u -q || true
-          git checkout -q --orphan ci-inspection
-          git rm -rf -q --cached . > /dev/null 2>&1 || true
-          git stash pop -q || true
-          git add -f inspection.txt
-          git commit -q -m "inspection $GITHUB_SHA"
-          git push -f -q origin HEAD:ci-log
-          git checkout -q -f $GITHUB_SHA
-        shell: bash
-
       - name: Pousser le log en cas d'échec
         if: failure()
         run: |
