@@ -161,6 +161,28 @@ public final class ScoutingStore {
                 }
             } catch (Exception ignored) {
             }
+            // Purge unique de TOUS les objets mémorisés (10/10/2026) : une partie
+            // venait de fausses confirmations (élimination par les dégâts qui
+            // ignorait "aucun objet", Évoluroc déduit de Smogon) - ex. Grosses
+            // Bottes sur un Pyrobut, Veste de Combat sur une Hatterene - sans
+            // moyen de les distinguer des vraies. Talents et capacités gardés.
+            // Depuis, seuls des objets observés sont enregistrés.
+            try {
+                Path temoin = FabricLoader.getInstance().getConfigDir()
+                    .resolve("tropicalc-scouting-purge-objets.done");
+                if (!Files.exists(temoin)) {
+                    for (Map<String, Faits> parEspece : donnees.values()) {
+                        for (Faits f : parEspece.values()) {
+                            if (f.objet != null) {
+                                f.objet = null;
+                                migrationAppliquee = true;
+                            }
+                        }
+                    }
+                    Files.writeString(temoin, "ok");
+                }
+            } catch (Exception ignored) {
+            }
             if (migrationAppliquee) {
                 sauvegarder();
             }

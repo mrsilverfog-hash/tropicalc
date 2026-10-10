@@ -706,6 +706,20 @@ public final class CalcOverlay implements HudRenderCallback {
                 dessinerTexte("Objet confirmé : aucun (retiré)", x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             }
+            // Objet probable : désigné par les dégâts (EV supposés Smogon) ou
+            // par Smogon (Évoluroc), sans preuve. Utilisé dans les calculs.
+            String objetProbable = ObservationCollector.getObjetProbable(especeAdv);
+            if (objetProbable != null && objetConfirme == null && !objetRetire) {
+                dessinerTexte("Objet probable : " + objetProbable + " ?", x, y, COULEUR_GRIS);
+                y += hauteurLigne;
+            }
+            // Preuve qu'il n'a pas d'objet Choix : deux capacités différentes
+            // sans sortir du terrain (inutile si un autre objet est confirmé)
+            String preuvePasChoix = ObservationCollector.getPreuvePasChoix(especeAdv);
+            if (preuvePasChoix != null && objetConfirme == null && !objetRetire) {
+                dessinerTexte("Pas d'objet Choix : " + preuvePasChoix, x, y, COULEUR_REVELE);
+                y += hauteurLigne;
+            }
         }
 
         // Lignes trop longues : coupées et les suivantes décalées vers le bas.

@@ -247,6 +247,8 @@ public final class ObservationCollector {
         statutJoueurTourEcoule = statutJoueurDebutTour;
         statutAdvTourEcoule = statutAdvDebutTour;
         especeJoueurTourEcoule = especeJoueurDebutTour;
+        joueurPokemonTourEcoule = joueurPokemonDebutTour;
+        adversairePokemonTourEcoule = adversairePokemonDebutTour;
         stageVitJoueurDebutTour = BoostTracker.getStageJoueur(Stat.VITESSE);
         tailwindJoueurDebutTour = FieldTracker.isTailwindJoueur();
         tailwindAdvDebutTour = FieldTracker.isTailwindAdversaire();
@@ -257,6 +259,9 @@ public final class ObservationCollector {
             statutJoueurDebutTour = jDebut != null ? jDebut.getStatut() : null;
             especeJoueurDebutTour = jDebut != null ? jDebut.getEspece() : null;
             statutAdvDebutTour = aDebut != null ? aDebut.getStatut() : null;
+            Pokemon jEquipe = BattleStateTracker.getJoueurActifDepuisEquipe();
+            joueurPokemonDebutTour = jEquipe != null ? jEquipe : jDebut;
+            adversairePokemonDebutTour = aDebut;
         } catch (Exception ignored) {
         }
         stageAtkSpeAdvTourEcoule = stageAtkSpeAdvDebutTour;
@@ -380,6 +385,8 @@ public final class ObservationCollector {
                 attaqueDiffereeCeTour = false;
                 multiCoupsCeTour = false;
                 adversaireAAgiEnPremier = null;
+        especeAdvActeur = null;
+        especeJoueurActeur = null;
                 return;
             }
 
@@ -474,6 +481,8 @@ public final class ObservationCollector {
         attaqueDiffereeCeTour = false;
         multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
+        especeAdvActeur = null;
+        especeJoueurActeur = null;
 
         tenterAppliquerHerbeBlanche(joueur, adversaire);
     }
@@ -490,6 +499,17 @@ public final class ObservationCollector {
         // Premier coup du tour = camp qui agit en premier
         if (adversaireAAgiEnPremier == null && estAdversaire != null) {
             adversaireAAgiEnPremier = estAdversaire;
+        }
+        // Qui a réellement agi de chaque côté (avant un éventuel Demi-Tour)
+        try {
+            if (Boolean.TRUE.equals(estAdversaire) && especeAdvActeur == null) {
+                Pokemon a = BattleStateTracker.getAdversaireActif();
+                if (a != null) especeAdvActeur = a.getEspece();
+            } else if (Boolean.FALSE.equals(estAdversaire) && especeJoueurActeur == null) {
+                Pokemon j = BattleStateTracker.getJoueurActif();
+                if (j != null) especeJoueurActeur = j.getEspece();
+            }
+        } catch (Exception ignored) {
         }
 
         if (Boolean.TRUE.equals(estAdversaire)) {
@@ -726,8 +746,26 @@ public final class ObservationCollector {
         // l'ordre observé ne concerne pas celui qu'on regarde (Demi-Tour...).
         String espece = adversaire.getEspece();
         if (!espece.equals(espaceAdversaireDuTour) || joueurAChangeCeTour()) {
-            MessageDebugLogger.analyse(debut + "switch pendant le tour : ignoré");
-            return;
+            // Demi-Tour, Change Éclair, Flip Turn, Demi-Tour forcé... : si les
+            // deux Pokémon qui ont agi sont bien ceux du début du tour, le
+            // changement est venu APRÈS leurs actions et l'ordre reste valable.
+            // On mesure alors avec ces deux Pokémon-là, pas avec les actifs.
+            boolean memesActeurs = especeAdvActeur != null && especeAdvActeur.equals(espaceAdversaireDuTour)
+                && especeJoueurActeur != null && especeJoueurActeur.equals(especeJoueurTourEcoule)
+                && adversairePokemonTourEcoule != null && joueurPokemonTourEcoule != null
+                && especeAdvActeur.equals(adversairePokemonTourEcoule.getEspece())
+                && especeJoueurActeur.equals(joueurPokemonTourEcoule.getEspece());
+            if (!memesActeurs) {
+                MessageDebugLogger.analyse(debut + "switch avant d'agir : ignoré");
+                return;
+            }
+            adversaire = adversairePokemonTourEcoule;
+            joueur = joueurPokemonTourEcoule;
+            espece = adversaire.getEspece();
+            debut = "VITESSE " + espece + " " + coupAdversaireDuTour.showdownId() + " / moi " + joueur.getEspece()
+                + " " + coupJoueurDuTour.showdownId() + " | "
+                + (Boolean.TRUE.equals(adversaireAAgiEnPremier) ? "il a agi avant" : "j'ai agi avant")
+                + " (switch après les actions) | ";
         }
 
         String idJ = coupJoueurDuTour.showdownId();
@@ -1092,6 +1130,103 @@ public final class ObservationCollector {
         String x = a.toLowerCase().replaceAll("[^a-z0-9]", "");
         String y = b.toLowerCase().replaceAll("[^a-z0-9]", "");
         return x.startsWith(y) || y.startsWith(x);
+    }
+
+    // --- Verrou Choix : deux capacités différentes sur le même séjour ---
+    // Un objet Choix bloque son porteur sur la première capacité utilisée
+    // depuis son entrée. Deux capacités différentes sans sortie entre les
+    // deux prouvent qu'il n'en a pas. Suivi par les messages du jeu (pas par
+    // tour : un Pokémon entré en cours de tour puis reparti avec Demi-Tour
+    // échappait à l'ancienne comparaison tour par tour).
+    private static String especeSejourAdv = null;
+    private static String premierCoupSejourAdv = null;
+    // Preuve affichée dans le HUD : espèce -> "Pyroball puis Demi-Tour"
+    private static final Map<String, String> PREUVE_PAS_CHOIX = new HashMap<>();
+    // Capacités qui en lancent une autre (la capacité lancée apparaît aussi)
+    private static final Set<String> COUPS_APPELANTS = Set.of(
+        "sleeptalk", "metronome", "copycat", "mefirst", "assist", "mirrormove", "naturepower");
+
+    private static void suivreVerrouChoix(String cle, Object[] args) {
+        if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")
+                || cle.startsWith("cobblemon.battle.dragged_out")) {
+            // Sortie ou entrée : nouveau séjour (prudent : n'importe quel
+            // changement côté adverse coupe la comparaison)
+            especeSejourAdv = null;
+            premierCoupSejourAdv = null;
+            return;
+        }
+        boolean coup = cle.equals("cobblemon.battle.used_move_on") || cle.equals("cobblemon.battle.used_move");
+        if (!coup || args.length < 2) return;
+        if (!Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) return;
+        String espece = especeDepuisArgument(args[0]);
+        if (espece == null) {
+            // Pokémon surnommé : le message donne le surnom, pas l'espèce
+            Pokemon actif = BattleStateTracker.getAdversaireActif();
+            if (actif != null) espece = actif.getEspece();
+        }
+        String idCoup = idCapaciteDepuisArgument(args[1]);
+        if (espece == null || idCoup == null || "struggle".equals(idCoup)) return;
+
+        if (!espece.equals(especeSejourAdv)) {
+            especeSejourAdv = espece;
+            premierCoupSejourAdv = idCoup;
+            return;
+        }
+        if (premierCoupSejourAdv == null) {
+            premierCoupSejourAdv = idCoup;
+            return;
+        }
+        if (premierCoupSejourAdv.equals(idCoup)) return;
+        // Capacité lancée par une autre (Blabla Dodo...) : pas une preuve
+        if (COUPS_APPELANTS.contains(premierCoupSejourAdv) || COUPS_APPELANTS.contains(idCoup)) return;
+        // Miroir Magik renvoie une capacité de statut au nom du porteur
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        if (adv != null && espece.equals(adv.getEspece())
+                && talentsBrutsPossibles(adv).contains("magicbounce")) {
+            MoveTemplate t = Moves.INSTANCE.getByName(idCoup);
+            if (t == null || "status".equalsIgnoreCase(t.getDamageCategory().getName())) return;
+        }
+        exclureChoix(espece, premierCoupSejourAdv, idCoup);
+    }
+
+    private static void exclureChoix(String espece, String coup1, String coup2) {
+        if (PREUVE_PAS_CHOIX.containsKey(espece)) return;
+        String preuve = nomCapacite(coup1) + " puis " + nomCapacite(coup2);
+        PREUVE_PAS_CHOIX.put(espece, preuve);
+        OBJETS_CHOIX_EXCLUS.add(espece);
+        String probable = OBJETS_PROBABLES.get(espece);
+        if (probable != null && probable.endsWith(" Choix")) OBJETS_PROBABLES.remove(espece);
+        String objet = OBJETS_CONFIRMES.get(espece);
+        if ("Mouchoir Choix".equals(objet) || "Bandeau Choix".equals(objet) || "Lunettes Choix".equals(objet)) {
+            OBJETS_CONFIRMES.remove(espece);
+            OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
+            RAISONS_OBJET.remove(espece);
+        }
+        MessageDebugLogger.analyse("OBJET " + espece + " : pas d'objet Choix (" + coup1 + " puis " + coup2
+            + " sans sortir)" + (objet != null && objet.contains("Choix") ? ", " + objet + " annulé" : ""));
+    }
+
+    private static String nomCapacite(String id) {
+        try {
+            MoveTemplate t = Moves.INSTANCE.getByName(id);
+            if (t != null) return t.getDisplayName().getString();
+        } catch (Exception ignored) {
+        }
+        return id;
+    }
+
+    // Objet déduit par élimination sur les dégâts (pas une preuve) : espèce -> objet
+    private static final Map<String, String> OBJETS_PROBABLES = new HashMap<>();
+
+    /** Objet que les dégâts désignent, sans être prouvé (null si aucun ou si confirmé/retiré). */
+    public static String getObjetProbable(String espece) {
+        if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return null;
+        return OBJETS_PROBABLES.get(espece);
+    }
+
+    /** "Pyroball puis Demi-Tour" si l'adversaire a prouvé ne pas avoir d'objet Choix, sinon null. */
+    public static String getPreuvePasChoix(String espece) {
+        return PREUVE_PAS_CHOIX.get(espece);
     }
 
     /**
@@ -1794,16 +1929,17 @@ public final class ObservationCollector {
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
                 if (objetEstime != null) {
                     b.objet(objetEstime);
-                    // Confirmé seulement si les dégâts ont éliminé "aucun
-                    // objet" (voir extraireObjetUnique) : l'objet restant est
-                    // alors le seul à expliquer les dégâts observés.
-                    confirmerObjet(espece, objetEstime, "dégâts inexplicables sans cet objet ("
-                        + profil.getNbObservations() + " coups mesurés)");
-                    // (fonction appelée à chaque image : une ligne seulement
-                    // quand la confirmation vient réellement d'être posée)
-                    if (objetEstime.equals(OBJETS_CONFIRMES.get(espece))) {
+                    // "Probable", jamais "confirmé" : l'élimination suppose
+                    // que ses EV sont dans les répartitions Smogon. Un set
+                    // inhabituel (plus d'EV défensifs) imite un objet - la
+                    // Hatterene "confirmée" Veste de Combat après un seul coup.
+                    // Appliqué au calcul, affiché comme probable, jamais
+                    // mémorisé entre les combats.
+                    // (appelé à chaque image : une ligne de log au changement)
+                    if (!objetEstime.equals(OBJETS_PROBABLES.put(espece, objetEstime))) {
                         MessageDebugLogger.analyse("OBJET " + espece + " : " + objetEstime
-                            + " confirmé par élimination (" + profil.getNbObservations() + " coups mesurés)");
+                            + " probable (seul objet qui explique les dégâts, " + profil.getNbObservations()
+                            + " coups mesurés, EV supposés Smogon)");
                     }
                 }
             }
@@ -1825,6 +1961,11 @@ public final class ObservationCollector {
             if (scout.objet != null && objetConfirme == null && !objetRetire) b.objet(scout.objet);
             if (scout.talent != null) b.talent(scout.talent);
         }
+
+        // Objet probable (élimination par les dégâts, Évoluroc) : plus fiable
+        // que le scouting et Smogon, moins qu'une confirmation
+        String objetProbable = OBJETS_PROBABLES.get(espece);
+        if (objetProbable != null && objetConfirme == null && !objetRetire) b.objet(objetProbable);
 
         if (objetConfirme != null && !objetRetire) {
             b.objet(objetConfirme);
@@ -2109,8 +2250,12 @@ public final class ObservationCollector {
         if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
         String topObjet = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
-        if ("Évoluroc".equals(topObjet) && smogon.topItemUsageFraction() >= 0.50) {
-            OBJETS_CONFIRMES.put(espece, "Évoluroc");
+        // Probable seulement (part d'usage Smogon, aucune observation) : plus
+        // de "confirmé" - le Piloswine l'affichait ainsi avant toute preuve.
+        if ("Évoluroc".equals(topObjet) && smogon.topItemUsageFraction() >= 0.50
+                && !"Évoluroc".equals(OBJETS_PROBABLES.put(espece, "Évoluroc"))) {
+            MessageDebugLogger.analyse("OBJET " + espece + " : Évoluroc probable ("
+                + Math.round(smogon.topItemUsageFraction() * 100) + " % des sets Smogon)");
         }
     }
 
@@ -2371,6 +2516,7 @@ public final class ObservationCollector {
             String fr = ShowdownIdMapper.objet(id);
             if (fr == null) continue;
             if ("Ballon".equals(fr) && ballonExclu(espece)) continue;
+            if (fr.endsWith(" Choix") && OBJETS_CHOIX_EXCLUS.contains(espece)) continue;
             return fr;
         }
         return null;
@@ -2401,6 +2547,7 @@ public final class ObservationCollector {
         if (cle == null) return;
 
         suivreCoupRecu(cle, contenu.getArgs());
+        suivreVerrouChoix(cle, contenu.getArgs());
 
         if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
             prioriteObjetCeTour = true;
@@ -2843,6 +2990,12 @@ public final class ObservationCollector {
     private static Pokemon.Statut statutJoueurDebutTour = null, statutJoueurTourEcoule = null;
     private static Pokemon.Statut statutAdvDebutTour = null, statutAdvTourEcoule = null;
     private static String especeJoueurDebutTour = null, especeJoueurTourEcoule = null;
+    // Pokémon actifs au début du tour (instantanés), pour mesurer la vitesse
+    // quand un Demi-Tour les a remplacés avant la fin du tour
+    private static Pokemon joueurPokemonDebutTour = null, joueurPokemonTourEcoule = null;
+    private static Pokemon adversairePokemonDebutTour = null, adversairePokemonTourEcoule = null;
+    // Espèce qui a agi en premier de chaque côté pendant le tour
+    private static String especeAdvActeur = null, especeJoueurActeur = null;
     private static int stageAtkSpeAdvDebutTour = 0;
 
     // Snapshots supplémentaires pour Défiant/Battant (une autre stat baisse,
@@ -2915,6 +3068,11 @@ public final class ObservationCollector {
         OBJETS_ANNULES.clear();
         BALLON_ANNONCE.clear();
         ENTREE_ADVERSAIRE_MS.clear();
+        PREUVE_PAS_CHOIX.clear();
+        OBJETS_PROBABLES.clear();
+        OBJETS_CHOIX_EXCLUS.clear();
+        especeSejourAdv = null;
+        premierCoupSejourAdv = null;
         coupRecu = null;
         coupDonne = null;
         coupRecuTourEcoule = null;
@@ -2988,6 +3146,8 @@ public final class ObservationCollector {
         attaqueDiffereeCeTour = false;
         multiCoupsCeTour = false;
         adversaireAAgiEnPremier = null;
+        especeAdvActeur = null;
+        especeJoueurActeur = null;
         espaceAdversaireDuTour = null;
     }
 
