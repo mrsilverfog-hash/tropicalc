@@ -152,7 +152,8 @@ public final class SwitchOverlayRenderer {
                 lignes.add(nom + " : immunisé");
                 couleurs.add(COULEUR_TEXTE);
             } else {
-                lignes.add(String.format("%s : %.0f%% - %.0f%%", nom, r.pourcentageMin, r.pourcentageMax));
+                lignes.add(String.format("%s : %.0f%% - %.0f%%%s", nom, r.pourcentageMin, r.pourcentageMax,
+                    CalcOverlay.texteKO(r, candidat, adversaire, capacite, field, true)));
                 couleurs.add(r.koGaranti ? COULEUR_KO : (r.koPossible ? 0xFFAA00 : COULEUR_TEXTE));
             }
         }
@@ -202,7 +203,8 @@ public final class SwitchOverlayRenderer {
                         lignes.add(prefixe + nom + " : immunisé");
                         couleurs.add(estRevele ? COULEUR_REVELE : COULEUR_TEXTE);
                     } else {
-                        lignes.add(String.format("%s%s : %.0f%% - %.0f%%", prefixe, nom, r.pourcentageMin, r.pourcentageMax));
+                        lignes.add(String.format("%s%s : %.0f%% - %.0f%%%s", prefixe, nom, r.pourcentageMin, r.pourcentageMax,
+                            CalcOverlay.texteKO(r, adversaire, candidat, capaciteAdv, field, false)));
                         couleurs.add(r.koGaranti ? COULEUR_KO
                             : (estRevele ? COULEUR_REVELE : (r.koPossible ? 0xFFAA00 : COULEUR_TEXTE)));
                     }

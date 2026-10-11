@@ -308,7 +308,8 @@ public final class CalcOverlay implements HudRenderCallback {
                 String marqueur = adversaire.estCorrigee(statDef) ? "~" : "";
                 String suffixeBoost = estFulgurayon ? " (+1)" : "";
                 String suffixeBallon = ballonEstimeNonConfirme ? " (0% si Ballon)" : "";
-                ligne = String.format("%s : %s%.0f%% - %.0f%%%s%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax, suffixeBoost, suffixeBallon);
+                ligne = String.format("%s : %s%.0f%% - %.0f%%%s%s%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax,
+                    suffixeBoost, suffixeBallon, texteKO(r, joueur, adversaire, capacite, field, true));
 
 
                 // Laser Hasard : 30% de chances de doubler sa puissance (80 -> 160).
@@ -443,8 +444,9 @@ public final class CalcOverlay implements HudRenderCallback {
                             ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
                         String marq = adversaire.estCorrigee(statAtk) ? "~" : "";
                         String suffixeBoost = estFulgurayon ? " (+1)" : "";
-                        ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s%s",
-                            estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixeBoost, suffixePp);
+                        ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s%s%s",
+                            estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixeBoost,
+                            texteKO(r, adversaire, joueur, capaciteAdv, field, false), suffixePp);
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
 
@@ -893,6 +895,26 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (hypo.immunise) return null;
         return String.format(" (%.0f%% - %.0f%%)", hypo.pourcentageMin, hypo.pourcentageMax);
+    }
+
+    /**
+     * " | 2HKO 78 %" : chances de K.O. de ce calcul (modèle Showdown : jets,
+     * PV actuels, Restes, brûlure, poison, Toxik, sable...), "" si aucune.
+     */
+    static String texteKO(DamageCalculator.Resultat r, Pokemon attaquant, Pokemon defenseur,
+                          com.tropimon.tropicalc.calc.Move capacite, Field terrain, boolean defenseurAdverse) {
+        if (r == null || r.immunise || r.degatsParRoll.length == 0) return "";
+        // Tête de Gel / Fantômasque intacts : le coup n'inflige pas ses jets
+        if (r.degatsMax != r.degatsParRoll[r.degatsParRoll.length - 1]) return "";
+        // Fermeté / Ceinture Focus à pleins PV : pas d'OHKO, le HUD le dit déjà
+        boolean protege = r.degatsParRoll[0] >= defenseur.getPvActuels() && !r.koGaranti;
+        int toxik = defenseurAdverse ? ObservationCollector.getCompteurToxikProchainAdversaire()
+            : ObservationCollector.getCompteurToxikProchainJoueur();
+        com.tropimon.tropicalc.calc.ChancesKO.Resultat ko = com.tropimon.tropicalc.calc.ChancesKO.calculer(
+            r.degatsParRoll, attaquant, defenseur, capacite, terrain, toxik);
+        if (protege && ko.n() == 1) return "";
+        String t = ko.texte();
+        return t.isEmpty() ? "" : " | " + t;
     }
 
     /** Une de mes capacités à afficher : nom affiché et capacité de calcul. */

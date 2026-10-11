@@ -176,6 +176,16 @@ const CAS = [
     ['Gant de Boxe + Poing de Fer', ['Iron Hands', { ...ATK, ability: 'Iron Fist', item: 'Punching Glove' }], ['Corviknight', PHYS_DEF], 'Thunder Punch'],
     ['Analyste contre plus rapide', ['Magnezone', { ...SPA, ability: 'Analytic' }], ['Dragapult', SPEC_DEF], 'Flash Cannon'],
     ['Analyste contre plus lent', ['Magnezone', { ...SPA, ability: 'Analytic' }], ['Toxapex', { ...SPEC_DEF, ability: 'Regenerator' }], 'Flash Cannon'],
+    // --- Chances de K.O. (fin de tour) ---
+    ['KO Restes', ['Garchomp', ATK], ['Corviknight', { ...PHYS_DEF, item: 'Leftovers' }], 'Stone Edge'],
+    ['KO Restes 2HKO', ['Dragonite', ATK], ['Toxapex', { ...PHYS_DEF, item: 'Leftovers', ability: 'Regenerator' }], 'Earthquake'],
+    ['KO brûlé', ['Gholdengo', SPA], ['Garchomp', { ...SPEC_DEF, status: 'brn' }], 'Shadow Ball'],
+    ['KO empoisonné', ['Gholdengo', SPA], ['Great Tusk', { ...SPEC_DEF, status: 'psn' }], 'Shadow Ball'],
+    ['KO Boue Noire hors Poison', ['Gholdengo', SPA], ['Great Tusk', { ...SPEC_DEF, item: 'Black Sludge' }], 'Shadow Ball'],
+    ['KO sable', ['Primarina', SPA], ['Dragonite', { ...SPEC_DEF, ability: 'Inner Focus' }], 'Moonblast', { field: { weather: 'Sand' } }],
+    ['KO Champ Herbu', ['Gholdengo', SPA], ['Great Tusk', SPEC_DEF], 'Shadow Ball', { field: { terrain: 'Grassy' } }],
+    ['KO PV partiels', ['Garchomp', ATK], ['Great Tusk', { ...PHYS_DEF, curHP: 45 }], 'Earthquake'],
+    ['KO Sabotage sur Restes', ['Kingambit', ATK], ['Gholdengo', { ...PHYS_DEF, item: 'Leftovers' }], 'Knock Off'],
     ['Protection + Orbe Vie', ['Garchomp', { ...ATK, item: 'Life Orb' }], ['Great Tusk', PHYS_DEF], 'Earthquake', { field: { defenderSide: { isReflect: true } } }],
     ['Ombre Nocturne', ['Dusclops', PHYS_DEF], ['Great Tusk', PHYS_DEF], 'Night Shade'],
 ];
@@ -247,6 +257,13 @@ for (const [nom, [espA, setA], [espD, setD], nomCapacite, options = {}] of CAS) 
         murLumiere: !!ecrans.isLightScreen,
         critique: !!options.crit,
         degatsAttendus: degats.length === 1 ? Array(16).fill(degats[0]) : degats,
+        // Chances de K.O. de Showdown (chance -1 = "possible" sans chiffre)
+        ko: (() => {
+            try {
+                const k = r.kochance();
+                return { n: k.n, chance: k.chance === undefined ? -1 : k.chance, texte: k.text };
+            } catch (e) { return null; }
+        })(),
         description: (() => { try { return r.desc(); } catch (e) { return ''; } })(),
     });
 }

@@ -71,7 +71,7 @@ public final class ComparaisonShowdown {
 
         int[] attendus = entiers(o.getAsJsonArray("degatsAttendus"));
         int[] obtenus = r.immunise || r.degatsParRoll.length == 0 ? new int[16] : r.degatsParRoll;
-        if (Arrays.equals(attendus, obtenus)) return null;
+        if (Arrays.equals(attendus, obtenus)) return verifierKO(o, obtenus, attaquant, defenseur, capacite, terrain);
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n  Showdown  : ").append(Arrays.toString(attendus));
@@ -80,6 +80,21 @@ public final class ComparaisonShowdown {
         ecartsDeStats(sb, "attaquant", attaquant, o.getAsJsonObject("attaquant"));
         ecartsDeStats(sb, "défenseur", defenseur, o.getAsJsonObject("defenseur"));
         return sb.toString();
+    }
+
+    /** Chances de K.O. contre celles de Showdown (n et probabilité), null si identiques. */
+    private static String verifierKO(JsonObject o, int[] degats, Pokemon attaquant, Pokemon defenseur,
+                                     Move capacite, Field terrain) {
+        if (!o.has("ko") || o.get("ko").isJsonNull()) return null;
+        JsonObject ko = o.getAsJsonObject("ko");
+        int nAttendu = ko.get("n").getAsInt();
+        double chanceAttendue = ko.get("chance").getAsDouble();
+        ChancesKO.Resultat k = ChancesKO.calculer(degats, attaquant, defenseur, capacite, terrain, 0);
+        boolean memeN = k.n() == nAttendu;
+        boolean memeChance = chanceAttendue < 0 ? k.possible() : (!k.possible() && Math.abs(k.chance() - chanceAttendue) < 1e-9);
+        if (memeN && memeChance) return null;
+        return "\n  Chances de K.O. : Showdown " + ko.get("texte").getAsString() + " (n=" + nAttendu + ", "
+            + chanceAttendue + "), TropiCalc " + k.texte() + " (n=" + k.n() + ", " + k.chance() + ")";
     }
 
     // --- Construction des objets du calcul ---

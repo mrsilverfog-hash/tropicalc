@@ -138,6 +138,11 @@
    126,
    127
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.9998626708984375,
+   "texte": "99.9% chance to 4HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Great Tusk: 108-127 (24.8 - 29.2%) -- 99.9% chance to 4HKO"
  },
  {
@@ -279,6 +284,11 @@
    580,
    588
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran: 496-588 (128.4 - 152.3%) -- guaranteed OHKO"
  },
  {
@@ -420,6 +430,11 @@
    59,
    60
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ Atk Garchomp Dragon Claw vs. 252 HP / 252+ Def Corviknight: 51-60 (12.7 - 15%) -- possible 7HKO"
  },
  {
@@ -561,6 +576,11 @@
    177,
    180
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Great Tusk Close Combat vs. 252 HP / 252+ Def Corviknight: 153-180 (38.2 - 45%) -- guaranteed 3HKO"
  },
  {
@@ -702,6 +722,11 @@
    61,
    62
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ SpA Gholdengo Focus Blast vs. 252 HP / 252+ SpD Dragonite: 53-62 (13.7 - 16%) -- possible 7HKO"
  },
  {
@@ -843,6 +868,11 @@
    147,
    148
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252 SpA Dragapult Shadow Ball vs. 4 HP / 0 SpD Garchomp: 126-148 (35.1 - 41.3%) -- guaranteed 3HKO"
  },
  {
@@ -984,6 +1014,11 @@
    164,
    168
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Gholdengo: 140-168 (72.1 - 86.5%) -- guaranteed 2HKO"
  },
  {
@@ -1125,6 +1160,11 @@
    99,
    100
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "252+ Atk Kingambit Kowtow Cleave vs. 252 HP / 252+ Def Toxapex: 84-100 (27.6 - 32.8%) -- guaranteed 4HKO"
  },
  {
@@ -1266,6 +1306,11 @@
    452,
    458
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Kingambit Sucker Punch vs. 252 HP / 4 Def Gengar: 390-458 (120.3 - 141.3%) -- guaranteed OHKO"
  },
  {
@@ -1407,6 +1452,7 @@
    0,
    0
   ],
+  "ko": null,
   "description": ""
  },
  {
@@ -1548,6 +1594,7 @@
    0,
    0
   ],
+  "ko": null,
   "description": ""
  },
  {
@@ -1689,6 +1736,11 @@
    168,
    170
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.78515625,
+   "texte": "78.5% chance to 2HKO"
+  },
   "description": "252+ SpA Kyurem Freeze-Dry vs. 252 HP / 252+ SpD Toxapex: 144-170 (47.3 - 55.9%) -- 78.5% chance to 2HKO"
  },
  {
@@ -1830,6 +1882,11 @@
    868,
    880
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Choice Band Garchomp Earthquake vs. 252 HP / 252+ Def Heatran: 744-880 (192.7 - 227.9%) -- guaranteed OHKO"
  },
  {
@@ -1971,6 +2028,11 @@
    276,
    279
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Choice Specs Gholdengo Make It Rain vs. 252 HP / 252+ SpD Dragonite: 237-279 (61.3 - 72.2%) -- guaranteed 2HKO"
  },
  {
@@ -2112,6 +2174,11 @@
    281,
    283
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Life Orb Dragapult Shadow Ball vs. 252 HP / 252+ SpD Gholdengo: 242-283 (64 - 74.8%) -- guaranteed 2HKO"
  },
  {
@@ -2253,6 +2320,11 @@
    768,
    782
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Expert Belt Great Tusk Close Combat vs. 252 HP / 252+ Def Kingambit: 662-782 (163.8 - 193.5%) -- guaranteed OHKO"
  },
  {
@@ -2394,6 +2466,11 @@
    219,
    222
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.98046875,
+   "texte": "98% chance to 2HKO"
+  },
   "description": "252+ Atk Great Tusk Headlong Rush vs. 252 HP / 252+ Def Dragapult: 187-222 (49.2 - 58.4%) -- 98% chance to 2HKO"
  },
  {
@@ -2534,6 +2611,11 @@
    386,
    392
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Charcoal Cinderace Pyro Ball vs. 252 HP / 252+ Def Corviknight: 332-392 (83 - 98%) -- guaranteed 2HKO"
  },
  {
@@ -2675,6 +2757,11 @@
    306,
    312
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Mystic Water Primarina Surf vs. 252 HP / 252+ SpD Heatran: 264-312 (68.3 - 80.8%) -- guaranteed 2HKO"
  },
  {
@@ -2816,6 +2903,11 @@
    127,
    129
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "252+ Atk Muscle Band Iron Hands Drain Punch vs. 252 HP / 252+ Def Corviknight: 109-129 (27.2 - 32.2%) -- guaranteed 4HKO"
  },
  {
@@ -2957,6 +3049,11 @@
    123,
    124
   ],
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
   "description": "252+ SpA Wise Glasses Iron Moth Fiery Dance vs. 252 HP / 252+ SpD Vessel of Ruin Ting-Lu: 105-124 (20.4 - 24.1%) -- guaranteed 5HKO"
  },
  {
@@ -3098,6 +3195,11 @@
    103,
    105
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.5469512939453125,
+   "texte": "54.7% chance to 4HKO"
+  },
   "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Assault Vest Iron Treads: 88-105 (22.9 - 27.3%) -- 54.7% chance to 4HKO"
  },
  {
@@ -3238,6 +3340,11 @@
    85,
    87
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Eviolite Dusclops: 73-87 (25.7 - 30.6%) -- guaranteed 4HKO"
  },
  {
@@ -3379,6 +3486,11 @@
    452,
    458
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.8125,
+   "texte": "81.3% chance to OHKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Corviknight in Sun: 390-458 (97.5 - 114.5%) -- 81.3% chance to OHKO"
  },
  {
@@ -3520,6 +3632,11 @@
    126,
    128
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "252+ SpA Primarina Surf vs. 252 HP / 252+ SpD Heatran in Sun: 108-128 (27.9 - 33.1%) -- guaranteed 4HKO"
  },
  {
@@ -3661,6 +3778,11 @@
    222,
    225
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.83984375,
+   "texte": "84% chance to 2HKO"
+  },
   "description": "252+ SpA Primarina Surf vs. 252 HP / 252+ SpD Corviknight in Rain: 190-225 (47.5 - 56.2%) -- 84% chance to 2HKO"
  },
  {
@@ -3802,6 +3924,11 @@
    150,
    152
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.931640625,
+   "texte": "93.2% chance to 3HKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Corviknight in Rain: 128-152 (32 - 38%) -- 93.2% chance to 3HKO"
  },
  {
@@ -3943,6 +4070,11 @@
    188,
    192
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Primarina Moonblast vs. 252 HP / 252+ SpD Tyranitar in Sand: 162-192 (40 - 47.5%) -- guaranteed 3HKO"
  },
  {
@@ -4084,6 +4216,11 @@
    108,
    109
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.0001678466796875,
+   "texte": "0.1% chance to 4HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Baxcalibur in Snow: 93-109 (21.4 - 25.1%) -- 0.1% chance to 4HKO"
  },
  {
@@ -4224,6 +4361,11 @@
    366,
    372
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Ninetales Weather Ball (100 BP Fire) vs. 252 HP / 252+ SpD Corviknight in Sun: 314-372 (78.5 - 93%) -- guaranteed 2HKO"
  },
  {
@@ -4365,6 +4507,11 @@
    468,
    474
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Quark Drive Iron Hands Wild Charge vs. 252 HP / 252+ Def Corviknight in Electric Terrain: 402-474 (100.5 - 118.5%) -- guaranteed OHKO"
  },
  {
@@ -4506,6 +4653,11 @@
    292,
    300
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO after Grassy Terrain recovery"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran in Grassy Terrain: 252-300 (65.2 - 77.7%) -- guaranteed 2HKO after Grassy Terrain recovery"
  },
  {
@@ -4647,6 +4799,11 @@
    246,
    248
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.92578125,
+   "texte": "92.6% chance to 2HKO"
+  },
   "description": "252+ Atk Iron Boulder Zen Headbutt vs. 252 HP / 252+ Def Great Tusk in Psychic Terrain: 210-248 (48.3 - 57.1%) -- 92.6% chance to 2HKO"
  },
  {
@@ -4788,6 +4945,11 @@
    182,
    186
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Dragapult Draco Meteor vs. 252 HP / 252+ SpD Garchomp in Misty Terrain: 156-186 (37.1 - 44.2%) -- guaranteed 3HKO"
  },
  {
@@ -4929,6 +5091,11 @@
    132,
    133
   ],
+  "ko": {
+   "n": 5,
+   "chance": -1,
+   "texte": "possible 5HKO"
+  },
   "description": "252+ Atk Corviknight Brave Bird vs. 252 HP / 252+ Def Iron Hands: 112-133 (21.8 - 25.9%) -- possible 5HKO"
  },
  {
@@ -5070,6 +5237,11 @@
    290,
    294
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran through Reflect: 248-294 (64.2 - 76.1%) -- guaranteed 2HKO"
  },
  {
@@ -5211,6 +5383,11 @@
    62,
    63
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Dragonite through Light Screen: 53-63 (13.7 - 16.3%) -- possible 7HKO"
  },
  {
@@ -5352,6 +5529,11 @@
    187,
    190
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Great Tusk on a critical hit: 160-190 (36.8 - 43.7%) -- guaranteed 3HKO"
  },
  {
@@ -5493,6 +5675,11 @@
    868,
    880
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran on a critical hit: 744-880 (192.7 - 227.9%) -- guaranteed OHKO"
  },
  {
@@ -5634,6 +5821,11 @@
    255,
    258
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "+2 252+ Atk Kingambit Kowtow Cleave vs. 252 HP / 252+ Def Corviknight: 219-258 (54.7 - 64.5%) -- guaranteed 2HKO"
  },
  {
@@ -5775,6 +5967,11 @@
    187,
    190
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. -1 252 HP / 252+ Def Great Tusk: 160-190 (36.8 - 43.7%) -- guaranteed 3HKO"
  },
  {
@@ -5916,6 +6113,11 @@
    292,
    300
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. +2 252 HP / 252+ Def Heatran: 252-300 (65.2 - 77.7%) -- guaranteed 2HKO"
  },
  {
@@ -6057,6 +6259,11 @@
    868,
    880
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran on a critical hit: 744-880 (192.7 - 227.9%) -- guaranteed OHKO"
  },
  {
@@ -6198,6 +6405,11 @@
    868,
    880
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran on a critical hit: 744-880 (192.7 - 227.9%) -- guaranteed OHKO"
  },
  {
@@ -6339,6 +6551,11 @@
    290,
    294
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk burned Garchomp Earthquake vs. 252 HP / 252+ Def Heatran: 248-294 (64.2 - 76.1%) -- guaranteed 2HKO"
  },
  {
@@ -6479,6 +6696,11 @@
    172,
    174
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Adaptability Porygon-Z Hyper Beam vs. 252 HP / 252+ SpD Corviknight: 147-174 (36.7 - 43.5%) -- guaranteed 3HKO"
  },
  {
@@ -6620,6 +6842,11 @@
    47,
    48
   ],
+  "ko": {
+   "n": 8,
+   "chance": -1,
+   "texte": "possible 8HKO"
+  },
   "description": "252+ Atk Technician Scizor Bullet Punch vs. 252 HP / 252+ Def Gholdengo: 40-48 (10.5 - 12.6%) -- possible 8HKO"
  },
  {
@@ -6761,6 +6988,11 @@
    308,
    314
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Huge Power Azumarill Play Rough vs. 252 HP / 252+ Def Dragonite: 266-314 (68.9 - 81.3%) -- guaranteed 2HKO"
  },
  {
@@ -6902,6 +7134,11 @@
    343,
    348
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Guts Ursaluna Headlong Rush vs. 252 HP / 252+ Def Dragapult: 295-348 (77.6 - 91.5%) -- guaranteed 2HKO"
  },
  {
@@ -7043,6 +7280,11 @@
    73,
    74
   ],
+  "ko": {
+   "n": 6,
+   "chance": 1,
+   "texte": "guaranteed 6HKO"
+  },
   "description": "252+ Atk Meowscarada Flower Trick vs. 252 HP / 252+ Def Gholdengo on a critical hit: 63-74 (16.6 - 19.5%) -- guaranteed 6HKO"
  },
  {
@@ -7184,6 +7426,11 @@
    278,
    282
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Iron Fist Iron Hands Thunder Punch vs. 252 HP / 252+ Def Corviknight: 236-282 (59 - 70.5%) -- guaranteed 2HKO"
  },
  {
@@ -7325,6 +7572,11 @@
    384,
    390
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.25,
+   "texte": "25% chance to OHKO"
+  },
   "description": "252+ Atk Strong Jaw Tyranitar Crunch vs. 252 HP / 252+ Def Gholdengo: 330-390 (87.3 - 103.1%) -- 25% chance to OHKO"
  },
  {
@@ -7466,6 +7718,11 @@
    696,
    708
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Sharpness Gallade Sacred Sword vs. 252 HP / 252+ Def Kingambit: 600-708 (148.5 - 175.2%) -- guaranteed OHKO"
  },
  {
@@ -7607,6 +7864,11 @@
    134,
    135
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.007080078125,
+   "texte": "0.7% chance to 3HKO"
+  },
   "description": "252+ Atk Hustle Dragonite Outrage vs. 252 HP / 252+ Def Corviknight: 114-135 (28.5 - 33.7%) -- 0.7% chance to 3HKO"
  },
  {
@@ -7748,6 +8010,11 @@
    50,
    50
   ],
+  "ko": {
+   "n": 8,
+   "chance": -1,
+   "texte": "possible 8HKO"
+  },
   "description": "252+ SpA Tinted Lens Venomoth Bug Buzz vs. 252 HP / 252+ SpD Heatran: 42-50 (10.8 - 12.9%) -- possible 8HKO"
  },
  {
@@ -7889,6 +8156,11 @@
    78,
    79
   ],
+  "ko": {
+   "n": 6,
+   "chance": 1,
+   "texte": "guaranteed 6HKO"
+  },
   "description": "252+ Atk Sand Force Excadrill Iron Head vs. 252 HP / 252+ Def Corviknight: 67-79 (16.7 - 19.7%) -- guaranteed 6HKO"
  },
  {
@@ -8029,6 +8301,11 @@
    326,
    332
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Transistor Regieleki Thunderbolt vs. 252 HP / 252+ SpD Corviknight: 282-332 (70.5 - 83%) -- guaranteed 2HKO"
  },
  {
@@ -8169,6 +8446,11 @@
    136,
    138
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.052001953125,
+   "texte": "5.2% chance to 3HKO"
+  },
   "description": "252+ SpA Dragon's Maw Regidrago Draco Meteor vs. 252 HP / 252+ SpD Corviknight: 117-138 (29.2 - 34.5%) -- 5.2% chance to 3HKO"
  },
  {
@@ -8309,6 +8591,11 @@
    181,
    184
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Rocky Payload Garganacl Stone Edge vs. 252 HP / 252+ Def Corviknight: 156-184 (39 - 46%) -- guaranteed 3HKO"
  },
  {
@@ -8450,6 +8737,11 @@
    58,
    59
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ Atk Steelworker Dhelmise Anchor Shot vs. 252 HP / 252+ Def Corviknight: 50-59 (12.5 - 14.7%) -- possible 7HKO"
  },
  {
@@ -8591,6 +8883,11 @@
    165,
    168
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Water Bubble Araquanid Liquidation vs. 252 HP / 252+ Def Corviknight: 142-168 (35.5 - 42%) -- guaranteed 3HKO"
  },
  {
@@ -8731,6 +9028,11 @@
    290,
    294
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Pixilate Sylveon Hyper Voice vs. 252 HP / 252+ SpD Dragonite: 248-294 (64.2 - 76.1%) -- guaranteed 2HKO"
  },
  {
@@ -8872,6 +9174,11 @@
    368,
    374
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Aerilate Salamence Double-Edge vs. 252 HP / 252+ Def Great Tusk: 318-374 (73.2 - 86.1%) -- guaranteed 2HKO"
  },
  {
@@ -9012,6 +9319,11 @@
    486,
    492
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Blaze Cinderace Pyro Ball vs. 252 HP / 252+ Def Corviknight: 416-492 (104 - 123%) -- guaranteed OHKO"
  },
  {
@@ -9153,6 +9465,11 @@
    338,
    344
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Reckless Staraptor Brave Bird vs. 252 HP / 252+ Def Great Tusk: 290-344 (66.8 - 79.2%) -- guaranteed 2HKO"
  },
  {
@@ -9293,6 +9610,11 @@
    144,
    145
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.58203125,
+   "texte": "58.2% chance to 3HKO"
+  },
   "description": "252+ SpA Mega Launcher Clawitzer Water Pulse vs. 252 HP / 252+ SpD Corviknight: 123-145 (30.7 - 36.2%) -- 58.2% chance to 3HKO"
  },
  {
@@ -9434,6 +9756,11 @@
    318,
    324
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Punk Rock Toxtricity Overdrive vs. 252 HP / 252+ SpD Corviknight: 272-324 (68 - 81%) -- guaranteed 2HKO"
  },
  {
@@ -9575,6 +9902,11 @@
    156,
    159
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Sword of Ruin Chien-Pao Icicle Crash vs. 252 HP / 252+ Def Corviknight: 135-159 (33.7 - 39.7%) -- guaranteed 3HKO"
  },
  {
@@ -9716,6 +10048,11 @@
    184,
    187
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Beads of Ruin Chi-Yu Dark Pulse vs. 252 HP / 252+ SpD Corviknight: 159-187 (39.7 - 46.7%) -- guaranteed 3HKO"
  },
  {
@@ -9857,6 +10194,11 @@
    57,
    57
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Tablets of Ruin Wo-Chien: 48-57 (12.8 - 15.2%) -- possible 7HKO"
  },
  {
@@ -9998,6 +10340,11 @@
    54,
    54
   ],
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
   "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Vessel of Ruin Ting-Lu: 46-54 (8.9 - 10.5%)"
  },
  {
@@ -10139,6 +10486,11 @@
    104,
    106
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.6852569580078125,
+   "texte": "68.5% chance to 4HKO"
+  },
   "description": "252+ Atk Garchomp Stone Edge vs. 252 HP / 252+ Def Multiscale Dragonite: 90-106 (23.3 - 27.4%) -- 68.5% chance to 4HKO"
  },
  {
@@ -10280,6 +10632,11 @@
    435,
    441
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.8125,
+   "texte": "81.3% chance to OHKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Filter Heatran: 372-441 (96.3 - 114.2%) -- 81.3% chance to OHKO"
  },
  {
@@ -10420,6 +10777,11 @@
    194,
    198
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Cinderace Pyro Ball vs. 252 HP / 252+ Def Thick Fat Mamoswine: 168-198 (39.6 - 46.6%) -- guaranteed 3HKO"
  },
  {
@@ -10560,6 +10922,11 @@
    103,
    105
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Fur Coat Persian-Alola: 88-105 (26.3 - 31.4%) -- guaranteed 4HKO"
  },
  {
@@ -10701,6 +11068,11 @@
    66,
    67
   ],
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
   "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Ice Scales Frosmoth: 57-67 (16.5 - 19.4%) -- possible 6HKO"
  },
  {
@@ -10841,6 +11213,11 @@
    27,
    27
   ],
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
   "description": "252+ Atk Iron Hands Drain Punch vs. 252 HP / 252+ Def Fluffy Dachsbun: 23-27 (7.2 - 8.4%)"
  },
  {
@@ -10982,6 +11359,7 @@
    0,
    0
   ],
+  "ko": null,
   "description": ""
  },
  {
@@ -11123,6 +11501,11 @@
    122,
    126
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.7421875,
+   "texte": "74.2% chance to 3HKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Heatproof Bronzong: 104-126 (30.7 - 37.2%) -- 74.2% chance to 3HKO"
  },
  {
@@ -11264,6 +11647,11 @@
    57,
    58
   ],
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Water Bubble Araquanid: 49-58 (14.4 - 17%) -- possible 6HKO"
  },
  {
@@ -11405,6 +11793,11 @@
    312,
    318
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Kingambit Knock Off (97.5 BP) vs. 252 HP / 252+ Def Gholdengo: 270-318 (71.4 - 84.1%) -- guaranteed 2HKO"
  },
  {
@@ -11546,6 +11939,11 @@
    210,
    212
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.8125,
+   "texte": "81.3% chance to 2HKO"
+  },
   "description": "252+ Atk Kingambit Knock Off vs. 252 HP / 252+ Def Gholdengo: 180-212 (47.6 - 56%) -- 81.3% chance to 2HKO"
  },
  {
@@ -11687,6 +12085,11 @@
    210,
    212
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Corviknight Acrobatics (110 BP) vs. 252 HP / 252+ Def Great Tusk: 180-212 (41.4 - 48.8%) -- guaranteed 3HKO"
  },
  {
@@ -11828,6 +12231,11 @@
    161,
    163
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Guts Ursaluna Facade (140 BP) vs. 252 HP / 252+ Def Corviknight: 138-163 (34.5 - 40.7%) -- guaranteed 3HKO"
  },
  {
@@ -11969,6 +12377,11 @@
    416,
    422
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.6875,
+   "texte": "68.8% chance to OHKO"
+  },
   "description": "252+ SpA Gengar Hex (130 BP) vs. 252 HP / 252+ SpD Gholdengo: 356-422 (94.1 - 111.6%) -- 68.8% chance to OHKO"
  },
  {
@@ -12110,6 +12523,11 @@
    368,
    374
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ SpA Primarina Brine (130 BP) vs. 252 HP / 252+ SpD Heatran: 318-374 (82.3 - 96.8%) -- guaranteed OHKO"
  },
  {
@@ -12251,6 +12669,11 @@
    81,
    83
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO after poison damage"
+  },
   "description": "252+ SpA Toxapex Venoshock (130 BP) vs. 252 HP / 252+ SpD Great Tusk: 70-83 (16.1 - 19.1%) -- guaranteed 4HKO after poison damage"
  },
  {
@@ -12391,6 +12814,11 @@
    93,
    95
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.0001373291015625,
+   "texte": "0.1% chance to 4HKO"
+  },
   "description": "252+ Atk Copperajah Heavy Slam (120 BP) vs. 252 HP / 252+ Def Gholdengo: 80-95 (21.1 - 25.1%) -- 0.1% chance to 4HKO"
  },
  {
@@ -12532,6 +12960,11 @@
    540,
    544
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Great Tusk Low Kick (100 BP) vs. 252 HP / 252+ Def Kingambit: 460-544 (113.8 - 134.6%) -- guaranteed OHKO"
  },
  {
@@ -12673,6 +13106,11 @@
    217,
    220
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.9609375,
+   "texte": "96.1% chance to 2HKO"
+  },
   "description": "252+ Atk Ferrothorn Gyro Ball (150 BP) vs. 252 HP / 252+ Def Dragapult: 186-220 (48.9 - 57.8%) -- 96.1% chance to 2HKO"
  },
  {
@@ -12813,6 +13251,11 @@
    294,
    296
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Transistor Regieleki Electro Ball (80 BP) vs. 252 HP / 252+ SpD Corviknight: 252-296 (63 - 74%) -- guaranteed 2HKO"
  },
  {
@@ -12953,6 +13396,11 @@
    444,
    450
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.6875,
+   "texte": "68.8% chance to OHKO"
+  },
   "description": "252+ SpA Typhlosion Eruption (150 BP) vs. 252 HP / 252+ SpD Corviknight: 380-450 (95 - 112.5%) -- 68.8% chance to OHKO"
  },
  {
@@ -13093,6 +13541,11 @@
    224,
    228
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.875,
+   "texte": "87.5% chance to 2HKO"
+  },
   "description": "252+ SpA Typhlosion Eruption (75 BP) vs. 252 HP / 252+ SpD Corviknight: 192-228 (48 - 57%) -- 87.5% chance to 2HKO"
  },
  {
@@ -13233,6 +13686,11 @@
    878,
    888
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "+2 252+ SpA Espeon Stored Power (100 BP) vs. 252 HP / 252+ SpD Great Tusk: 752-888 (173.2 - 204.6%) -- guaranteed OHKO"
  },
  {
@@ -13374,6 +13832,11 @@
    58,
    59
   ],
+  "ko": {
+   "n": 8,
+   "chance": -1,
+   "texte": "possible 8HKO"
+  },
   "description": "252+ Def Corviknight Body Press vs. 252 HP / 252+ Def Great Tusk: 50-59 (11.5 - 13.5%) -- possible 8HKO"
  },
  {
@@ -13515,6 +13978,11 @@
    318,
    322
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "+1 252+ Atk Grimmsnarl Foul Play vs. 4 HP / 0 Def Dragonite: 273-322 (84.2 - 99.3%) -- guaranteed 2HKO"
  },
  {
@@ -13654,6 +14122,11 @@
    711,
    718
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.0625,
+   "texte": "6.3% chance to OHKO"
+  },
   "description": "252+ SpA Alakazam Psyshock vs. 252 HP / 4 Def Blissey: 610-718 (85.4 - 100.5%) -- 6.3% chance to OHKO"
  },
  {
@@ -13795,6 +14268,11 @@
    170,
    174
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Iron Hands Rising Voltage (70 BP) vs. 252 HP / 252+ SpD Corviknight in Electric Terrain: 146-174 (36.5 - 43.5%) -- guaranteed 3HKO"
  },
  {
@@ -13936,6 +14414,11 @@
    590,
    596
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ SpA Indeedee Expanding Force (120 BP) vs. 252 HP / 252+ SpD Great Tusk in Psychic Terrain: 506-596 (116.5 - 137.3%) -- guaranteed OHKO"
  },
  {
@@ -14077,6 +14560,11 @@
    386,
    392
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Quark Drive Iron Leaves Psyblade (120 BP) vs. 252 HP / 252+ Def Great Tusk in Electric Terrain: 332-392 (76.4 - 90.3%) -- guaranteed 2HKO"
  },
  {
@@ -14218,6 +14706,11 @@
    69,
    69
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO after poison damage"
+  },
   "description": "252+ Atk Overqwil Barb Barrage (120 BP) vs. 252 HP / 252+ Def Great Tusk: 59-69 (13.5 - 15.8%) -- guaranteed 4HKO after poison damage"
  },
  {
@@ -14359,6 +14852,11 @@
    54,
    55
   ],
+  "ko": {
+   "n": 8,
+   "chance": -1,
+   "texte": "possible 8HKO"
+  },
   "description": "252+ Atk Ursaluna Facade vs. 252 HP / 252+ Def Corviknight: 46-55 (11.5 - 13.7%) -- possible 8HKO"
  },
  {
@@ -14500,6 +14998,11 @@
    348,
    354
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Pelipper Weather Ball (100 BP Water) vs. 252 HP / 252+ SpD Heatran in Rain: 300-354 (77.7 - 91.7%) -- guaranteed 2HKO"
  },
  {
@@ -14641,6 +15144,11 @@
    724,
    736
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Koraidon Collision Course (133.3251953125 BP) vs. 252 HP / 252+ Def Kingambit: 624-736 (154.4 - 182.1%) -- guaranteed OHKO"
  },
  {
@@ -14781,6 +15289,11 @@
    100,
    100
   ],
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
   "description": "Blissey Seismic Toss vs. 252 HP Corviknight: 100-100 (25 - 25%) -- guaranteed 4HKO"
  },
  {
@@ -14922,6 +15435,11 @@
    480,
    486
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ Atk Orichalcum Pulse Koraidon Flare Blitz vs. 252 HP / 252+ Def Corviknight in Sun: 412-486 (103 - 121.5%) -- guaranteed OHKO"
  },
  {
@@ -15063,6 +15581,11 @@
    794,
    804
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ SpA Hadron Engine Miraidon Electro Drift (133.3251953125 BP) vs. 252 HP / 252+ SpD Corviknight in Electric Terrain: 680-804 (170 - 201%) -- guaranteed OHKO"
  },
  {
@@ -15204,6 +15727,11 @@
    97,
    99
   ],
+  "ko": {
+   "n": 5,
+   "chance": -1,
+   "texte": "possible 5HKO"
+  },
   "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Protosynthesis Great Tusk: 84-99 (19.3 - 22.8%) -- possible 5HKO"
  },
  {
@@ -15345,6 +15873,11 @@
    97,
    99
   ],
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
   "description": "252+ SpA Quark Drive Iron Valiant Moonblast vs. 252 HP / 252+ SpD Corviknight: 84-99 (21 - 24.7%) -- guaranteed 5HKO"
  },
  {
@@ -15486,6 +16019,11 @@
    178,
    181
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ SpA Dark Aura Yveltal Dark Pulse vs. 252 HP / 252+ SpD Corviknight: 153-181 (38.2 - 45.2%) -- guaranteed 3HKO"
  },
  {
@@ -15627,6 +16165,11 @@
    220,
    223
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Dry Skin Toxicroak: 189-223 (51 - 60.2%) -- guaranteed 2HKO"
  },
  {
@@ -15767,6 +16310,11 @@
    66,
    67
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Purifying Salt Garganacl: 57-67 (14.1 - 16.5%) -- possible 7HKO"
  },
  {
@@ -15907,6 +16455,11 @@
    312,
    318
   ],
+  "ko": {
+   "n": 1,
+   "chance": 0.0625,
+   "texte": "6.3% chance to OHKO"
+  },
   "description": "252+ SpA Heatran Flamethrower vs. 252 HP / 252+ SpD Fluffy Dachsbun: 270-318 (84.9 - 100%) -- 6.3% chance to OHKO"
  },
  {
@@ -16048,6 +16601,11 @@
    334,
    339
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ SpA Sniper Kingdra Hydro Pump vs. 252 HP / 252+ SpD Corviknight on a critical hit: 288-339 (72 - 84.7%) -- guaranteed 2HKO"
  },
  {
@@ -16189,6 +16747,11 @@
    100,
    102
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.002166748046875,
+   "texte": "0.2% chance to 4HKO"
+  },
   "description": "252+ SpA Heracross Focus Blast vs. 252 HP / 252+ SpD Corviknight: 85-102 (21.2 - 25.5%) -- 0.2% chance to 4HKO"
  },
  {
@@ -16329,6 +16892,11 @@
    196,
    199
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Gorilla Tactics Darmanitan-Galar Icicle Crash vs. 252 HP / 252+ Def Corviknight: 169-199 (42.2 - 49.7%) -- guaranteed 3HKO"
  },
  {
@@ -16470,6 +17038,11 @@
    738,
    746
   ],
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
   "description": "252+ SpA Solar Power Houndoom Fire Blast vs. 252 HP / 252+ SpD Corviknight in Sun: 632-746 (158 - 186.5%) -- guaranteed OHKO"
  },
  {
@@ -16610,6 +17183,11 @@
    161,
    163
   ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
   "description": "252+ Atk Toxic Boost Zangoose Close Combat vs. 252 HP / 252+ Def Corviknight: 138-163 (34.5 - 40.7%) -- guaranteed 3HKO"
  },
  {
@@ -16751,6 +17329,11 @@
    140,
    142
   ],
+  "ko": {
+   "n": 3,
+   "chance": 0.703125,
+   "texte": "70.3% chance to 3HKO"
+  },
   "description": "252+ Atk Garchomp Stone Edge vs. 252 HP / 252+ Def Marvel Scale Dragonite: 120-142 (31 - 36.7%) -- 70.3% chance to 3HKO"
  },
  {
@@ -16892,6 +17475,11 @@
    83,
    84
   ],
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
   "description": "252+ SpA Sheer Force Landorus Sludge Wave vs. 252 HP / 252+ SpD Great Tusk: 71-84 (16.3 - 19.3%) -- possible 6HKO"
  },
  {
@@ -17032,6 +17620,11 @@
    121,
    123
   ],
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
   "description": "252+ Atk Kingambit Kowtow Cleave vs. 252 HP / 252+ Def Unaware Dondozo: 103-123 (20.4 - 24.4%) -- guaranteed 5HKO"
  },
  {
@@ -17173,6 +17766,11 @@
    86,
    87
   ],
+  "ko": {
+   "n": 5,
+   "chance": -1,
+   "texte": "possible 5HKO"
+  },
   "description": "+1 252+ Def Corviknight Body Press vs. 252 HP / 252+ Def Great Tusk: 73-87 (16.8 - 20%) -- possible 5HKO"
  },
  {
@@ -17314,6 +17912,11 @@
    114,
    116
   ],
+  "ko": {
+   "n": 4,
+   "chance": 0.2835693359375,
+   "texte": "28.4% chance to 4HKO"
+  },
   "description": "252+ Atk Hustle burned Dragonite Outrage vs. 252 HP / 252+ Def Great Tusk: 98-116 (22.5 - 26.7%) -- 28.4% chance to 4HKO"
  },
  {
@@ -17455,6 +18058,11 @@
    105,
    107
   ],
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
   "description": "252+ Atk Choice Band Tough Claws Meowscarada Knock Off (97.5 BP) vs. 252 HP / 252+ Def Great Tusk: 90-107 (20.7 - 24.6%) -- guaranteed 5HKO"
  },
  {
@@ -17596,6 +18204,11 @@
    99,
    101
   ],
+  "ko": {
+   "n": 5,
+   "chance": -1,
+   "texte": "possible 5HKO"
+  },
   "description": "252+ Atk Life Orb Technician Scizor Bullet Punch vs. 252 HP / 252+ Def Great Tusk: 86-101 (19.8 - 23.2%) -- possible 5HKO"
  },
  {
@@ -17737,6 +18350,11 @@
    306,
    312
   ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
   "description": "252+ Atk Punching Glove Iron Fist Iron Hands Thunder Punch vs. 252 HP / 252+ Def Corviknight: 264-312 (66 - 78%) -- guaranteed 2HKO"
  },
  {
@@ -17878,6 +18496,11 @@
    189,
    192
   ],
+  "ko": {
+   "n": 2,
+   "chance": 0.01171875,
+   "texte": "1.2% chance to 2HKO"
+  },
   "description": "252+ SpA Analytic Magnezone Flash Cannon vs. 252 HP / 252+ SpD Dragapult: 162-192 (42.6 - 50.5%) -- 1.2% chance to 2HKO"
  },
  {
@@ -18019,7 +18642,1326 @@
    47,
    48
   ],
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
   "description": "252+ SpA Magnezone Flash Cannon vs. 252 HP / 252+ SpD Toxapex: 40-48 (13.1 - 15.7%) -- possible 7HKO"
+ },
+ {
+  "nom": "KO Restes",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": "leftovers",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "stoneedge",
+   "type": "rock",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   84,
+   85,
+   86,
+   87,
+   88,
+   89,
+   90,
+   91,
+   92,
+   93,
+   94,
+   95,
+   96,
+   97,
+   98,
+   99
+  ],
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ Atk Garchomp Stone Edge vs. 252 HP / 252+ Def Corviknight: 84-99 (21 - 24.7%) -- possible 6HKO"
+ },
+ {
+  "nom": "KO Restes 2HKO",
+  "attaquant": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "innerfocus",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 324,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 324,
+    "atk": 403,
+    "def": 226,
+    "spa": 212,
+    "spd": 236,
+    "spe": 259
+   }
+  },
+  "defenseur": {
+   "espece": "toxapex",
+   "niveau": 100,
+   "types": [
+    "poison",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 63,
+    "def": 152,
+    "spa": 53,
+    "spd": 142,
+    "spe": 35
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "regenerator",
+   "objet": "leftovers",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 304,
+   "poidsKg": 14.5,
+   "statsShowdown": {
+    "hp": 304,
+    "atk": 162,
+    "def": 443,
+    "spa": 127,
+    "spd": 321,
+    "spe": 106
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   132,
+   134,
+   134,
+   136,
+   138,
+   140,
+   140,
+   142,
+   144,
+   146,
+   148,
+   148,
+   150,
+   152,
+   154,
+   156
+  ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO after Leftovers recovery"
+  },
+  "description": "252+ Atk Dragonite Earthquake vs. 252 HP / 252+ Def Toxapex: 132-156 (43.4 - 51.3%) -- guaranteed 3HKO after Leftovers recovery"
+ },
+ {
+  "nom": "KO brûlé",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "brn",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   118,
+   118,
+   120,
+   121,
+   123,
+   124,
+   126,
+   127,
+   129,
+   130,
+   132,
+   133,
+   135,
+   136,
+   138,
+   139
+  ],
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO after burn damage"
+  },
+  "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Garchomp: 118-139 (28 - 33%) -- guaranteed 3HKO after burn damage"
+ },
+ {
+  "nom": "KO empoisonné",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "psn",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 268,
+    "def": 299,
+    "spa": 142,
+    "spd": 225,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   153,
+   156,
+   157,
+   159,
+   160,
+   162,
+   165,
+   166,
+   168,
+   169,
+   171,
+   174,
+   175,
+   177,
+   178,
+   181
+  ],
+  "ko": {
+   "n": 2,
+   "chance": 0.7421875,
+   "texte": "74.2% chance to 2HKO after poison damage"
+  },
+  "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Great Tusk: 153-181 (35.2 - 41.7%) -- 74.2% chance to 2HKO after poison damage"
+ },
+ {
+  "nom": "KO Boue Noire hors Poison",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "protosynthesis",
+   "objet": "blacksludge",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 268,
+    "def": 299,
+    "spa": 142,
+    "spd": 225,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   153,
+   156,
+   157,
+   159,
+   160,
+   162,
+   165,
+   166,
+   168,
+   169,
+   171,
+   174,
+   175,
+   177,
+   178,
+   181
+  ],
+  "ko": {
+   "n": 2,
+   "chance": 0.7421875,
+   "texte": "74.2% chance to 2HKO after Black Sludge damage"
+  },
+  "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Great Tusk: 153-181 (35.2 - 41.7%) -- 74.2% chance to 2HKO after Black Sludge damage"
+ },
+ {
+  "nom": "KO sable",
+  "attaquant": {
+   "espece": "primarina",
+   "niveau": 100,
+   "types": [
+    "water",
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 74,
+    "def": 74,
+    "spa": 126,
+    "spd": 116,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "torrent",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 44,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 165,
+    "def": 184,
+    "spa": 386,
+    "spd": 268,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "innerfocus",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 273,
+    "def": 227,
+    "spa": 236,
+    "spd": 328,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "moonblast",
+   "type": "fairy",
+   "categorie": "Special",
+   "puissance": 95
+  },
+  "meteo": "SABLE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   240,
+   242,
+   246,
+   248,
+   252,
+   254,
+   258,
+   260,
+   264,
+   266,
+   270,
+   272,
+   276,
+   278,
+   282,
+   284
+  ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO after sandstorm damage"
+  },
+  "description": "252+ SpA Primarina Moonblast vs. 252 HP / 252+ SpD Dragonite: 240-284 (62.1 - 73.5%) -- guaranteed 2HKO after sandstorm damage"
+ },
+ {
+  "nom": "KO Champ Herbu",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 268,
+    "def": 299,
+    "spa": 142,
+    "spd": 225,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "HERBU",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   153,
+   156,
+   157,
+   159,
+   160,
+   162,
+   165,
+   166,
+   168,
+   169,
+   171,
+   174,
+   175,
+   177,
+   178,
+   181
+  ],
+  "ko": {
+   "n": 3,
+   "chance": 0.8095703125,
+   "texte": "81% chance to 3HKO after Grassy Terrain recovery"
+  },
+  "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Great Tusk: 153-181 (35.2 - 41.7%) -- 81% chance to 3HKO after Grassy Terrain recovery"
+ },
+ {
+  "nom": "KO PV partiels",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 195,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 298,
+    "def": 397,
+    "spa": 127,
+    "spd": 143,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   108,
+   109,
+   109,
+   111,
+   112,
+   114,
+   115,
+   117,
+   118,
+   118,
+   120,
+   121,
+   123,
+   124,
+   126,
+   127
+  ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Great Tusk: 108-127 (24.8 - 29.2%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "KO Sabotage sur Restes",
+  "attaquant": {
+   "espece": "kingambit",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 135,
+    "def": 120,
+    "spa": 60,
+    "spd": 85,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "defiant",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 120,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 405,
+    "def": 276,
+    "spa": 140,
+    "spd": 206,
+    "spe": 199
+   }
+  },
+  "defenseur": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "goodasgold",
+   "objet": "leftovers",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 378,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 378,
+    "atk": 156,
+    "def": 317,
+    "spa": 271,
+    "spd": 219,
+    "spe": 204
+   }
+  },
+  "capacite": {
+   "id": "knockoff",
+   "type": "dark",
+   "categorie": "Physical",
+   "puissance": 65
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   270,
+   272,
+   276,
+   278,
+   282,
+   284,
+   288,
+   290,
+   294,
+   296,
+   300,
+   302,
+   306,
+   308,
+   312,
+   318
+  ],
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Kingambit Knock Off (97.5 BP) vs. 252 HP / 252+ Def Gholdengo: 270-318 (71.4 - 84.1%) -- guaranteed 2HKO"
  },
  {
   "nom": "Protection + Orbe Vie",
@@ -18160,6 +20102,11 @@
    82,
    83
   ],
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
   "description": "252+ Atk Life Orb Garchomp Earthquake vs. 252 HP / 252+ Def Great Tusk through Reflect: 70-83 (16.1 - 19.1%) -- possible 6HKO"
  },
  {
@@ -18300,6 +20247,11 @@
    100,
    100
   ],
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
   "description": "Dusclops Night Shade vs. 252 HP Great Tusk: 100-100 (23 - 23%) -- guaranteed 5HKO"
  }
 ]
