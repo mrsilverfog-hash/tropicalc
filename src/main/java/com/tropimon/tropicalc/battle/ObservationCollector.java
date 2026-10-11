@@ -221,7 +221,28 @@ public final class ObservationCollector {
     private static Boolean adversaireAAgiEnPremier = null;
     private static String espaceAdversaireDuTour = null;
 
+    // --- Fin de tour différée ---
+    // Le serveur envoie la mise à jour des PV environ 1,5 s APRÈS le message
+    // de la capacité, et le message "tour suivant" arrive juste après la
+    // dernière capacité : mesurés à ce moment, les dégâts du dernier coup du
+    // tour valaient 0 (3 Ébullilave sur Carchacrok "perte 0,0 %", Draco-Griffe
+    // 1,8 % pour 20 % prévus). Les mesures de fin de tour attendent donc que
+    // les PV soient à jour : 2,5 s, ou le prochain message de combat.
+    private static long finDeTourEnAttenteMs = 0;
+    private static final long DELAI_PV_MS = 2500;
+
     public static synchronized void signalerNouveauTour() {
+        if (finDeTourEnAttenteMs != 0) traiterFinDeTour();
+        finDeTourEnAttenteMs = System.currentTimeMillis();
+    }
+
+    /** Traite la fin de tour en attente (à appeler avant tout nouveau message). */
+    public static synchronized void viderFinDeTourEnAttente() {
+        if (finDeTourEnAttenteMs != 0) traiterFinDeTour();
+    }
+
+    private static synchronized void traiterFinDeTour() {
+        finDeTourEnAttenteMs = 0;
         mettreAJourRepos();
         try {
             journaliserEstimation();
@@ -2429,6 +2450,9 @@ public final class ObservationCollector {
             return;
         }
         etatVide = false;
+        if (finDeTourEnAttenteMs != 0 && System.currentTimeMillis() - finDeTourEnAttenteMs >= DELAI_PV_MS) {
+            viderFinDeTourEnAttente();
+        }
 
         // Capacités copiées par mon Métamorph : lues dans le menu d'attaque
         // dès qu'il est disponible, gardées tant qu'il reste transformé.
@@ -3197,6 +3221,7 @@ public final class ObservationCollector {
 
     public static void reinitialiser() {
         MessageDebugLogger.analyse("=============== NOUVEAU COMBAT ===============");
+        finDeTourEnAttenteMs = 0;
         combatSauvageDetecte = false;
         OBJET_REEL_JOUEUR_CONNU.clear();
         OBJET_STACK_JOUEUR.clear();

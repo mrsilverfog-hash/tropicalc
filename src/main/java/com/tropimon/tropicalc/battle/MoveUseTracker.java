@@ -29,6 +29,10 @@ public final class MoveUseTracker {
     public static void traiterMessage(Text message) {
         if (message == null) return;
 
+        // Fin du tour précédent encore en attente (PV pas encore à jour) :
+        // la traiter avant ce nouveau message, pour garder l'ordre.
+        ObservationCollector.viderFinDeTourEnAttente();
+
         // Diagnostic temporaire : capture la clé + les arguments de CHAQUE
         // message dans config/tropicalc-messages-debug.txt. À retirer une
         // fois la vraie clé du changement de type (Protéen/Libéro) confirmée
