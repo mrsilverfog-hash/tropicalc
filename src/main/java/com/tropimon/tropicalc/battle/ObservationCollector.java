@@ -3082,6 +3082,46 @@ public final class ObservationCollector {
                     marquerObjetJoueurDetruit(joueurActif2.getEspece());
                 }
             }
+            return;
+        }
+
+        // Toute autre révélation d'objet par le jeu (Fouille, Tour de Magie,
+        // Passe-Passe, Passe-Cadeau, annonce d'entrée...) : "item.X", arg0 =
+        // le porteur, un argument "item.cobblemon.nom_objet". Le Ballon a déjà
+        // son traitement (annonce d'entrée) plus haut.
+        if (cle.startsWith("cobblemon.battle.item.") && !cle.contains("airballoon")) {
+            Object[] args = contenu.getArgs();
+            if (args.length < 2) return;
+            String suffixe = cle.substring("cobblemon.battle.item.".length());
+            String cleObjet = null;
+            for (int k = 1; k < args.length; k++) {
+                String c = cleDepuisArgument(args[k]);
+                if (c != null && c.startsWith("item.")) {
+                    cleObjet = c;
+                    break;
+                }
+            }
+            if (cleObjet == null) return;
+            String objetFr = ShowdownIdMapper.objet(cleObjet.substring(cleObjet.lastIndexOf('.') + 1).replace("_", ""));
+            ItemStack stack = stackDepuisCleBrute(cleObjet);
+            // Objet RECU en cours de combat (et non simplement révélé)
+            boolean recu = suffixe.contains("trick") || suffixe.contains("switcheroo") || suffixe.contains("bestow");
+            Boolean porteurAdverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (Boolean.TRUE.equals(porteurAdverse)) {
+                Pokemon adv = BattleStateTracker.getAdversaireActif();
+                if (adv == null || objetFr == null) return;
+                if (recu) objetAdversaireRecu(adv.getEspece());
+                OBJETS_RETIRES.remove(adv.getEspece());
+                confirmerObjet(adv.getEspece(), objetFr, recu ? "reçu (" + suffixe + ")" : "révélé par le jeu (" + suffixe + ")");
+                MessageDebugLogger.analyse("OBJET " + adv.getEspece() + " : " + objetFr
+                    + (recu ? " reçu" : " révélé") + " par le jeu (" + cle + ")");
+            } else if (Boolean.FALSE.equals(porteurAdverse) && recu) {
+                Pokemon moi = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (moi == null) moi = BattleStateTracker.getJoueurActif();
+                if (moi == null) return;
+                marquerObjetJoueurConnu(moi.getEspece(), objetFr);
+                if (!stack.isEmpty()) OBJET_STACK_JOUEUR.put(cleEspece(moi.getEspece()), stack);
+            }
         }
     }
 
