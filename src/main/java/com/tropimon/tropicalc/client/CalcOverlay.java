@@ -726,7 +726,10 @@ public final class CalcOverlay implements HudRenderCallback {
             // par Smogon (Évoluroc), sans preuve. Utilisé dans les calculs.
             String objetProbable = ObservationCollector.getObjetProbable(especeAdv);
             if (objetProbable != null && objetConfirme == null && !objetRetire) {
-                dessinerTexte("Objet probable : " + objetProbable + " ?", x, y, COULEUR_GRIS);
+                String raisonProbable = ObservationCollector.getRaisonObjetProbable(especeAdv);
+                dessinerTexte("Objet supposé : " + objetProbable
+                    + (raisonProbable != null ? " (" + raisonProbable + ")" : "")
+                    + ", pris en compte dans les dégâts", x, y, COULEUR_GRIS);
                 y += hauteurLigne;
             }
             // Preuve qu'il n'a pas d'objet Choix : deux capacités différentes

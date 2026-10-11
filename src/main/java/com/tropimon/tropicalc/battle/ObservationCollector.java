@@ -362,15 +362,7 @@ public final class ObservationCollector {
             if (perteAdversaire < -5.0 || perteJoueur < -5.0) {
                 // Soin adverse de ~1/16 sans switch ni capacité de soin : Restes confirmés
                 // (Vampigraine/Vœu soignent 1/8+ et le tour d'après pour Vœu : exclus)
-                if (perteAdversaire <= -5.0 && perteAdversaire >= -8.0
-                        && adversaire.getEspece().equals(espaceAdversaireDuTour)
-                        && !OBJETS_RETIRES.contains(adversaire.getEspece())
-                        && (coupAdversaireDuTour == null
-                            || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
-                        && !"wish".equals(coupAdversaireTourPrecedent)
-                        && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
-                    OBJETS_CONFIRMES.put(adversaire.getEspece(), "Restes");
-                }
+                // (Restes : plus déduits des PV, le jeu les annonce)
                 if (coupAdversaireDuTour != null) {
                     coupAdversaireTourPrecedent = coupAdversaireDuTour.showdownId();
                 }
@@ -416,46 +408,11 @@ public final class ObservationCollector {
                 marquerObjetJoueurDetruit(joueur.getEspece());
             }
 
-            // Détection Casque Brut : tour "propre" où le joueur attaque au contact,
-            // l'adversaire ne l'attaque pas, et le joueur perd des PV quand même.
-            // 12.5% = Épine de Fer/Peau Dure seule | ~17% = Casque Brut | ~29% = les deux
-            if (coupJoueurDuTour != null
-                    && com.tropimon.tropicalc.calc.ContactMoves.estContact(coupJoueurDuTour.showdownId())
-                    && perteAdversaire >= 0.5
-                    && perteJoueur >= 14.0 && perteJoueur <= 33.0
-                    && !(perteJoueur > 20.0 && perteJoueur < 25.0)
-                    && adversaireNAPasAttaque()
-                    && joueur.getStatut() == Pokemon.Statut.AUCUN
-                    && !joueurVampigraine
-                    && !"Orbe Vie".equals(joueur.getObjet())
-                    && !OBJETS_RETIRES.contains(adversaire.getEspece())
-                    && (FieldTracker.construireField().getMeteo() != Field.Meteo.SABLE
-                        || immuniseSableSimple(joueur))) {
-                OBJETS_CONFIRMES.put(adversaire.getEspece(), "Casque Brut");
-                // 25-33% = Casque Brut + Épine de Fer/Peau Dure : le talent aussi est un fait
-                if (perteJoueur >= 25.0) {
-                    TALENTS_CHIP_CONFIRMES.add(adversaire.getEspece());
-                }
-            }
-
-            // Détection Orbe Vie : tour "propre" où l'adversaire attaque
-            // (dégâts, pas statut, pas de recul propre à la capacité) et
-            // perd ~10% de ses PV max le même tour, sans autre source
-            // possible (statut, Salaison, Vampigraine, sable non-immunisé,
-            // dégâts du joueur qui viendraient troubler la mesure).
-            if (coupAdversaireDuTour != null
-                    && !adversaireNAPasAttaque()
-                    && !com.tropimon.tropicalc.calc.MoveFlags.aRecul(coupAdversaireDuTour.showdownId())
-                    && reculOrbeVieIsole(joueur, adversaire, perteAdversaire)
-                    && adversaire.getStatut() == Pokemon.Statut.AUCUN
-                    && !adversaireVampigraine
-                    && !adversaireSalaison
-                    && !OBJETS_CONFIRMES.containsKey(adversaire.getEspece())
-                    && !OBJETS_RETIRES.contains(adversaire.getEspece())
-                    && (FieldTracker.construireField().getMeteo() != Field.Meteo.SABLE
-                        || immuniseSableSimple(adversaire))) {
-                OBJETS_CONFIRMES.put(adversaire.getEspece(), "Orbe Vie");
-            }
+            // Casque Brut et Orbe Vie : plus déduits des pertes de PV. Le jeu
+            // annonce les deux (damage.rockyhelmet, damage.lifeorb), lus dans
+            // MoveUseTracker et traiterMessageObjet. La déduction par les PV
+            // a confirmé une Orbe Vie sur un Carchacrok qui n'en avait pas
+            // (11/10), alors qu'il avait attaqué sans recul annoncé.
 
             // Vitesse : ordre d'action du tour écoulé, évalué avec l'état du
             // DÉBUT de ce tour (stages, météo, champ, Vent Arrière, statut).
@@ -682,52 +639,6 @@ public final class ObservationCollector {
         return (e.compteur() + e.pas() - 1) / e.pas();
     }
 
-    /**
-     * Vrai si la perte de PV de l'adversaire sur ce tour s'explique par le
-     * recul de l'Orbe Vie (10% des PV max). Porté depuis randompvp (aeadf47).
-     *
-     * Cas simple : le joueur n'a pas attaqué, la perte EST le recul.
-     *
-     * Cas général : le joueur a aussi attaqué, donc la perte observée mélange
-     * ses dégâts et le recul. On soustrait les dégâts prévus pour isoler le
-     * résidu. L'ancienne condition exigeait que le joueur n'attaque pas, ce qui
-     * ne se produit presque jamais : la détection ne se déclenchait quasiment
-     * pas. L'Orbe Vie adverse n'influe pas sur les dégâts que le JOUEUR
-     * inflige, donc aucune circularité.
-     *
-     * Précision propre au ranked : ici le set défensif adverse est ESTIMÉ (pas
-     * fixe comme en random battle), donc cette voie est moins sûre que le
-     * message direct cobblemon.battle.damage.lifeorb, traité plus haut, qui
-     * reste la source principale. Celle-ci sert de secours.
-     */
-    private static boolean reculOrbeVieIsole(Pokemon joueur, Pokemon adversaire, double perteAdversaire) {
-        if (coupJoueurDuTour == null || joueurNAPasAttaque()) {
-            return perteAdversaire >= 8.0 && perteAdversaire <= 12.0;
-        }
-        try {
-            MoveTemplate template = Moves.INSTANCE.getByName(coupJoueurDuTour.showdownId());
-            if (template == null) return false;
-            com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
-            if (capacite == null) return false;
-
-            Pokemon defenseur = construireAdversaireEstime(adversaire);
-            Field terrain = FieldTracker.construireField();
-            DamageCalculator.Resultat prevu = DamageCalculator.calculer(
-                joueur, defenseur, capacite, terrain, terrain.getEcransAdversaire(), false);
-            if (prevu.immunise) {
-                return perteAdversaire >= 8.0 && perteAdversaire <= 12.0;
-            }
-
-            // Résidu possible une fois les dégâts du joueur retirés. Tolérance
-            // un peu plus large que la fenêtre 8-12% du cas simple, le résidu
-            // cumulant l'imprécision des deux mesures.
-            double residuMin = perteAdversaire - prevu.pourcentageMax;
-            double residuMax = perteAdversaire - prevu.pourcentageMin;
-            return residuMin >= 7.0 && residuMax <= 13.5;
-        } catch (Throwable e) {
-            return false;
-        }
-    }
 
     // ---------------------------------------------------------------------
     // Vitesse : Mouchoir Choix par impossibilité, plancher/plafond affichés.
@@ -1387,6 +1298,12 @@ public final class ObservationCollector {
 
     // Objet déduit par élimination sur les dégâts (pas une preuve) : espèce -> objet
     private static final Map<String, String> OBJETS_PROBABLES = new HashMap<>();
+    private static final Map<String, String> RAISONS_PROBABLES = new HashMap<>();
+
+    /** Pourquoi cet objet est supposé (affiché dans le HUD), ou null. */
+    public static String getRaisonObjetProbable(String espece) {
+        return getObjetProbable(espece) == null ? null : RAISONS_PROBABLES.get(espece);
+    }
 
     /** Objet que les dégâts désignent, sans être prouvé (null si aucun ou si confirmé/retiré). */
     public static String getObjetProbable(String espece) {
@@ -2098,6 +2015,7 @@ public final class ObservationCollector {
                     // Appliqué au calcul, affiché comme probable, jamais
                     // mémorisé entre les combats.
                     // (appelé à chaque image : une ligne de log au changement)
+                    RAISONS_PROBABLES.put(espece, "seul objet qui colle aux dégâts mesurés");
                     if (!objetEstime.equals(OBJETS_PROBABLES.put(espece, objetEstime))) {
                         MessageDebugLogger.analyse("OBJET " + espece + " : " + objetEstime
                             + " probable (seul objet qui explique les dégâts, " + profil.getNbObservations()
@@ -2408,16 +2326,35 @@ public final class ObservationCollector {
         }
     }
 
+    /**
+     * Évoluroc supposé pour une sous-évolution (le Pokémon peut encore
+     * évoluer) : en compétitif, c'est presque toujours son objet. Écarté
+     * seulement si Smogon montre clairement autre chose (Évoluroc absent du
+     * top et sous 30 %). Utilisé dans les calculs, affiché comme supposé ;
+     * un objet prouvé (message du jeu, Sabotage...) le remplace.
+     */
     private static void tenterConfirmerEvoluroc(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
-        if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return;
         if (OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece)) return;
-        String topObjet = ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
-        // Probable seulement (part d'usage Smogon, aucune observation) : plus
-        // de "confirmé" - le Piloswine l'affichait ainsi avant toute preuve.
-        if ("Évoluroc".equals(topObjet) && smogon.topItemUsageFraction() >= 0.50
-                && !"Évoluroc".equals(OBJETS_PROBABLES.put(espece, "Évoluroc"))) {
-            MessageDebugLogger.analyse("OBJET " + espece + " : Évoluroc probable ("
-                + Math.round(smogon.topItemUsageFraction() * 100) + " % des sets Smogon)");
+        if (OBJETS_PROBABLES.containsKey(espece)) return;
+        if (!peutEvoluer(espece)) return;
+        boolean enTete = false;
+        if (smogon != null && !smogon.topItemsShowdownId().isEmpty()) {
+            enTete = "Évoluroc".equals(ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0)));
+        }
+        double part = SmogonDataLoader.fractionObjet(espece, "eviolite");
+        if (smogon != null && !enTete && part < 0.30) return;
+        OBJETS_PROBABLES.put(espece, "Évoluroc");
+        RAISONS_PROBABLES.put(espece, "sous-évolution" + (part >= 0 ? ", " + Math.round(part * 100) + " % Smogon" : ""));
+        MessageDebugLogger.analyse("OBJET " + espece + " : Évoluroc supposé (" + RAISONS_PROBABLES.get(espece) + ")");
+    }
+
+    /** Vrai si cette espèce a encore une évolution (Évoluroc possible). */
+    private static boolean peutEvoluer(String espece) {
+        try {
+            Species sp = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(espece);
+            return sp != null && !sp.getEvolutions().isEmpty();
+        } catch (Throwable t) {
+            return false;
         }
     }
 
@@ -2528,29 +2465,12 @@ public final class ObservationCollector {
             new double[]{adv.getPourcentagePv(), adv.getStatut().ordinal()});
 
         double remontee = pvNow - pvPlancherAdv;
-        if (remontee >= 4.5 && remontee <= 8.0
-                && adv.getStatut() != Pokemon.Statut.POISON
-                && adv.getStatut() != Pokemon.Statut.POISON_GRAVE
-                && !OBJETS_RETIRES.contains(adv.getEspece())
-                && (coupAdversaireDuTour == null
-                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
-                && !"wish".equals(coupAdversaireTourPrecedent)
-                && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
-            OBJETS_CONFIRMES.put(adv.getEspece(), "Restes");
-            pvPlancherAdv = pvNow;
-        } else if (remontee >= 1.5 && pvNow >= 99.5
-                && adv.getStatut() == Pokemon.Statut.AUCUN
-                && !OBJETS_RETIRES.contains(adv.getEspece())
-                && (coupAdversaireDuTour == null
-                    || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
-                && !"wish".equals(coupAdversaireTourPrecedent)
-                && FieldTracker.construireField().getTerrain() != Field.TypeTerrain.HERBU) {
-            // Soin plafonné par les PV max (ex: Restes à 97% ne rendent que 3%) :
-            // une petite remontée qui termine pile à 100% sans capacité de soin
-            // ne s'explique que par un objet de soin passif
-            OBJETS_CONFIRMES.put(adv.getEspece(), "Restes");
-            pvPlancherAdv = pvNow;
-        } else if (remontee >= 10.5 && remontee <= 14.0
+        // Restes, Boue Noire, baies : le jeu annonce ces soins (heal.leftovers,
+        // heal.blacksludge, enditem...), lus dans MoveUseTracker. Plus aucune
+        // déduction par la remontée des PV : un soin écarté (Vampipoing) laissait
+        // l'ancien point bas en place, et au tour suivant la même remontée était
+        // prise pour des Restes (Colossinge du 11/10).
+        if (remontee >= 10.5 && remontee <= 14.0
                 && (adv.getStatut() == Pokemon.Statut.POISON
                     || adv.getStatut() == Pokemon.Statut.POISON_GRAVE)
                 && !joueurVampigraine
@@ -2568,14 +2488,12 @@ public final class ObservationCollector {
                 && (coupAdversaireDuTour == null
                     || !COUPS_SOIN_OU_DRAIN.contains(coupAdversaireDuTour.showdownId()))
                 && !"wish".equals(coupAdversaireTourPrecedent)) {
-            // Baie Sitrus (ou équivalente) : restaure 1/4 des PV max, se
-            // déclenche sous 50% PV. Contrairement à Restes, l'objet est
-            // CONSOMMÉ - important pour Sabotage (Knock Off), qui ne doit
-            // plus appliquer son bonus x1.5 une fois la baie mangée.
-            OBJETS_RETIRES.add(adv.getEspece());
+            // Baie Sitrus probable : sa consommation est annoncée par le jeu
+            // (enditem), qui marque l'objet perdu. Rien de déduit ici.
             pvPlancherAdv = pvNow;
-        } else if (remontee > 8.0) {
-            // Gros soin (Vœu, Soin, drain...) : repartir de ce niveau
+        } else if (remontee > 1.0) {
+            // Tout autre soin (Vœu, Soin, drain, Restes annoncés...) : repartir
+            // de ce niveau, pour ne pas le recompter plus tard
             pvPlancherAdv = pvNow;
         }
     }
@@ -2993,7 +2911,10 @@ public final class ObservationCollector {
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire == null) return;
             String objetFr = ShowdownIdMapper.objet(objetShowdownId);
-            if (objetFr != null) OBJETS_CONFIRMES.put(adversaire.getEspece(), objetFr);
+            if (objetFr != null) {
+                OBJETS_RETIRES.remove(adversaire.getEspece());
+                confirmerObjet(adversaire.getEspece(), objetFr, "annoncé par le jeu");
+            }
         } catch (Exception ignored) {
         }
     }
@@ -3299,6 +3220,7 @@ public final class ObservationCollector {
         coupAdvRateCeTour = false;
         TORCHE_ACTIVE.clear();
         OBJETS_PROBABLES.clear();
+        RAISONS_PROBABLES.clear();
         OBJETS_CHOIX_EXCLUS.clear();
         especeSejourAdv = null;
         premierCoupSejourAdv = null;
