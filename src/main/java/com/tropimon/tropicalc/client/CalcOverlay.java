@@ -944,22 +944,6 @@ public final class CalcOverlay implements HudRenderCallback {
         String t = ko.texte();
         if (t.isEmpty()) return "";
 
-        // Précision : il faut toucher à chacun des n coups
-        if (!ko.possible()) {
-            try {
-                MoveTemplate modele = Moves.INSTANCE.getByName(capacite.getNom());
-                if (modele != null) {
-                    double p = com.tropimon.tropicalc.calc.ChancesKO.precision(modele.getAccuracy(),
-                        capacite.getNom(), attaquant, defenseur, terrain,
-                        capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE);
-                    if (p < 100) {
-                        double avecPrecision = ko.chance() * Math.pow(p / 100.0, ko.n());
-                        t += " (" + com.tropimon.tropicalc.calc.ChancesKO.pourcent(avecPrecision) + " avec la précision)";
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
         return " | " + t;
     }
 
