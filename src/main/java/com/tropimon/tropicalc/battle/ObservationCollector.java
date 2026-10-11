@@ -1697,7 +1697,9 @@ public final class ObservationCollector {
                     if (!r.immunise && !cd.ko && !cd.multiCoups) {
                         if (perte > r.pourcentageMax + 2) log.append(" | PLUS que prévu");
                         else if (perte < r.pourcentageMin - 2) log.append(" | MOINS que prévu");
-                        if (!cd.crit) tenterExclureObjetDefensif(cd, def, capacite, perte, log);
+                        if (!cd.crit && !tenterExclureObjetDefensif(cd, def, capacite, perte, log)) {
+                            tenterFacteurDefensif(cd, def, capacite, perte, r, log);
+                        }
                     }
                 }
             }
@@ -1727,12 +1729,12 @@ public final class ObservationCollector {
         return PREUVES_EXCLUSION.get(espece);
     }
 
-    private static void tenterExclureObjetDefensif(CoupDonne cd, Pokemon def,
+    /** Vrai si l'objet supposé vient d'être exclu (l'estimation change). */
+    private static boolean tenterExclureObjetDefensif(CoupDonne cd, Pokemon def,
             com.tropimon.tropicalc.calc.Move capacite, double perte, StringBuilder log) {
         String objet = def.getObjet();
-        String espece = cd.especeDefenseur;
-        if (objet == null || !OBJETS_DEFENSIFS.contains(objet)) return;
-        if (OBJETS_CONFIRMES.containsKey(def.getEspece())) return;
+        if (objet == null || !OBJETS_DEFENSIFS.contains(objet)) return false;
+        if (OBJETS_CONFIRMES.containsKey(def.getEspece())) return false;
         boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
             || "psyshock".equals(cd.idCoup) || "psystrike".equals(cd.idCoup) || "secretsword".equals(cd.idCoup);
         Stat statDef = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
@@ -1743,9 +1745,9 @@ public final class ObservationCollector {
         faible.setObjet(null);
         DamageCalculator.Resultat sans = DamageCalculator.calculer(
             cd.attaquant, faible, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
-        if (avec.immunise || sans.immunise) return;
+        if (avec.immunise || sans.immunise) return false;
         double seuil = avec.pourcentageMax * 1.02 + 0.5;
-        if (perte <= seuil || perte > sans.pourcentageMax * 1.05 + 1.0) return;
+        if (perte <= seuil || perte > sans.pourcentageMax * 1.05 + 1.0) return false;
         String nomCoup = cd.idCoup;
         try {
             MoveTemplate t = Moves.INSTANCE.getByName(cd.idCoup);
@@ -1758,6 +1760,98 @@ public final class ObservationCollector {
         PREUVES_EXCLUSION.put(def.getEspece(), "pas de " + objet + " : " + preuve);
         log.append(" | PAS DE ").append(objet).append(" : ").append(pct(perte)).append(" > ")
             .append(pct(avec.pourcentageMax)).append(" max du set le moins résistant qui la tient");
+        return true;
+    }
+
+    // --- Résistance mesurée sur mes coups (EV défensifs) ---
+    // Mon coup fait nettement plus (ou moins) que prévu : on cherche, parmi
+    // tous les sets (EV PV 0-252, EV défense 0-252, nature +/neutre/-, même
+    // objet et talent supposés), le plus résistant (ou le moins résistant)
+    // qui explique encore la perte. Son rapport à l'estimation (PV x défense)
+    // devient une borne, appliquée à sa défense dès un écart net (20 %) ou à
+    // la deuxième mesure. Plus résistant et moins résistant à la fois :
+    // mesures incohérentes, rien n'est appliqué.
+    private static final Map<String, Map<Stat, Double>> PLAFONDS_DEFENSIFS = new HashMap<>();
+    private static final Map<String, Map<Stat, Double>> PLANCHERS_DEFENSIFS = new HashMap<>();
+    private static final Map<String, Integer> MESURES_DEFENSIVES = new HashMap<>();
+    private static final Set<String> DEFENSIFS_ACTIFS = new HashSet<>();
+
+    private static void tenterFacteurDefensif(CoupDonne cd, Pokemon def,
+            com.tropimon.tropicalc.calc.Move capacite, double perte, DamageCalculator.Resultat prevu,
+            StringBuilder log) {
+        if (prevu.pourcentageMin < 4.0) return;
+        double marge = Math.max(1.5, prevu.pourcentageMax * 0.05);
+        boolean plus = perte > prevu.pourcentageMax + marge;
+        boolean moins = perte < prevu.pourcentageMin - marge;
+        if (!plus && !moins) return;
+        if (PUISSANCE_NON_MODELISEE.contains(cd.idCoup)) return;
+        boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+            || "psyshock".equals(cd.idCoup) || "psystrike".equals(cd.idCoup) || "secretsword".equals(cd.idCoup);
+        Stat statDef = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        com.tropimon.tropicalc.calc.Nature[] natures = physique
+            ? new com.tropimon.tropicalc.calc.Nature[]{com.tropimon.tropicalc.calc.Nature.ASSURE,
+                com.tropimon.tropicalc.calc.Nature.HARDI, com.tropimon.tropicalc.calc.Nature.PRESSE}
+            : new com.tropimon.tropicalc.calc.Nature[]{com.tropimon.tropicalc.calc.Nature.CALME,
+                com.tropimon.tropicalc.calc.Nature.HARDI, com.tropimon.tropicalc.calc.Nature.NAIF};
+
+        // Estimation SANS facteur déjà appliqué (base commune à toutes les mesures)
+        Pokemon brut = def.copieAvecEvNature(Map.of(), null);
+        double resistanceEstimee = (double) brut.getPvMax() * brut.getStatCalculee(statDef);
+        double meilleure = plus ? -1 : Double.MAX_VALUE;
+        for (com.tropimon.tropicalc.calc.Nature n : natures) {
+            for (int evPv = 0; evPv <= 252; evPv += 4) {
+                for (int evDef = 0; evDef <= 252; evDef += 4) {
+                    Pokemon h = def.copieAvecEvNature(Map.of(Stat.PV, evPv, statDef, evDef), n);
+                    double resistance = (double) h.getPvMax() * h.getStatCalculee(statDef);
+                    if (plus ? resistance <= meilleure : resistance >= meilleure) continue;
+                    DamageCalculator.Resultat r = DamageCalculator.calculer(
+                        cd.attaquant, h, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+                    if (r.immunise) return;
+                    if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) meilleure = resistance;
+                }
+            }
+        }
+        if (plus ? meilleure < 0 : meilleure == Double.MAX_VALUE) {
+            log.append(plus ? " | inexplicable par ses EV (objet ou talent ?)" : " | inexplicable par ses EV");
+            return;
+        }
+        double facteur = meilleure / resistanceEstimee;
+        if (plus ? facteur > 0.97 : facteur < 1.03) return;
+        String espece = def.getEspece();
+        int mesures = MESURES_DEFENSIVES.merge(espece, 1, Integer::sum);
+        boolean net = plus ? perte > prevu.pourcentageMax * 1.2 : perte < prevu.pourcentageMin * 0.8;
+        if (plus) PLAFONDS_DEFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).merge(statDef, facteur, Math::min);
+        else PLANCHERS_DEFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).merge(statDef, facteur, Math::max);
+        if (net || mesures >= 2) DEFENSIFS_ACTIFS.add(espece);
+        log.append(plus ? " | MOINS RÉSISTANT : " : " | PLUS RÉSISTANT : ")
+            .append(statDef == Stat.DEFENSE ? "PV x Déf" : "PV x DéfSpé")
+            .append(plus ? " au plus x" : " au moins x").append(String.format(java.util.Locale.ROOT, "%.2f", facteur))
+            .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
+    }
+
+    /** Facteur appliqué à sa défense (1.0 = aucun), une fois établi et cohérent. */
+    private static double facteurDefensif(String espece, Stat stat) {
+        if (!DEFENSIFS_ACTIFS.contains(espece)) return 1.0;
+        Double plafond = PLAFONDS_DEFENSIFS.getOrDefault(espece, Map.of()).get(stat);
+        Double plancher = PLANCHERS_DEFENSIFS.getOrDefault(espece, Map.of()).get(stat);
+        if (plafond != null && plancher != null) return 1.0;   // incohérent
+        if (plafond != null) return plafond;
+        if (plancher != null) return plancher;
+        return 1.0;
+    }
+
+    /** "moins résistant que prévu : DéfSpé x0,85" (ou plus), null si rien d'établi. */
+    public static String getFacteurDefensifTexte(String espece) {
+        StringBuilder sb = new StringBuilder();
+        for (Stat st : new Stat[]{Stat.DEFENSE, Stat.DEFENSE_SPE}) {
+            double f = facteurDefensif(espece, st);
+            if (f == 1.0) continue;
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(f < 1 ? "moins" : "plus").append(" résistant que prévu : ")
+                .append(st == Stat.DEFENSE ? "Déf" : "DéfSpé").append(" x")
+                .append(String.format(java.util.Locale.FRANCE, "%.2f", f));
+        }
+        return sb.length() == 0 ? null : sb.toString();
     }
 
     private static void photographierCoupRecu(String idCoup, String especeAtt, String especeDef) {
@@ -1838,6 +1932,36 @@ public final class ObservationCollector {
             + " | moi " + moi.getEspece() + " " + pct(moi.getPourcentagePv()) + " objet " + moi.getObjet()
             + " Vit " + moi.getStatCalculee(Stat.VITESSE)
             + " | météo " + FieldTracker.construireField().getMeteo() + " champ " + FieldTracker.construireField().getTerrain());
+    }
+
+    // --- Journal des PV ---
+    // Une ligne à chaque changement de PV, statut ou boosts des deux Pokémon
+    // actifs : permet de rejouer un combat hors du jeu et de vérifier les
+    // mesures (le bug des PV max du 11/10 aurait sauté aux yeux).
+    private static String dernierePhotoPv = null;
+
+    private static void journaliserPv() {
+        Pokemon moi = BattleStateTracker.getJoueurActif();
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        if (moi == null || adv == null) return;
+        String photo = "PV | moi " + moi.getEspece() + " " + moi.getPvActuels() + "/" + moi.getPvMax()
+            + " (" + pct(moi.getPourcentagePv()) + ")" + etatCompact(moi, false)
+            + " | adv " + adv.getEspece() + " " + pct(adv.getPourcentagePv()) + etatCompact(adv, true);
+        if (photo.equals(dernierePhotoPv)) return;
+        dernierePhotoPv = photo;
+        MessageDebugLogger.analyse(photo);
+    }
+
+    private static String etatCompact(Pokemon p, boolean adverse) {
+        StringBuilder sb = new StringBuilder();
+        if (p.getStatut() != null && p.getStatut() != Pokemon.Statut.AUCUN) sb.append(' ').append(p.getStatut());
+        String[] noms = {"Atq", "Déf", "AtqSpé", "DéfSpé", "Vit"};
+        Stat[] stats = {Stat.ATTAQUE, Stat.DEFENSE, Stat.ATTAQUE_SPE, Stat.DEFENSE_SPE, Stat.VITESSE};
+        for (int i = 0; i < stats.length; i++) {
+            int st = adverse ? BoostTracker.getStageAdversaire(stats[i]) : BoostTracker.getStageJoueur(stats[i]);
+            if (st != 0) sb.append(' ').append(noms[i]).append(st > 0 ? "+" : "").append(st);
+        }
+        return sb.toString();
     }
 
     private static String pct(double v) {
@@ -2392,6 +2516,11 @@ public final class ObservationCollector {
             double plafond = plafondOffensif(espece, st);
             if (plafond < 0.97) b.multiplicateurStat(st, plafond);
         }
+        // Résistance mesurée sur mes coups (PV x défense) : appliquée à sa défense
+        for (Stat st : new Stat[]{Stat.DEFENSE, Stat.DEFENSE_SPE}) {
+            double f = facteurDefensif(espece, st);
+            if (f != 1.0) b.multiplicateurStat(st, f);
+        }
 
         // Correction par observation : DÉSACTIVÉE temporairement — mesure
         // de bord peu fiable, écrasait des dégâts corrects (retour utilisateur).
@@ -2764,6 +2893,10 @@ public final class ObservationCollector {
         etatVide = false;
         if (finDeTourEnAttenteMs != 0 && System.currentTimeMillis() - finDeTourEnAttenteMs >= DELAI_PV_MS) {
             viderFinDeTourEnAttente();
+        }
+        try {
+            journaliserPv();
+        } catch (Exception ignored) {
         }
 
         // Capacités copiées par mon Métamorph : lues dans le menu d'attaque
@@ -3665,6 +3798,11 @@ public final class ObservationCollector {
         OBJETS_PERDUS_CONNUS.clear();
         OBJETS_EXCLUS.clear();
         PREUVES_EXCLUSION.clear();
+        PLAFONDS_DEFENSIFS.clear();
+        PLANCHERS_DEFENSIFS.clear();
+        MESURES_DEFENSIVES.clear();
+        DEFENSIFS_ACTIFS.clear();
+        dernierePhotoPv = null;
         meteoType = null;
         meteoLanceurAdv = null;
         meteoUpkeeps = 0;

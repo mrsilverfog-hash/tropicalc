@@ -755,6 +755,12 @@ public final class CalcOverlay implements HudRenderCallback {
                     x, y, COULEUR_GRIS);
                 y += hauteurLigne;
             }
+            // Résistance mesurée sur mes coups (PV x défense)
+            String resistance = ObservationCollector.getFacteurDefensifTexte(especeAdv);
+            if (resistance != null) {
+                dessinerTexte("Set " + resistance + " (mesuré sur tes coups)", x, y, COULEUR_GRIS);
+                y += hauteurLigne;
+            }
             // Preuve qu'il n'a pas d'objet Choix : deux capacités différentes
             // sans sortir du terrain (inutile si un autre objet est confirmé)
             String preuvePasChoix = ObservationCollector.getPreuvePasChoix(especeAdv);
@@ -910,18 +916,51 @@ public final class CalcOverlay implements HudRenderCallback {
      */
     static String texteKO(DamageCalculator.Resultat r, Pokemon attaquant, Pokemon defenseur,
                           com.tropimon.tropicalc.calc.Move capacite, Field terrain, boolean defenseurAdverse) {
+        return texteKO(r, attaquant, defenseur, capacite, terrain, defenseurAdverse, false);
+    }
+
+    /**
+     * @param defenseurEntre le défenseur est un Pokémon de mon équipe qui
+     *                       entrerait (écran de switch) : ni Salaison ni
+     *                       Vampigraine, compteur Toxik repart à 1
+     */
+    static String texteKO(DamageCalculator.Resultat r, Pokemon attaquant, Pokemon defenseur,
+                          com.tropimon.tropicalc.calc.Move capacite, Field terrain, boolean defenseurAdverse,
+                          boolean defenseurEntre) {
         if (r == null || r.immunise || r.degatsParRoll.length == 0) return "";
         // Tête de Gel / Fantômasque intacts : le coup n'inflige pas ses jets
         if (r.degatsMax != r.degatsParRoll[r.degatsParRoll.length - 1]) return "";
         // Fermeté / Ceinture Focus à pleins PV : pas d'OHKO, le HUD le dit déjà
         boolean protege = r.degatsParRoll[0] >= defenseur.getPvActuels() && !r.koGaranti;
-        int toxik = defenseurAdverse ? ObservationCollector.getCompteurToxikProchainAdversaire()
+        int toxik = defenseurEntre ? 1 : defenseurAdverse ? ObservationCollector.getCompteurToxikProchainAdversaire()
             : ObservationCollector.getCompteurToxikProchainJoueur();
+        boolean salaison = !defenseurEntre && (defenseurAdverse ? ObservationCollector.isAdversaireSalaison()
+            : ObservationCollector.isJoueurSalaison());
+        boolean vampigraine = !defenseurEntre && (defenseurAdverse ? ObservationCollector.isAdversaireVampigraine()
+            : ObservationCollector.isJoueurVampigraine());
         com.tropimon.tropicalc.calc.ChancesKO.Resultat ko = com.tropimon.tropicalc.calc.ChancesKO.calculer(
-            r.degatsParRoll, attaquant, defenseur, capacite, terrain, toxik);
+            r.degatsParRoll, attaquant, defenseur, capacite, terrain, toxik, salaison, vampigraine);
         if (protege && ko.n() == 1) return "";
         String t = ko.texte();
-        return t.isEmpty() ? "" : " | " + t;
+        if (t.isEmpty()) return "";
+
+        // Précision : il faut toucher à chacun des n coups
+        if (!ko.possible()) {
+            try {
+                MoveTemplate modele = Moves.INSTANCE.getByName(capacite.getNom());
+                if (modele != null) {
+                    double p = com.tropimon.tropicalc.calc.ChancesKO.precision(modele.getAccuracy(),
+                        capacite.getNom(), attaquant, defenseur, terrain,
+                        capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE);
+                    if (p < 100) {
+                        double avecPrecision = ko.chance() * Math.pow(p / 100.0, ko.n());
+                        t += " (" + com.tropimon.tropicalc.calc.ChancesKO.pourcent(avecPrecision) + " avec la précision)";
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return " | " + t;
     }
 
     /** Une de mes capacités à afficher : nom affiché et capacité de calcul. */

@@ -41,12 +41,28 @@ public final class ChancesKO {
      */
     public static Resultat calculer(int[] degats, Pokemon attaquant, Pokemon defenseur, Move capacite,
                                     Field terrain, int compteurToxik) {
+        return calculer(degats, attaquant, defenseur, capacite, terrain, compteurToxik, false, false);
+    }
+
+    /**
+     * Avec Salaison et Vampigraine sur le défenseur, que le calculateur
+     * Showdown ignore (1/8 par tour chacune, Salaison 1/4 sur Eau/Acier).
+     */
+    public static Resultat calculer(int[] degats, Pokemon attaquant, Pokemon defenseur, Move capacite,
+                                    Field terrain, int compteurToxik, boolean salaison, boolean vampigraine) {
         if (degats == null || degats.length == 0 || degats[degats.length - 1] <= 0) return Resultat.AUCUN;
         int pvMax = defenseur.getPvMax();
         int pv = defenseur.getPvActuels();
         if (degats[0] >= pvMax) return new Resultat(1, 1.0, false);
 
         int fdt = finDeTour(attaquant, defenseur, capacite, terrain);
+        if (!"Garde Magik".equals(defenseur.getTalent())) {
+            if (salaison) {
+                boolean vulnerable = defenseur.possedeType(PokemonType.EAU) || defenseur.possedeType(PokemonType.ACIER);
+                fdt -= pvMax / (vulnerable ? 4 : 8);
+            }
+            if (vampigraine) fdt -= pvMax / 8;
+        }
         int toxik = defenseur.getStatut() == Pokemon.Statut.POISON_GRAVE
             && !"Garde Magik".equals(defenseur.getTalent()) && !"Soin Poison".equals(defenseur.getTalent())
             ? compteurToxik : 0;
@@ -65,6 +81,42 @@ public final class ChancesKO {
             if (totalPrevu(degats[degats.length - 1], fdt, i, toxik, pvMax) >= pv) return new Resultat(i, 0, true);
         }
         return Resultat.AUCUN;
+    }
+
+    /**
+     * Précision réelle en % (100 = touche toujours) : précision de base,
+     * Annule Garde, Œil Composé, Agitation, Victorieux, Loupe, Poudre Claire,
+     * Voile Sable / Rideau Neige, Fatal-Foudre / Vent Violent / Blizzard
+     * selon la météo. Les boosts de précision et d'esquive ne sont pas suivis.
+     *
+     * @param base précision de la capacité (0 ou moins = ne rate jamais)
+     */
+    public static double precision(double base, String idCoup, Pokemon attaquant, Pokemon defenseur,
+                                   Field terrain, boolean physique) {
+        if ("Annule Garde".equals(attaquant.getTalent()) || "Annule Garde".equals(defenseur.getTalent())) return 100;
+        Field.Meteo meteo = terrain.getMeteo();
+        boolean pluie = meteo == Field.Meteo.PLUIE || meteo == Field.Meteo.PLUIE_INTENSE;
+        boolean soleil = meteo == Field.Meteo.SOLEIL || meteo == Field.Meteo.SOLEIL_INTENSE;
+        if (("thunder".equals(idCoup) || "hurricane".equals(idCoup) || "bleakwindstorm".equals(idCoup)
+                || "wildboltstorm".equals(idCoup) || "sandsearstorm".equals(idCoup)) && pluie) return 100;
+        if ("blizzard".equals(idCoup) && meteo == Field.Meteo.NEIGE) return 100;
+        if (base <= 0 || base > 100) return 100;
+        double p = base;
+        if (("thunder".equals(idCoup) || "hurricane".equals(idCoup)) && soleil) p = 50;
+        if ("Œil Composé".equals(attaquant.getTalent())) p *= 1.3;
+        if ("Victorieux".equals(attaquant.getTalent())) p *= 1.1;
+        if ("Agitation".equals(attaquant.getTalent()) && physique) p *= 0.8;
+        if ("Loupe".equals(attaquant.getObjet())) p *= 1.1;
+        if ("Poudre Claire".equals(defenseur.getObjet())) p *= 0.9;
+        if (("Voile Sable".equals(defenseur.getTalent()) && meteo == Field.Meteo.SABLE)
+                || ("Rideau Neige".equals(defenseur.getTalent()) && meteo == Field.Meteo.NEIGE)) p *= 0.8;
+        return Math.min(100, p);
+    }
+
+    /** "37,5 %" : même arrondi que les chances de K.O. */
+    public static String pourcent(double chance) {
+        double pct = Math.max(Math.min(Math.round(chance * 1000), 999), 1) / 10.0;
+        return (pct == Math.floor(pct) ? String.valueOf((int) pct) : String.valueOf(pct)).replace('.', ',') + " %";
     }
 
     /** PV gagnés (+) ou perdus (-) par le défenseur à chaque fin de tour (hors Toxik). */

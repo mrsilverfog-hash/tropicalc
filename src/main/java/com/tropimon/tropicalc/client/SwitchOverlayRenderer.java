@@ -127,6 +127,19 @@ public final class SwitchOverlayRenderer {
             lignes.add(lignePieges.toString());
             couleurs.add(pvApres <= 0 ? COULEUR_KO : (degatsPieges >= 25 ? 0xFFAA00 : COULEUR_TEXTE));
         }
+        // Il entre avec les PV et le statut d'après les pièges : ses chances
+        // de K.O. (et Multiécaille, Fermeté...) en tiennent compte, comme
+        // Showdown ("after Stealth Rock").
+        boolean apresPieges = false;
+        if (degatsPieges > 0) {
+            int perdus = (int) Math.floor(candidat.getPvMax() * degatsPieges / 100.0);
+            candidat.setPvActuels(Math.max(0, candidat.getPvActuels() - perdus));
+            apresPieges = true;
+        }
+        if (picsToxik && (candidat.getStatut() == null || candidat.getStatut() == Pokemon.Statut.AUCUN)) {
+            candidat.setStatut(FieldTracker.getToxicSpikesJoueur() >= 2 ? Pokemon.Statut.POISON_GRAVE : Pokemon.Statut.POISON);
+            apresPieges = true;
+        }
 
         // Ses attaques (Imposteur : celles de l'adversaire, connues ou Smogon, "?")
         lignes.add(imposteur ? "Ses attaques (copiées, probables) :" : "Ses attaques :");
@@ -186,7 +199,7 @@ public final class SwitchOverlayRenderer {
         }
 
         if (!coupsAdv.isEmpty()) {
-            lignes.add("Il subit :");
+            lignes.add(apresPieges ? "Il subit (après les pièges) :" : "Il subit :");
             couleurs.add(COULEUR_DANGER);
             for (MoveTemplate template : coupsAdv) {
                 boolean estRevele = reveleIds.contains(template.getName());
@@ -204,7 +217,7 @@ public final class SwitchOverlayRenderer {
                         couleurs.add(estRevele ? COULEUR_REVELE : COULEUR_TEXTE);
                     } else {
                         lignes.add(String.format("%s%s : %.0f%% - %.0f%%%s", prefixe, nom, r.pourcentageMin, r.pourcentageMax,
-                            CalcOverlay.texteKO(r, adversaire, candidat, capaciteAdv, field, false)));
+                            CalcOverlay.texteKO(r, adversaire, candidat, capaciteAdv, field, false, true)));
                         couleurs.add(r.koGaranti ? COULEUR_KO
                             : (estRevele ? COULEUR_REVELE : (r.koPossible ? 0xFFAA00 : COULEUR_TEXTE)));
                     }

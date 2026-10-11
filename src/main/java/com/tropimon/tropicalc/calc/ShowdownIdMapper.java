@@ -144,6 +144,10 @@ public final class ShowdownIdMapper {
         TALENTS.put("adaptability", "Adaptabilité");
         TALENTS.put("guts", "Cran");
         TALENTS.put("hustle", "Agitation");
+        TALENTS.put("noguard", "Annule Garde");
+        TALENTS.put("compoundeyes", "Œil Composé");
+        TALENTS.put("snowcloak", "Rideau Neige");
+        TALENTS.put("victorystar", "Victorieux");
         TALENTS.put("technician", "Technicien");
         TALENTS.put("ironfist", "Poing de Fer");
         TALENTS.put("strongjaw", "Prognathe");
@@ -245,6 +249,8 @@ public final class ShowdownIdMapper {
         OBJETS.put("heatrock", "Roche Chaude");
         OBJETS.put("damprock", "Roche Humide");
         OBJETS.put("smoothrock", "Roche Lisse");
+        OBJETS.put("widelens", "Loupe");
+        OBJETS.put("brightpowder", "Poudre Claire");
         OBJETS.put("icyrock", "Roche Glacée");
         OBJETS.put("shellbell", "Grelot Coquille");
         OBJETS.put("lumberry", "Baie Lum");
