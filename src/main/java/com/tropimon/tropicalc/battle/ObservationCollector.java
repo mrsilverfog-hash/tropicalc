@@ -1137,6 +1137,7 @@ public final class ObservationCollector {
     }
 
     private static boolean estTransforme(boolean campAdverse, String espece) {
+        if (campAdverse && cibleMorphingAdversaire != null) return true;
         return espece != null && TRANSFORMES.contains((campAdverse ? "adv:" : "moi:") + espece);
     }
 
@@ -1145,6 +1146,75 @@ public final class ObservationCollector {
     // capacités copiées, lues dans le menu d'attaque du jeu.
     private static Pokemon cibleMorphingJoueur = null;
     private static List<String> capacitesMorphing = new ArrayList<>();
+
+    // Métamorph ADVERSE : mon Pokémon qu'il a copié (stats exactes) et mes
+    // capacités qu'il a donc aussi.
+    private static Pokemon cibleMorphingAdversaire = null;
+    private static String especeMorphingAdversaire = null;   // son espèce d'origine (Métamorph...)
+    private static List<String> capacitesMorphingAdversaire = new ArrayList<>();
+
+    /** Mes capacités copiées par le Métamorph adverse (id Showdown), vide sinon. */
+    public static List<String> getCapacitesMorphingAdversaire() {
+        return cibleMorphingAdversaire == null ? List.of() : capacitesMorphingAdversaire;
+    }
+
+    /** Espèce de mon Pokémon copié par le Métamorph adverse, ou null. */
+    public static String getCibleMorphingAdversaire() {
+        return cibleMorphingAdversaire == null ? null : cibleMorphingAdversaire.getEspece();
+    }
+
+    /**
+     * L'adversaire tel que le HUD doit le calculer : son estimation, ou, s'il
+     * s'est transformé en mon Pokémon, une copie exacte de mon Pokémon (stats,
+     * types, talent) avec ses PV, son statut et son objet à lui.
+     */
+    public static Pokemon adversaireAffiche(Pokemon adversaireBase) {
+        Pokemon estime = construireAdversaireEstime(adversaireBase);
+        Pokemon cible = cibleMorphingAdversaire;
+        if (cible == null) return estime;
+        // Son espèce d'origine : celle vue au Morphing, sauf si le jeu affichait
+        // déjà l'espèce copiée (alors Métamorph, le seul cas courant).
+        String origine = especeMorphingAdversaire == null || especeMorphingAdversaire.equals(cible.getEspece())
+            ? "ditto" : especeMorphingAdversaire;
+        int pvMax;
+        String objet;
+        if (origine.equals(adversaireBase.getEspece())) {
+            pvMax = estime.getPvMax();
+            objet = estime.getObjet();
+        } else {
+            pvMax = pvMaxEstime(origine, adversaireBase.getNiveau());
+            objet = OBJETS_RETIRES.contains(origine) ? null
+                : OBJETS_CONFIRMES.containsKey(origine) ? OBJETS_CONFIRMES.get(origine)
+                : objetSmogonProbable(origine, SmogonDataLoader.getDonnees(origine));
+        }
+        Pokemon.Builder b = Pokemon.builder(cible.getEspece(), cible.getNiveau(), cible.getType1(), cible.getType2())
+            .nature(cible.getNature())
+            .poids(cible.getPoidsHg());
+        if (cible.getTalent() != null) b.talent(cible.getTalent());
+        for (Stat st : Stat.values()) {
+            b.statBase(st, cible.getStatBase(st)).ev(st, cible.getEv(st)).iv(st, cible.getIv(st));
+        }
+        Pokemon copie = b.build();
+        copie.setCampAdverse(true);
+        if (pvMax > 0) copie.setPvMaxOverride(pvMax);
+        copie.setPvActuels((int) Math.round(adversaireBase.getPourcentagePv() / 100.0 * copie.getPvMax()));
+        copie.setStatut(adversaireBase.getStatut());
+        copie.setObjet(objet);
+        return copie;
+    }
+
+    /** PV max d'une espèce à ce niveau avec 252 EV et 31 IV (0 si inconnue). */
+    private static int pvMaxEstime(String espece, int niveau) {
+        try {
+            Species sp = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(espece);
+            if (sp == null) return 0;
+            Integer base = sp.getBaseStats().get(com.cobblemon.mod.common.api.pokemon.stats.Stats.HP);
+            if (base == null) return 0;
+            return ((2 * base + 31 + 63) * niveau) / 100 + niveau + 10;
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
 
     /** La cible copiée par mon Métamorph, ou null (pas de Morphing vu). */
     public static Pokemon getCibleMorphingJoueur() {
@@ -1176,6 +1246,27 @@ public final class ObservationCollector {
             Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
             if (adverse == null) return;
             Pokemon p = adverse ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+            if (adverse) {
+                // Métamorph adverse transformé en MON Pokémon : copie exacte de
+                // ses stats (connues), de ses capacités et de ses boosts.
+                especeMorphingAdversaire = p != null ? p.getEspece() : null;
+                cibleMorphingAdversaire = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (cibleMorphingAdversaire == null) cibleMorphingAdversaire = BattleStateTracker.getJoueurActif();
+                if (cibleMorphingAdversaire != null) appliquerObjetReelJoueur(cibleMorphingAdversaire);
+                capacitesMorphingAdversaire = new ArrayList<>();
+                try {
+                    com.cobblemon.mod.common.pokemon.Pokemon complet = BattleStateTracker.getPokemonCompletJoueur();
+                    if (complet != null) {
+                        for (com.cobblemon.mod.common.api.moves.Move m : complet.getMoveSet()) {
+                            if (m != null) capacitesMorphingAdversaire.add(m.getName());
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+                for (Stat st : Stat.values()) {
+                    if (st != Stat.PV) BoostTracker.forcerStageAdversaire(st, BoostTracker.getStageJoueur(st));
+                }
+            }
             if (!adverse) {
                 // Morphing copie aussi les boosts de la cible
                 cibleMorphingJoueur = BattleStateTracker.getAdversaireActif();
@@ -1191,6 +1282,9 @@ public final class ObservationCollector {
             }
         } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
             TRANSFORMES.removeIf(k -> k.startsWith("adv:"));
+            cibleMorphingAdversaire = null;
+            especeMorphingAdversaire = null;
+            capacitesMorphingAdversaire = new ArrayList<>();
         } else if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
             TRANSFORMES.removeIf(k -> k.startsWith("moi:"));
             cibleMorphingJoueur = null;
@@ -3340,6 +3434,9 @@ public final class ObservationCollector {
         TRANSFORMES.clear();
         cibleMorphingJoueur = null;
         capacitesMorphing = new ArrayList<>();
+        cibleMorphingAdversaire = null;
+        especeMorphingAdversaire = null;
+        capacitesMorphingAdversaire = new ArrayList<>();
         reculOrbeVieAdvCeTour = false;
         coupAdvRateCeTour = false;
         TORCHE_ACTIVE.clear();

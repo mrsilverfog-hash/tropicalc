@@ -106,7 +106,8 @@ public final class CalcOverlay implements HudRenderCallback {
         // cible copiée déclenche à tort une purge des boosts comme un vrai switch.
         String especeJoueurStable = joueur.getEspece();
 
-        Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
+        // (copie exacte de mon Pokémon si c'est un Métamorph adverse transformé)
+        Pokemon adversaire = ObservationCollector.adversaireAffiche(adversaireBase);
 
         // Morphing / Imposteur : stats, types et talent de la CIBLE copiée
         // (gardée même si l'adversaire a changé de Pokémon depuis), PV,
@@ -352,6 +353,17 @@ public final class CalcOverlay implements HudRenderCallback {
 
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
         List<MoveTemplate> coupsReveles = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
+        // Métamorph adverse transformé en mon Pokémon : il a MES capacités,
+        // connues avec certitude.
+        List<String> copiees = ObservationCollector.getCapacitesMorphingAdversaire();
+        if (!copiees.isEmpty()) {
+            coupsReveles = new ArrayList<>();
+            for (String id : copiees) {
+                MoveTemplate t = Moves.INSTANCE.getByName(id);
+                if (t != null) coupsReveles.add(t);
+            }
+            smogon = null;
+        }
 
         LinkedHashSet<String> reveleIds = new LinkedHashSet<>();
         for (MoveTemplate t : coupsReveles) reveleIds.add(t.getName());
@@ -368,7 +380,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (!aAfficher.isEmpty()) {
             y += 4;
-            dessinerTexte("Capacités adverses :", x, y, COULEUR_DANGER);
+            String cibleAdv = ObservationCollector.getCibleMorphingAdversaire();
+            dessinerTexte(cibleAdv != null ? "Capacités adverses (copie de ton " + nomEspece(cibleAdv) + ") :"
+                : "Capacités adverses :", x, y, COULEUR_DANGER);
             y += hauteurLigne;
 
             // Verrou Choix : objet Choix + un coup déjà utilisé depuis son entrée

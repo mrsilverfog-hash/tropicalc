@@ -62,7 +62,7 @@ public final class SwitchOverlayRenderer {
         // encore mis à jour après un vol via Pickpocket.
         ObservationCollector.appliquerObjetReelJoueur(candidat);
 
-        Pokemon adversaire = ObservationCollector.construireAdversaireEstime(adversaireBase);
+        Pokemon adversaire = ObservationCollector.adversaireAffiche(adversaireBase);
 
         // Métamorph avec Imposteur : il entre déjà transformé en l'adversaire
         // en face (stats, types, talent et boosts copiés ; ses PV, son objet).
@@ -161,6 +161,15 @@ public final class SwitchOverlayRenderer {
         String especeAdv = adversaireBase.getEspece();
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(especeAdv);
         List<MoveTemplate> coupsReveles = ObservationCollector.getCoupsAdversaireReveles(especeAdv);
+        List<String> copiees = ObservationCollector.getCapacitesMorphingAdversaire();
+        if (!copiees.isEmpty()) {
+            coupsReveles = new ArrayList<>();
+            for (String id : copiees) {
+                MoveTemplate t = Moves.INSTANCE.getByName(id);
+                if (t != null) coupsReveles.add(t);
+            }
+            smogon = null;
+        }
 
         LinkedHashSet<String> reveleIds = new LinkedHashSet<>();
         for (MoveTemplate t : coupsReveles) reveleIds.add(t.getName());
