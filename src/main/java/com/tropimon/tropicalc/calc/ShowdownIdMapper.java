@@ -218,6 +218,10 @@ public final class ShowdownIdMapper {
         OBJETS.put("flameorb", "Orbe Flamme");
         OBJETS.put("toxicorb", "Orbe Toxik");
         OBJETS.put("focussash", "Ceinture Focus");
+        OBJETS.put("ejectbutton", "Bouton Fuite");
+        OBJETS.put("redcard", "Carton Rouge");
+        OBJETS.put("powerherb", "Herbe Pouvoir");
+        OBJETS.put("ejectpack", "Sac Fuite");
         OBJETS.put("sitrusberry", "Baie Sitrus");
         OBJETS.put("aguavberry", "Baie Agava");
         OBJETS.put("iapapaberry", "Baie Iapapa");

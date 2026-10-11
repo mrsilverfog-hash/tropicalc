@@ -1545,11 +1545,11 @@ public final class ObservationCollector {
             }
             if (Boolean.FALSE.equals(adverse) && cle.equals("cobblemon.battle.used_move_on") && args.length > 2
                     && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[2])))) {
-                photographierCoupDonne(idCoup, especeDepuisArgument(args[2]));
+                photographierCoupDonne(idCoup, especeOuActif(args[2]));
             }
             if (dernierCoupEstAdverse && cle.equals("cobblemon.battle.used_move_on") && args.length > 2
                     && Boolean.FALSE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[2])))) {
-                photographierCoupRecu(idCoup, especeDepuisArgument(args[0]), especeDepuisArgument(args[2]));
+                photographierCoupRecu(idCoup, especeOuActif(args[0]), especeOuActif(args[2]));
             }
             return;
         }
@@ -1568,7 +1568,7 @@ public final class ObservationCollector {
         if (cr == null) return;
         Boolean surMoi = args.length > 0
             ? Boolean.FALSE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]))) : false;
-        boolean surDefenseur = surMoi && memeEspece(especeDepuisArgument(args[0]), cr.especeDefenseur);
+        boolean surDefenseur = surMoi && memeEspece(especeOuActif(args[0]), cr.especeDefenseur);
         // Son coup bloqué par mon Abri, raté, sans effet ou échoué : rien à mesurer
         // (log du 11/10 : Cascade sur l'Abri de Braségali lu comme « perte 0 »)
         if (dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
@@ -1642,7 +1642,7 @@ public final class ObservationCollector {
         if (cd == null) return;
         boolean surLui = args.length > 0
             && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))
-            && memeEspece(especeDepuisArgument(args[0]), cd.especeDefenseur);
+            && memeEspece(especeOuActif(args[0]), cd.especeDefenseur);
         if (!dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
                 || ((cle.startsWith("cobblemon.battle.activate.protect") || cle.equals("cobblemon.battle.immune"))
                     && surLui))) {
@@ -2299,6 +2299,21 @@ public final class ObservationCollector {
     private static final Set<String> KO_JOUEUR = new HashSet<>();
     public static int getNombreKoAdversaire() { return KO_ADVERSAIRE.size(); }
     public static int getNombreKoJoueur() { return KO_JOUEUR.size(); }
+
+    /**
+     * Espèce nommée par un argument de message ; pour un Pokémon surnommé
+     * (le message donne "Master_Sans:Pichon", sans l'espèce), celle du
+     * Pokémon actif de ce camp. Log du 11/10 : le K.O. de Pyrobut surnommé
+     * n'était pas reconnu, la mesure finissait en « adversaire introuvable ».
+     */
+    private static String especeOuActif(Object arg) {
+        String espece = especeDepuisArgument(arg);
+        if (espece != null) return espece;
+        Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(arg));
+        if (adverse == null) return null;
+        Pokemon actif = adverse ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+        return actif != null ? actif.getEspece() : null;
+    }
 
     /** owned_pokemon(dresseur, translation{cobblemon.species.X.name}) -> "X". */
     private static String especeDepuisArgument(Object arg) {
@@ -3284,7 +3299,10 @@ public final class ObservationCollector {
                     // Le jeu nomme l'objet perdu ("item.cobblemon.focus_sash") :
                     // gardé pour les prochains combats contre ce joueur.
                     String texteObjet = argsFin.length > 1 ? cleDepuisArgument(argsFin[1]) : null;
-                    if (texteObjet != null && texteObjet.lastIndexOf('.') >= 0) {
+                    // Sans objet en argument, la clé le nomme souvent elle-même
+                    // (enditem.ejectbutton, enditem.focussash, enditem.whiteherb...)
+                    if (texteObjet == null) texteObjet = cle;
+                    if (texteObjet.lastIndexOf('.') >= 0) {
                         String fr = ShowdownIdMapper.objet(
                             texteObjet.substring(texteObjet.lastIndexOf('.') + 1).replace("_", ""));
                         if (fr != null) {
