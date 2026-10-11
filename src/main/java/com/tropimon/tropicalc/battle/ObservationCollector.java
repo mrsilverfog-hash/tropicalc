@@ -1042,6 +1042,7 @@ public final class ObservationCollector {
         Field etat;
         boolean clone;
         boolean crit, multiCoups, ko, invalide;
+        boolean bloque;             // Abri, raté, immunité ou échec : aucun dégât à mesurer
         boolean tressailli;          // cant.flinch sur le Pokémon touché après le coup
         boolean joueurBloqueAvant;   // je n'ai pas pu agir AVANT son coup (sommeil, paralysie, recharge...)
         int prioriteMinJoueur = Integer.MIN_VALUE;  // priorité la plus basse parmi mes capacités
@@ -1056,6 +1057,7 @@ public final class ObservationCollector {
         Pokemon attaquant;          // mon Pokémon au moment du coup
         Pokemon defenseurBase;      // adversaire tel que vu au moment du coup
         Pokemon defenseurEstime;    // son estimation (objet, stats) au moment du coup
+        boolean bloque;             // Abri, raté, immunité ou échec : aucun dégât à mesurer
         double pvAvant;
         Field etat;
         boolean crit, multiCoups, ko, invalide;
@@ -1567,6 +1569,13 @@ public final class ObservationCollector {
         Boolean surMoi = args.length > 0
             ? Boolean.FALSE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]))) : false;
         boolean surDefenseur = surMoi && memeEspece(especeDepuisArgument(args[0]), cr.especeDefenseur);
+        // Son coup bloqué par mon Abri, raté, sans effet ou échoué : rien à mesurer
+        // (log du 11/10 : Cascade sur l'Abri de Braségali lu comme « perte 0 »)
+        if (dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
+                || ((cle.startsWith("cobblemon.battle.activate.protect") || cle.equals("cobblemon.battle.immune"))
+                    && surDefenseur))) {
+            cr.bloque = true;
+        }
 
         if (cle.equals("cobblemon.battle.crit")) {
             if (dernierCoupEstAdverse) cr.crit = true;
@@ -1634,6 +1643,11 @@ public final class ObservationCollector {
         boolean surLui = args.length > 0
             && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))
             && memeEspece(especeDepuisArgument(args[0]), cd.especeDefenseur);
+        if (!dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
+                || ((cle.startsWith("cobblemon.battle.activate.protect") || cle.equals("cobblemon.battle.immune"))
+                    && surLui))) {
+            cd.bloque = true;
+        }
         if (cle.equals("cobblemon.battle.crit")) {
             if (!dernierCoupEstAdverse) cd.crit = true;
         } else if (cle.equals("cobblemon.battle.hit_count")) {
@@ -1676,6 +1690,8 @@ public final class ObservationCollector {
         try {
             if ("futuresight".equals(cd.idCoup) || "doomdesire".equals(cd.idCoup)) {
                 log.append("dégâts dans deux tours : pas de mesure");
+            } else if (cd.bloque) {
+                log.append("coup bloqué (Abri, raté, sans effet ou échoué)");
             } else if (cd.invalide) {
                 log.append("mesure invalide (soin, dégât annexe ou switch après le coup)");
             } else {
@@ -2083,6 +2099,7 @@ public final class ObservationCollector {
 
     private static String analyserCoupRecu(CoupRecu cr) {
         StringBuilder log = new StringBuilder();
+        if (cr.bloque) return "coup bloqué (Abri, raté, sans effet ou échoué)";
         if (cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
         if (estTransforme(true, cr.especeAttaquant) || joueurTransforme()) {
             return "Morphing en cours : ignoré";
