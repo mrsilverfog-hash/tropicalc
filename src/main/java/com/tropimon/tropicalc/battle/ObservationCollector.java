@@ -1637,6 +1637,92 @@ public final class ObservationCollector {
     }
 
     /** Analyse un coup reçu ; renvoie la ligne de log (mesures et conclusion). */
+    // --- Set moins offensif que l'estimation (Pyrobut de soutien...) ---
+    // Facteur maximal sur sa stat offensive (espèce -> stat -> facteur < 1)
+    // et nombre de coups qui l'ont mesuré.
+    private static final Map<String, Map<Stat, Double>> PLAFONDS_OFFENSIFS = new HashMap<>();
+    private static final Map<String, Integer> MESURES_PLAFOND = new HashMap<>();
+    private static final Set<String> PLAFONDS_ACTIFS = new HashSet<>();
+
+    /**
+     * Le coup reçu reste nettement sous le minimum prévu : on cherche le set
+     * le plus offensif qui l'explique encore (EV 252 -> 0, nature favorable,
+     * neutre ou défavorable, même objet et talent supposés). Le rapport à
+     * l'estimation devient un plafond, appliqué dès un écart net (< 80 % du
+     * minimum) ou à la deuxième mesure. Chaque coup donne une borne haute :
+     * on garde la plus basse.
+     */
+    private static void tenterPlafondOffensif(CoupRecu cr, Pokemon estime,
+            com.tropimon.tropicalc.calc.Move capacite, Stat statAtk, double perte,
+            DamageCalculator.Resultat prevu, StringBuilder log) {
+        if (prevu.pourcentageMin < 6.0 || perte >= prevu.pourcentageMin * 0.9 - 1.0) return;
+        String espece = cr.especeAttaquant;
+        // Stat de l'estimation SANS plafond déjà appliqué (base commune à
+        // toutes les mesures)
+        int statEstimee = (int) Math.round(estime.getStatCalculee(statAtk) / plafondOffensif(espece, statAtk));
+        if (statEstimee <= 0) return;
+        String objet = estime.getObjet() != null ? estime.getObjet() : StatHypothesis.AUCUN;
+        String talent = estime.getTalent() != null ? estime.getTalent() : StatHypothesis.AUCUN;
+        int meilleure = -1;
+        for (com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost n
+                : com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.values()) {
+            for (int ev = 252; ev >= 0; ev -= 4) {
+                Pokemon h = com.tropimon.tropicalc.calc.SetInferenceEngine.construirePokemonHypothetique(
+                    estime, statAtk, ev, n, objet, talent);
+                int stat = h.getStatCalculee(statAtk);
+                if (stat <= meilleure) continue;   // déjà mieux trouvé
+                for (Stat st : Stat.values()) {
+                    if (st != Stat.PV) h.setStage(st, 0);
+                }
+                h.setStage(Stat.ATTAQUE, cr.stageAtk);
+                h.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
+                if (cr.statutAttaquant != null) h.setStatut(cr.statutAttaquant);
+                DamageCalculator.Resultat r = DamageCalculator.calculer(
+                    h, cr.defenseur, capacite, cr.etat, cr.etat.getEcransJoueur(), false);
+                // Pourcentages arrondis à l'affichage : 1 point de marge
+                if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) {
+                    meilleure = stat;
+                    break;   // EV décroissants : le premier qui colle est le plus offensif
+                }
+            }
+        }
+        if (meilleure < 0) {
+            log.append(" | MOINS que prévu, inexplicable par ses EV");
+            return;
+        }
+        double facteur = (double) meilleure / statEstimee;
+        if (facteur > 0.97) return;
+        int mesures = MESURES_PLAFOND.merge(espece, 1, Integer::sum);
+        boolean net = perte < prevu.pourcentageMin * 0.8;
+        PLAFONDS_OFFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).merge(statAtk, facteur, Math::min);
+        if (net || mesures >= 2) PLAFONDS_ACTIFS.add(espece);
+        log.append(" | MOINS que prévu : ").append(statAtk == Stat.ATTAQUE ? "Atq" : "AtqSpé")
+            .append(" au plus ").append(meilleure).append(" (x").append(String.format("%.2f", facteur)).append(")")
+            .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
+    }
+
+    /** Facteur à appliquer à sa stat offensive (1.0 = aucun), une fois établi. */
+    private static double plafondOffensif(String espece, Stat stat) {
+        if (!PLAFONDS_ACTIFS.contains(espece)) return 1.0;
+        Map<Stat, Double> m = PLAFONDS_OFFENSIFS.get(espece);
+        if (m == null || !m.containsKey(stat)) return 1.0;
+        return m.get(stat);
+    }
+
+    /** "Atq x0.80" si son set s'est montré moins offensif que l'estimation, sinon null. */
+    public static String getPlafondOffensifTexte(String espece) {
+        if (!PLAFONDS_ACTIFS.contains(espece)) return null;
+        Map<Stat, Double> m = PLAFONDS_OFFENSIFS.get(espece);
+        if (m == null || m.isEmpty()) return null;
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Stat, Double> e : m.entrySet()) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(e.getKey() == Stat.ATTAQUE ? "Atq" : "AtqSpé").append(" x")
+                .append(String.format("%.2f", e.getValue()));
+        }
+        return sb.toString();
+    }
+
     private static String analyserCoupRecu(CoupRecu cr) {
         StringBuilder log = new StringBuilder();
         if (cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
@@ -1680,6 +1766,12 @@ public final class ObservationCollector {
             .append(", ").append(physique ? "Atq " : "AtqSpé ").append(estime.getStatCalculee(statAtk))
             .append(" stage ").append(physique ? cr.stageAtk : cr.stageAtkSpe)
             .append(", météo ").append(cr.etat.getMeteo()).append(", champ ").append(cr.etat.getTerrain()).append(']');
+
+        // --- Set moins offensif que l'estimation ---
+        if (!cr.crit && !cr.ko && !cr.multiCoups && !capacite.isMultiCoups() && !prevu.immunise
+                && !PUISSANCE_NON_MODELISEE.contains(cr.idCoup)) {
+            tenterPlafondOffensif(cr, estime, capacite, statAtk, perte, prevu, log);
+        }
 
         // --- Détection Bandeau / Lunettes Choix ---
         if (cr.crit) return log.append(" | coup critique : pas de conclusion").toString();
@@ -2079,6 +2171,13 @@ public final class ObservationCollector {
 
         if (objetRetire) {
             b.objet(null);
+        }
+
+        // Plafond offensif mesuré sur les coups reçus (set moins offensif que
+        // l'estimation) : appliqué comme correction de stat ("~" dans le HUD).
+        for (Stat st : new Stat[]{Stat.ATTAQUE, Stat.ATTAQUE_SPE}) {
+            double plafond = plafondOffensif(espece, st);
+            if (plafond < 0.97) b.multiplicateurStat(st, plafond);
         }
 
         // Correction par observation : DÉSACTIVÉE temporairement — mesure
@@ -3284,6 +3383,9 @@ public final class ObservationCollector {
         ESPECES_SCOUT_FUSIONNEES.clear();
         ADVERSAIRES_VUS.clear();
         FACTEURS.clear();
+        PLAFONDS_OFFENSIFS.clear();
+        MESURES_PLAFOND.clear();
+        PLAFONDS_ACTIFS.clear();
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();

@@ -732,6 +732,13 @@ public final class CalcOverlay implements HudRenderCallback {
                     + ", pris en compte dans les dégâts", x, y, COULEUR_GRIS);
                 y += hauteurLigne;
             }
+            // Set moins offensif que l'estimation, mesuré sur ses coups
+            String plafond = ObservationCollector.getPlafondOffensifTexte(especeAdv);
+            if (plafond != null) {
+                dessinerTexte("Set moins offensif que prévu : " + plafond + " (mesuré sur ses coups)",
+                    x, y, COULEUR_GRIS);
+                y += hauteurLigne;
+            }
             // Preuve qu'il n'a pas d'objet Choix : deux capacités différentes
             // sans sortir du terrain (inutile si un autre objet est confirmé)
             String preuvePasChoix = ObservationCollector.getPreuvePasChoix(especeAdv);
