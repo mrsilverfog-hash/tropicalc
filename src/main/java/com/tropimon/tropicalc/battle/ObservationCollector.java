@@ -1222,6 +1222,22 @@ public final class ObservationCollector {
         return cibleMorphingJoueur;
     }
 
+    /**
+     * Mon Pokémon actif est transformé. Le message "transform" fait foi
+     * jusqu'à ce qu'il quitte le terrain : quand la cible copiée tombe K.O.,
+     * le jeu peut de nouveau présenter mon Métamorph comme un Métamorph
+     * (log du 11/10 : Braségali copié puis K.O., plus aucune capacité
+     * affichée face au Léviator alors que j'étais toujours transformé).
+     */
+    public static boolean isJoueurTransforme() {
+        if (cibleMorphingJoueur != null) return true;
+        try {
+            return BattleStateTracker.joueurEstTransforme();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /** Capacités copiées par mon Métamorph (id Showdown), vide si pas encore lues. */
     public static List<String> getCapacitesMorphing() {
         return capacitesMorphing;
@@ -1939,6 +1955,8 @@ public final class ObservationCollector {
     // actifs : permet de rejouer un combat hors du jeu et de vérifier les
     // mesures (le bug des PV max du 11/10 aurait sauté aux yeux).
     private static String dernierePhotoPv = null;
+    private static String photoPvEnCours = null;
+    private static long photoPvDepuisMs = 0;
 
     private static void journaliserPv() {
         Pokemon moi = BattleStateTracker.getJoueurActif();
@@ -1947,7 +1965,15 @@ public final class ObservationCollector {
         String photo = "PV | moi " + moi.getEspece() + " " + moi.getPvActuels() + "/" + moi.getPvMax()
             + " (" + pct(moi.getPourcentagePv()) + ")" + etatCompact(moi, false)
             + " | adv " + adv.getEspece() + " " + pct(adv.getPourcentagePv()) + etatCompact(adv, true);
-        if (photo.equals(dernierePhotoPv)) return;
+        // La barre de PV s'anime (une valeur par image pendant ~0,5 s) : on
+        // n'écrit que les valeurs restées stables 300 ms.
+        long maintenant = System.currentTimeMillis();
+        if (!photo.equals(photoPvEnCours)) {
+            photoPvEnCours = photo;
+            photoPvDepuisMs = maintenant;
+            return;
+        }
+        if (photo.equals(dernierePhotoPv) || maintenant - photoPvDepuisMs < 300) return;
         dernierePhotoPv = photo;
         MessageDebugLogger.analyse(photo);
     }
@@ -2905,7 +2931,7 @@ public final class ObservationCollector {
             // cibleMorphingJoueur : effacée au retrait, alors que le combat
             // montre encore le Métamorph transformé quelques instants (les
             // capacités du Pokémon suivant étaient prises pour des copies).
-            if (cibleMorphingJoueur != null && BattleStateTracker.joueurEstTransforme()) {
+            if (cibleMorphingJoueur != null) {
                 List<String> ids = BattleStateTracker.getCapacitesRequeteJoueur();
                 if (ids != null && !ids.isEmpty() && !ids.contains("transform") && !ids.equals(capacitesMorphing)) {
                     capacitesMorphing = new ArrayList<>(ids);
@@ -3803,6 +3829,7 @@ public final class ObservationCollector {
         MESURES_DEFENSIVES.clear();
         DEFENSIFS_ACTIFS.clear();
         dernierePhotoPv = null;
+        photoPvEnCours = null;
         meteoType = null;
         meteoLanceurAdv = null;
         meteoUpkeeps = 0;

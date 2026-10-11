@@ -112,7 +112,7 @@ public final class CalcOverlay implements HudRenderCallback {
         // Morphing / Imposteur : stats, types et talent de la CIBLE copiée
         // (gardée même si l'adversaire a changé de Pokémon depuis), PV,
         // objet et statut de Métamorph.
-        boolean transforme = BattleStateTracker.joueurEstTransforme();
+        boolean transforme = ObservationCollector.isJoueurTransforme();
         Pokemon cibleMorphing = null;
         if (transforme) {
             cibleMorphing = ObservationCollector.getCibleMorphingJoueur();
