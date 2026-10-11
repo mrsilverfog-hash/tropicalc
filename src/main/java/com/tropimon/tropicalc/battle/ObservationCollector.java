@@ -1316,6 +1316,54 @@ public final class ObservationCollector {
         }
     }
 
+    // --- Durée de la météo : 8 tours = roche du lanceur ---
+    // Une météo dure 5 tours (4 messages "upkeep" puis "end"), 8 avec la
+    // roche adaptée. Un 5e upkeep sans relance prouve la roche du lanceur.
+    // Vérifié sur le log du 11/10 : Sable Volant de Tyranocif = 7 upkeep,
+    // celui de mon Métamorph (Mouchoir Choix) = 4, Neige de Roigada = 4.
+    private static final Map<String, String> ROCHES_METEO = Map.of(
+        "sandstorm", "Roche Lisse", "raindance", "Roche Humide", "sunnyday", "Roche Chaude",
+        "snow", "Roche Glacée", "snowscape", "Roche Glacée", "hail", "Roche Glacée");
+    private static Boolean dernierActeurAdverse = null;
+    private static String meteoType = null;
+    private static String meteoLanceurAdv = null;   // espèce adverse qui l'a lancée, sinon null
+    private static int meteoUpkeeps = 0;
+
+    private static void suivreDureeMeteo(String cle, Object[] args) {
+        if ((cle.equals("cobblemon.battle.ability.generic") || cle.equals("cobblemon.battle.used_move")
+                || cle.equals("cobblemon.battle.used_move_on")) && args.length > 0) {
+            dernierActeurAdverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            return;
+        }
+        if (!cle.startsWith("cobblemon.battle.weather.")) return;
+        String[] p = cle.substring("cobblemon.battle.weather.".length()).split("\\.");
+        if (p.length != 2) return;
+        if (p[1].equals("start")) {
+            meteoType = p[0];
+            meteoUpkeeps = 0;
+            Pokemon adv = Boolean.TRUE.equals(dernierActeurAdverse) ? BattleStateTracker.getAdversaireActif() : null;
+            meteoLanceurAdv = adv != null ? adv.getEspece() : null;
+        } else if (p[1].equals("upkeep") && p[0].equals(meteoType)) {
+            meteoUpkeeps++;
+            String roche = ROCHES_METEO.get(meteoType);
+            if (meteoUpkeeps == 5 && meteoLanceurAdv != null && roche != null) {
+                String espece = meteoLanceurAdv;
+                String raison = "météo de 8 tours au lieu de 5";
+                if (OBJETS_RETIRES.contains(espece)) {
+                    OBJETS_PERDUS_CONNUS.put(espece, roche);
+                    MessageDebugLogger.analyse("OBJET " + espece + " : tenait une " + roche + " (" + raison + "), perdue depuis");
+                } else {
+                    confirmerObjet(espece, roche, raison);
+                    MessageDebugLogger.analyse("OBJET " + espece + " : " + roche + " confirmée (" + raison + ")");
+                }
+            }
+        } else if (p[1].equals("end")) {
+            meteoType = null;
+            meteoLanceurAdv = null;
+            meteoUpkeeps = 0;
+        }
+    }
+
     private static void suivreTorche(String cle, Object[] args) {
         if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
             TORCHE_ACTIVE.removeIf(k -> k.startsWith("adv:"));
@@ -1649,6 +1697,7 @@ public final class ObservationCollector {
                     if (!r.immunise && !cd.ko && !cd.multiCoups) {
                         if (perte > r.pourcentageMax + 2) log.append(" | PLUS que prévu");
                         else if (perte < r.pourcentageMin - 2) log.append(" | MOINS que prévu");
+                        if (!cd.crit) tenterExclureObjetDefensif(cd, def, capacite, perte, log);
                     }
                 }
             }
@@ -1656,6 +1705,59 @@ public final class ObservationCollector {
             log.append("erreur : ").append(e);
         }
         MessageDebugLogger.analyse(log.toString());
+    }
+
+    // --- Objet défensif supposé démenti par les dégâts ---
+    // Veste de Combat / Évoluroc supposés (Smogon, scouting) : si mon coup
+    // fait plus que le maximum possible du set le MOINS résistant qui tient
+    // cet objet (0 EV en PV et en défense, nature qui baisse la défense,
+    // 31 IV), il ne l'a pas. Il faut aussi que le même set SANS l'objet
+    // explique la perte, sinon c'est la mesure qui est douteuse.
+    private static final Set<String> OBJETS_DEFENSIFS = Set.of("Veste de Combat", "Évoluroc");
+    private static final Map<String, Set<String>> OBJETS_EXCLUS = new HashMap<>();
+    private static final Map<String, String> PREUVES_EXCLUSION = new HashMap<>();
+
+    private static boolean objetExclu(String espece, String objet) {
+        Set<String> s = OBJETS_EXCLUS.get(espece);
+        return s != null && objet != null && s.contains(objet);
+    }
+
+    /** "Pas de Veste de Combat : Vibrobscur 11,3 % > 10,9 % max", null sinon. */
+    public static String getPreuveExclusionObjet(String espece) {
+        return PREUVES_EXCLUSION.get(espece);
+    }
+
+    private static void tenterExclureObjetDefensif(CoupDonne cd, Pokemon def,
+            com.tropimon.tropicalc.calc.Move capacite, double perte, StringBuilder log) {
+        String objet = def.getObjet();
+        String espece = cd.especeDefenseur;
+        if (objet == null || !OBJETS_DEFENSIFS.contains(objet)) return;
+        if (OBJETS_CONFIRMES.containsKey(def.getEspece())) return;
+        boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
+            || "psyshock".equals(cd.idCoup) || "psystrike".equals(cd.idCoup) || "secretsword".equals(cd.idCoup);
+        Stat statDef = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        Pokemon faible = def.copieAvecEvNature(Map.of(Stat.PV, 0, statDef, 0),
+            physique ? com.tropimon.tropicalc.calc.Nature.PRESSE : com.tropimon.tropicalc.calc.Nature.NAIF);
+        DamageCalculator.Resultat avec = DamageCalculator.calculer(
+            cd.attaquant, faible, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+        faible.setObjet(null);
+        DamageCalculator.Resultat sans = DamageCalculator.calculer(
+            cd.attaquant, faible, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+        if (avec.immunise || sans.immunise) return;
+        double seuil = avec.pourcentageMax * 1.02 + 0.5;
+        if (perte <= seuil || perte > sans.pourcentageMax * 1.05 + 1.0) return;
+        String nomCoup = cd.idCoup;
+        try {
+            MoveTemplate t = Moves.INSTANCE.getByName(cd.idCoup);
+            if (t != null) nomCoup = t.getDisplayName().getString();
+        } catch (Exception ignored) {
+        }
+        OBJETS_EXCLUS.computeIfAbsent(def.getEspece(), k -> new HashSet<>()).add(objet);
+        OBJETS_PROBABLES.remove(def.getEspece(), objet);
+        String preuve = String.format(java.util.Locale.FRANCE, "%s %.1f %% > %.1f %% max avec", nomCoup, perte, avec.pourcentageMax);
+        PREUVES_EXCLUSION.put(def.getEspece(), "pas de " + objet + " : " + preuve);
+        log.append(" | PAS DE ").append(objet).append(" : ").append(pct(perte)).append(" > ")
+            .append(pct(avec.pourcentageMax)).append(" max du set le moins résistant qui la tient");
     }
 
     private static void photographierCoupRecu(String idCoup, String especeAtt, String especeDef) {
@@ -2225,6 +2327,7 @@ public final class ObservationCollector {
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.attaqueSpe);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defense);
                 if (objetEstime == null) objetEstime = extraireObjetUnique(profil.defenseSpe);
+                if (objetEstime != null && objetExclu(espece, objetEstime)) objetEstime = null;
                 if (objetEstime != null) {
                     b.objet(objetEstime);
                     // "Probable", jamais "confirmé" : l'élimination suppose
@@ -2257,14 +2360,18 @@ public final class ObservationCollector {
         // Objet/talent des combats passés : meilleure estimation que Smogon,
         // mais le "?" reste (le set a pu changer depuis)
         if (scout != null) {
-            if (scout.objet != null && objetConfirme == null && !objetRetire) b.objet(scout.objet);
+            if (scout.objet != null && objetConfirme == null && !objetRetire && !objetExclu(espece, scout.objet)) {
+                b.objet(scout.objet);
+            }
             if (scout.talent != null) b.talent(scout.talent);
         }
 
         // Objet probable (élimination par les dégâts, Évoluroc) : plus fiable
         // que le scouting et Smogon, moins qu'une confirmation
         String objetProbable = OBJETS_PROBABLES.get(espece);
-        if (objetProbable != null && objetConfirme == null && !objetRetire) b.objet(objetProbable);
+        if (objetProbable != null && objetConfirme == null && !objetRetire && !objetExclu(espece, objetProbable)) {
+            b.objet(objetProbable);
+        }
 
         if (objetConfirme != null && !objetRetire) {
             b.objet(objetConfirme);
@@ -2843,6 +2950,7 @@ public final class ObservationCollector {
             if ("Ballon".equals(fr) && ballonExclu(espece)) continue;
             if (fr.endsWith(" Choix") && OBJETS_CHOIX_EXCLUS.contains(espece)) continue;
             if ("Orbe Vie".equals(fr) && ORBE_VIE_EXCLUE.contains(espece)) continue;
+            if (objetExclu(espece, fr)) continue;
             return fr;
         }
         return null;
@@ -2878,6 +2986,7 @@ public final class ObservationCollector {
         suivreCoupRecu(cle, contenu.getArgs());
         suivreVerrouChoix(cle, contenu.getArgs());
         suivreTorche(cle, contenu.getArgs());
+        suivreDureeMeteo(cle, contenu.getArgs());
         suivreMorphingEtRates(cle, contenu.getArgs());
 
         if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
@@ -3554,6 +3663,11 @@ public final class ObservationCollector {
         ADVERSAIRES_VUS.clear();
         FACTEURS.clear();
         OBJETS_PERDUS_CONNUS.clear();
+        OBJETS_EXCLUS.clear();
+        PREUVES_EXCLUSION.clear();
+        meteoType = null;
+        meteoLanceurAdv = null;
+        meteoUpkeeps = 0;
         PLAFONDS_OFFENSIFS.clear();
         MESURES_PLAFOND.clear();
         PLAFONDS_ACTIFS.clear();

@@ -147,6 +147,33 @@ public class Pokemon {
         return (int) (statCalculee * multiplicateur);
     }
 
+    /**
+     * Copie avec d'autres EV et une autre nature, le reste identique (objet,
+     * talent, types, boosts, statut, % de PV). Sans correction observée ni
+     * PV forcés : sert à tester un set hypothétique.
+     */
+    public Pokemon copieAvecEvNature(Map<Stat, Integer> nouveauxEvs, Nature nouvelleNature) {
+        Builder b = new Builder(espece, niveau, type1, type2);
+        b.statsBase.putAll(statsBase);
+        b.ivs.putAll(ivs);
+        b.evs.putAll(evs);
+        b.evs.putAll(nouveauxEvs);
+        b.nature = nouvelleNature != null ? nouvelleNature : nature;
+        b.talent = talent;
+        b.objet = objet;
+        b.poidsHg = poidsHg;
+        b.teraType = teraType;
+        b.teracristallise = teracristallise;
+        b.mega = mega;
+        Pokemon p = new Pokemon(b);
+        if (typesModifies) p.setTypesOverride(typeOverride1, typeOverride2);
+        p.stages.putAll(stages);
+        p.statut = statut;
+        p.campAdverse = campAdverse;
+        p.pvActuels = (int) Math.round(getPourcentagePv() / 100.0 * p.getPvMax());
+        return p;
+    }
+
     public int getStage(Stat stat) { return stages.getOrDefault(stat, 0); }
 
     public void setStage(Stat stat, int valeur) {

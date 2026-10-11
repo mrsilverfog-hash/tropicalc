@@ -762,6 +762,13 @@ public final class CalcOverlay implements HudRenderCallback {
                 dessinerTexte("Pas d'objet Choix : " + preuvePasChoix, x, y, COULEUR_REVELE);
                 y += hauteurLigne;
             }
+            // Objet défensif supposé démenti par mes dégâts
+            String preuveExclusion = ObservationCollector.getPreuveExclusionObjet(especeAdv);
+            if (preuveExclusion != null && objetConfirme == null && !objetRetire) {
+                dessinerTexte(Character.toUpperCase(preuveExclusion.charAt(0)) + preuveExclusion.substring(1),
+                    x, y, COULEUR_REVELE);
+                y += hauteurLigne;
+            }
         }
 
         // Lignes trop longues : coupées et les suivantes décalées vers le bas.
