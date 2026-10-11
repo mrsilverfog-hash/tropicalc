@@ -1055,6 +1055,7 @@ public final class ObservationCollector {
         String idCoup, especeAttaquant, especeDefenseur;
         Pokemon attaquant;          // mon Pokémon au moment du coup
         Pokemon defenseurBase;      // adversaire tel que vu au moment du coup
+        Pokemon defenseurEstime;    // son estimation (objet, stats) au moment du coup
         double pvAvant;
         Field etat;
         boolean crit, multiCoups, ko, invalide;
@@ -1542,6 +1543,8 @@ public final class ObservationCollector {
             if (def == null || att == null) return;
             if (especeDef != null && !memeEspece(especeDef, def.getEspece())) return;
             appliquerObjetReelJoueur(att);
+            // Mon Métamorph transformé frappe avec la copie, pas ses propres stats
+            if (joueurTransforme() && cibleMorphingJoueur != null) att = construireMorphing(att, cibleMorphingJoueur);
             for (Stat st : Stat.values()) {
                 if (st != Stat.PV) att.setStage(st, BoostTracker.getStageJoueur(st));
             }
@@ -1551,6 +1554,9 @@ public final class ObservationCollector {
             cd.especeDefenseur = def.getEspece();
             cd.attaquant = att;
             cd.defenseurBase = def;
+            // Estimation AU MOMENT du coup : Sabotage fait tomber l'objet juste
+            // après, mais son bonus x1,5 dépendait de l'objet encore tenu.
+            cd.defenseurEstime = construireAdversaireEstime(def);
             cd.pvAvant = def.getPourcentagePv();
             cd.etat = FieldTracker.construireField();
             coupDonne = cd;
@@ -1570,6 +1576,9 @@ public final class ObservationCollector {
             if (!dernierCoupEstAdverse) cd.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
             if (surLui) cd.ko = true;
+        } else if (cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire")) {
+            // Une Prescience lancée deux tours plus tôt frappe le même tour
+            if (surLui) cd.invalide = true;
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surLui) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -1601,7 +1610,9 @@ public final class ObservationCollector {
         StringBuilder log = new StringBuilder("COUP DONNÉ ").append(cd.especeAttaquant).append(' ')
             .append(cd.idCoup).append(" -> ").append(cd.especeDefenseur).append(" | ");
         try {
-            if (cd.invalide) {
+            if ("futuresight".equals(cd.idCoup) || "doomdesire".equals(cd.idCoup)) {
+                log.append("dégâts dans deux tours : pas de mesure");
+            } else if (cd.invalide) {
                 log.append("mesure invalide (soin, dégât annexe ou switch après le coup)");
             } else {
                 double perte;
@@ -1623,7 +1634,8 @@ public final class ObservationCollector {
                 if (cd.crit) log.append(" CRITIQUE");
                 if (cd.multiCoups) log.append(" multi-coups");
                 if (capacite != null && !capacite.estCapaciteDeStatut()) {
-                    Pokemon def = construireAdversaireEstime(cd.defenseurBase);
+                    Pokemon def = cd.defenseurEstime != null ? cd.defenseurEstime
+                        : construireAdversaireEstime(cd.defenseurBase);
                     DamageCalculator.Resultat r = DamageCalculator.calculer(
                         cd.attaquant, def, capacite, cd.etat, cd.etat.getEcransAdversaire(), cd.crit);
                     boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
@@ -2650,7 +2662,10 @@ public final class ObservationCollector {
         // Capacités copiées par mon Métamorph : lues dans le menu d'attaque
         // dès qu'il est disponible, gardées tant qu'il reste transformé.
         try {
-            if (BattleStateTracker.joueurEstTransforme()) {
+            // cibleMorphingJoueur : effacée au retrait, alors que le combat
+            // montre encore le Métamorph transformé quelques instants (les
+            // capacités du Pokémon suivant étaient prises pour des copies).
+            if (cibleMorphingJoueur != null && BattleStateTracker.joueurEstTransforme()) {
                 List<String> ids = BattleStateTracker.getCapacitesRequeteJoueur();
                 if (ids != null && !ids.isEmpty() && !ids.contains("transform") && !ids.equals(capacitesMorphing)) {
                     capacitesMorphing = new ArrayList<>(ids);
@@ -2833,6 +2848,9 @@ public final class ObservationCollector {
         return null;
     }
 
+    /** Objet tenu au début du combat, connu par le message de sa perte (Sabotage, baie...). */
+    private static final Map<String, String> OBJETS_PERDUS_CONNUS = new HashMap<>();
+
     /** L'adversaire a perdu son objet (annoncé par le jeu). */
     private static void marquerObjetAdversairePerdu(String espece, String detail) {
         OBJETS_RETIRES.add(espece);
@@ -2975,8 +2993,22 @@ public final class ObservationCollector {
             if (argsFin.length > 0 && Boolean.TRUE.equals(
                     determinerAttaquant(MoveUseTracker.extraireProprietaire(argsFin[0])))) {
                 Pokemon adv = BattleStateTracker.getAdversaireActif();
-                if (adv != null) marquerObjetAdversairePerdu(adv.getEspece(),
-                    cle.substring("cobblemon.battle.enditem.".length()));
+                if (adv != null) {
+                    marquerObjetAdversairePerdu(adv.getEspece(),
+                        cle.substring("cobblemon.battle.enditem.".length()));
+                    // Le jeu nomme l'objet perdu ("item.cobblemon.focus_sash") :
+                    // gardé pour les prochains combats contre ce joueur.
+                    String texteObjet = argsFin.length > 1 ? cleDepuisArgument(argsFin[1]) : null;
+                    if (texteObjet != null && texteObjet.lastIndexOf('.') >= 0) {
+                        String fr = ShowdownIdMapper.objet(
+                            texteObjet.substring(texteObjet.lastIndexOf('.') + 1).replace("_", ""));
+                        if (fr != null) {
+                            OBJETS_PERDUS_CONNUS.put(adv.getEspece(), fr);
+                            MessageDebugLogger.analyse("OBJET " + adv.getEspece() + " : c'était " + fr
+                                + " (retenu pour les prochains combats)");
+                        }
+                    }
+                }
             }
         } else if (mentionneBallon(cle, contenu.getArgs())) {
             // Le jeu annonce le Ballon à l'entrée du porteur ("X flotte grâce
@@ -3503,12 +3535,13 @@ public final class ObservationCollector {
         if (nomAdversaireCourant != null) {
             Set<String> especes = new HashSet<>();
             especes.addAll(OBJETS_CONFIRMES.keySet());
+            especes.addAll(OBJETS_PERDUS_CONNUS.keySet());
             especes.addAll(TALENTS_CONFIRMES.keySet());
             especes.addAll(TALENTS_CHIP_CONFIRMES);
             especes.addAll(COUPS_ADVERSAIRE.keySet());
             for (String esp : especes) {
                 ScoutingStore.enregistrer(nomAdversaireCourant, esp,
-                    OBJETS_CONFIRMES.get(esp),
+                    OBJETS_CONFIRMES.get(esp) != null ? OBJETS_CONFIRMES.get(esp) : OBJETS_PERDUS_CONNUS.get(esp),
                     TALENTS_CONFIRMES.get(esp),
                     TALENTS_CHIP_CONFIRMES.contains(esp),
                     COUPS_ADVERSAIRE.get(esp));
@@ -3520,6 +3553,7 @@ public final class ObservationCollector {
         ESPECES_SCOUT_FUSIONNEES.clear();
         ADVERSAIRES_VUS.clear();
         FACTEURS.clear();
+        OBJETS_PERDUS_CONNUS.clear();
         PLAFONDS_OFFENSIFS.clear();
         MESURES_PLAFOND.clear();
         PLAFONDS_ACTIFS.clear();
