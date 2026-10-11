@@ -111,6 +111,113 @@ public class DamageCalculator {
      */
     public static Resultat calculer(Pokemon attaquant, Pokemon defenseur, Move capacite,
                                      Field terrain, Field.Ecrans ecransDefenseur, boolean critique) {
+        int[] coups = coupsEffectifs(capacite, attaquant);
+        Resultat premier = calculerCoup(attaquant, defenseur, capacite, terrain, ecransDefenseur, critique, 1);
+        if (coups[1] <= 1 || premier.immunise || premier.degatsParRoll.length == 0) return premier;
+
+        int[][] matrice = matriceCoups(attaquant, defenseur, capacite, terrain, ecransDefenseur, critique, coups[1]);
+        // Fantômasque / Tête de Gel intacts : seul le premier coup est absorbé
+        if (defenseur.getPvActuels() == defenseur.getPvMax()) {
+            if ("Fantômasque".equals(defenseur.getTalent())) {
+                java.util.Arrays.fill(matrice[0], Math.max(1, defenseur.getPvMax() / 8));
+            } else if ("Tête de Gel".equals(defenseur.getTalent())
+                    && capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                java.util.Arrays.fill(matrice[0], 0);
+            }
+        }
+        int[] repartition = repartitionTotale(matrice, poidsNombreDeCoups(coups));
+        // Fermeté / Ceinture Focus ne protègent que d'un coup unique : pas de
+        // défenseurRobuste ni d'objet ici, le total se lit tel quel.
+        return new Resultat(repartition, defenseur.getPvMax(), defenseur.getPvActuels(), false,
+            premier.efficaciteType, null, null, capacite.getCategorie() == Move.Categorie.PHYSIQUE);
+    }
+
+    /**
+     * Dégâts de chaque coup d'une capacité multi-coups ([coup][jet]), comme
+     * la matrice de Showdown : Multiécaille ne compte qu'au premier coup,
+     * Endurance / Armurouillée / Sable Humide changent la Défense entre deux
+     * coups, Triple Axel et Triple Pied montent en puissance (20/40/60).
+     * Null si la capacité n'inflige pas de dégâts.
+     */
+    public static int[][] matriceCoups(Pokemon attaquant, Pokemon defenseur, Move capacite, Field terrain,
+                                       Field.Ecrans ecransDefenseur, boolean critique, int nombreDeCoups) {
+        int[][] matrice = new int[nombreDeCoups][];
+        int defenseOrigine = defenseur.getStage(Stat.DEFENSE);
+        boolean lucidite = "Lucidité".equals(attaquant.getTalent());
+        String talent = defenseur.getTalent();
+        try {
+            for (int coup = 1; coup <= nombreDeCoups; coup++) {
+                Resultat r = calculerCoup(attaquant, defenseur, capacite, terrain, ecransDefenseur, critique, coup);
+                if (r.immunise || r.degatsParRoll.length == 0) return null;
+                matrice[coup - 1] = r.degatsParRoll;
+                if (lucidite) continue;
+                if ("Endurance".equals(talent)) {
+                    defenseur.modifierStage(Stat.DEFENSE, 1);
+                } else if ("Sable Humide".equals(talent) && capacite.getType() == PokemonType.EAU) {
+                    defenseur.modifierStage(Stat.DEFENSE, 2);
+                } else if ("Armurouillée".equals(talent) && capacite.getCategorie() == Move.Categorie.PHYSIQUE) {
+                    defenseur.modifierStage(Stat.DEFENSE, -1);
+                }
+            }
+        } finally {
+            defenseur.setStage(Stat.DEFENSE, defenseOrigine);
+        }
+        return matrice;
+    }
+
+    /** Probabilité de chaque nombre de coups (indice = nombre de coups). */
+    private static double[] poidsNombreDeCoups(int[] coups) {
+        double[] p = new double[coups[1] + 1];
+        if (coups[0] == coups[1]) {
+            p[coups[1]] = 1;
+        } else if (coups[0] == 2 && coups[1] == 5) {
+            // 2 et 3 coups : 35 % chacun, 4 et 5 coups : 15 % chacun
+            p[2] = 0.35; p[3] = 0.35; p[4] = 0.15; p[5] = 0.15;
+        } else {
+            // Dé Pipé : 4 ou 5 coups à chances égales
+            for (int k = coups[0]; k <= coups[1]; k++) p[k] = 1.0 / (coups[1] - coups[0] + 1);
+        }
+        return p;
+    }
+
+    /**
+     * Total des coups ramené à 16 valeurs également probables, pour garder le
+     * format des 16 jets : chaque coup a son propre jet (indépendants), le
+     * nombre de coups suit ses probabilités. La 1re valeur est le minimum
+     * absolu, la dernière le maximum absolu, les autres des quantiles.
+     */
+    static int[] repartitionTotale(int[][] matrice, double[] poids) {
+        java.util.TreeMap<Integer, Double> somme = new java.util.TreeMap<>();
+        somme.put(0, 1.0);
+        java.util.TreeMap<Integer, Double> total = new java.util.TreeMap<>();
+        for (int coup = 1; coup < poids.length && coup <= matrice.length; coup++) {
+            java.util.TreeMap<Integer, Double> suivante = new java.util.TreeMap<>();
+            int[] jets = matrice[coup - 1];
+            for (Map.Entry<Integer, Double> e : somme.entrySet()) {
+                for (int d : jets) suivante.merge(e.getKey() + d, e.getValue() / jets.length, Double::sum);
+            }
+            somme = suivante;
+            if (poids[coup] > 0) {
+                double p = poids[coup];
+                for (Map.Entry<Integer, Double> e : somme.entrySet()) total.merge(e.getKey(), e.getValue() * p, Double::sum);
+            }
+        }
+        int[] r = new int[16];
+        r[0] = total.firstKey();
+        r[15] = total.lastKey();
+        double cumul = 0;
+        int i = 1;
+        for (Map.Entry<Integer, Double> e : total.entrySet()) {
+            cumul += e.getValue();
+            while (i < 15 && cumul >= (i + 0.5) / 16 - 1e-12) r[i++] = e.getKey();
+            if (i >= 15) break;
+        }
+        while (i < 15) r[i++] = r[15];
+        return r;
+    }
+
+    private static Resultat calculerCoup(Pokemon attaquant, Pokemon defenseur, Move capacite,
+                                         Field terrain, Field.Ecrans ecransDefenseur, boolean critique, int coup) {
 
         if (capacite.estCapaciteDeStatut()) {
             return Resultat.sansDegats();
@@ -127,6 +234,7 @@ public class DamageCalculator {
         boolean bonusPeau = capacite != avantTalent && !"Hydrata-Son".equals(attaquant.getTalent());
 
         ModifierContext ctx = new ModifierContext(attaquant, defenseur, capacite, terrain, critique);
+        ctx.coup = coup;
 
         // Puissance de la capacité avant modificateurs. Calculée en premier :
         // Technicien en dépend, et Façade pose ignorerPenaliteBrulure.
@@ -281,16 +389,6 @@ public class DamageCalculator {
             degats[i] = (int) Math.max(1, d);
         }
 
-        // Multi-coups : total = dégâts par coup x nombre de coups
-        // (interpolation coupsMin -> coupsMax du roll min au roll max)
-        int[] coups = coupsEffectifs(capacite, attaquant);
-        if (coups[1] > 1) {
-            for (int i = 0; i < 16; i++) {
-                double c = coups[0] + (coups[1] - coups[0]) * (i / 15.0);
-                degats[i] = (int) Math.round(degats[i] * c);
-            }
-        }
-
         return Resultat.depuis(degats, defenseur, efficacite, capacite);
     }
 
@@ -310,6 +408,8 @@ public class DamageCalculator {
         // 3 coups fixes
         Map.entry("surgingstrikes", new int[]{3, 3}),
         Map.entry("tripledive", new int[]{3, 3}),
+        Map.entry("triplekick", new int[]{3, 3}),
+        Map.entry("tripleaxel", new int[]{3, 3}),
         // 2 à 5 coups
         Map.entry("bulletseed", new int[]{2, 5}),
         Map.entry("rockblast", new int[]{2, 5}),
@@ -538,12 +638,12 @@ public class DamageCalculator {
                 else puissance = 200;
             }
             case "triplekick" -> {
-                // Triple Pied : 10+20+30, affiché comme total
-                puissance = 60;
+                // Triple Pied : 10, 20 puis 30 selon le coup
+                puissance = 10 * ctx.coup;
             }
             case "tripleaxel" -> {
-                // Triple Axel : 20+40+60, affiché comme total
-                puissance = 120;
+                // Triple Axel : 20, 40 puis 60 selon le coup
+                puissance = 20 * ctx.coup;
             }
             case "brine" -> {
                 // Saumure : x2 si la cible a 50 % de ses PV ou moins

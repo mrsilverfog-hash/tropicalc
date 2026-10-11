@@ -153,7 +153,8 @@ public interface AbilityModifier {
         AbilityModifier demiDegatsPleinePv = new AbilityModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                if (ctx.defenseur.getPvActuels() == ctx.defenseur.getPvMax()) {
+                // Seulement le premier coup d'une capacité multi-coups
+                if (ctx.coup == 1 && ctx.defenseur.getPvActuels() == ctx.defenseur.getPvMax()) {
                     ctx.degatsFinal(ModifierContext.ORDRE_MULTIECAILLE, 2048);
                 }
             }

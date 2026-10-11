@@ -35,6 +35,8 @@ public class ModifierContext {
 
     /** Puissance de la capacité avant modificateurs (Technicien en dépend). */
     public int puissanceBase;
+    /** Numéro du coup (1 = premier) pour les capacités multi-coups. */
+    public int coup = 1;
 
     public boolean stabAugmente = false;
     public boolean immuniteType = false;

@@ -67,6 +67,10 @@ public final class ComparaisonShowdown {
         ecrans.setMurLumiere(o.get("murLumiere").getAsBoolean());
         boolean critique = o.get("critique").getAsBoolean();
 
+        if (o.has("matriceAttendue") && !o.get("matriceAttendue").isJsonNull()) {
+            return verifierMatrice(o, attaquant, defenseur, capacite, terrain, ecrans, critique);
+        }
+
         DamageCalculator.Resultat r = DamageCalculator.calculer(attaquant, defenseur, capacite, terrain, ecrans, critique);
 
         int[] attendus = entiers(o.getAsJsonArray("degatsAttendus"));
@@ -79,6 +83,26 @@ public final class ComparaisonShowdown {
         sb.append("\n  ").append(o.get("description").getAsString());
         ecartsDeStats(sb, "attaquant", attaquant, o.getAsJsonObject("attaquant"));
         ecartsDeStats(sb, "défenseur", defenseur, o.getAsJsonObject("defenseur"));
+        return sb.toString();
+    }
+
+    /** Multi-coups : les 16 jets de chaque coup contre la matrice de Showdown, null si identiques. */
+    private static String verifierMatrice(JsonObject o, Pokemon attaquant, Pokemon defenseur, Move capacite,
+                                          Field terrain, Field.Ecrans ecrans, boolean critique) {
+        JsonArray lignes = o.getAsJsonArray("matriceAttendue");
+        int[][] obtenue = DamageCalculator.matriceCoups(attaquant, defenseur, capacite, terrain, ecrans,
+            critique, lignes.size());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lignes.size(); i++) {
+            int[] attendus = entiers(lignes.get(i).getAsJsonArray());
+            int[] obtenus = obtenue == null ? new int[16] : obtenue[i];
+            if (!Arrays.equals(attendus, obtenus)) {
+                sb.append("\n  Coup ").append(i + 1).append(" Showdown  : ").append(Arrays.toString(attendus));
+                sb.append("\n  Coup ").append(i + 1).append(" TropiCalc : ").append(Arrays.toString(obtenus));
+            }
+        }
+        if (sb.length() == 0) return null;
+        sb.append("\n  ").append(o.get("description").getAsString());
         return sb.toString();
     }
 

@@ -138,6 +138,9 @@ public final class ShowdownIdMapper {
         TALENTS.put("multiscale", "Multiécaille");
         TALENTS.put("shadowshield", "Spectro-Bouclier");
         TALENTS.put("unaware", "Lucidité");
+        TALENTS.put("stamina", "Endurance");
+        TALENTS.put("weakarmor", "Armurouillée");
+        TALENTS.put("watercompaction", "Sable Humide");
         TALENTS.put("adaptability", "Adaptabilité");
         TALENTS.put("guts", "Cran");
         TALENTS.put("hustle", "Agitation");

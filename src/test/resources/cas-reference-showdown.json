@@ -138,6 +138,7 @@
    126,
    127
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.9998626708984375,
@@ -284,6 +285,7 @@
    580,
    588
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -430,6 +432,7 @@
    59,
    60
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -576,6 +579,7 @@
    177,
    180
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -722,6 +726,7 @@
    61,
    62
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -868,6 +873,7 @@
    147,
    148
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -1014,6 +1020,7 @@
    164,
    168
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -1160,6 +1167,7 @@
    99,
    100
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -1306,6 +1314,7 @@
    452,
    458
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -1452,6 +1461,7 @@
    0,
    0
   ],
+  "matriceAttendue": null,
   "ko": null,
   "description": ""
  },
@@ -1594,6 +1604,7 @@
    0,
    0
   ],
+  "matriceAttendue": null,
   "ko": null,
   "description": ""
  },
@@ -1736,6 +1747,7 @@
    168,
    170
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.78515625,
@@ -1882,6 +1894,7 @@
    868,
    880
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -2028,6 +2041,7 @@
    276,
    279
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -2174,6 +2188,7 @@
    281,
    283
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -2320,6 +2335,7 @@
    768,
    782
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -2466,6 +2482,7 @@
    219,
    222
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.98046875,
@@ -2611,6 +2628,7 @@
    386,
    392
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -2757,6 +2775,7 @@
    306,
    312
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -2903,6 +2922,7 @@
    127,
    129
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -3049,6 +3069,7 @@
    123,
    124
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": 1,
@@ -3195,6 +3216,7 @@
    103,
    105
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.5469512939453125,
@@ -3340,6 +3362,7 @@
    85,
    87
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -3486,6 +3509,7 @@
    452,
    458
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.8125,
@@ -3632,6 +3656,7 @@
    126,
    128
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -3778,6 +3803,7 @@
    222,
    225
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.83984375,
@@ -3924,6 +3950,7 @@
    150,
    152
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.931640625,
@@ -4070,6 +4097,7 @@
    188,
    192
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -4216,6 +4244,7 @@
    108,
    109
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.0001678466796875,
@@ -4361,6 +4390,7 @@
    366,
    372
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -4507,6 +4537,7 @@
    468,
    474
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -4653,6 +4684,7 @@
    292,
    300
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -4799,6 +4831,7 @@
    246,
    248
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.92578125,
@@ -4945,6 +4978,7 @@
    182,
    186
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -5091,6 +5125,7 @@
    132,
    133
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": -1,
@@ -5237,6 +5272,7 @@
    290,
    294
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -5383,6 +5419,7 @@
    62,
    63
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -5529,6 +5566,7 @@
    187,
    190
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -5675,6 +5713,7 @@
    868,
    880
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -5821,6 +5860,7 @@
    255,
    258
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -5967,6 +6007,7 @@
    187,
    190
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -6113,6 +6154,7 @@
    292,
    300
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -6259,6 +6301,7 @@
    868,
    880
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -6405,6 +6448,7 @@
    868,
    880
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -6551,6 +6595,7 @@
    290,
    294
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -6696,6 +6741,7 @@
    172,
    174
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -6842,6 +6888,7 @@
    47,
    48
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 8,
    "chance": -1,
@@ -6988,6 +7035,7 @@
    308,
    314
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -7134,6 +7182,7 @@
    343,
    348
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -7280,6 +7329,7 @@
    73,
    74
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": 1,
@@ -7426,6 +7476,7 @@
    278,
    282
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -7572,6 +7623,7 @@
    384,
    390
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.25,
@@ -7718,6 +7770,7 @@
    696,
    708
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -7864,6 +7917,7 @@
    134,
    135
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.007080078125,
@@ -8010,6 +8064,7 @@
    50,
    50
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 8,
    "chance": -1,
@@ -8156,6 +8211,7 @@
    78,
    79
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": 1,
@@ -8301,6 +8357,7 @@
    326,
    332
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -8446,6 +8503,7 @@
    136,
    138
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.052001953125,
@@ -8591,6 +8649,7 @@
    181,
    184
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -8737,6 +8796,7 @@
    58,
    59
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -8883,6 +8943,7 @@
    165,
    168
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -9028,6 +9089,7 @@
    290,
    294
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -9174,6 +9236,7 @@
    368,
    374
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -9319,6 +9382,7 @@
    486,
    492
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -9465,6 +9529,7 @@
    338,
    344
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -9610,6 +9675,7 @@
    144,
    145
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.58203125,
@@ -9756,6 +9822,7 @@
    318,
    324
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -9902,6 +9969,7 @@
    156,
    159
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -10048,6 +10116,7 @@
    184,
    187
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -10194,6 +10263,7 @@
    57,
    57
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -10340,6 +10410,7 @@
    54,
    54
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 0,
    "chance": 0,
@@ -10486,6 +10557,7 @@
    104,
    106
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.6852569580078125,
@@ -10632,6 +10704,7 @@
    435,
    441
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.8125,
@@ -10777,6 +10850,7 @@
    194,
    198
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -10922,6 +10996,7 @@
    103,
    105
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -11068,6 +11143,7 @@
    66,
    67
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": -1,
@@ -11213,6 +11289,7 @@
    27,
    27
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 0,
    "chance": 0,
@@ -11359,6 +11436,7 @@
    0,
    0
   ],
+  "matriceAttendue": null,
   "ko": null,
   "description": ""
  },
@@ -11501,6 +11579,7 @@
    122,
    126
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.7421875,
@@ -11647,6 +11726,7 @@
    57,
    58
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": -1,
@@ -11793,6 +11873,7 @@
    312,
    318
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -11939,6 +12020,7 @@
    210,
    212
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.8125,
@@ -12085,6 +12167,7 @@
    210,
    212
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -12231,6 +12314,7 @@
    161,
    163
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -12377,6 +12461,7 @@
    416,
    422
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.6875,
@@ -12523,6 +12608,7 @@
    368,
    374
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -12669,6 +12755,7 @@
    81,
    83
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -12814,6 +12901,7 @@
    93,
    95
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.0001373291015625,
@@ -12960,6 +13048,7 @@
    540,
    544
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -13106,6 +13195,7 @@
    217,
    220
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.9609375,
@@ -13251,6 +13341,7 @@
    294,
    296
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -13396,6 +13487,7 @@
    444,
    450
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.6875,
@@ -13541,6 +13633,7 @@
    224,
    228
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.875,
@@ -13686,6 +13779,7 @@
    878,
    888
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -13832,6 +13926,7 @@
    58,
    59
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 8,
    "chance": -1,
@@ -13978,6 +14073,7 @@
    318,
    322
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -14122,6 +14218,7 @@
    711,
    718
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.0625,
@@ -14268,6 +14365,7 @@
    170,
    174
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -14414,6 +14512,7 @@
    590,
    596
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -14560,6 +14659,7 @@
    386,
    392
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -14706,6 +14806,7 @@
    69,
    69
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -14852,6 +14953,7 @@
    54,
    55
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 8,
    "chance": -1,
@@ -14998,6 +15100,7 @@
    348,
    354
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -15144,6 +15247,7 @@
    724,
    736
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -15289,6 +15393,7 @@
    100,
    100
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 1,
@@ -15435,6 +15540,7 @@
    480,
    486
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -15581,6 +15687,7 @@
    794,
    804
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -15727,6 +15834,7 @@
    97,
    99
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": -1,
@@ -15873,6 +15981,7 @@
    97,
    99
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": 1,
@@ -16019,6 +16128,7 @@
    178,
    181
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -16165,6 +16275,7 @@
    220,
    223
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -16310,6 +16421,7 @@
    66,
    67
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -16455,6 +16567,7 @@
    312,
    318
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 0.0625,
@@ -16601,6 +16714,7 @@
    334,
    339
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -16747,6 +16861,7 @@
    100,
    102
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.002166748046875,
@@ -16892,6 +17007,7 @@
    196,
    199
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -17038,6 +17154,7 @@
    738,
    746
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 1,
    "chance": 1,
@@ -17183,6 +17300,7 @@
    161,
    163
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -17329,6 +17447,7 @@
    140,
    142
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.703125,
@@ -17475,6 +17594,7 @@
    83,
    84
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": -1,
@@ -17620,6 +17740,7 @@
    121,
    123
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": 1,
@@ -17766,6 +17887,7 @@
    86,
    87
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": -1,
@@ -17912,6 +18034,7 @@
    114,
    116
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 4,
    "chance": 0.2835693359375,
@@ -18058,6 +18181,7 @@
    105,
    107
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": 1,
@@ -18204,6 +18328,7 @@
    99,
    101
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": -1,
@@ -18350,6 +18475,7 @@
    306,
    312
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -18496,6 +18622,7 @@
    189,
    192
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.01171875,
@@ -18642,6 +18769,7 @@
    47,
    48
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 7,
    "chance": -1,
@@ -18788,6 +18916,7 @@
    98,
    99
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": -1,
@@ -18934,6 +19063,7 @@
    154,
    156
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -19080,6 +19210,7 @@
    138,
    139
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 1,
@@ -19226,6 +19357,7 @@
    178,
    181
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.7421875,
@@ -19372,6 +19504,7 @@
    178,
    181
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 0.7421875,
@@ -19518,6 +19651,7 @@
    282,
    284
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -19664,6 +19798,7 @@
    178,
    181
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 3,
    "chance": 0.8095703125,
@@ -19810,6 +19945,7 @@
    126,
    127
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -19956,6 +20092,7 @@
    312,
    318
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 2,
    "chance": 1,
@@ -20102,6 +20239,7 @@
    82,
    83
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 6,
    "chance": -1,
@@ -20247,11 +20385,2629 @@
    100,
    100
   ],
+  "matriceAttendue": null,
   "ko": {
    "n": 5,
    "chance": 1,
    "texte": "guaranteed 5HKO"
   },
   "description": "Dusclops Night Shade vs. 252 HP Great Tusk: 100-100 (23 - 23%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Stalactite 5 coups Multi-Coups",
+  "attaquant": {
+   "espece": "cloyster",
+   "niveau": 100,
+   "types": [
+    "water",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 95,
+    "def": 180,
+    "spa": 85,
+    "spd": 45,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "skilllink",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 242,
+   "poidsKg": 132.5,
+   "statsShowdown": {
+    "hp": 242,
+    "atk": 317,
+    "def": 396,
+    "spa": 185,
+    "spd": 126,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "iciclespear",
+   "type": "ice",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    25,
+    27,
+    27,
+    27,
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    31
+   ],
+   [
+    25,
+    27,
+    27,
+    27,
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    31
+   ],
+   [
+    25,
+    27,
+    27,
+    27,
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    31
+   ],
+   [
+    25,
+    27,
+    27,
+    27,
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    31
+   ],
+   [
+    25,
+    27,
+    27,
+    27,
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    31
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Cloyster Icicle Spear (5 hits) vs. 252 HP / 252+ Def Corviknight: 125-155 (31.2 - 38.7%) -- approx. 99.9% chance to 3HKO"
+ },
+ {
+  "nom": "Balle Graine 3 coups Technicien",
+  "attaquant": {
+   "espece": "breloom",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 60,
+    "atk": 130,
+    "def": 80,
+    "spa": 60,
+    "spd": 60,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "technician",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 262,
+   "poidsKg": 39.2,
+   "statsShowdown": {
+    "hp": 262,
+    "atk": 394,
+    "def": 196,
+    "spa": 140,
+    "spd": 156,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "protosynthesis",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 298,
+    "def": 397,
+    "spa": 127,
+    "spd": 143,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "bulletseed",
+   "type": "grass",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    80,
+    80,
+    80,
+    84,
+    84,
+    84,
+    86,
+    86,
+    86,
+    90,
+    90,
+    90,
+    92,
+    92,
+    92,
+    96
+   ],
+   [
+    80,
+    80,
+    80,
+    84,
+    84,
+    84,
+    86,
+    86,
+    86,
+    90,
+    90,
+    90,
+    92,
+    92,
+    92,
+    96
+   ],
+   [
+    80,
+    80,
+    80,
+    84,
+    84,
+    84,
+    86,
+    86,
+    86,
+    90,
+    90,
+    90,
+    92,
+    92,
+    92,
+    96
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Technician Breloom Bullet Seed (3 hits) vs. 252 HP / 252+ Def Great Tusk: 240-288 (55.2 - 66.3%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Boule Roc 4 coups Dé Pipé",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": "loadeddice",
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "rockblast",
+   "type": "rock",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    22,
+    22,
+    22,
+    22,
+    23,
+    23,
+    23,
+    23,
+    24,
+    24,
+    24,
+    24,
+    25,
+    25,
+    25,
+    26
+   ],
+   [
+    22,
+    22,
+    22,
+    22,
+    23,
+    23,
+    23,
+    23,
+    24,
+    24,
+    24,
+    24,
+    25,
+    25,
+    25,
+    26
+   ],
+   [
+    22,
+    22,
+    22,
+    22,
+    23,
+    23,
+    23,
+    23,
+    24,
+    24,
+    24,
+    24,
+    25,
+    25,
+    25,
+    26
+   ],
+   [
+    22,
+    22,
+    22,
+    22,
+    23,
+    23,
+    23,
+    23,
+    24,
+    24,
+    24,
+    24,
+    25,
+    25,
+    25,
+    26
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Garchomp Rock Blast (4 hits) vs. 252 HP / 252+ Def Corviknight: 88-104 (22 - 26%) -- approx. 0.1% chance to 4HKO"
+ },
+ {
+  "nom": "Triple Axel Technicien",
+  "attaquant": {
+   "espece": "weavile",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 120,
+    "def": 65,
+    "spa": 45,
+    "spd": 85,
+    "spe": 125
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "technician",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 282,
+   "poidsKg": 34,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 372,
+    "def": 166,
+    "spa": 113,
+    "spd": 206,
+    "spe": 349
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "sandveil",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 296,
+    "def": 317,
+    "spa": 176,
+    "spd": 207,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "tripleaxel",
+   "type": "ice",
+   "categorie": "Physical",
+   "puissance": 20
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    156,
+    156,
+    156,
+    160,
+    160,
+    160,
+    168,
+    168,
+    168,
+    172,
+    172,
+    172,
+    180,
+    180,
+    180,
+    184
+   ],
+   [
+    304,
+    312,
+    316,
+    316,
+    324,
+    324,
+    328,
+    336,
+    336,
+    340,
+    340,
+    348,
+    352,
+    352,
+    360,
+    364
+   ],
+   [
+    456,
+    460,
+    468,
+    472,
+    480,
+    484,
+    484,
+    492,
+    496,
+    504,
+    508,
+    516,
+    520,
+    528,
+    532,
+    540
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Technician Weavile Triple Axel (120 BP) (3 hits) vs. 252 HP / 252+ Def Garchomp: 916-1088 (218 - 259%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Triple Pied",
+  "attaquant": {
+   "espece": "hitmontop",
+   "niveau": 100,
+   "types": [
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 95,
+    "def": 95,
+    "spa": 35,
+    "spd": 110,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "technician",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 242,
+   "poidsKg": 48,
+   "statsShowdown": {
+    "hp": 242,
+    "atk": 317,
+    "def": 226,
+    "spa": 95,
+    "spd": 256,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "triplekick",
+   "type": "fighting",
+   "categorie": "Physical",
+   "puissance": 10
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    18,
+    18,
+    18,
+    18,
+    18,
+    18,
+    18,
+    19
+   ],
+   [
+    31,
+    31,
+    31,
+    33,
+    33,
+    33,
+    33,
+    34,
+    34,
+    34,
+    34,
+    36,
+    36,
+    36,
+    36,
+    37
+   ],
+   [
+    46,
+    46,
+    48,
+    48,
+    48,
+    49,
+    49,
+    51,
+    51,
+    51,
+    52,
+    52,
+    52,
+    54,
+    54,
+    55
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Technician Hitmontop Triple Kick (60 BP) (3 hits) vs. 252 HP / 252+ Def Corviknight: 93-111 (23.2 - 27.7%) -- 79.5% chance to 4HKO"
+ },
+ {
+  "nom": "Multiécaille au premier coup",
+  "attaquant": {
+   "espece": "cloyster",
+   "niveau": 100,
+   "types": [
+    "water",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 95,
+    "def": 180,
+    "spa": 85,
+    "spd": 45,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "skilllink",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 242,
+   "poidsKg": 132.5,
+   "statsShowdown": {
+    "hp": 242,
+    "atk": 317,
+    "def": 396,
+    "spa": 185,
+    "spd": 126,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "multiscale",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 304,
+    "def": 317,
+    "spa": 212,
+    "spd": 237,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "iciclespear",
+   "type": "ice",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    56,
+    56,
+    60,
+    60,
+    60,
+    60,
+    60,
+    62,
+    62,
+    62,
+    62,
+    66,
+    66,
+    66,
+    66,
+    68
+   ],
+   [
+    112,
+    112,
+    120,
+    120,
+    120,
+    120,
+    120,
+    124,
+    124,
+    124,
+    124,
+    132,
+    132,
+    132,
+    132,
+    136
+   ],
+   [
+    112,
+    112,
+    120,
+    120,
+    120,
+    120,
+    120,
+    124,
+    124,
+    124,
+    124,
+    132,
+    132,
+    132,
+    132,
+    136
+   ],
+   [
+    112,
+    112,
+    120,
+    120,
+    120,
+    120,
+    120,
+    124,
+    124,
+    124,
+    124,
+    132,
+    132,
+    132,
+    132,
+    136
+   ],
+   [
+    112,
+    112,
+    120,
+    120,
+    120,
+    120,
+    120,
+    124,
+    124,
+    124,
+    124,
+    132,
+    132,
+    132,
+    132,
+    136
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Cloyster Icicle Spear (5 hits) vs. 252 HP / 252+ Def Multiscale Dragonite: 504-612 (130.5 - 158.5%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Endurance entre les coups",
+  "attaquant": {
+   "espece": "cinccino",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 95,
+    "def": 60,
+    "spa": 65,
+    "spd": 60,
+    "spe": 115
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "skilllink",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 292,
+   "poidsKg": 7.5,
+   "statsShowdown": {
+    "hp": 292,
+    "atk": 317,
+    "def": 156,
+    "spa": 149,
+    "spd": 156,
+    "spe": 329
+   }
+  },
+  "defenseur": {
+   "espece": "mudsdale",
+   "niveau": 100,
+   "types": [
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 125,
+    "def": 100,
+    "spa": 55,
+    "spd": 85,
+    "spe": 35
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "stamina",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 404,
+   "poidsKg": 920,
+   "statsShowdown": {
+    "hp": 404,
+    "atk": 286,
+    "def": 328,
+    "spa": 131,
+    "spd": 207,
+    "spe": 106
+   }
+  },
+  "capacite": {
+   "id": "tailslap",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    30,
+    31,
+    31,
+    31,
+    31,
+    33
+   ],
+   [
+    18,
+    18,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    21,
+    21,
+    21,
+    21,
+    21,
+    21,
+    22
+   ],
+   [
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    18
+   ],
+   [
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    15
+   ],
+   [
+    9,
+    9,
+    9,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    12
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Cinccino Tail Slap (5 hits) vs. 252 HP / 252+ Def Stamina Mudsdale: 81-100 (20 - 24.7%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Armurouillée entre les coups",
+  "attaquant": {
+   "espece": "cloyster",
+   "niveau": 100,
+   "types": [
+    "water",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 95,
+    "def": 180,
+    "spa": 85,
+    "spd": 45,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "skilllink",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 242,
+   "poidsKg": 132.5,
+   "statsShowdown": {
+    "hp": 242,
+    "atk": 317,
+    "def": 396,
+    "spa": 185,
+    "spd": 126,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "skarmory",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 65,
+    "atk": 80,
+    "def": 140,
+    "spa": 40,
+    "spd": 70,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "weakarmor",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 334,
+   "poidsKg": 50.5,
+   "statsShowdown": {
+    "hp": 334,
+    "atk": 196,
+    "def": 416,
+    "spa": 104,
+    "spd": 177,
+    "spe": 176
+   }
+  },
+  "capacite": {
+   "id": "rockblast",
+   "type": "rock",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    15,
+    15,
+    15,
+    15,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    17,
+    17,
+    17,
+    17,
+    17,
+    18
+   ],
+   [
+    22,
+    22,
+    22,
+    22,
+    23,
+    23,
+    23,
+    23,
+    24,
+    24,
+    24,
+    24,
+    25,
+    25,
+    25,
+    26
+   ],
+   [
+    28,
+    29,
+    29,
+    29,
+    30,
+    30,
+    30,
+    31,
+    31,
+    31,
+    32,
+    32,
+    32,
+    33,
+    33,
+    34
+   ],
+   [
+    35,
+    36,
+    36,
+    36,
+    37,
+    37,
+    38,
+    38,
+    39,
+    39,
+    39,
+    40,
+    40,
+    41,
+    41,
+    42
+   ],
+   [
+    42,
+    43,
+    43,
+    44,
+    44,
+    45,
+    45,
+    46,
+    46,
+    47,
+    47,
+    48,
+    48,
+    49,
+    49,
+    50
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Cloyster Rock Blast (5 hits) vs. 252 HP / 252+ Def Weak Armor Skarmory: 142-170 (42.5 - 50.8%) -- approx. 0.1% chance to 2HKO"
+ },
+ {
+  "nom": "Endurance contre Lucidité",
+  "attaquant": {
+   "espece": "cinccino",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 95,
+    "def": 60,
+    "spa": 65,
+    "spd": 60,
+    "spe": 115
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "unaware",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 292,
+   "poidsKg": 7.5,
+   "statsShowdown": {
+    "hp": 292,
+    "atk": 317,
+    "def": 156,
+    "spa": 149,
+    "spd": 156,
+    "spe": 329
+   }
+  },
+  "defenseur": {
+   "espece": "mudsdale",
+   "niveau": 100,
+   "types": [
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 125,
+    "def": 100,
+    "spa": 55,
+    "spd": 85,
+    "spe": 35
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "stamina",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 404,
+   "poidsKg": 920,
+   "statsShowdown": {
+    "hp": 404,
+    "atk": 286,
+    "def": 328,
+    "spa": 131,
+    "spd": 207,
+    "spe": 106
+   }
+  },
+  "capacite": {
+   "id": "tailslap",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    30,
+    31,
+    31,
+    31,
+    31,
+    33
+   ],
+   [
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    30,
+    31,
+    31,
+    31,
+    31,
+    33
+   ],
+   [
+    27,
+    27,
+    28,
+    28,
+    28,
+    28,
+    30,
+    30,
+    30,
+    30,
+    30,
+    31,
+    31,
+    31,
+    31,
+    33
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Unaware Cinccino Tail Slap (3 hits) vs. 252 HP / 252+ Def Mudsdale: 81-99 (20 - 24.5%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Torrent de Coups critique",
+  "attaquant": {
+   "espece": "urshifurapidstrike",
+   "niveau": 100,
+   "types": [
+    "fighting",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 130,
+    "def": 100,
+    "spa": 63,
+    "spd": 60,
+    "spe": 97
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "unseenfist",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 105,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 394,
+    "def": 236,
+    "spa": 145,
+    "spd": 156,
+    "spe": 293
+   }
+  },
+  "defenseur": {
+   "espece": "palossand",
+   "niveau": 100,
+   "types": [
+    "ghost",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 85,
+    "atk": 75,
+    "def": 110,
+    "spa": 100,
+    "spd": 75,
+    "spe": 35
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "watercompaction",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 374,
+   "poidsKg": 250,
+   "statsShowdown": {
+    "hp": 374,
+    "atk": 186,
+    "def": 350,
+    "spa": 212,
+    "spd": 187,
+    "spe": 106
+   }
+  },
+  "capacite": {
+   "id": "surgingstrikes",
+   "type": "water",
+   "categorie": "Physical",
+   "puissance": 25
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    92,
+    92,
+    96,
+    96,
+    96,
+    98,
+    98,
+    102,
+    102,
+    102,
+    104,
+    104,
+    104,
+    108,
+    108,
+    110
+   ],
+   [
+    92,
+    92,
+    96,
+    96,
+    96,
+    98,
+    98,
+    102,
+    102,
+    102,
+    104,
+    104,
+    104,
+    108,
+    108,
+    110
+   ],
+   [
+    92,
+    92,
+    96,
+    96,
+    96,
+    98,
+    98,
+    102,
+    102,
+    102,
+    104,
+    104,
+    104,
+    108,
+    108,
+    110
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Urshifu-Rapid-Strike Surging Strikes (3 hits) vs. 252 HP / 252+ Def Water Compaction Palossand on a critical hit: 276-330 (73.7 - 88.2%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Draco-Flèches",
+  "attaquant": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "clearbody",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 318,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 318,
+    "atk": 372,
+    "def": 186,
+    "spa": 212,
+    "spd": 186,
+    "spe": 383
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "dragondarts",
+   "type": "dragon",
+   "categorie": "Physical",
+   "puissance": 50
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    30,
+    30,
+    30,
+    31,
+    31,
+    32,
+    32,
+    33,
+    33,
+    33,
+    33,
+    34,
+    34,
+    35,
+    35,
+    36
+   ],
+   [
+    30,
+    30,
+    30,
+    31,
+    31,
+    32,
+    32,
+    33,
+    33,
+    33,
+    33,
+    34,
+    34,
+    35,
+    35,
+    36
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Dragapult Dragon Darts (2 hits) vs. 252 HP / 252+ Def Corviknight: 60-72 (15 - 18%) -- possible 6HKO"
+ },
+ {
+  "nom": "Prolifération",
+  "attaquant": {
+   "espece": "maushold",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 74,
+    "atk": 75,
+    "def": 70,
+    "spa": 65,
+    "spd": 75,
+    "spe": 111
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "technician",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 290,
+   "poidsKg": 2.3,
+   "statsShowdown": {
+    "hp": 290,
+    "atk": 273,
+    "def": 176,
+    "spa": 149,
+    "spd": 186,
+    "spe": 321
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "populationbomb",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 20
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ],
+   [
+    13,
+    13,
+    14,
+    14,
+    14,
+    14,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    16
+   ]
+  ],
+  "ko": null,
+  "description": "252+ Atk Technician Maushold Population Bomb (10 hits) vs. 252 HP / 252+ Def Corviknight: 130-160 (32.5 - 40%) -- approx. 99.9% chance to 3HKO"
+ },
+ {
+  "nom": "Shuriken Spécial",
+  "attaquant": {
+   "espece": "greninja",
+   "niveau": 100,
+   "types": [
+    "water",
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 72,
+    "atk": 95,
+    "def": 67,
+    "spa": 103,
+    "spd": 71,
+    "spe": 122
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "torrent",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 286,
+   "poidsKg": 40,
+   "statsShowdown": {
+    "hp": 286,
+    "atk": 203,
+    "def": 170,
+    "spa": 335,
+    "spd": 178,
+    "spe": 343
+   }
+  },
+  "defenseur": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "goodasgold",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 378,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 378,
+    "atk": 140,
+    "def": 227,
+    "spa": 302,
+    "spd": 309,
+    "spe": 204
+   }
+  },
+  "capacite": {
+   "id": "watershuriken",
+   "type": "water",
+   "categorie": "Special",
+   "puissance": 15
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": null,
+  "matriceAttendue": [
+   [
+    18,
+    18,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    21,
+    21,
+    21,
+    21,
+    21,
+    21,
+    22
+   ],
+   [
+    18,
+    18,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    21,
+    21,
+    21,
+    21,
+    21,
+    21,
+    22
+   ],
+   [
+    18,
+    18,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    19,
+    21,
+    21,
+    21,
+    21,
+    21,
+    21,
+    22
+   ]
+  ],
+  "ko": null,
+  "description": "252+ SpA Greninja Water Shuriken (15 BP) (3 hits) vs. 252 HP / 252+ SpD Gholdengo: 54-66 (14.2 - 17.4%) -- possible 6HKO"
  }
 ]
