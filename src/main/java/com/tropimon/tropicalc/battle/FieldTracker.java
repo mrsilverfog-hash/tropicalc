@@ -245,7 +245,11 @@ public final class FieldTracker {
             // Le lanceur est CELUI qui a envoyé Prescience : si c'est
             // l'adversaire, l'impact me touchera MOI (compteur joueur) ;
             // si c'est moi, l'impact touchera l'ADVERSAIRE (compteur adv).
-            if (estAdversaire) futureSightJoueurTours = 2; else futureSightAdversaireTours = 2;
+            // Lancée au tour T, elle frappe à la fin du tour T+2. Le message
+            // arrive juste avant "tour T+1" : 3 ici, 2 pendant T+1 (fin du
+            // tour prochain), 1 pendant T+2 (fin de ce tour).
+            if (estAdversaire) futureSightJoueurTours = 3; else futureSightAdversaireTours = 3;
+            ObservationCollector.noterLanceurPrescience(estAdversaire);
             return;
         }
         if (cle.equals("cobblemon.battle.end.futuresight")) {
@@ -253,6 +257,7 @@ public final class FieldTracker {
             Boolean estAdversaire = ObservationCollector.determinerAttaquant(cible);
             if (estAdversaire == null) return;
             if (estAdversaire) futureSightAdversaireTours = 0; else futureSightJoueurTours = 0;
+            ObservationCollector.oublierPrescience(estAdversaire);
             return;
         }
 

@@ -3937,7 +3937,47 @@ public final class ObservationCollector {
             || p.getType2() == com.tropimon.tropicalc.calc.PokemonType.ACIER;
     }
 
+    // --- Prescience : lanceur gardé pour calculer l'impact ---
+    // Les dégâts sont calculés à l'impact avec les stats du lanceur, même
+    // s'il a quitté le terrain (ses boosts sont alors perdus).
+    private static Pokemon lanceurPrescienceJoueur = null;   // mon Pokémon (la copie si transformé)
+    private static Pokemon lanceurPrescienceAdvBase = null;  // l'adversaire tel que vu au lancement
+
+    /** @param adverse vrai si c'est l'adversaire qui a lancé Prescience */
+    public static void noterLanceurPrescience(boolean adverse) {
+        try {
+            if (adverse) {
+                lanceurPrescienceAdvBase = BattleStateTracker.getAdversaireActif();
+            } else {
+                Pokemon moi = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (moi == null) return;
+                appliquerObjetReelJoueur(moi);
+                if (isJoueurTransforme() && cibleMorphingJoueur != null) moi = construireMorphing(moi, cibleMorphingJoueur);
+                lanceurPrescienceJoueur = moi;
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** @param surAdversaire vrai si la Prescience vient de frapper l'adversaire */
+    public static void oublierPrescience(boolean surAdversaire) {
+        if (surAdversaire) lanceurPrescienceJoueur = null;
+        else lanceurPrescienceAdvBase = null;
+    }
+
+    /** Mon Pokémon qui a lancé la Prescience en cours sur l'adversaire, ou null. */
+    public static Pokemon getLanceurPrescienceJoueur() {
+        return lanceurPrescienceJoueur;
+    }
+
+    /** Estimation de l'adversaire qui a lancé la Prescience en cours sur moi, ou null. */
+    public static Pokemon getLanceurPrescienceAdversaire() {
+        return lanceurPrescienceAdvBase == null ? null : construireAdversaireEstime(lanceurPrescienceAdvBase);
+    }
+
     public static void reinitialiser() {
+        lanceurPrescienceJoueur = null;
+        lanceurPrescienceAdvBase = null;
         MessageDebugLogger.analyse("=============== NOUVEAU COMBAT ===============");
         finDeTourEnAttenteMs = 0;
         combatSauvageDetecte = false;

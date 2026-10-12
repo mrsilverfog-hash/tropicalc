@@ -102,6 +102,9 @@ public final class MessageDebugLogger {
     }
 
     private static synchronized void ecrire(String ligne) {
+        // Seulement quand ce mod est activé (F6) : TropiCalc et RandomPvp
+        // n'écrivent plus tous les deux les mêmes combats.
+        if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
         try {
             Path f = fichier("");
             if (Files.exists(f) && Files.size(f) > TAILLE_MAX_OCTETS) {

@@ -177,6 +177,38 @@ public final class CalcOverlay implements HudRenderCallback {
 
         Field field = FieldTracker.construireField();
 
+        // Prescience : dégâts à l'impact (lanceur gardé au lancement)
+        prescienceSurAdv = null;
+        prescienceSurMoi = null;
+        try {
+            com.tropimon.tropicalc.calc.Move fs = convertirTemplate(Moves.INSTANCE.getByName("futuresight"));
+            if (fs != null && FieldTracker.getFutureSightAdversaireTours() > 0) {
+                Pokemon lanceur = ObservationCollector.getLanceurPrescienceJoueur();
+                if (lanceur != null) {
+                    // Boosts seulement s'il est toujours sur le terrain
+                    if (lanceur.getEspece().equalsIgnoreCase(joueur.getEspece())) {
+                        for (Stat st : Stat.values()) if (st != Stat.PV) lanceur.setStage(st, BoostTracker.getStageJoueur(st));
+                    } else {
+                        for (Stat st : Stat.values()) if (st != Stat.PV) lanceur.setStage(st, 0);
+                    }
+                    prescienceSurAdv = DamageCalculator.calculer(lanceur, adversaire, fs, field, field.getEcransAdversaire(), false);
+                    prescienceSurAdvKO = texteKO(prescienceSurAdv, lanceur, adversaire, fs, field, true);
+                }
+            }
+            if (fs != null && FieldTracker.getFutureSightJoueurTours() > 0) {
+                Pokemon lanceur = ObservationCollector.getLanceurPrescienceAdversaire();
+                if (lanceur != null) {
+                    boolean toujoursLa = lanceur.getEspece().equalsIgnoreCase(adversaireBase.getEspece());
+                    for (Stat st : Stat.values()) {
+                        if (st != Stat.PV) lanceur.setStage(st, toujoursLa ? BoostTracker.getStageAdversaire(st) : 0);
+                    }
+                    prescienceSurMoi = DamageCalculator.calculer(lanceur, joueur, fs, field, field.getEcransJoueur(), false);
+                    prescienceSurMoiKO = texteKO(prescienceSurMoi, lanceur, joueur, fs, field, false);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         // --- Section 1 : mes capacités ---
         String titre = transforme
             ? "TropiCalc [transformé en " + nomEspece(cibleMorphing.getEspece()) + "]" : "TropiCalc";
@@ -310,6 +342,9 @@ public final class CalcOverlay implements HudRenderCallback {
                 String suffixeBallon = ballonEstimeNonConfirme ? " (0% si Ballon)" : "";
                 ligne = String.format("%s : %s%.0f%% - %.0f%%%s%s%s", nom, marqueur, r.pourcentageMin, r.pourcentageMax,
                     suffixeBoost, suffixeBallon, texteKO(r, joueur, adversaire, capacite, field, true));
+                if (FieldTracker.getFutureSightAdversaireTours() == 1) {
+                    ligne += texteKOAvecPrescience(r, prescienceSurAdv, adversaire.getPvActuels());
+                }
 
 
                 // Laser Hasard : 30% de chances de doubler sa puissance (80 -> 160).
@@ -447,6 +482,9 @@ public final class CalcOverlay implements HudRenderCallback {
                         ligne = String.format("%s%s : %s%.0f%% - %.0f%%%s%s%s",
                             estRevele ? "✓ " : "", nom, marq, r.pourcentageMin, r.pourcentageMax, suffixeBoost,
                             texteKO(r, adversaire, joueur, capaciteAdv, field, false), suffixePp);
+                        if (FieldTracker.getFutureSightJoueurTours() == 1) {
+                            ligne += texteKOAvecPrescience(r, prescienceSurMoi, joueur.getPvActuels());
+                        }
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
 
@@ -637,17 +675,19 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Prescience : une ligne dédiée par camp, icône œil à gauche ---
+        // --- Prescience : quand elle frappe et combien, une ligne par camp ---
         if (FieldTracker.getFutureSightJoueurTours() > 0) {
             dessinerIcone(6, x, y);
-            dessinerTexte(String.format("Prescience sur toi : %dt", FieldTracker.getFutureSightJoueurTours()),
-                x + 13, y, COULEUR_TEXTE);
+            dessinerTexte("Prescience sur toi (" + quandPrescience(FieldTracker.getFutureSightJoueurTours()) + ")"
+                + texteDegatsPrescience(prescienceSurMoi), x + 13, y,
+                prescienceSurMoi != null && prescienceSurMoi.koGaranti ? COULEUR_KO : COULEUR_TEXTE);
             y += hauteurLigne;
         }
         if (FieldTracker.getFutureSightAdversaireTours() > 0) {
             dessinerIcone(6, x, y);
-            dessinerTexte(String.format("Prescience sur adv : %dt", FieldTracker.getFutureSightAdversaireTours()),
-                x + 13, y, COULEUR_TEXTE);
+            dessinerTexte("Prescience sur adv (" + quandPrescience(FieldTracker.getFutureSightAdversaireTours()) + ")"
+                + texteDegatsPrescience(prescienceSurAdv), x + 13, y,
+                prescienceSurAdv != null && prescienceSurAdv.koGaranti ? COULEUR_REVELE : COULEUR_TEXTE);
             y += hauteurLigne;
         }
 
@@ -945,6 +985,40 @@ public final class CalcOverlay implements HudRenderCallback {
         if (t.isEmpty()) return "";
 
         return " | " + t;
+    }
+
+    // Prescience en cours (recalculée à chaque image)
+    private DamageCalculator.Resultat prescienceSurAdv = null;
+    private DamageCalculator.Resultat prescienceSurMoi = null;
+    private String prescienceSurAdvKO = "";
+    private String prescienceSurMoiKO = "";
+
+    private static String quandPrescience(int tours) {
+        return tours <= 1 ? "fin de ce tour" : "fin du tour prochain";
+    }
+
+    private String texteDegatsPrescience(DamageCalculator.Resultat r) {
+        if (r == null) return "";
+        if (r.immunise) return " : immunisé";
+        String ko = r == prescienceSurAdv ? prescienceSurAdvKO : prescienceSurMoiKO;
+        return String.format(" : %.0f%% - %.0f%%%s", r.pourcentageMin, r.pourcentageMax, ko);
+    }
+
+    /**
+     * " | +Prescience : K.O. 62 %" : chance que ce coup puis la Prescience
+     * (fin du tour) mettent K.O., jets indépendants. Rien si le coup seul
+     * suffit toujours, ou si la somme ne peut pas suffire.
+     */
+    static String texteKOAvecPrescience(DamageCalculator.Resultat coup, DamageCalculator.Resultat fs, int pv) {
+        if (coup == null || fs == null || coup.immunise || fs.immunise
+                || coup.degatsParRoll.length == 0 || fs.degatsParRoll.length == 0 || pv <= 0) return "";
+        if (coup.degatsParRoll[0] >= pv) return "";
+        int ko = 0;
+        int total = coup.degatsParRoll.length * fs.degatsParRoll.length;
+        for (int a : coup.degatsParRoll) for (int b : fs.degatsParRoll) if (a + b >= pv) ko++;
+        if (ko == 0) return "";
+        return ko == total ? " | +Prescience : K.O. garanti"
+            : " | +Prescience : K.O. " + com.tropimon.tropicalc.calc.ChancesKO.pourcent((double) ko / total);
     }
 
     /** Une de mes capacités à afficher : nom affiché et capacité de calcul. */
