@@ -213,7 +213,7 @@ public final class ScoutingStore {
             .computeIfAbsent(joueur.toLowerCase(), k -> new HashMap<>())
             .computeIfAbsent(espece, k -> new Faits());
         if (objet != null) f.objet = objet;
-        if (talent != null) f.talent = talent;
+        if (talent != null && !("Imposteur".equals(talent) && !"ditto".equals(espece))) f.talent = talent;
         if (chipTalent) f.chipTalent = true;
         if (capacites != null) {
             for (String c : capacites) {

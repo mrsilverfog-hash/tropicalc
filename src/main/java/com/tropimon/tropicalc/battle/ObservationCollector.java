@@ -321,12 +321,12 @@ public final class ObservationCollector {
             compteurToxikAdversaire = 0;
             coupVerrouAdversaire = null;   // le verrou Choix tombe au switch
             compteurAbrisAdversaire = 0;
-        } else if (espaceAdversaireDuTour != null && coupAdversaireDuTour != null) {
-            // Pas de switch : une capacité différente de celle du tour
-            // précédent est une preuve certaine que l'objet Choix
-            // proactif était une erreur (Choix verrouille sur un seul coup).
-            tenterRevoquerObjetChoix(adversaire.getEspece(), coupAdversaireDuTour.showdownId());
         }
+        // (Plus de révocation du Choix par comparaison tour à tour : avec un
+        // Demi-Tour, la capacité « du tour précédent » était celle du Pokémon
+        // reparti. Log du 12/10 : Lunettes Choix de Dracolosse confirmées puis
+        // annulées par le Demi-Tour de Pyrobut. suivreVerrouChoix compare les
+        // capacités d'un même séjour, à partir des messages du jeu.)
 
         // Abris consécutifs de l'adversaire (le 2e n'a que ~33% de réussite)
         if (coupAdversaireDuTour != null) {
@@ -1033,6 +1033,7 @@ public final class ObservationCollector {
         String idCoup;
         String especeAttaquant;
         Pokemon attaquant;          // adversaire tel que vu au moment du coup
+        Pokemon attaquantEstime;    // son estimation (objet...) au moment du coup
         double pvAttaquantPct;
         Pokemon.Statut statutAttaquant;
         int stageAtk, stageAtkSpe;
@@ -1907,6 +1908,12 @@ public final class ObservationCollector {
         cr.idCoup = idCoup;
         cr.especeAttaquant = attaquant.getEspece();
         cr.attaquant = attaquant;
+        // Estimation AU MOMENT du coup : Dégommage lance l'objet puis le perd
+        // (log du 12/10 : Orbe Flamme de Krarmor, prévu 0 % après la perte)
+        try {
+            cr.attaquantEstime = construireAdversaireEstime(attaquant);
+        } catch (Exception ignored) {
+        }
         cr.pvAttaquantPct = attaquant.getPourcentagePv();
         cr.statutAttaquant = attaquant.getStatut();
         cr.stageAtk = BoostTracker.getStageAdversaire(Stat.ATTAQUE);
@@ -2129,7 +2136,7 @@ public final class ObservationCollector {
         if (cr.ko) log.append(" K.O. (borne basse)");
 
         // Ce que le HUD prévoyait, avec l'adversaire estimé tel qu'affiché.
-        Pokemon estime = construireAdversaireEstime(cr.attaquant);
+        Pokemon estime = cr.attaquantEstime != null ? cr.attaquantEstime : construireAdversaireEstime(cr.attaquant);
         estime.setStage(Stat.ATTAQUE, cr.stageAtk);
         estime.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
         DamageCalculator.Resultat prevu = DamageCalculator.calculer(
@@ -2311,8 +2318,162 @@ public final class ObservationCollector {
         if (espece != null) return espece;
         Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(arg));
         if (adverse == null) return null;
+        // Le dernier Pokémon annoncé à l'entrée : plus sûr que l'état du jeu,
+        // pas encore mis à jour quand le message est lu
+        String entre = adverse ? derniereEntreeAdv : derniereEntreeMoi;
+        if (entre != null) return entre;
         Pokemon actif = adverse ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
         return actif != null ? actif.getEspece() : null;
+    }
+
+    // --- Dernier Pokémon entré de chaque camp, lu dans les messages d'entrée ---
+    // ("switch.other.nickname | Slycos_ | Kraft | weezing" donne l'espèce même
+    // pour un Pokémon surnommé)
+    private static String derniereEntreeAdv = null;
+    private static String derniereEntreeMoi = null;
+
+    private static void suivreEntrees(String cle, Object[] args) {
+        boolean adv = cle.startsWith("cobblemon.battle.switch.other");
+        boolean moi = cle.startsWith("cobblemon.battle.switch.self");
+        boolean traine = cle.startsWith("cobblemon.battle.dragged_out");
+        if (!adv && !moi && !traine) return;
+        String espece = null;
+        for (Object a : args) {
+            espece = especeDeTexte(a);
+            if (espece != null) break;
+        }
+        if (traine) {
+            if (args.length == 0) return;
+            Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (adverse == null) return;
+            adv = adverse;
+        }
+        if (espece == null) return;
+        if (adv) {
+            derniereEntreeAdv = espece;
+            especeSejourIllusion = espece;
+            faitsAvantSejour = capturerFaits(espece);
+        } else {
+            derniereEntreeMoi = espece;
+        }
+    }
+
+    // --- Illusion (Zoroark) ---
+    // Le Zoroark entre déguisé : capacités, objet, recul d'Orbe Vie... sont
+    // notés sur l'espèce imitée. Au message end.illusion, tout ce qui a été
+    // appris depuis son entrée repart sur le Zoroark et l'espèce imitée
+    // retrouve ses faits d'avant (log du 12/10 : Orbe Vie et Explonuit
+    // attribués à Flingouste, c'était le Zoroark).
+    private static final class FaitsEspece {
+        LinkedHashSet<String> coups;
+        Map<String, Integer> pp;
+        boolean retire, ovExclue, choixExclu;
+        String objet, raison, preuveChoix, talent, perdu;
+    }
+    private static String especeSejourIllusion = null;
+    private static FaitsEspece faitsAvantSejour = null;
+
+    private static FaitsEspece capturerFaits(String e) {
+        FaitsEspece f = new FaitsEspece();
+        f.coups = COUPS_ADVERSAIRE.containsKey(e) ? new LinkedHashSet<>(COUPS_ADVERSAIRE.get(e)) : null;
+        f.pp = PP_UTILISES.containsKey(e) ? new HashMap<>(PP_UTILISES.get(e)) : null;
+        f.retire = OBJETS_RETIRES.contains(e);
+        f.ovExclue = ORBE_VIE_EXCLUE.contains(e);
+        f.choixExclu = OBJETS_CHOIX_EXCLUS.contains(e);
+        f.objet = OBJETS_CONFIRMES.get(e);
+        f.raison = RAISONS_OBJET.get(e);
+        f.preuveChoix = PREUVE_PAS_CHOIX.get(e);
+        f.talent = TALENTS_CONFIRMES.get(e);
+        f.perdu = OBJETS_PERDUS_CONNUS.get(e);
+        return f;
+    }
+
+    private static <K, V> void remettre(Map<K, V> m, K k, V v) {
+        if (v == null) m.remove(k);
+        else m.put(k, v);
+    }
+
+    private static void remettre(Set<String> s, String k, boolean present) {
+        if (present) s.add(k);
+        else s.remove(k);
+    }
+
+    private static void restaurerFaits(String e, FaitsEspece f) {
+        remettre(COUPS_ADVERSAIRE, e, f.coups);
+        remettre(PP_UTILISES, e, f.pp);
+        remettre(OBJETS_RETIRES, e, f.retire);
+        remettre(ORBE_VIE_EXCLUE, e, f.ovExclue);
+        remettre(OBJETS_CHOIX_EXCLUS, e, f.choixExclu);
+        remettre(OBJETS_CONFIRMES, e, f.objet);
+        remettre(RAISONS_OBJET, e, f.raison);
+        remettre(PREUVE_PAS_CHOIX, e, f.preuveChoix);
+        remettre(TALENTS_CONFIRMES, e, f.talent);
+        remettre(OBJETS_PERDUS_CONNUS, e, f.perdu);
+    }
+
+    private static void suivreIllusion(String cle, Object[] args) {
+        if (!cle.startsWith("cobblemon.battle.end.illusion") || args.length == 0) return;
+        if (!Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) return;
+        // Les coups de ce tour visaient / venaient du Zoroark, pas de l'espèce imitée
+        if (coupRecu != null) coupRecu.invalide = true;
+        if (coupDonne != null) coupDonne.invalide = true;
+        String vrai = especeDepuisArgument(args[0]);
+        String faux = especeSejourIllusion;
+        if (vrai == null || faux == null || vrai.equals(faux) || faitsAvantSejour == null) return;
+        FaitsEspece apres = capturerFaits(faux);
+        FaitsEspece avant = faitsAvantSejour;
+        restaurerFaits(faux, avant);
+        if (apres.coups != null) {
+            for (String c : apres.coups) {
+                if (avant.coups == null || !avant.coups.contains(c)) {
+                    COUPS_ADVERSAIRE.computeIfAbsent(vrai, k -> new LinkedHashSet<>()).add(c);
+                }
+            }
+        }
+        if (apres.pp != null) {
+            for (Map.Entry<String, Integer> e : apres.pp.entrySet()) {
+                int avantPp = avant.pp != null ? avant.pp.getOrDefault(e.getKey(), 0) : 0;
+                if (e.getValue() > avantPp) {
+                    PP_UTILISES.computeIfAbsent(vrai, k -> new HashMap<>()).merge(e.getKey(), e.getValue() - avantPp, Integer::sum);
+                }
+            }
+        }
+        if (apres.objet != null && !apres.objet.equals(avant.objet)) confirmerObjet(vrai, apres.objet, apres.raison);
+        if (apres.retire && !avant.retire) OBJETS_RETIRES.add(vrai);
+        if (apres.ovExclue && !avant.ovExclue) ORBE_VIE_EXCLUE.add(vrai);
+        if (apres.choixExclu && !avant.choixExclu) OBJETS_CHOIX_EXCLUS.add(vrai);
+        if (apres.preuveChoix != null && avant.preuveChoix == null) PREUVE_PAS_CHOIX.put(vrai, apres.preuveChoix);
+        if (apres.talent != null && !apres.talent.equals(avant.talent)) TALENTS_CONFIRMES.put(vrai, apres.talent);
+        if (apres.perdu != null && !apres.perdu.equals(avant.perdu)) OBJETS_PERDUS_CONNUS.put(vrai, apres.perdu);
+        MessageDebugLogger.analyse("ILLUSION : c'était " + vrai + " déguisé en " + faux
+            + ", ce qui a été vu depuis son entrée lui est réattribué");
+        derniereEntreeAdv = vrai;
+        especeSejourIllusion = vrai;
+        faitsAvantSejour = capturerFaits(vrai);
+    }
+
+    /** Espèce contenue dans un argument (clé cobblemon.species.X, directe ou dans owned_pokemon). */
+    private static String especeDeTexte(Object arg) {
+        if (arg instanceof Text t && t.getContent() instanceof TranslatableTextContent c) {
+            String k = c.getKey();
+            if (k != null && k.startsWith("cobblemon.species.")) {
+                String sp = k.substring("cobblemon.species.".length());
+                return sp.endsWith(".name") ? sp.substring(0, sp.length() - 5) : sp;
+            }
+            for (Object sous : c.getArgs()) {
+                String sp = especeDeTexte(sous);
+                if (sp != null) return sp;
+            }
+            return null;
+        }
+        if (arg instanceof String str) {
+            int i = str.indexOf("cobblemon.species.");
+            if (i >= 0) {
+                int fin = str.indexOf(".name", i);
+                if (fin > i) return str.substring(i + "cobblemon.species.".length(), fin);
+            }
+        }
+        return null;
     }
 
     /** owned_pokemon(dresseur, translation{cobblemon.species.X.name}) -> "X". */
@@ -2545,7 +2706,11 @@ public final class ObservationCollector {
             if (scout.objet != null && objetConfirme == null && !objetRetire && !objetExclu(espece, scout.objet)) {
                 b.objet(scout.objet);
             }
-            if (scout.talent != null) b.talent(scout.talent);
+            // Imposteur hors Métamorph : erreur d'attribution d'anciens combats
+            // (talent du Métamorph entrant donné au Pokémon qu'il remplaçait)
+            if (scout.talent != null && !("Imposteur".equals(scout.talent) && !"ditto".equals(espece))) {
+                b.talent(scout.talent);
+            }
         }
 
         // Objet probable (élimination par les dégâts, Évoluroc) : plus fiable
@@ -2816,35 +2981,6 @@ public final class ObservationCollector {
         }
     }
 
-    /**
-     * Révoque TOUTE confirmation d'objet Choix contredite par les faits.
-     *
-     * Deux capacités différentes du même Pokémon sans switch entre-temps est
-     * une preuve certaine qu'il ne tient pas d'objet Choix : le verrou impose
-     * la première capacité utilisée depuis l'entrée sur le terrain.
-     *
-     * Ne se limitait au départ qu'à OBJETS_CONFIRMES_PROACTIVEMENT (le taux
-     * d'usage Smogon), laissant intacte une confirmation de
-     * tenterConfirmerEcharpeChoix (fondée sur la vitesse) - or c'est
-     * exactement celle qui peut se tromper si une hypothèse de vitesse manque
-     * au modèle (terrain de course, boost adverse non pris en compte, etc.).
-     * Une preuve certaine doit l'emporter sur n'importe quelle estimation,
-     * quelle qu'en soit la source. Trouvé en portant un fix similaire depuis
-     * randompvp (faux positif réel sur un Pelipper ayant enchaîné Vent Violent
-     * puis Balle Météo).
-     */
-    private static void tenterRevoquerObjetChoix(String espece, String coupActuelId) {
-        String objet = OBJETS_CONFIRMES.get(espece);
-        boolean estObjetChoix = "Mouchoir Choix".equals(objet)
-            || "Bandeau Choix".equals(objet) || "Lunettes Choix".equals(objet);
-        if (!estObjetChoix) return;
-        if (coupAdversaireTourPrecedent == null || coupActuelId == null) return;
-        if (!coupAdversaireTourPrecedent.equals(coupActuelId)) {
-            OBJETS_CONFIRMES.remove(espece);
-            OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
-            OBJETS_CHOIX_EXCLUS.add(espece);
-        }
-    }
 
     /**
      * Évoluroc supposé pour une sous-évolution (le Pokémon peut encore
@@ -3174,6 +3310,8 @@ public final class ObservationCollector {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        suivreEntrees(cle, contenu.getArgs());
+        suivreIllusion(cle, contenu.getArgs());
         suivreCoupRecu(cle, contenu.getArgs());
         suivreVerrouChoix(cle, contenu.getArgs());
         suivreTorche(cle, contenu.getArgs());
@@ -3472,6 +3610,16 @@ public final class ObservationCollector {
      * (le talent du joueur est déjà connu avec certitude).
      */
     public static void confirmerTalentParMessage(String proprietaire, String talentAnglais) {
+        confirmerTalentParMessage(proprietaire, talentAnglais, null);
+    }
+
+    /**
+     * @param argPokemon l'argument du message qui nomme le Pokémon : le talent
+     *                   lui est attribué, pas au Pokémon que le jeu montre encore
+     *                   (log du 12/10 : l'Imposteur d'un Métamorph entrant attribué
+     *                   à l'Ectoplasma qu'il remplaçait).
+     */
+    public static void confirmerTalentParMessage(String proprietaire, String talentAnglais, Object argPokemon) {
         try {
             Boolean estAdversaire = determinerAttaquant(proprietaire);
             if (talentAnglais != null && "flashfire".equals(talentAnglais.toLowerCase().replaceAll("[^a-z]", ""))) {
@@ -3481,10 +3629,12 @@ public final class ObservationCollector {
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire == null) return;
             String talentFr = ShowdownIdMapper.talent(talentAnglais);
+            String espece = argPokemon != null ? especeOuActif(argPokemon) : null;
+            if (espece == null) espece = adversaire.getEspece();
             if (talentFr != null) {
-                TALENTS_CONFIRMES.put(adversaire.getEspece(), talentFr);
+                TALENTS_CONFIRMES.put(espece, talentFr);
                 if ("Épine de Fer".equals(talentFr) || "Peau Dure".equals(talentFr)) {
-                    TALENTS_CHIP_CONFIRMES.add(adversaire.getEspece());
+                    TALENTS_CHIP_CONFIRMES.add(espece);
                 }
             }
         } catch (Exception ignored) {
@@ -3857,6 +4007,10 @@ public final class ObservationCollector {
         ADVERSAIRES_VUS.clear();
         FACTEURS.clear();
         OBJETS_PERDUS_CONNUS.clear();
+        derniereEntreeAdv = null;
+        derniereEntreeMoi = null;
+        especeSejourIllusion = null;
+        faitsAvantSejour = null;
         OBJETS_EXCLUS.clear();
         PREUVES_EXCLUSION.clear();
         PLAFONDS_DEFENSIFS.clear();

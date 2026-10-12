@@ -106,7 +106,7 @@ public final class MoveUseTracker {
             Object[] args = contenu.getArgs();
             if (args.length >= 2 && args[1] instanceof String talentAnglais) {
                 String proprietaire = extraireProprietaire(args[0]);
-                ObservationCollector.confirmerTalentParMessage(proprietaire, talentAnglais);
+                ObservationCollector.confirmerTalentParMessage(proprietaire, talentAnglais, args[0]);
             }
             return;
         }
@@ -119,7 +119,7 @@ public final class MoveUseTracker {
                 if ("rockyhelmet".equals(source)) {
                     ObservationCollector.confirmerObjetParMessage(porteur, source);
                 } else if ("ironbarbs".equals(source) || "roughskin".equals(source)) {
-                    ObservationCollector.confirmerTalentParMessage(porteur, source);
+                    ObservationCollector.confirmerTalentParMessage(porteur, source, args[1]);
                 }
             }
             return;
