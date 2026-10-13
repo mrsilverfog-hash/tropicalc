@@ -119,7 +119,24 @@ public final class FieldTracker {
 
     public static void traiterMessage(Text message) {
         if (message == null) return;
-        if (!(message.getContent() instanceof TranslatableTextContent contenu)) return;
+        // Prescience sans cible (Pokémon K.O. sur la position visée) : le
+        // jeu envoie un simple texte « |-hint|Future Sight did not hit... »
+        // au lieu de end.futuresight. Sans ça la ligne restait affichée.
+        if (!(message.getContent() instanceof TranslatableTextContent)) {
+            String brut = message.getString();
+            if (brut != null && brut.contains("Future Sight did not hit")) {
+                if (futureSightAdversaireTours > 0 && futureSightAdversaireTours <= 1) {
+                    futureSightAdversaireTours = 0;
+                    ObservationCollector.abandonnerPrescience(true);
+                }
+                if (futureSightJoueurTours > 0 && futureSightJoueurTours <= 1) {
+                    futureSightJoueurTours = 0;
+                    ObservationCollector.abandonnerPrescience(false);
+                }
+            }
+            return;
+        }
+        TranslatableTextContent contenu = (TranslatableTextContent) message.getContent();
         String cle = contenu.getKey();
         if (cle == null) return;
 

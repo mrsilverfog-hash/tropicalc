@@ -143,6 +143,7 @@ const CAS = [
     ['Big Splash', ['Corviknight', { nature: 'Impish', evs: { hp: 252, def: 252 } }], ['Great Tusk', PHYS_DEF], 'Body Press'],
     ['Tricherie', ['Grimmsnarl', { nature: 'Careful', evs: { hp: 252, spd: 252 } }], ['Dragonite', { ...ATK, boosts: { atk: 1 } }], 'Foul Play'],
     ['Choc Psy', ['Alakazam', SPA], ['Blissey', SPEC_DEF], 'Psyshock'],
+    ['Prescience', ['Slowking', SPA], ['Flygon', SPEC_DEF], 'Future Sight'],
     ['Monte-Tension champ', ['Iron Hands', SPA], ['Corviknight', SPEC_DEF], 'Rising Voltage', { field: { terrain: 'Electric' } }],
     ['Vaste Pouvoir champ', ['Indeedee', SPA], ['Great Tusk', SPEC_DEF], 'Expanding Force', { field: { terrain: 'Psychic' } }],
     ['Lame Psychique champ', ['Iron Leaves', ATK], ['Great Tusk', PHYS_DEF], 'Psyblade', { field: { terrain: 'Electric' } }],

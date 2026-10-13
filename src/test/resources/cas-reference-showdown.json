@@ -14227,6 +14227,153 @@
   "description": "252+ SpA Alakazam Psyshock vs. 252 HP / 4 Def Blissey: 610-718 (85.4 - 100.5%) -- 6.3% chance to OHKO"
  },
  {
+  "nom": "Prescience",
+  "attaquant": {
+   "espece": "slowking",
+   "niveau": 100,
+   "types": [
+    "water",
+    "psychic"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 75,
+    "def": 80,
+    "spa": 100,
+    "spd": 110,
+    "spe": 30
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "oblivious",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 332,
+   "poidsKg": 79.5,
+   "statsShowdown": {
+    "hp": 332,
+    "atk": 167,
+    "def": 196,
+    "spa": 328,
+    "spd": 256,
+    "spe": 159
+   }
+  },
+  "defenseur": {
+   "espece": "flygon",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "dragon"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 100,
+    "def": 80,
+    "spa": 80,
+    "spd": 80,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "levitate",
+   "objet": null,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 364,
+   "poidsKg": 82,
+   "statsShowdown": {
+    "hp": 364,
+    "atk": 212,
+    "def": 197,
+    "spa": 196,
+    "spd": 284,
+    "spe": 236
+   }
+  },
+  "capacite": {
+   "id": "futuresight",
+   "type": "psychic",
+   "categorie": "Special",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "critique": false,
+  "degatsAttendus": [
+   150,
+   151,
+   153,
+   154,
+   157,
+   159,
+   160,
+   162,
+   163,
+   165,
+   168,
+   169,
+   171,
+   172,
+   174,
+   177
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "252+ SpA Slowking Future Sight vs. 252 HP / 252+ SpD Flygon: 150-177 (41.2 - 48.6%) -- guaranteed 3HKO"
+ },
+ {
   "nom": "Monte-Tension champ",
   "attaquant": {
    "espece": "ironhands",

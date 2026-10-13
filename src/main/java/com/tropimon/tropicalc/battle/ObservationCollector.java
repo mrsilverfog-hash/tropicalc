@@ -1744,7 +1744,9 @@ public final class ObservationCollector {
                         .append(", PV ").append(def.getPvMax())
                         .append(physique ? ", Déf " : ", DéfSpé ")
                         .append(def.getStatCalculee(physique ? Stat.DEFENSE : Stat.DEFENSE_SPE))
-                        .append(", mon objet ").append(cd.attaquant.getObjet()).append(']');
+                        .append(", mon objet ").append(cd.attaquant.getObjet())
+                        .append(physique ? ", mon Atq " : ", mon AtqSpé ")
+                        .append(cd.attaquant.getStatCalculee(physique ? Stat.ATTAQUE : Stat.ATTAQUE_SPE)).append(']');
                     boolean coupsFixes = !cd.multiCoups || DamageCalculator.nombreDeCoupsFixe(capacite, cd.attaquant);
                     if (!r.immunise && !cd.ko && coupsFixes) {
                         if (perte > r.pourcentageMax + 2) log.append(" | PLUS que prévu");
@@ -1790,6 +1792,10 @@ public final class ObservationCollector {
         boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
             || "psyshock".equals(cd.idCoup) || "psystrike".equals(cd.idCoup) || "secretsword".equals(cd.idCoup);
         Stat statDef = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
+        if (objet.equals(OBJETS_PROBABLES.get(def.getEspece()))
+                && retirerObjetDefensifDeduit(cd, def, capacite, perte, objet, log)) {
+            return true;
+        }
         Pokemon faible = def.copieAvecEvNature(Map.of(Stat.PV, 0, statDef, 0),
             physique ? com.tropimon.tropicalc.calc.Nature.PRESSE : com.tropimon.tropicalc.calc.Nature.NAIF);
         DamageCalculator.Resultat avec = DamageCalculator.calculer(
@@ -1812,6 +1818,46 @@ public final class ObservationCollector {
         PREUVES_EXCLUSION.put(def.getEspece(), "pas de " + objet + " : " + preuve);
         log.append(" | PAS DE ").append(objet).append(" : ").append(pct(perte)).append(" > ")
             .append(pct(avec.pourcentageMax)).append(" max du set le moins résistant qui la tient");
+        return true;
+    }
+
+    /**
+     * Veste de Combat / Évoluroc seulement déduits (« seul objet qui explique
+     * les dégâts », EV supposés Smogon) : si un coup fait nettement plus que
+     * prévu avec l'objet et tombe pile dans la fourchette du même set SANS
+     * l'objet, la déduction était fausse. Log du 13/10 : Primarina supposé
+     * Veste de Combat, Bombe Beurk 48,9 % pour 31-37 % prévu (47-55 % sans) ;
+     * le mod gardait la Veste et baissait ses EV à la place.
+     */
+    private static boolean retirerObjetDefensifDeduit(CoupDonne cd, Pokemon def,
+            com.tropimon.tropicalc.calc.Move capacite, double perte, String objet, StringBuilder log) {
+        Pokemon estime = def.copieAvecEvNature(Map.of(), null);
+        DamageCalculator.Resultat avec = DamageCalculator.calculer(
+            cd.attaquant, estime, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+        estime.setObjet(null);
+        DamageCalculator.Resultat sans = DamageCalculator.calculer(
+            cd.attaquant, estime, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+        if (avec.immunise || sans.immunise) return false;
+        double marge = Math.max(1.5, avec.pourcentageMax * 0.05);
+        if (perte <= avec.pourcentageMax + marge) return false;
+        if (perte < sans.pourcentageMin - marge || perte > sans.pourcentageMax + marge) return false;
+        String espece = def.getEspece();
+        String nomCoup = cd.idCoup;
+        try {
+            MoveTemplate t = Moves.INSTANCE.getByName(cd.idCoup);
+            if (t != null) nomCoup = t.getDisplayName().getString();
+        } catch (Exception ignored) {
+        }
+        OBJETS_EXCLUS.computeIfAbsent(espece, k -> new HashSet<>()).add(objet);
+        OBJETS_PROBABLES.remove(espece, objet);
+        RAISONS_PROBABLES.remove(espece);
+        PREUVES_EXCLUSION.put(espece, String.format(java.util.Locale.FRANCE,
+            "pas de %s : %s %.1f %% (%.0f-%.0f %% sans, %.0f %% max avec)", objet, nomCoup, perte,
+            sans.pourcentageMin, sans.pourcentageMax, avec.pourcentageMax));
+        log.append(" | ").append(objet.toUpperCase(java.util.Locale.FRANCE)).append(" DÉMENTIE : ")
+            .append(pct(perte)).append(" colle au même set sans objet (").append(pct(sans.pourcentageMin))
+            .append(" - ").append(pct(sans.pourcentageMax)).append(')');
+        MessageDebugLogger.analyse("OBJET " + espece + " : " + objet + " retiré (déduction démentie par " + cd.idCoup + ")");
         return true;
     }
 
@@ -2764,6 +2810,8 @@ public final class ObservationCollector {
         }
     }
 
+    public static final boolean PROFIL_ANCIEN_ACTIF = false;
+
     public static Pokemon construireAdversaireEstime(Pokemon adversaireBase) {
         String espece = adversaireBase.getEspece();
         ProfilAdversaire profil = PROFILS.get(espece);
@@ -2811,11 +2859,15 @@ public final class ObservationCollector {
             }
         }
 
-        // Une seule observation suffit à corriger : mieux vaut une estimation
-        // calibrée sur le réel qu'un set Smogon démenti par les faits
-        if (profil != null && profil.getNbObservations() >= 3) {
-            // Seuil remonté à 3 : le moteur de correction rapide est en pause,
-            // on revient à la prudence d'origine pour les hypothèses d'EV
+        // Ancien profil (pertes de PV comparées d'un tour à l'autre) : il ne
+        // corrige plus ni les EV ni l'objet. Ses pertes mélangent Torrent,
+        // boosts, deux coups par tour et changements de Pokémon ; les mesures
+        // coup par coup (plafond/plancher offensif, résistance mesurée,
+        // exclusion de Veste) les remplacent. Logs : Primarina passé à
+        // AtqSpé 351 et « Veste de Combat probable » à tort, Dragapult
+        // « Lunettes Choix probable » alors que le Choix était exclu,
+        // Hydrapple « Orbe Vie probable » sans recul annoncé.
+        if (PROFIL_ANCIEN_ACTIF && profil != null && profil.getNbObservations() >= 3) {
             appliquerHypothese(b, Stat.ATTAQUE, profil.attaque);
             appliquerHypothese(b, Stat.ATTAQUE_SPE, profil.attaqueSpe);
             appliquerHypothese(b, Stat.DEFENSE, profil.defense);
@@ -4131,10 +4183,17 @@ public final class ObservationCollector {
         else lanceurPrescienceAdvBase = null;
     }
 
+    /** Prescience tombée dans le vide (cible K.O.) : rien à mesurer. */
+    public static void abandonnerPrescience(boolean surAdversaire) {
+        if (surAdversaire) lanceurPrescienceJoueur = null;
+        else lanceurPrescienceAdvBase = null;
+    }
+
     // Impact de Prescience mesuré à la fin du tour (vérifie la ligne du HUD)
     private static String prescienceCible = null;
     private static boolean prescienceSurAdv = false;
     private static double prescienceAvant = -1, prescienceMin = 0, prescienceMax = 0;
+    private static String prescienceDetail = "";
 
     private static void photographierPrescience(boolean surAdversaire) {
         prescienceCible = null;
@@ -4166,6 +4225,9 @@ public final class ObservationCollector {
         prescienceSurAdv = surAdversaire;
         prescienceMin = r.pourcentageMin;
         prescienceMax = r.pourcentageMax;
+        prescienceDetail = " [lanceur " + lanceur.getEspece() + " AtqSpé " + lanceur.getStatCalculee(Stat.ATTAQUE_SPE)
+            + " objet " + lanceur.getObjet() + " | cible PV " + cible.getStatCalculee(Stat.PV)
+            + " DéfSpé " + cible.getStatCalculee(Stat.DEFENSE_SPE) + " objet " + cible.getObjet() + "]";
     }
 
     private static void journaliserPrescience() {
@@ -4177,7 +4239,7 @@ public final class ObservationCollector {
         double perte = prescienceAvant - actuel.getPourcentagePv();
         MessageDebugLogger.analyse("PRESCIENCE sur " + cible + " | PV avant " + pct(prescienceAvant) + " | perte "
             + pct(perte) + (actuel.getPvActuels() <= 0 ? " K.O. (borne basse)" : "") + " | prévu " + pct(prescienceMin)
-            + " - " + pct(prescienceMax) + " (Leftovers et autres soins non retirés)");
+            + " - " + pct(prescienceMax) + prescienceDetail + " (Leftovers et autres soins non retirés)");
     }
 
     /** Mon Pokémon qui a lancé la Prescience en cours sur l'adversaire, ou null. */
