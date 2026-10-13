@@ -256,6 +256,10 @@ public final class ObservationCollector {
             journaliserCoupDonne();
         } catch (Exception ignored) {
         }
+        try {
+            journaliserPrescience();
+        } catch (Exception ignored) {
+        }
         coupRecuTourEcoule = coupRecu;
         coupRecu = null;
         joueurBloqueCeTour = false;
@@ -1586,6 +1590,10 @@ public final class ObservationCollector {
             if (surDefenseur) cr.ko = true;
         } else if (cle.equals("cobblemon.battle.cant.flinch")) {
             if (surDefenseur) cr.tressailli = true;
+        } else if (cle.equals("cobblemon.battle.heal.wish")) {
+            // « heal.wish | moi:Mamanbo » soigne le Pokémon EN PLACE (Roigada
+            // entré entre-temps) : le message nomme le lanceur du Vœu
+            if (surMoi) cr.invalide = true;
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surDefenseur) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -1631,6 +1639,12 @@ public final class ObservationCollector {
             // Estimation AU MOMENT du coup : Sabotage fait tomber l'objet juste
             // après, mais son bonus x1,5 dépendait de l'objet encore tenu.
             cd.defenseurEstime = construireAdversaireEstime(def);
+            // Ses boosts du moment (Plénitude, Gonflette...) : sans eux, un
+            // Pokémon boosté en Déf. paraissait « plus résistant que prévu »
+            // (log du 12/10 : Braségali après Gonflette, Primarina après Plénitude)
+            for (Stat st : Stat.values()) {
+                if (st != Stat.PV) cd.defenseurEstime.setStage(st, BoostTracker.getStageAdversaire(st));
+            }
             cd.pvAvant = def.getPourcentagePv();
             cd.etat = FieldTracker.construireField();
             coupDonne = cd;
@@ -1658,6 +1672,10 @@ public final class ObservationCollector {
         } else if (cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire")) {
             // Une Prescience lancée deux tours plus tôt frappe le même tour
             if (surLui) cd.invalide = true;
+        } else if (cle.equals("cobblemon.battle.heal.wish")) {
+            if (args.length > 0 && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) {
+                cd.invalide = true;
+            }
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surLui) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -2082,26 +2100,98 @@ public final class ObservationCollector {
             .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
     }
 
-    /** Facteur à appliquer à sa stat offensive (1.0 = aucun), une fois établi. */
+    /**
+     * Facteur à appliquer à sa stat offensive (1.0 = aucun), une fois établi :
+     * plafond (set moins offensif) ou plancher (set plus offensif) ; les deux
+     * à la fois = mesures incohérentes, rien n'est appliqué.
+     */
     private static double plafondOffensif(String espece, Stat stat) {
-        if (!PLAFONDS_ACTIFS.contains(espece)) return 1.0;
-        Map<Stat, Double> m = PLAFONDS_OFFENSIFS.get(espece);
-        if (m == null || !m.containsKey(stat)) return 1.0;
-        return m.get(stat);
+        Double plafond = PLAFONDS_ACTIFS.contains(espece)
+            ? PLAFONDS_OFFENSIFS.getOrDefault(espece, Map.of()).get(stat) : null;
+        Double plancher = PLANCHERS_ACTIFS.contains(espece)
+            ? PLANCHERS_OFFENSIFS.getOrDefault(espece, Map.of()).get(stat) : null;
+        if (plafond != null && plancher != null) return 1.0;
+        if (plafond != null) return plafond;
+        if (plancher != null) return plancher;
+        return 1.0;
     }
 
-    /** "Atq x0.80" si son set s'est montré moins offensif que l'estimation, sinon null. */
+    /** "moins offensif que prévu : Atq x0,80" (ou plus), null si rien d'établi. */
     public static String getPlafondOffensifTexte(String espece) {
-        if (!PLAFONDS_ACTIFS.contains(espece)) return null;
-        Map<Stat, Double> m = PLAFONDS_OFFENSIFS.get(espece);
-        if (m == null || m.isEmpty()) return null;
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Stat, Double> e : m.entrySet()) {
+        for (Stat st : new Stat[]{Stat.ATTAQUE, Stat.ATTAQUE_SPE}) {
+            double f = plafondOffensif(espece, st);
+            if (f == 1.0) continue;
             if (sb.length() > 0) sb.append(", ");
-            sb.append(e.getKey() == Stat.ATTAQUE ? "Atq" : "AtqSpé").append(" x")
-                .append(String.format("%.2f", e.getValue()));
+            sb.append(f < 1 ? "moins" : "plus").append(" offensif que prévu : ")
+                .append(st == Stat.ATTAQUE ? "Atq" : "AtqSpé").append(" x")
+                .append(String.format(java.util.Locale.FRANCE, "%.2f", f));
         }
-        return sb.toString();
+        return sb.length() == 0 ? null : sb.toString();
+    }
+
+    // --- Set plus offensif que l'estimation ---
+    // Son coup fait nettement plus que le maximum prévu alors que les objets
+    // qui l'expliqueraient sont écartés (Choix exclu, Orbe Vie exclue, ou
+    // objet connu) : on cherche le set le MOINS offensif qui l'explique
+    // (EV 0 -> 252, nature -/neutre/+). Rapport à l'estimation = plancher,
+    // appliqué dès un écart net (> 120 % du max) ou à la deuxième mesure.
+    // Log du 12/10 : Chartor offensif, Ball'Météo 45 % pour 25-30 % prévus.
+    private static final Map<String, Map<Stat, Double>> PLANCHERS_OFFENSIFS = new HashMap<>();
+    private static final Map<String, Integer> MESURES_PLANCHER = new HashMap<>();
+    private static final Set<String> PLANCHERS_ACTIFS = new HashSet<>();
+
+    private static void tenterPlancherOffensif(CoupRecu cr, Pokemon estime,
+            com.tropimon.tropicalc.calc.Move capacite, Stat statAtk, double perte,
+            DamageCalculator.Resultat prevu, StringBuilder log) {
+        if (prevu.pourcentageMax < 4.0 || perte <= prevu.pourcentageMax * 1.1 + 1.5) return;
+        String espece = cr.especeAttaquant;
+        boolean objetConnu = OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
+        boolean objetsBoostEcartes = objetConnu
+            || (OBJETS_CHOIX_EXCLUS.contains(espece) && ORBE_VIE_EXCLUE.contains(espece));
+        if (!objetsBoostEcartes) return;
+        int statEstimee = (int) Math.round(estime.getStatCalculee(statAtk) / plafondOffensif(espece, statAtk));
+        if (statEstimee <= 0) return;
+        String objet = estime.getObjet() != null ? estime.getObjet() : StatHypothesis.AUCUN;
+        String talent = estime.getTalent() != null ? estime.getTalent() : StatHypothesis.AUCUN;
+        int moindre = Integer.MAX_VALUE;
+        com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost[] natures = {
+            com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BAISSEE,
+            com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.NEUTRE,
+            com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BOOSTEE};
+        for (com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost n : natures) {
+            for (int ev = 0; ev <= 252; ev += 4) {
+                Pokemon h = com.tropimon.tropicalc.calc.SetInferenceEngine.construirePokemonHypothetique(
+                    estime, statAtk, ev, n, objet, talent);
+                int stat = h.getStatCalculee(statAtk);
+                if (stat >= moindre) continue;
+                for (Stat st : Stat.values()) {
+                    if (st != Stat.PV) h.setStage(st, 0);
+                }
+                h.setStage(Stat.ATTAQUE, cr.stageAtk);
+                h.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
+                if (cr.statutAttaquant != null) h.setStatut(cr.statutAttaquant);
+                DamageCalculator.Resultat r = DamageCalculator.calculer(
+                    h, cr.defenseur, capacite, cr.etat, cr.etat.getEcransJoueur(), false);
+                if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) {
+                    moindre = stat;
+                    break;   // EV croissants : le premier qui colle est le moins offensif
+                }
+            }
+        }
+        if (moindre == Integer.MAX_VALUE) {
+            log.append(" | PLUS que prévu, inexplicable par ses EV");
+            return;
+        }
+        double facteur = (double) moindre / statEstimee;
+        if (facteur < 1.03) return;
+        int mesures = MESURES_PLANCHER.merge(espece, 1, Integer::sum);
+        boolean net = perte > prevu.pourcentageMax * 1.2;
+        PLANCHERS_OFFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).merge(statAtk, facteur, Math::max);
+        if (net || mesures >= 2) PLANCHERS_ACTIFS.add(espece);
+        log.append(" | PLUS que prévu : ").append(statAtk == Stat.ATTAQUE ? "Atq" : "AtqSpé")
+            .append(" au moins ").append(moindre).append(" (x").append(String.format("%.2f", facteur)).append(")")
+            .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
     }
 
     private static String analyserCoupRecu(CoupRecu cr) {
@@ -2149,10 +2239,11 @@ public final class ObservationCollector {
             .append(" stage ").append(physique ? cr.stageAtk : cr.stageAtkSpe)
             .append(", météo ").append(cr.etat.getMeteo()).append(", champ ").append(cr.etat.getTerrain()).append(']');
 
-        // --- Set moins offensif que l'estimation ---
+        // --- Set moins (ou plus) offensif que l'estimation ---
         if (!cr.crit && !cr.ko && !cr.multiCoups && !capacite.isMultiCoups() && !prevu.immunise
                 && !PUISSANCE_NON_MODELISEE.contains(cr.idCoup)) {
             tenterPlafondOffensif(cr, estime, capacite, statAtk, perte, prevu, log);
+            tenterPlancherOffensif(cr, estime, capacite, statAtk, perte, prevu, log);
         }
 
         // --- Détection Bandeau / Lunettes Choix ---
@@ -2737,7 +2828,7 @@ public final class ObservationCollector {
         // l'estimation) : appliqué comme correction de stat ("~" dans le HUD).
         for (Stat st : new Stat[]{Stat.ATTAQUE, Stat.ATTAQUE_SPE}) {
             double plafond = plafondOffensif(espece, st);
-            if (plafond < 0.97) b.multiplicateurStat(st, plafond);
+            if (Math.abs(plafond - 1.0) > 0.03) b.multiplicateurStat(st, plafond);
         }
         // Résistance mesurée sur mes coups (PV x défense) : appliquée à sa défense
         for (Stat st : new Stat[]{Stat.DEFENSE, Stat.DEFENSE_SPE}) {
@@ -3961,8 +4052,61 @@ public final class ObservationCollector {
 
     /** @param surAdversaire vrai si la Prescience vient de frapper l'adversaire */
     public static void oublierPrescience(boolean surAdversaire) {
+        try {
+            photographierPrescience(surAdversaire);
+        } catch (Exception ignored) {
+        }
         if (surAdversaire) lanceurPrescienceJoueur = null;
         else lanceurPrescienceAdvBase = null;
+    }
+
+    // Impact de Prescience mesuré à la fin du tour (vérifie la ligne du HUD)
+    private static String prescienceCible = null;
+    private static boolean prescienceSurAdv = false;
+    private static double prescienceAvant = -1, prescienceMin = 0, prescienceMax = 0;
+
+    private static void photographierPrescience(boolean surAdversaire) {
+        prescienceCible = null;
+        MoveTemplate t = Moves.INSTANCE.getByName("futuresight");
+        com.tropimon.tropicalc.calc.Move fs = t == null ? null : convertirCapacite(t);
+        if (fs == null) return;
+        Field terrain = FieldTracker.construireField();
+        Pokemon lanceur, cible;
+        if (surAdversaire) {
+            lanceur = lanceurPrescienceJoueur;
+            Pokemon base = BattleStateTracker.getAdversaireActif();
+            if (lanceur == null || base == null) return;
+            cible = construireAdversaireEstime(base);
+            for (Stat st : Stat.values()) if (st != Stat.PV) cible.setStage(st, BoostTracker.getStageAdversaire(st));
+            prescienceAvant = base.getPourcentagePv();
+        } else {
+            lanceur = getLanceurPrescienceAdversaire();
+            cible = BattleStateTracker.getJoueurActifDepuisEquipe();
+            if (lanceur == null || cible == null) return;
+            appliquerObjetReelJoueur(cible);
+            for (Stat st : Stat.values()) if (st != Stat.PV) cible.setStage(st, BoostTracker.getStageJoueur(st));
+            Pokemon combat = BattleStateTracker.getJoueurActif();
+            prescienceAvant = combat != null ? combat.getPourcentagePv() : cible.getPourcentagePv();
+        }
+        DamageCalculator.Resultat r = DamageCalculator.calculer(lanceur, cible, fs, terrain,
+            surAdversaire ? terrain.getEcransAdversaire() : terrain.getEcransJoueur(), false);
+        if (r.immunise) return;
+        prescienceCible = cible.getEspece();
+        prescienceSurAdv = surAdversaire;
+        prescienceMin = r.pourcentageMin;
+        prescienceMax = r.pourcentageMax;
+    }
+
+    private static void journaliserPrescience() {
+        String cible = prescienceCible;
+        prescienceCible = null;
+        if (cible == null) return;
+        Pokemon actuel = prescienceSurAdv ? BattleStateTracker.getAdversaireActif() : BattleStateTracker.getJoueurActif();
+        if (actuel == null || !memeEspece(actuel.getEspece(), cible)) return;
+        double perte = prescienceAvant - actuel.getPourcentagePv();
+        MessageDebugLogger.analyse("PRESCIENCE sur " + cible + " | PV avant " + pct(prescienceAvant) + " | perte "
+            + pct(perte) + (actuel.getPvActuels() <= 0 ? " K.O. (borne basse)" : "") + " | prévu " + pct(prescienceMin)
+            + " - " + pct(prescienceMax) + " (Leftovers et autres soins non retirés)");
     }
 
     /** Mon Pokémon qui a lancé la Prescience en cours sur l'adversaire, ou null. */
@@ -4065,6 +4209,10 @@ public final class ObservationCollector {
         PLAFONDS_OFFENSIFS.clear();
         MESURES_PLAFOND.clear();
         PLAFONDS_ACTIFS.clear();
+        PLANCHERS_OFFENSIFS.clear();
+        MESURES_PLANCHER.clear();
+        PLANCHERS_ACTIFS.clear();
+        prescienceCible = null;
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
         PP_UTILISES.clear();

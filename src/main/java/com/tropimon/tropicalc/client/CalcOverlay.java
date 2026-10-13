@@ -791,7 +791,7 @@ public final class CalcOverlay implements HudRenderCallback {
             // Set moins offensif que l'estimation, mesuré sur ses coups
             String plafond = ObservationCollector.getPlafondOffensifTexte(especeAdv);
             if (plafond != null) {
-                dessinerTexte("Set moins offensif que prévu : " + plafond + " (mesuré sur ses coups)",
+                dessinerTexte("Set " + plafond + " (mesuré sur ses coups)",
                     x, y, COULEUR_GRIS);
                 y += hauteurLigne;
             }
