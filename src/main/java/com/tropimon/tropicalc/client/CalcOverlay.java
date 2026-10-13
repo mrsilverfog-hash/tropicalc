@@ -751,9 +751,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
             dessinerTexte("Set estimé :", x, y, COULEUR_TITRE);
             y += hauteurLigne;
-            dessinerTexte(String.format("HP %d | Def %d | DéfSpé %d | %s",
-                    top.hpEv(), top.defEv(), top.spdEv(),
-                    ShowdownIdMapper.nature(top.natureShowdownId())), x, y, deduitParObservation ? COULEUR_REVELE : COULEUR_TEXTE);
+            // Toutes les EV non nulles : un set offensif (252 Atq / 252 Vit)
+            // n'affiche plus « HP 0 | Def 0 | DéfSpé 0 », qui semblait vide
+            dessinerTexte(texteSpread(top), x, y, deduitParObservation ? COULEUR_REVELE : COULEUR_TEXTE);
             y += hauteurLigne;
 
             if (ObservationCollector.PROFIL_ANCIEN_ACTIF && profil != null && profil.getNbObservations() >= 3) {
@@ -1002,6 +1002,30 @@ public final class CalcOverlay implements HudRenderCallback {
     private DamageCalculator.Resultat prescienceSurMoi = null;
     private String prescienceSurAdvKO = "";
     private String prescienceSurMoiKO = "";
+
+    /** « Rigide | 252 Atq / 4 DéfSpé / 252 Vit » : nature puis EV non nulles. */
+    private static String texteSpread(SmogonDataLoader.ParsedSpread sp) {
+        StringBuilder evs = new StringBuilder();
+        int[] valeurs = {sp.hpEv(), sp.atkEv(), sp.defEv(), sp.spaEv(), sp.spdEv(), sp.speEv()};
+        String[] noms = {"PV", "Atq", "Déf", "AtqSpé", "DéfSpé", "Vit"};
+        for (int i = 0; i < valeurs.length; i++) {
+            if (valeurs[i] <= 0) continue;
+            if (evs.length() > 0) evs.append(" / ");
+            evs.append(valeurs[i]).append(' ').append(noms[i]);
+        }
+        com.tropimon.tropicalc.calc.Nature n = ShowdownIdMapper.nature(sp.natureShowdownId());
+        String nature = null;
+        if (n != null) {
+            nature = n.name().charAt(0) + n.name().substring(1).toLowerCase(java.util.Locale.ROOT);
+            nature = switch (nature) {
+                case "Assure" -> "Assuré";
+                case "Lache" -> "Lâche";
+                case "Naif" -> "Naïf";
+                default -> nature;
+            };
+        }
+        return (nature != null ? nature + " | " : "") + (evs.length() > 0 ? evs : "aucune EV");
+    }
 
     private static String quandPrescience(int tours) {
         return tours <= 1 ? "frappe à la fin de ce tour" : "frappe à la fin du tour prochain";

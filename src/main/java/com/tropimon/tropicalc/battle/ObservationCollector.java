@@ -253,7 +253,15 @@ public final class ObservationCollector {
         } catch (Exception ignored) {
         }
         try {
-            journaliserCoupDonne();
+            CoupDonne cd = coupDonne;
+            coupDonne = null;
+            journaliserCoupDonne(cd);
+        } catch (Exception ignored) {
+        }
+        try {
+            CoupDonne cd = coupPrescience;
+            coupPrescience = null;
+            journaliserCoupDonne(cd);
         } catch (Exception ignored) {
         }
         try {
@@ -1068,8 +1076,11 @@ public final class ObservationCollector {
         Field etat;
         boolean crit, multiCoups, ko, invalide;
         double correctionPv = 0;
+        boolean impactPrescience;   // impact de ma Prescience (fin de tour), pas un coup du tour
+        double pvApres = -1;        // ses PV relus juste après mon coup, avant l'effet suivant
     }
     private static CoupDonne coupDonne = null;
+    private static CoupDonne coupPrescience = null;
     private static CoupRecu coupRecuTourEcoule = null;   // conservé pour observerVitesse
     private static boolean dernierCoupEstAdverse = false;
     private static boolean joueurBloqueCeTour = false;   // avant le coup adverse
@@ -1654,61 +1665,86 @@ public final class ObservationCollector {
     }
 
     private static void suivreCoupDonne(String cle, Object[] args) {
-        CoupDonne cd = coupDonne;
-        if (cd == null) return;
+        suivreUnCoupDonne(coupDonne, cle, args);
+        suivreUnCoupDonne(coupPrescience, cle, args);
+    }
+
+    /**
+     * Un soin, un dégât annexe ou une Prescience touche l'adversaire après mon
+     * coup : ses PV relus à l'arrivée de ce message sont ceux d'APRÈS mon coup
+     * (le jeu applique les PV après le message). La mesure reste valable au
+     * lieu d'être jetée. Log du 13/10 : Pisto-Poing sur Dracolosse puis
+     * Prescience le même tour, 78,4 % relu à l'arrivée de la Prescience,
+     * identique au journal des PV.
+     */
+    private static void figerOuInvalider(CoupDonne cd) {
+        try {
+            Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv != null && memeEspece(adv.getEspece(), cd.especeDefenseur) && adv.getPvActuels() > 0
+                    && adv.getPourcentagePv() < cd.pvAvant - 0.05) {
+                cd.pvApres = adv.getPourcentagePv();
+                return;
+            }
+        } catch (Exception ignored) {
+        }
+        cd.invalide = true;
+    }
+
+    private static void suivreUnCoupDonne(CoupDonne cd, String cle, Object[] args) {
+        if (cd == null || cd.pvApres >= 0 || cd.invalide) return;
         boolean surLui = args.length > 0
             && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))
             && memeEspece(especeOuActif(args[0]), cd.especeDefenseur);
-        if (!dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
+        if (!cd.impactPrescience && !dernierCoupEstAdverse && (cle.equals("cobblemon.battle.missed") || cle.equals("cobblemon.battle.fail")
                 || ((cle.startsWith("cobblemon.battle.activate.protect") || cle.equals("cobblemon.battle.immune"))
                     && surLui))) {
             cd.bloque = true;
         }
         if (cle.equals("cobblemon.battle.crit")) {
-            if (!dernierCoupEstAdverse) cd.crit = true;
+            // Prescience : frappe en fin de tour, plus aucune capacité après
+            if (cd.impactPrescience || !dernierCoupEstAdverse) cd.crit = true;
         } else if (cle.equals("cobblemon.battle.hit_count")) {
-            if (!dernierCoupEstAdverse) cd.multiCoups = true;
+            if (!cd.impactPrescience && !dernierCoupEstAdverse) cd.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
             if (surLui) cd.ko = true;
         } else if (cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire")) {
             // Une Prescience lancée deux tours plus tôt frappe le même tour
-            if (surLui) cd.invalide = true;
+            if (surLui && !cd.impactPrescience) figerOuInvalider(cd);
         } else if (cle.equals("cobblemon.battle.heal.wish")) {
             if (args.length > 0 && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) {
-                cd.invalide = true;
+                figerOuInvalider(cd);
             }
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surLui) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
                 if (type.equals("leftovers") || type.equals("grassyterrain")) cd.correctionPv += 6.25;
-                else cd.invalide = true;
+                else figerOuInvalider(cd);
             }
         } else if (cle.startsWith("cobblemon.status.") && cle.endsWith(".hurt")) {
             if (surLui) {
                 if (cle.contains("burn")) cd.correctionPv -= 6.25;
                 else if (cle.contains("poison") && cd.defenseurBase.getStatut() == Pokemon.Statut.POISON) cd.correctionPv -= 12.5;
-                else cd.invalide = true;
+                else figerOuInvalider(cd);
             }
         } else if (cle.startsWith("cobblemon.battle.damage.")) {
             if (surLui) {
                 // Son Orbe Vie : 10 % de ses PV max, connu exactement.
                 if (cle.endsWith(".lifeorb")) cd.correctionPv -= 10.0;
-                else cd.invalide = true;
+                else figerOuInvalider(cd);
             }
         } else if (cle.equals("cobblemon.battle.switch.other") || cle.equals("cobblemon.battle.withdraw.other")) {
-            if (!cd.ko) cd.invalide = true;
+            if (!cd.ko) figerOuInvalider(cd);
         }
     }
 
     /** Ligne de log pour mon coup du tour écoulé : prévu contre réel. */
-    private static void journaliserCoupDonne() {
-        CoupDonne cd = coupDonne;
-        coupDonne = null;
+    private static void journaliserCoupDonne(CoupDonne cd) {
         if (cd == null) return;
         StringBuilder log = new StringBuilder("COUP DONNÉ ").append(cd.especeAttaquant).append(' ')
-            .append(cd.idCoup).append(" -> ").append(cd.especeDefenseur).append(" | ");
+            .append(cd.idCoup).append(cd.impactPrescience ? " (impact)" : "").append(" -> ")
+            .append(cd.especeDefenseur).append(" | ");
         try {
-            if ("futuresight".equals(cd.idCoup) || "doomdesire".equals(cd.idCoup)) {
+            if (!cd.impactPrescience && ("futuresight".equals(cd.idCoup) || "doomdesire".equals(cd.idCoup))) {
                 log.append("dégâts dans deux tours : pas de mesure");
             } else if (cd.bloque) {
                 log.append("coup bloqué (Abri, raté, sans effet ou échoué)");
@@ -1718,6 +1754,8 @@ public final class ObservationCollector {
                 double perte;
                 if (cd.ko) {
                     perte = cd.pvAvant;
+                } else if (cd.pvApres >= 0) {
+                    perte = cd.pvAvant - cd.pvApres + cd.correctionPv;
                 } else {
                     Pokemon adv = BattleStateTracker.getAdversaireActif();
                     if (adv == null || !memeEspece(adv.getEspece(), cd.especeDefenseur)) {
@@ -1730,6 +1768,7 @@ public final class ObservationCollector {
                 com.tropimon.tropicalc.calc.Move capacite = t == null ? null : convertirCapacite(t);
                 log.append("PV avant ").append(pct(cd.pvAvant)).append(" | perte ").append(pct(perte));
                 if (cd.correctionPv != 0) log.append(" (corrigée de ").append(pct(cd.correctionPv)).append(")");
+                if (cd.pvApres >= 0) log.append(" (PV relus avant l'effet suivant)");
                 if (cd.ko) log.append(" K.O. (borne basse)");
                 if (cd.crit) log.append(" CRITIQUE");
                 if (cd.multiCoups) log.append(" multi-coups");
@@ -1883,7 +1922,7 @@ public final class ObservationCollector {
         boolean plus = perte > prevu.pourcentageMax + marge;
         boolean moins = perte < prevu.pourcentageMin - marge;
         if (!plus && !moins) return;
-        if (PUISSANCE_NON_MODELISEE.contains(cd.idCoup)) return;
+        if (PUISSANCE_NON_MODELISEE.contains(cd.idCoup) && !cd.impactPrescience) return;
         boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE
             || "psyshock".equals(cd.idCoup) || "psystrike".equals(cd.idCoup) || "secretsword".equals(cd.idCoup);
         Stat statDef = physique ? Stat.DEFENSE : Stat.DEFENSE_SPE;
@@ -2339,6 +2378,23 @@ public final class ObservationCollector {
 
         // Ce que le HUD prévoyait, avec l'adversaire estimé tel qu'affiché.
         Pokemon estime = cr.attaquantEstime != null ? cr.attaquantEstime : construireAdversaireEstime(cr.attaquant);
+        // Objet supposé au moment du coup, exclu juste après (Choix exclu par
+        // sa 2e capacité, Orbe Vie sans recul) : on mesure avec l'objet estimé
+        // maintenant. Log du 13/10 : Hameçon, Demi-Tour mesuré avec un Bandeau
+        // exclu une milliseconde plus tard, d'où « Atq au plus 311 » à tort.
+        String objetSuppose = estime.getObjet();
+        if (objetSuppose != null && !OBJETS_CONFIRMES.containsKey(cr.especeAttaquant)
+                && ((objetSuppose.endsWith("Choix") && OBJETS_CHOIX_EXCLUS.contains(cr.especeAttaquant))
+                    || ("Orbe Vie".equals(objetSuppose) && ORBE_VIE_EXCLUE.contains(cr.especeAttaquant)))) {
+            String remplacant = null;
+            try {
+                remplacant = construireAdversaireEstime(cr.attaquant).getObjet();
+            } catch (Exception ignored) {
+            }
+            if (remplacant != null && (remplacant.endsWith("Choix") || "Orbe Vie".equals(remplacant))) remplacant = null;
+            estime.setObjet(remplacant);
+            log.append(" (").append(objetSuppose).append(" exclu depuis, recalculé avec ").append(remplacant).append(')');
+        }
         estime.setStage(Stat.ATTAQUE, cr.stageAtk);
         estime.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
         DamageCalculator.Resultat prevu = DamageCalculator.calculer(
@@ -4210,6 +4266,20 @@ public final class ObservationCollector {
             cible = construireAdversaireEstime(base);
             for (Stat st : Stat.values()) if (st != Stat.PV) cible.setStage(st, BoostTracker.getStageAdversaire(st));
             prescienceAvant = base.getPourcentagePv();
+            // Mesurée comme mes coups (soins après, résistance, Veste...) :
+            // ligne COUP DONNÉ « futuresight (impact) » en fin de tour
+            CoupDonne cd = new CoupDonne();
+            cd.idCoup = "futuresight";
+            cd.impactPrescience = true;
+            cd.attaquant = lanceur.copieAvecEvNature(Map.of(), null);
+            cd.especeAttaquant = lanceur.getEspece();
+            cd.defenseurBase = base;
+            cd.defenseurEstime = cible;
+            cd.especeDefenseur = base.getEspece();
+            cd.pvAvant = prescienceAvant;
+            cd.etat = terrain;
+            coupPrescience = cd;
+            return;
         } else {
             lanceur = getLanceurPrescienceAdversaire();
             cible = BattleStateTracker.getJoueurActifDepuisEquipe();
@@ -4290,6 +4360,7 @@ public final class ObservationCollector {
         premierCoupSejourAdv = null;
         coupRecu = null;
         coupDonne = null;
+        coupPrescience = null;
         coupRecuTourEcoule = null;
         joueurBloqueCeTour = false;
         dernierCoupEstAdverse = false;
