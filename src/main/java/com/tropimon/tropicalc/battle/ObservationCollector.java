@@ -1017,7 +1017,8 @@ public final class ObservationCollector {
         "smellingsalts", "wakeupslap", "trumpcard", "punishment", "beatup", "fling",
         "naturalgift", "present", "magnitude", "spitup", "foulplay", "photongeyser",
         "terablast", "shellsidearm", "ragingbull", "futuresight", "doomdesire", "bodypress",
-        "electroball", "hiddenpower", "terrainpulse", "tripleaxel", "triplekick", "populationbomb");
+        "electroball", "hiddenpower", "terrainpulse", "tripleaxel", "triplekick", "populationbomb",
+        "ficklebeam");
 
     // ---------------------------------------------------------------------
     // Bandeau Choix / Lunettes Choix : coup reçu trop fort.
