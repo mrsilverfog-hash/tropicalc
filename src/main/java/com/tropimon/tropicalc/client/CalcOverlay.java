@@ -118,6 +118,9 @@ public final class CalcOverlay implements HudRenderCallback {
             cibleMorphing = ObservationCollector.getCibleMorphingJoueur();
             if (cibleMorphing == null) cibleMorphing = adversaireBase;
             joueur = ObservationCollector.construireMorphing(joueur, cibleMorphing);
+            // PV réels lus dans le combat : l'équipe ne suit plus pendant la transformation
+            int pvReels = BattleStateTracker.getPvBrutJoueurActif();
+            if (pvReels >= 0) joueur.setPvActuels(Math.min(pvReels, joueur.getPvMax()));
         }
 
         // Mes capacités : celles de ma fiche, ou celles copiées par Morphing
@@ -792,6 +795,13 @@ public final class CalcOverlay implements HudRenderCallback {
             String plafond = ObservationCollector.getPlafondOffensifTexte(especeAdv);
             if (plafond != null) {
                 dessinerTexte("Set " + plafond + " (mesuré sur ses coups)",
+                    x, y, COULEUR_GRIS);
+                y += hauteurLigne;
+            }
+            // Talent désigné par mes dégâts
+            String talentProbable = ObservationCollector.getTalentProbable(especeAdv);
+            if (talentProbable != null) {
+                dessinerTexte("Talent supposé : " + talentProbable + " (seul qui explique tes dégâts)",
                     x, y, COULEUR_GRIS);
                 y += hauteurLigne;
             }

@@ -153,13 +153,18 @@ public class Pokemon {
      * PV forcés : sert à tester un set hypothétique.
      */
     public Pokemon copieAvecEvNature(Map<Stat, Integer> nouveauxEvs, Nature nouvelleNature) {
+        return copieAvec(nouveauxEvs, nouvelleNature, talent);
+    }
+
+    /** Même chose avec un autre talent (hypothèse de talent). */
+    public Pokemon copieAvec(Map<Stat, Integer> nouveauxEvs, Nature nouvelleNature, String nouveauTalent) {
         Builder b = new Builder(espece, niveau, type1, type2);
         b.statsBase.putAll(statsBase);
         b.ivs.putAll(ivs);
         b.evs.putAll(evs);
         b.evs.putAll(nouveauxEvs);
         b.nature = nouvelleNature != null ? nouvelleNature : nature;
-        b.talent = talent;
+        b.talent = nouveauTalent;
         b.objet = objet;
         b.poidsHg = poidsHg;
         b.teraType = teraType;

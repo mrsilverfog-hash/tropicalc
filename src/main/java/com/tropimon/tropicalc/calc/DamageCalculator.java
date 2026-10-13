@@ -450,6 +450,12 @@ public class DamageCalculator {
         return new int[]{min, max};
     }
 
+    /** Vrai si la capacité frappe un nombre de coups fixe (1, Double Baston, Triple Axel...). */
+    public static boolean nombreDeCoupsFixe(Move capacite, Pokemon attaquant) {
+        int[] c = coupsEffectifs(capacite, attaquant);
+        return c[0] == c[1];
+    }
+
     /** Nombre maximal de coups d'une capacité (1 si mono-coup). Pour le recul par contact. */
     public static int nombreDeCoupsMax(Move capacite, Pokemon attaquant) {
         return coupsEffectifs(capacite, attaquant)[1];

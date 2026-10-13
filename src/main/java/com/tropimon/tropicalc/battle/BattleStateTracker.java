@@ -60,6 +60,36 @@ public final class BattleStateTracker {
         return convertir(cbp, complet);
     }
 
+    /**
+     * PV réels (absolus) de mon Pokémon actif lus dans le combat, -1 si
+     * indisponibles. Sert pour un Métamorph transformé : l'équipe n'est plus
+     * mise à jour pendant la transformation (log du 13/10 : Métamorph à 15 %
+     * dans l'équipe alors que le Vœu l'avait remis à 100 %).
+     */
+    public static int getPvBrutJoueurActif() {
+        try {
+            ClientBattleActor acteur = getActeurJoueur();
+            if (acteur == null || acteur.getActivePokemon().isEmpty()) return -1;
+            ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
+            if (cbp == null || !cbp.isHpFlat()) return -1;
+            return Math.round(cbp.getHpValue());
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    /** UUID de mon Pokémon actif, ou null. */
+    public static java.util.UUID getUuidJoueurActif() {
+        try {
+            ClientBattleActor acteur = getActeurJoueur();
+            if (acteur == null || acteur.getActivePokemon().isEmpty()) return null;
+            ClientBattlePokemon cbp = acteur.getActivePokemon().get(0).getBattlePokemon();
+            return cbp == null ? null : cbp.getUuid();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Pokemon getAdversaireActif() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         ClientBattleActor acteurJoueur = getActeurJoueur();

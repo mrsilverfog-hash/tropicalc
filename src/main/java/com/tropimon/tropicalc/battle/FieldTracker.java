@@ -71,6 +71,8 @@ public final class FieldTracker {
 
     private static boolean substituteJoueur = false;
     private static boolean substituteAdversaire = false;
+    private static boolean relaisJoueur = false;          // Relais lancé : le Clone passe au suivant
+    private static boolean relaisAdversaire = false;
 
     /** Nombre de tours restants avant l'impact - 0 si aucune Prescience en vol. */
     private static int futureSightJoueurTours = 0;      // va me toucher
@@ -220,6 +222,33 @@ public final class FieldTracker {
                 }
             }
             return;
+        }
+
+        // Le Clone disparaît quand son porteur quitte le terrain (sauf Relais,
+        // qui le transmet). Log du 13/10 : le Clone de Trioxhydre restait
+        // « actif » pour tous mes Pokémon suivants, et chaque coup reçu était
+        // ignoré comme « touché sur un Clone ».
+        if (cle.equals("cobblemon.battle.used_move") || cle.equals("cobblemon.battle.used_move_on")) {
+            Object[] a = contenu.getArgs();
+            if (a.length > 1) {
+                String coup = String.valueOf(a[1]).toLowerCase();
+                if (coup.contains("batonpass")) {
+                    Boolean adv = ObservationCollector.determinerAttaquant(MoveUseTracker.extraireProprietaire(a[0]));
+                    if (adv != null) { if (adv) relaisAdversaire = true; else relaisJoueur = true; }
+                }
+            }
+        }
+        if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            if (!relaisJoueur) substituteJoueur = false;
+            if (cle.startsWith("cobblemon.battle.switch.self")) relaisJoueur = false;
+        } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
+            if (!relaisAdversaire) substituteAdversaire = false;
+            if (cle.startsWith("cobblemon.battle.switch.other")) relaisAdversaire = false;
+        } else if (cle.startsWith("cobblemon.battle.dragged_out")) {
+            Boolean adv = ObservationCollector.determinerAttaquant(MoveUseTracker.extraireProprietaire(
+                contenu.getArgs().length > 0 ? contenu.getArgs()[0] : null));
+            if (Boolean.TRUE.equals(adv)) substituteAdversaire = false;
+            else if (Boolean.FALSE.equals(adv)) substituteJoueur = false;
         }
 
         // Clone (Substitute) : le porteur est directement l'argument, jamais
@@ -441,6 +470,8 @@ public final class FieldTracker {
         toursTailwindAdversaireRestants = 0;
         substituteJoueur = false;
         substituteAdversaire = false;
+        relaisJoueur = false;
+        relaisAdversaire = false;
         futureSightJoueurTours = 0;
         futureSightAdversaireTours = 0;
         poseurEcranAdversaire = null;

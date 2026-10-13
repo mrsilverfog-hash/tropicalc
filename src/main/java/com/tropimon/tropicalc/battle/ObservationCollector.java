@@ -1745,7 +1745,8 @@ public final class ObservationCollector {
                         .append(physique ? ", Déf " : ", DéfSpé ")
                         .append(def.getStatCalculee(physique ? Stat.DEFENSE : Stat.DEFENSE_SPE))
                         .append(", mon objet ").append(cd.attaquant.getObjet()).append(']');
-                    if (!r.immunise && !cd.ko && !cd.multiCoups) {
+                    boolean coupsFixes = !cd.multiCoups || DamageCalculator.nombreDeCoupsFixe(capacite, cd.attaquant);
+                    if (!r.immunise && !cd.ko && coupsFixes) {
                         if (perte > r.pourcentageMax + 2) log.append(" | PLUS que prévu");
                         else if (perte < r.pourcentageMin - 2) log.append(" | MOINS que prévu");
                         if (!cd.crit && !tenterExclureObjetDefensif(cd, def, capacite, perte, log)) {
@@ -1848,21 +1849,31 @@ public final class ObservationCollector {
         // Estimation SANS facteur déjà appliqué (base commune à toutes les mesures)
         Pokemon brut = def.copieAvecEvNature(Map.of(), null);
         double resistanceEstimee = (double) brut.getPvMax() * brut.getStatCalculee(statDef);
-        double meilleure = plus ? -1 : Double.MAX_VALUE;
-        for (com.tropimon.tropicalc.calc.Nature n : natures) {
-            for (int evPv = 0; evPv <= 252; evPv += 4) {
-                for (int evDef = 0; evDef <= 252; evDef += 4) {
-                    Pokemon h = def.copieAvecEvNature(Map.of(Stat.PV, evPv, statDef, evDef), n);
-                    double resistance = (double) h.getPvMax() * h.getStatCalculee(statDef);
-                    if (plus ? resistance <= meilleure : resistance >= meilleure) continue;
-                    DamageCalculator.Resultat r = DamageCalculator.calculer(
-                        cd.attaquant, h, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
-                    if (r.immunise) return;
-                    if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) meilleure = resistance;
+        double meilleure = chercherResistance(cd, def, def.getTalent(), capacite, perte, statDef, natures, plus);
+        if (Double.isNaN(meilleure)) {
+            // Inexplicable avec le talent supposé : un autre talent possible
+            // de l'espèce l'explique-t-il seul ? (log du 13/10 : Milobellus
+            // empoisonné avec Écaille Spéciale, estimé Battant ; mes coups
+            // faisaient moitié moins que prévu)
+            String espece = def.getEspece();
+            if (!TALENTS_CONFIRMES.containsKey(espece)) {
+                List<String> explications = new ArrayList<>();
+                for (String id : talentsBrutsPossibles(def)) {
+                    String fr = ShowdownIdMapper.talent(id);
+                    if (fr == null || fr.equals(def.getTalent())) continue;
+                    if (!Double.isNaN(chercherResistance(cd, def, fr, capacite, perte, statDef, natures, plus))) {
+                        explications.add(fr);
+                    }
+                }
+                if (explications.size() == 1) {
+                    TALENTS_PROBABLES.put(espece, explications.get(0));
+                    log.append(" | talent ").append(explications.get(0))
+                        .append(" probable (seul talent possible qui explique la perte)");
+                    MessageDebugLogger.analyse("TALENT " + espece + " : " + explications.get(0)
+                        + " probable (seul talent qui explique mes dégâts)");
+                    return;
                 }
             }
-        }
-        if (plus ? meilleure < 0 : meilleure == Double.MAX_VALUE) {
             log.append(plus ? " | inexplicable par ses EV (objet ou talent ?)" : " | inexplicable par ses EV");
             return;
         }
@@ -1878,6 +1889,38 @@ public final class ObservationCollector {
             .append(statDef == Stat.DEFENSE ? "PV x Déf" : "PV x DéfSpé")
             .append(plus ? " au plus x" : " au moins x").append(String.format(java.util.Locale.ROOT, "%.2f", facteur))
             .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
+    }
+
+    /**
+     * Résistance (PV x défense) du set le plus (plus=true : le moins) résistant
+     * qui explique la perte avec ce talent, NaN si aucun.
+     */
+    private static double chercherResistance(CoupDonne cd, Pokemon def, String talent,
+            com.tropimon.tropicalc.calc.Move capacite, double perte, Stat statDef,
+            com.tropimon.tropicalc.calc.Nature[] natures, boolean plus) {
+        double meilleure = plus ? -1 : Double.MAX_VALUE;
+        for (com.tropimon.tropicalc.calc.Nature n : natures) {
+            for (int evPv = 0; evPv <= 252; evPv += 4) {
+                for (int evDef = 0; evDef <= 252; evDef += 4) {
+                    Pokemon h = def.copieAvec(Map.of(Stat.PV, evPv, statDef, evDef), n, talent);
+                    double resistance = (double) h.getPvMax() * h.getStatCalculee(statDef);
+                    if (plus ? resistance <= meilleure : resistance >= meilleure) continue;
+                    DamageCalculator.Resultat r = DamageCalculator.calculer(
+                        cd.attaquant, h, capacite, cd.etat, cd.etat.getEcransAdversaire(), false);
+                    if (r.immunise) return Double.NaN;
+                    if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) meilleure = resistance;
+                }
+            }
+        }
+        return (plus ? meilleure < 0 : meilleure == Double.MAX_VALUE) ? Double.NaN : meilleure;
+    }
+
+    // Talent désigné par les dégâts (seul talent possible qui les explique) :
+    // utilisé dans les calculs, affiché comme supposé, jamais mémorisé
+    private static final Map<String, String> TALENTS_PROBABLES = new HashMap<>();
+
+    public static String getTalentProbable(String espece) {
+        return TALENTS_CONFIRMES.containsKey(espece) ? null : TALENTS_PROBABLES.get(espece);
     }
 
     /** Facteur appliqué à sa défense (1.0 = aucun), une fois établi et cohérent. */
@@ -1998,6 +2041,28 @@ public final class ObservationCollector {
     private static String dernierePhotoPv = null;
     private static String photoPvEnCours = null;
     private static long photoPvDepuisMs = 0;
+
+    // PV réels de mon Métamorph pendant sa transformation (l'équipe se fige)
+    private static final Map<java.util.UUID, Integer> PV_METAMORPH = new HashMap<>();
+
+    private static void suivrePvMetamorph() {
+        java.util.UUID id = BattleStateTracker.getUuidJoueurActif();
+        if (id == null) return;
+        if (cibleMorphingJoueur != null) {
+            int pv = BattleStateTracker.getPvBrutJoueurActif();
+            if (pv >= 0) PV_METAMORPH.put(id, pv);
+        } else if (PV_METAMORPH.containsKey(id) && !BattleStateTracker.joueurEstTransforme()) {
+            // De retour sur le terrain, pas (encore) transformé : l'équipe
+            // a redonné ses vrais PV
+            PV_METAMORPH.remove(id);
+        }
+    }
+
+    /** PV réels de ce Pokémon de mon équipe s'il a été transformé depuis sa dernière entrée, sinon -1. */
+    public static int getPvReelsApresTransformation(java.util.UUID id) {
+        Integer pv = id == null ? null : PV_METAMORPH.get(id);
+        return pv == null ? -1 : pv;
+    }
 
     private static void journaliserPv() {
         Pokemon moi = BattleStateTracker.getJoueurActif();
@@ -2815,6 +2880,8 @@ public final class ObservationCollector {
             b.objet(objetConfirme);
         }
 
+        String talentProbable = TALENTS_PROBABLES.get(espece);
+        if (talentProbable != null) b.talent(talentProbable);
         String talentConfirme = TALENTS_CONFIRMES.get(espece);
         if (talentConfirme != null) {
             b.talent(talentConfirme);
@@ -3181,6 +3248,10 @@ public final class ObservationCollector {
         }
         try {
             journaliserPv();
+        } catch (Exception ignored) {
+        }
+        try {
+            suivrePvMetamorph();
         } catch (Exception ignored) {
         }
 
@@ -4197,6 +4268,8 @@ public final class ObservationCollector {
         faitsAvantSejour = null;
         OBJETS_EXCLUS.clear();
         PREUVES_EXCLUSION.clear();
+        PV_METAMORPH.clear();
+        TALENTS_PROBABLES.clear();
         PLAFONDS_DEFENSIFS.clear();
         PLANCHERS_DEFENSIFS.clear();
         MESURES_DEFENSIVES.clear();

@@ -50,13 +50,18 @@ public final class SwitchOverlayRenderer {
         if (survolee == null) return;
 
         com.cobblemon.mod.common.pokemon.Pokemon membre = survolee.getPokemon();
-        if (membre == null || membre.getCurrentHealth() <= 0) return;
+        if (membre == null) return;
+        // Métamorph sorti transformé : ses PV d'équipe sont figés depuis la
+        // transformation, on prend les derniers PV réels lus en combat
+        int pvReels = ObservationCollector.getPvReelsApresTransformation(membre.getUuid());
+        if ((pvReels >= 0 ? pvReels : membre.getCurrentHealth()) <= 0) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
         if (adversaireBase == null) return;
 
         Pokemon candidat = BattleStateTracker.convertirMembre(membre);
         if (candidat == null) return;
+        if (pvReels >= 0) candidat.setPvActuels(Math.min(pvReels, candidat.getPvMax()));
         // Même sécurité que dans CalcOverlay : sans ça, un candidat pouvait
         // encore montrer un objet déjà détruit (Ballon, Sabotage) ou pas
         // encore mis à jour après un vol via Pickpocket.
