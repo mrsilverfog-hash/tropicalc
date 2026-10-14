@@ -281,12 +281,51 @@ public final class CalcOverlay implements HudRenderCallback {
         vitAdversaire = Math.min(vitAdversaire,
             ObservationCollector.getVitesseMaxObservee(adversaireBase.getEspece()));
         boolean distorsion = FieldTracker.isDistorsion();
+        // Métamorph transformé : il copie la Vitesse RÉELLE de sa cible, dont
+        // les EV et la nature sont inconnus. La valeur affichée vient du set
+        // Smogon estimé de la cible ; la plage va de 0 EV nature - à 252 EV
+        // nature +, resserrée par ce qu'on a vu de la cible dans le combat.
+        // Mouchoir, boosts, statut et Vent Arrière appliqués à toute la plage.
+        String plageMorphing = "";
+        boolean morphingIncertain = false;
+        if (transforme && cibleMorphing != null) {
+            int statEstimee = joueur.getStatCalculee(Stat.VITESSE);
+            if (statEstimee > 0) {
+                double rapport = (double) vitJoueur / statEstimee;
+                int min = Integer.MAX_VALUE, max = 0;
+                for (com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost n
+                        : com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.values()) {
+                    for (int ev : new int[]{0, 252}) {
+                        int v = com.tropimon.tropicalc.calc.SetInferenceEngine.construirePokemonHypothetique(
+                            joueur, Stat.VITESSE, ev, n, StatHypothesis.AUCUN, StatHypothesis.AUCUN)
+                            .getStatCalculee(Stat.VITESSE);
+                        min = Math.min(min, v);
+                        max = Math.max(max, v);
+                    }
+                }
+                String especeCible = cibleMorphing.getEspece();
+                int obsMin = ObservationCollector.getVitesseMinObservee(especeCible);
+                int obsMax = ObservationCollector.getVitesseMaxObservee(especeCible);
+                if (obsMin > min) min = Math.min(obsMin, max);
+                if (obsMax < max) max = Math.max(obsMax, min);
+                int stat = Math.max(min, Math.min(max, statEstimee));
+                vitJoueur = (int) Math.floor(stat * rapport);
+                int effMin = (int) Math.floor(min * rapport);
+                int effMax = (int) Math.floor(max * rapport);
+                if (effMin != effMax) {
+                    plageMorphing = " [" + effMin + "-" + effMax + "]";
+                    boolean minPremier = distorsion ? effMin < vitAdversaire : effMin > vitAdversaire;
+                    boolean maxPremier = distorsion ? effMax < vitAdversaire : effMax > vitAdversaire;
+                    morphingIncertain = minPremier != maxPremier;
+                }
+            }
+        }
         boolean joueurPremier = distorsion ? vitJoueur < vitAdversaire : vitJoueur > vitAdversaire;
         boolean egalite = vitJoueur == vitAdversaire;
-        String fleche = egalite ? "=" : (joueurPremier ? ">" : "<");
-        int couleurVitesse = egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
+        String fleche = morphingIncertain ? "?" : egalite ? "=" : (joueurPremier ? ">" : "<");
+        int couleurVitesse = morphingIncertain || egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
         String suffixe = distorsion ? " [Distorsion]" : "";
-        String texteVitesse = String.format("Vitesse : %d %s %d%s", vitJoueur, fleche, vitAdversaire, suffixe);
+        String texteVitesse = String.format("Vitesse : %d%s %s %d%s", vitJoueur, plageMorphing, fleche, vitAdversaire, suffixe);
         dessinerTexte(texteVitesse, x, y, couleurVitesse);
 
         // Hypothèse Mouchoir Choix : sa vitesse x1.5 s'il en tenait un.
