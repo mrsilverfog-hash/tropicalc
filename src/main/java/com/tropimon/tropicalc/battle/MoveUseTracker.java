@@ -28,6 +28,9 @@ public final class MoveUseTracker {
 
     public static void traiterMessage(Text message) {
         if (message == null) return;
+        // Nouveau combat enchaîné sans écran hors combat : repartir de zéro
+        // AVANT d'enregistrer ses premiers messages (entrées des Pokémon)
+        ObservationCollector.verifierChangementDeCombat();
 
         // Fin du tour précédent encore en attente (PV pas encore à jour) :
         // la traiter avant ce nouveau message, pour garder l'ordre.

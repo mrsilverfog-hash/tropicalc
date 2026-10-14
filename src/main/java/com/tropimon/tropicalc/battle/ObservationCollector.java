@@ -3343,14 +3343,38 @@ public final class ObservationCollector {
     // lignes en 25 minutes, le journal débordait et perdait les combats.
     private static boolean etatVide = false;
 
+    // Combat suivi : un nouvel objet combat = un nouveau match. En random, la
+    // file enchaîne parfois deux combats sans repasser « hors combat » entre
+    // les deux, et l'état du match précédent (Pokémon vus, attaques, objets)
+    // restait affiché.
+    private static Object combatSuivi = null;
+
+    /** Remet tout à zéro si le combat en cours n'est plus celui qu'on suivait. */
+    public static void verifierChangementDeCombat() {
+        Object combat;
+        try {
+            combat = com.cobblemon.mod.common.client.CobblemonClient.INSTANCE.getBattle();
+        } catch (Throwable t) {
+            return;
+        }
+        if (combat == null || combat == combatSuivi) return;
+        if (combatSuivi != null) {
+            reinitialiser();
+            etatVide = false;
+        }
+        combatSuivi = combat;
+    }
+
     public static void tick() {
         if (!BattleStateTracker.estEnCombat()) {
+            combatSuivi = null;
             if (!etatVide) {
                 reinitialiser();
                 etatVide = true;
             }
             return;
         }
+        verifierChangementDeCombat();
         etatVide = false;
         if (finDeTourEnAttenteMs != 0 && System.currentTimeMillis() - finDeTourEnAttenteMs >= DELAI_PV_MS) {
             viderFinDeTourEnAttente();
