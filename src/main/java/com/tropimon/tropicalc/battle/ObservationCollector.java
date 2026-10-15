@@ -1061,6 +1061,8 @@ public final class ObservationCollector {
         boolean joueurBloqueAvant;   // je n'ai pas pu agir AVANT son coup (sommeil, paralysie, recharge...)
         int prioriteMinJoueur = Integer.MIN_VALUE;  // priorité la plus basse parmi mes capacités
         double correctionPv = 0;    // PV rendus (+) ou perdus (-) après le coup
+        long instantMs;
+        boolean pvStableAuCoup, pvAvantDouteux;
     }
     private static CoupRecu coupRecu = null;
 
@@ -1077,6 +1079,7 @@ public final class ObservationCollector {
         boolean crit, multiCoups, ko, invalide;
         double correctionPv = 0;
         boolean impactPrescience;   // impact de ma Prescience (fin de tour), pas un coup du tour
+        boolean clone;              // son Clone a pris le coup : ses PV n'ont pas bougé
         long instantMs;             // moment du coup (décodage du message)
         boolean pvStableAuCoup;     // sa barre de PV était immobile à ce moment
         boolean pvAvantDouteux;     // un effet sur ses PV venait d'arriver, pas encore appliqué
@@ -1668,6 +1671,7 @@ public final class ObservationCollector {
             }
             cd.pvAvant = def.getPourcentagePv();
             cd.etat = FieldTracker.construireField();
+            cd.clone = FieldTracker.adversaireAUnClone();
             noterInstantDuCoup(cd);
             coupDonne = cd;
         } catch (Exception ignored) {
@@ -1675,7 +1679,7 @@ public final class ObservationCollector {
     }
 
     private static void suivreCoupDonne(String cle, Object[] args) {
-        noterEffetPvAdversaire(cle, args);
+        noterEffetPv(cle, args);
         suivreUnCoupDonne(coupDonne, cle, args);
         suivreUnCoupDonne(coupPrescience, cle, args);
     }
@@ -1701,52 +1705,88 @@ public final class ObservationCollector {
         final long t; final String espece; final double v;
         PvStable(long t, String espece, double v) { this.t = t; this.espece = espece; this.v = v; }
     }
-    private static final java.util.ArrayDeque<PvStable> HISTO_PV_ADV = new java.util.ArrayDeque<>();
-    private static String pvAdvEspece = null;
-    private static double pvAdvValeur = -1;
-    private static long pvAdvDepuisMs = 0;
-    private static boolean pvAdvStable = false;
-    private static long dernierEffetPvAdvMs = 0;
 
-    private static void suivrePvStableAdversaire() {
-        Pokemon adv = BattleStateTracker.getAdversaireActif();
-        if (adv == null) return;
-        long t = System.currentTimeMillis();
-        double v = adv.getPourcentagePv();
-        String e = adv.getEspece();
-        if (!java.util.Objects.equals(e, pvAdvEspece) || Math.abs(v - pvAdvValeur) > 0.01) {
-            pvAdvEspece = e;
-            pvAdvValeur = v;
-            pvAdvDepuisMs = t;
-            pvAdvStable = false;
-            return;
+    /** Barre de PV d'un camp : valeurs restées immobiles 300 ms, et dernier effet annoncé. */
+    private static final class SuiviPv {
+        final java.util.ArrayDeque<PvStable> histo = new java.util.ArrayDeque<>();
+        String espece = null;
+        double valeur = -1;
+        long depuisMs = 0;
+        boolean stable = false;
+        long dernierEffetMs = 0;
+
+        void suivre(Pokemon p) {
+            if (p == null) return;
+            long t = System.currentTimeMillis();
+            double v = p.getPourcentagePv();
+            String e = p.getEspece();
+            if (!java.util.Objects.equals(e, espece) || Math.abs(v - valeur) > 0.01) {
+                espece = e;
+                valeur = v;
+                depuisMs = t;
+                stable = false;
+                return;
+            }
+            if (!stable && t - depuisMs >= 300) {
+                stable = true;
+                histo.addLast(new PvStable(depuisMs, e, v));
+                while (histo.size() > 40) histo.removeFirst();
+            }
         }
-        if (!pvAdvStable && t - pvAdvDepuisMs >= 300) {
-            pvAdvStable = true;
-            HISTO_PV_ADV.addLast(new PvStable(pvAdvDepuisMs, e, v));
-            while (HISTO_PV_ADV.size() > 40) HISTO_PV_ADV.removeFirst();
+
+        boolean stableA(String especeVisee, double pv) {
+            return stable && memeEspece(espece, especeVisee) && Math.abs(valeur - pv) < 0.05;
+        }
+
+        /** {avant, juste après} le premier changement après l'instant, ou null. */
+        double[] mesure(long instantMs, String especeVisee, boolean stableAuCoup, double pvAuCoup) {
+            double avant = stableAuCoup ? pvAuCoup : Double.NaN;
+            for (PvStable p : histo) {
+                if (p.t <= instantMs || !memeEspece(p.espece, especeVisee)) continue;
+                if (Double.isNaN(avant)) {
+                    avant = p.v;
+                    continue;
+                }
+                if (Math.abs(p.v - avant) > 0.05) return new double[]{avant, p.v};
+            }
+            return null;
+        }
+
+        void vider() {
+            histo.clear();
+            espece = null;
+            valeur = -1;
+            stable = false;
+            dernierEffetMs = 0;
         }
     }
+    private static final SuiviPv SUIVI_PV_ADV = new SuiviPv();
+    private static final SuiviPv SUIVI_PV_MOI = new SuiviPv();
 
-    /** Message qui change les PV de l'adversaire (appliqués plus tard par le jeu). */
-    private static void noterEffetPvAdversaire(String cle, Object[] args) {
+    private static void suivrePvStables() {
+        SUIVI_PV_ADV.suivre(BattleStateTracker.getAdversaireActif());
+        SUIVI_PV_MOI.suivre(BattleStateTracker.getJoueurActif());
+    }
+
+    /** Message qui change des PV (appliqués plus tard par le jeu) : on note le camp. */
+    private static void noterEffetPv(String cle, Object[] args) {
         if (args.length == 0) return;
         boolean effet = cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.heal.")
             || (cle.startsWith("cobblemon.status.") && cle.endsWith(".hurt"))
             || cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire");
         if (!effet) return;
         Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+        if (adverse == null) return;
         // heal.drain nomme le Pokémon VIDÉ : c'est l'autre camp qui se soigne
-        boolean surLui = cle.equals("cobblemon.battle.heal.drain") ? Boolean.FALSE.equals(adverse) : Boolean.TRUE.equals(adverse);
-        if (surLui) dernierEffetPvAdvMs = System.currentTimeMillis();
+        boolean surAdv = cle.equals("cobblemon.battle.heal.drain") ? !adverse : adverse;
+        (surAdv ? SUIVI_PV_ADV : SUIVI_PV_MOI).dernierEffetMs = System.currentTimeMillis();
     }
 
     /** Remplit l'état « PV au moment du coup » d'une mesure qui commence. */
     private static void noterInstantDuCoup(CoupDonne cd) {
         cd.instantMs = System.currentTimeMillis();
-        cd.pvStableAuCoup = pvAdvStable && memeEspece(pvAdvEspece, cd.especeDefenseur)
-            && Math.abs(pvAdvValeur - cd.pvAvant) < 0.05;
-        cd.pvAvantDouteux = cd.instantMs - dernierEffetPvAdvMs < 2500;
+        cd.pvStableAuCoup = SUIVI_PV_ADV.stableA(cd.especeDefenseur, cd.pvAvant);
+        cd.pvAvantDouteux = cd.instantMs - SUIVI_PV_ADV.dernierEffetMs < 2500;
     }
 
     /**
@@ -1756,16 +1796,13 @@ public final class ObservationCollector {
      */
     private static double[] mesureParPvStables(CoupDonne cd) {
         if (cd.multiCoups || cd.pvAvantDouteux || cd.instantMs == 0) return null;
-        double avant = cd.pvStableAuCoup ? cd.pvAvant : Double.NaN;
-        for (PvStable p : HISTO_PV_ADV) {
-            if (p.t <= cd.instantMs || !memeEspece(p.espece, cd.especeDefenseur)) continue;
-            if (Double.isNaN(avant)) {
-                avant = p.v;
-                continue;
-            }
-            if (Math.abs(p.v - avant) > 0.05) return new double[]{avant, p.v};
-        }
-        return null;
+        return SUIVI_PV_ADV.mesure(cd.instantMs, cd.especeDefenseur, cd.pvStableAuCoup, cd.pvAvant);
+    }
+
+    /** Même chose pour un coup reçu (ma barre de PV). */
+    private static double[] mesureParPvStables(CoupRecu cr) {
+        if (cr.multiCoups || cr.pvAvantDouteux || cr.instantMs == 0) return null;
+        return SUIVI_PV_MOI.mesure(cr.instantMs, cr.especeDefenseur, cr.pvStableAuCoup, cr.pvAvant);
     }
 
     private static void suivreUnCoupDonne(CoupDonne cd, String cle, Object[] args) {
@@ -1831,6 +1868,8 @@ public final class ObservationCollector {
                 log.append("dégâts dans deux tours : pas de mesure");
             } else if (cd.bloque) {
                 log.append("coup bloqué (Abri, raté, sans effet ou échoué)");
+            } else if (cd.clone && !cd.impactPrescience) {
+                log.append("touché sur son Clone");
             } else if (mesureParPvStables(cd) == null && cd.pvAvantDouteux) {
                 log.append("mesure invalide (effet sur ses PV juste avant le coup, pas encore appliqué)");
             } else if (mesureParPvStables(cd) == null && cd.invalide) {
@@ -2163,6 +2202,9 @@ public final class ObservationCollector {
         cr.especeDefenseur = defCombat.getEspece();
         cr.defenseur = defenseur;
         cr.pvAvant = defCombat.getPourcentagePv();
+        cr.instantMs = System.currentTimeMillis();
+        cr.pvStableAuCoup = SUIVI_PV_MOI.stableA(cr.especeDefenseur, cr.pvAvant);
+        cr.pvAvantDouteux = cr.instantMs - SUIVI_PV_MOI.dernierEffetMs < 2500;
         cr.etat = FieldTracker.construireField();
         cr.clone = FieldTracker.joueurAUnClone();
         cr.joueurBloqueAvant = joueurBloqueCeTour;
@@ -2443,7 +2485,11 @@ public final class ObservationCollector {
     private static String analyserCoupRecu(CoupRecu cr) {
         StringBuilder log = new StringBuilder();
         if (cr.bloque) return "coup bloqué (Abri, raté, sans effet ou échoué)";
-        if (cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
+        double[] stables = mesureParPvStables(cr);
+        if (stables == null && cr.pvAvantDouteux) {
+            return "mesure invalide (effet sur mes PV juste avant le coup, pas encore appliqué)";
+        }
+        if (stables == null && cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
         if (estTransforme(true, cr.especeAttaquant) || joueurTransforme()) {
             return "Morphing en cours : ignoré";
         }
@@ -2460,7 +2506,13 @@ public final class ObservationCollector {
 
         // Perte due au coup seul (ou borne basse si K.O.).
         double perte;
-        if (cr.ko) {
+        if (stables != null) {
+            // Ma barre juste après son coup, avant Restes, recul ou autre effet
+            cr.pvAvant = stables[0];
+            cr.correctionPv = 0;
+            cr.ko = stables[1] <= 0.05;
+            perte = cr.ko ? stables[0] : stables[0] - stables[1];
+        } else if (cr.ko) {
             perte = cr.pvAvant;
         } else {
             Pokemon actif = BattleStateTracker.getJoueurActif();
@@ -3479,7 +3531,7 @@ public final class ObservationCollector {
         } catch (Exception ignored) {
         }
         try {
-            suivrePvStableAdversaire();
+            suivrePvStables();
         } catch (Exception ignored) {
         }
         try {
@@ -4533,11 +4585,8 @@ public final class ObservationCollector {
         MESURES_DEFENSIVES.clear();
         DEFENSIFS_ACTIFS.clear();
         dernierePhotoPv = null;
-        HISTO_PV_ADV.clear();
-        pvAdvEspece = null;
-        pvAdvValeur = -1;
-        pvAdvStable = false;
-        dernierEffetPvAdvMs = 0;
+        SUIVI_PV_ADV.vider();
+        SUIVI_PV_MOI.vider();
         photoPvEnCours = null;
         meteoType = null;
         meteoLanceurAdv = null;
