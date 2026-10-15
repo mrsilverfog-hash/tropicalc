@@ -1077,7 +1077,9 @@ public final class ObservationCollector {
         boolean crit, multiCoups, ko, invalide;
         double correctionPv = 0;
         boolean impactPrescience;   // impact de ma Prescience (fin de tour), pas un coup du tour
-        double pvApres = -1;        // ses PV relus juste après mon coup, avant l'effet suivant
+        long instantMs;             // moment du coup (décodage du message)
+        boolean pvStableAuCoup;     // sa barre de PV était immobile à ce moment
+        boolean pvAvantDouteux;     // un effet sur ses PV venait d'arriver, pas encore appliqué
     }
     private static CoupDonne coupDonne = null;
     private static CoupDonne coupPrescience = null;
@@ -1606,6 +1608,13 @@ public final class ObservationCollector {
             // « heal.wish | moi:Mamanbo » soigne le Pokémon EN PLACE (Roigada
             // entré entre-temps) : le message nomme le lanceur du Vœu
             if (surMoi) cr.invalide = true;
+        } else if (cle.equals("cobblemon.battle.heal.drain")) {
+            // « heal.drain | X » nomme le Pokémon VIDÉ : si c'est moi, c'est
+            // l'attaquant qui se soigne (Lame Ointe sur Trioxhydre, mesure jetée
+            // à tort le 13/10) ; si c'est lui, c'est moi qui me soigne.
+            if (args.length > 0 && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) {
+                cr.invalide = true;
+            }
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surDefenseur) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -1659,39 +1668,108 @@ public final class ObservationCollector {
             }
             cd.pvAvant = def.getPourcentagePv();
             cd.etat = FieldTracker.construireField();
+            noterInstantDuCoup(cd);
             coupDonne = cd;
         } catch (Exception ignored) {
         }
     }
 
     private static void suivreCoupDonne(String cle, Object[] args) {
+        noterEffetPvAdversaire(cle, args);
         suivreUnCoupDonne(coupDonne, cle, args);
         suivreUnCoupDonne(coupPrescience, cle, args);
     }
 
     /**
-     * Un soin, un dégât annexe ou une Prescience touche l'adversaire après mon
-     * coup : ses PV relus à l'arrivée de ce message sont ceux d'APRÈS mon coup
-     * (le jeu applique les PV après le message). La mesure reste valable au
-     * lieu d'être jetée. Log du 13/10 : Pisto-Poing sur Dracolosse puis
-     * Prescience le même tour, 78,4 % relu à l'arrivée de la Prescience,
-     * identique au journal des PV.
+     * Effet sur ses PV après mon coup : la mesure par fin de tour devient
+     * fausse. Elle reste possible par l'historique des PV stables (voir
+     * mesureParPvStables), qui lit ses PV juste après mon coup.
      */
     private static void figerOuInvalider(CoupDonne cd) {
-        try {
-            Pokemon adv = BattleStateTracker.getAdversaireActif();
-            if (adv != null && memeEspece(adv.getEspece(), cd.especeDefenseur) && adv.getPvActuels() > 0
-                    && adv.getPourcentagePv() < cd.pvAvant - 0.05) {
-                cd.pvApres = adv.getPourcentagePv();
-                return;
-            }
-        } catch (Exception ignored) {
-        }
         cd.invalide = true;
     }
 
+    // --- PV adverses stables : historique de la barre de PV ---
+    // Les messages arrivent 1 à 2 s AVANT que le jeu applique les PV, et la
+    // barre s'anime ensuite. Relire ses PV à l'arrivée d'un message donnait
+    // donc une valeur d'avant le coup ou à mi-animation (logs du 15/10 :
+    // Meloetta lue à 51,5 % au lieu de 45,8 %, Corboss lu avant le recul de
+    // son Orbe Vie). On garde chaque valeur restée immobile 300 ms : la
+    // première qui change après mon coup est sa vie juste après mon coup,
+    // avant les Restes, poisons et autres effets de fin de tour.
+    private static final class PvStable {
+        final long t; final String espece; final double v;
+        PvStable(long t, String espece, double v) { this.t = t; this.espece = espece; this.v = v; }
+    }
+    private static final java.util.ArrayDeque<PvStable> HISTO_PV_ADV = new java.util.ArrayDeque<>();
+    private static String pvAdvEspece = null;
+    private static double pvAdvValeur = -1;
+    private static long pvAdvDepuisMs = 0;
+    private static boolean pvAdvStable = false;
+    private static long dernierEffetPvAdvMs = 0;
+
+    private static void suivrePvStableAdversaire() {
+        Pokemon adv = BattleStateTracker.getAdversaireActif();
+        if (adv == null) return;
+        long t = System.currentTimeMillis();
+        double v = adv.getPourcentagePv();
+        String e = adv.getEspece();
+        if (!java.util.Objects.equals(e, pvAdvEspece) || Math.abs(v - pvAdvValeur) > 0.01) {
+            pvAdvEspece = e;
+            pvAdvValeur = v;
+            pvAdvDepuisMs = t;
+            pvAdvStable = false;
+            return;
+        }
+        if (!pvAdvStable && t - pvAdvDepuisMs >= 300) {
+            pvAdvStable = true;
+            HISTO_PV_ADV.addLast(new PvStable(pvAdvDepuisMs, e, v));
+            while (HISTO_PV_ADV.size() > 40) HISTO_PV_ADV.removeFirst();
+        }
+    }
+
+    /** Message qui change les PV de l'adversaire (appliqués plus tard par le jeu). */
+    private static void noterEffetPvAdversaire(String cle, Object[] args) {
+        if (args.length == 0) return;
+        boolean effet = cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.heal.")
+            || (cle.startsWith("cobblemon.status.") && cle.endsWith(".hurt"))
+            || cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire");
+        if (!effet) return;
+        Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+        // heal.drain nomme le Pokémon VIDÉ : c'est l'autre camp qui se soigne
+        boolean surLui = cle.equals("cobblemon.battle.heal.drain") ? Boolean.FALSE.equals(adverse) : Boolean.TRUE.equals(adverse);
+        if (surLui) dernierEffetPvAdvMs = System.currentTimeMillis();
+    }
+
+    /** Remplit l'état « PV au moment du coup » d'une mesure qui commence. */
+    private static void noterInstantDuCoup(CoupDonne cd) {
+        cd.instantMs = System.currentTimeMillis();
+        cd.pvStableAuCoup = pvAdvStable && memeEspece(pvAdvEspece, cd.especeDefenseur)
+            && Math.abs(pvAdvValeur - cd.pvAvant) < 0.05;
+        cd.pvAvantDouteux = cd.instantMs - dernierEffetPvAdvMs < 2500;
+    }
+
+    /**
+     * {PV avant, PV juste après} mon coup d'après l'historique stable, ou null.
+     * Si sa barre bougeait encore au moment du coup, « avant » est la valeur
+     * où elle s'est arrêtée.
+     */
+    private static double[] mesureParPvStables(CoupDonne cd) {
+        if (cd.multiCoups || cd.pvAvantDouteux || cd.instantMs == 0) return null;
+        double avant = cd.pvStableAuCoup ? cd.pvAvant : Double.NaN;
+        for (PvStable p : HISTO_PV_ADV) {
+            if (p.t <= cd.instantMs || !memeEspece(p.espece, cd.especeDefenseur)) continue;
+            if (Double.isNaN(avant)) {
+                avant = p.v;
+                continue;
+            }
+            if (Math.abs(p.v - avant) > 0.05) return new double[]{avant, p.v};
+        }
+        return null;
+    }
+
     private static void suivreUnCoupDonne(CoupDonne cd, String cle, Object[] args) {
-        if (cd == null || cd.pvApres >= 0 || cd.invalide) return;
+        if (cd == null) return;
         boolean surLui = args.length > 0
             && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))
             && memeEspece(especeOuActif(args[0]), cd.especeDefenseur);
@@ -1714,6 +1792,11 @@ public final class ObservationCollector {
             if (args.length > 0 && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])))) {
                 figerOuInvalider(cd);
             }
+        } else if (cle.equals("cobblemon.battle.heal.drain")) {
+            // « heal.drain | lui » : il a été VIDÉ, c'est moi qui me soigne
+            boolean surMoiVide = args.length > 0
+                && Boolean.FALSE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0])));
+            if (surMoiVide) figerOuInvalider(cd);   // lui se soigne en me vidant
         } else if (cle.startsWith("cobblemon.battle.heal.")) {
             if (surLui) {
                 String type = cle.substring("cobblemon.battle.heal.".length());
@@ -1748,14 +1831,26 @@ public final class ObservationCollector {
                 log.append("dégâts dans deux tours : pas de mesure");
             } else if (cd.bloque) {
                 log.append("coup bloqué (Abri, raté, sans effet ou échoué)");
-            } else if (cd.invalide) {
+            } else if (mesureParPvStables(cd) == null && cd.pvAvantDouteux) {
+                log.append("mesure invalide (effet sur ses PV juste avant le coup, pas encore appliqué)");
+            } else if (mesureParPvStables(cd) == null && cd.invalide) {
                 log.append("mesure invalide (soin, dégât annexe ou switch après le coup)");
             } else {
                 double perte;
-                if (cd.ko) {
+                double[] stables = mesureParPvStables(cd);
+                boolean parPvStables = stables != null;
+                if (parPvStables) {
+                    cd.pvAvant = stables[0];
+                    cd.correctionPv = 0;
+                    if (stables[1] <= 0.05) {
+                        cd.ko = true;
+                        perte = stables[0];
+                    } else {
+                        cd.ko = false;
+                        perte = stables[0] - stables[1];
+                    }
+                } else if (cd.ko) {
                     perte = cd.pvAvant;
-                } else if (cd.pvApres >= 0) {
-                    perte = cd.pvAvant - cd.pvApres + cd.correctionPv;
                 } else {
                     Pokemon adv = BattleStateTracker.getAdversaireActif();
                     if (adv == null || !memeEspece(adv.getEspece(), cd.especeDefenseur)) {
@@ -1768,7 +1863,7 @@ public final class ObservationCollector {
                 com.tropimon.tropicalc.calc.Move capacite = t == null ? null : convertirCapacite(t);
                 log.append("PV avant ").append(pct(cd.pvAvant)).append(" | perte ").append(pct(perte));
                 if (cd.correctionPv != 0) log.append(" (corrigée de ").append(pct(cd.correctionPv)).append(")");
-                if (cd.pvApres >= 0) log.append(" (PV relus avant l'effet suivant)");
+                if (parPvStables) log.append(" (PV relus juste après le coup)");
                 if (cd.ko) log.append(" K.O. (borne basse)");
                 if (cd.crit) log.append(" CRITIQUE");
                 if (cd.multiCoups) log.append(" multi-coups");
@@ -3384,6 +3479,10 @@ public final class ObservationCollector {
         } catch (Exception ignored) {
         }
         try {
+            suivrePvStableAdversaire();
+        } catch (Exception ignored) {
+        }
+        try {
             suivrePvMetamorph();
         } catch (Exception ignored) {
         }
@@ -4302,6 +4401,7 @@ public final class ObservationCollector {
             cd.especeDefenseur = base.getEspece();
             cd.pvAvant = prescienceAvant;
             cd.etat = terrain;
+            noterInstantDuCoup(cd);
             coupPrescience = cd;
             return;
         } else {
@@ -4433,6 +4533,11 @@ public final class ObservationCollector {
         MESURES_DEFENSIVES.clear();
         DEFENSIFS_ACTIFS.clear();
         dernierePhotoPv = null;
+        HISTO_PV_ADV.clear();
+        pvAdvEspece = null;
+        pvAdvValeur = -1;
+        pvAdvStable = false;
+        dernierEffetPvAdvMs = 0;
         photoPvEnCours = null;
         meteoType = null;
         meteoLanceurAdv = null;
