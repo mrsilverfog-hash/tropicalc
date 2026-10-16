@@ -4045,6 +4045,16 @@ public final class ObservationCollector {
     }
 
     /** Vrai si l'objet de cette espèce est un fait observé (soin vu, ou retiré par Sabotage). */
+    /** Objet Choix exclu (deux capacités différentes sans sortir). */
+    public static boolean estChoixExclu(String espece) {
+        return OBJETS_CHOIX_EXCLUS.contains(espece);
+    }
+
+    /** Orbe Vie exclue (il a attaqué sans recul annoncé). */
+    public static boolean estOrbeVieExclue(String espece) {
+        return ORBE_VIE_EXCLUE.contains(espece);
+    }
+
     public static boolean estObjetConfirme(String espece) {
         return OBJETS_CONFIRMES.containsKey(espece) || OBJETS_RETIRES.contains(espece);
     }

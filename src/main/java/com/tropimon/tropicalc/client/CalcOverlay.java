@@ -334,7 +334,8 @@ public final class CalcOverlay implements HudRenderCallback {
         String objetAdversaire = adversaire.getObjet();
         boolean mouchoirDejaPris = "Mouchoir Choix".equals(objetAdversaire);
         int largeurVitesse = client.textRenderer.getWidth(texteVitesse);
-        if (!mouchoirDejaPris) {
+        // Choix exclu (deux capacités sans sortir) : pas de Mouchoir possible
+        if (!mouchoirDejaPris && !ObservationCollector.estChoixExclu(adversaireBase.getEspece())) {
             // Sa vitesse maximale SANS objet (252 EV, nature +Vitesse, meilleur
             // talent, état actuel) : si tu es au-dessus et qu'il te dépasse sans
             // priorité, c'est forcément un Mouchoir.
@@ -986,6 +987,9 @@ public final class CalcOverlay implements HudRenderCallback {
         if (!estOrbeVie && !estBandeau && !estLunettes) return null;
         if (estBandeau && !estPhysique) return null;
         if (estLunettes && estPhysique) return null;
+        // Objet déjà écarté par un fait : plus de pire cas à prévoir
+        if ((estBandeau || estLunettes) && ObservationCollector.estChoixExclu(espece)) return null;
+        if (estOrbeVie && ObservationCollector.estOrbeVieExclue(espece)) return null;
 
         // Déjà l'objet actif : le range normal l'inclut déjà, pas la peine de redire
         if (objetProbable.equals(adversaire.getObjet())) return null;
