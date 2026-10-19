@@ -2690,6 +2690,16 @@ public final class ObservationCollector {
             estime.setObjet(remplacant);
             log.append(" (").append(objetSuppose).append(" exclu depuis, recalculé avec ").append(remplacant).append(')');
         }
+        // Objet confirmé juste après le coup (recul d'Orbe Vie annoncé après
+        // les dégâts) : c'est lui qui a compté. Log du 19/10 : Darumacho
+        // mesuré avec un Mouchoir supposé, Orbe Vie confirmée par son recul,
+        // d'où un faux « plus que prévu, inexplicable ».
+        String objetConfirmeDepuis = OBJETS_CONFIRMES.get(cr.especeAttaquant);
+        if (objetConfirmeDepuis != null && !objetConfirmeDepuis.equals(estime.getObjet())
+                && !OBJETS_RETIRES.contains(cr.especeAttaquant)) {
+            log.append(" (").append(objetConfirmeDepuis).append(" confirmé depuis, recalculé avec)");
+            estime.setObjet(objetConfirmeDepuis);
+        }
         estime.setStage(Stat.ATTAQUE, cr.stageAtk);
         estime.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
         DamageCalculator.Resultat prevu = DamageCalculator.calculer(
