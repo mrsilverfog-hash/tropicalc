@@ -1082,6 +1082,7 @@ public final class ObservationCollector {
         boolean clone;              // son Clone a pris le coup : ses PV n'ont pas bougé
         long instantMs;             // moment du coup (décodage du message)
         boolean pvStableAuCoup;     // sa barre de PV était immobile à ce moment
+        long coupPrecedentMs;       // mon coup du même tour avant l'impact de Prescience
         boolean pvAvantDouteux;     // un effet sur ses PV venait d'arriver, pas encore appliqué
     }
     private static CoupDonne coupDonne = null;
@@ -1718,6 +1719,14 @@ public final class ObservationCollector {
         long depuisMs = 0;
         boolean stable = false;
         long dernierEffetMs = 0;
+        // Arrivée des messages qui changent ces PV (appliqués ~1 s plus tard)
+        final java.util.ArrayDeque<Long> effets = new java.util.ArrayDeque<>();
+
+        void noterEffet(long t) {
+            dernierEffetMs = t;
+            effets.addLast(t);
+            while (effets.size() > 60) effets.removeFirst();
+        }
 
         void suivre(Pokemon p) {
             if (p == null) return;
@@ -1742,18 +1751,47 @@ public final class ObservationCollector {
             return stable && memeEspece(espece, especeVisee) && Math.abs(valeur - pv) < 0.05;
         }
 
-        /** {avant, juste après} le premier changement après l'instant, ou null. */
-        double[] mesure(long instantMs, String especeVisee, boolean stableAuCoup, double pvAuCoup) {
-            double avant = stableAuCoup ? pvAuCoup : Double.NaN;
+        /**
+         * {avant, juste après} le coup lu dans les PV stables, ou null.
+         * Un effet annoncé juste avant le coup mais pas encore appliqué
+         * (Pièges de Roc à l'entrée, recul...) donne un changement de plus à
+         * sauter ; deux, ou un effet collé juste après le coup (les deux
+         * changements peuvent alors se fondre), et la mesure est écartée.
+         * @param autreCoup instant d'un autre coup sur ce camp juste avant (0 sinon)
+         */
+        double[] mesure(long instantMs, String especeVisee, long autreCoup) {
+            long dernierChangement = 0;
+            double v0 = Double.NaN;
+            java.util.List<Double> suite = new java.util.ArrayList<>();
             for (PvStable p : histo) {
-                if (p.t <= instantMs || !memeEspece(p.espece, especeVisee)) continue;
-                if (Double.isNaN(avant)) {
-                    avant = p.v;
-                    continue;
+                if (!memeEspece(p.espece, especeVisee)) continue;
+                if (p.t <= instantMs) {
+                    dernierChangement = p.t;
+                    v0 = p.v;
+                } else {
+                    suite.add(p.v);
                 }
-                if (Math.abs(p.v - avant) > 0.05) return new double[]{avant, p.v};
             }
-            return null;
+            int enAttente = 0;
+            for (long e : effets) {
+                if (e > dernierChangement && e < instantMs && e > instantMs - 3000) enAttente++;
+            }
+            if (autreCoup > dernierChangement && autreCoup < instantMs && autreCoup > instantMs - 10000) enAttente++;
+            if (enAttente >= 2) return null;
+            for (long e : effets) {
+                if (e > instantMs) {
+                    if (e - instantMs < 1800) return null;
+                    break;
+                }
+            }
+            java.util.List<Double> valeurs = new java.util.ArrayList<>();
+            if (!Double.isNaN(v0)) valeurs.add(v0);
+            valeurs.addAll(suite);
+            if (valeurs.size() < enAttente + 2) return null;
+            double avant = valeurs.get(enAttente);
+            double apres = valeurs.get(enAttente + 1);
+            if (Math.abs(apres - avant) < 0.05) return null;
+            return new double[]{avant, apres};
         }
 
         void vider() {
@@ -1762,6 +1800,7 @@ public final class ObservationCollector {
             valeur = -1;
             stable = false;
             dernierEffetMs = 0;
+            effets.clear();
         }
     }
     private static final SuiviPv SUIVI_PV_ADV = new SuiviPv();
@@ -1777,13 +1816,14 @@ public final class ObservationCollector {
         if (args.length == 0) return;
         boolean effet = cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.heal.")
             || (cle.startsWith("cobblemon.status.") && cle.endsWith(".hurt"))
+            || cle.equals("cobblemon.battle.item.eat")
             || cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire");
         if (!effet) return;
         Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
         if (adverse == null) return;
         // heal.drain nomme le Pokémon VIDÉ : c'est l'autre camp qui se soigne
         boolean surAdv = cle.equals("cobblemon.battle.heal.drain") ? !adverse : adverse;
-        (surAdv ? SUIVI_PV_ADV : SUIVI_PV_MOI).dernierEffetMs = System.currentTimeMillis();
+        (surAdv ? SUIVI_PV_ADV : SUIVI_PV_MOI).noterEffet(System.currentTimeMillis());
     }
 
     // --- Pas de Restes : blessé avant la fin du tour, aucun soin ---
@@ -1867,6 +1907,12 @@ public final class ObservationCollector {
         cd.instantMs = System.currentTimeMillis();
         cd.pvStableAuCoup = SUIVI_PV_ADV.stableA(cd.especeDefenseur, cd.pvAvant);
         cd.pvAvantDouteux = cd.instantMs - SUIVI_PV_ADV.dernierEffetMs < 2500;
+        // L'impact de Prescience suit mon coup du même tour : son changement
+        // de PV peut ne pas être encore appliqué
+        if (cd.impactPrescience && coupDonne != null && !coupDonne.bloque && !coupDonne.clone
+                && memeEspece(coupDonne.especeDefenseur, cd.especeDefenseur)) {
+            cd.coupPrecedentMs = coupDonne.instantMs;
+        }
     }
 
     /**
@@ -1875,14 +1921,14 @@ public final class ObservationCollector {
      * où elle s'est arrêtée.
      */
     private static double[] mesureParPvStables(CoupDonne cd) {
-        if (cd.multiCoups || cd.pvAvantDouteux || cd.instantMs == 0) return null;
-        return SUIVI_PV_ADV.mesure(cd.instantMs, cd.especeDefenseur, cd.pvStableAuCoup, cd.pvAvant);
+        if (cd.multiCoups || cd.instantMs == 0) return null;
+        return SUIVI_PV_ADV.mesure(cd.instantMs, cd.especeDefenseur, cd.coupPrecedentMs);
     }
 
     /** Même chose pour un coup reçu (ma barre de PV). */
     private static double[] mesureParPvStables(CoupRecu cr) {
-        if (cr.multiCoups || cr.pvAvantDouteux || cr.instantMs == 0) return null;
-        return SUIVI_PV_MOI.mesure(cr.instantMs, cr.especeDefenseur, cr.pvStableAuCoup, cr.pvAvant);
+        if (cr.multiCoups || cr.instantMs == 0) return null;
+        return SUIVI_PV_MOI.mesure(cr.instantMs, cr.especeDefenseur, 0);
     }
 
     private static void suivreUnCoupDonne(CoupDonne cd, String cle, Object[] args) {
@@ -2419,17 +2465,9 @@ public final class ObservationCollector {
      * minimum) ou à la deuxième mesure. Chaque coup donne une borne haute :
      * on garde la plus basse.
      */
-    private static void tenterPlafondOffensif(CoupRecu cr, Pokemon estime,
-            com.tropimon.tropicalc.calc.Move capacite, Stat statAtk, double perte,
-            DamageCalculator.Resultat prevu, StringBuilder log) {
-        if (prevu.pourcentageMin < 6.0 || perte >= prevu.pourcentageMin * 0.9 - 1.0) return;
-        String espece = cr.especeAttaquant;
-        // Stat de l'estimation SANS plafond déjà appliqué (base commune à
-        // toutes les mesures)
-        int statEstimee = (int) Math.round(estime.getStatCalculee(statAtk) / plafondOffensif(espece, statAtk));
-        if (statEstimee <= 0) return;
-        String objet = estime.getObjet() != null ? estime.getObjet() : StatHypothesis.AUCUN;
-        String talent = estime.getTalent() != null ? estime.getTalent() : StatHypothesis.AUCUN;
+    /** Stat offensive la plus haute (EV 252 -> 0, 3 natures) qui explique la perte, -1 si aucune. */
+    private static int statLaPlusOffensive(CoupRecu cr, Pokemon estime, com.tropimon.tropicalc.calc.Move capacite,
+                                           Stat statAtk, double perte, String objet, String talent) {
         int meilleure = -1;
         for (com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost n
                 : com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.values()) {
@@ -2453,7 +2491,37 @@ public final class ObservationCollector {
                 }
             }
         }
+        return meilleure;
+    }
+
+    private static void tenterPlafondOffensif(CoupRecu cr, Pokemon estime,
+            com.tropimon.tropicalc.calc.Move capacite, Stat statAtk, double perte,
+            DamageCalculator.Resultat prevu, StringBuilder log) {
+        if (prevu.pourcentageMin < 6.0 || perte >= prevu.pourcentageMin * 0.9 - 1.0) return;
+        String espece = cr.especeAttaquant;
+        // Stat de l'estimation SANS plafond déjà appliqué (base commune à
+        // toutes les mesures)
+        int statEstimee = (int) Math.round(estime.getStatCalculee(statAtk) / plafondOffensif(espece, statAtk));
+        if (statEstimee <= 0) return;
+        String objet = estime.getObjet() != null ? estime.getObjet() : StatHypothesis.AUCUN;
+        String talent = estime.getTalent() != null ? estime.getTalent() : StatHypothesis.AUCUN;
+        int meilleure = statLaPlusOffensive(cr, estime, capacite, statAtk, perte, objet, talent);
         if (meilleure < 0) {
+            // Même sans EV avec l'objet supposé, ça fait trop : l'objet supposé
+            // (Bandeau, Lunettes, Orbe Vie...) est faux s'il n'est pas confirmé.
+            // Logs du 19/10 : Gorythmic « Bandeau Choix (estimé) », Sabotage
+            // à 31,6 % sur Cizayox pour 51-61 % prévus, plusieurs fois.
+            boolean objetSuppose = !StatHypothesis.AUCUN.equals(objet)
+                && !OBJETS_CONFIRMES.containsKey(espece) && !OBJETS_RETIRES.contains(espece);
+            if (objetSuppose && statLaPlusOffensive(cr, estime, capacite, statAtk, perte, StatHypothesis.AUCUN, talent) >= 0) {
+                OBJETS_EXCLUS.computeIfAbsent(espece, k -> new HashSet<>()).add(objet);
+                if ("Orbe Vie".equals(objet)) ORBE_VIE_EXCLUE.add(espece);
+                OBJETS_PROBABLES.remove(espece, objet);
+                log.append(" | PAS DE ").append(objet).append(" : trop peu de dégâts même sans EV avec");
+                MessageDebugLogger.analyse("OBJET " + espece + " : pas de " + objet
+                    + " (" + cr.idCoup + " trop faible même sans EV avec cet objet)");
+                return;
+            }
             log.append(" | MOINS que prévu, inexplicable par ses EV");
             return;
         }
