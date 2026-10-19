@@ -3874,30 +3874,51 @@ public final class ObservationCollector {
 
     /** Objet le plus joué sur Smogon, hors Ballon quand le jeu ne l'a pas annoncé. */
     // Pokémon qui peut encore évoluer : Évoluroc quasi certain (x1,5 Déf et
-    // Déf. Spé.). Lu dans les données d'espèce de Cobblemon.
-    private static final Map<String, Boolean> PRE_EVOLUTIONS = new HashMap<>();
+    // Déf. Spé.). Liste tirée du Pokédex de Showdown (champ « evos »), livrée
+    // avec le mod : les données d'évolution de Cobblemon ne sont pas
+    // forcément envoyées au client (Colossinge sans Évoluroc le 19/10).
+    private static volatile Set<String> PRE_EVOLUTIONS = null;
 
     static boolean estPreEvolution(String espece) {
         if (espece == null) return false;
-        return PRE_EVOLUTIONS.computeIfAbsent(espece, e -> {
-            try {
-                Species sp = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(
-                    e.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", ""));
-                return sp != null && !sp.getEvolutions().isEmpty();
-            } catch (Throwable t) {
-                return false;
+        Set<String> liste = PRE_EVOLUTIONS;
+        if (liste == null) {
+            Set<String> lu = new HashSet<>();
+            try (java.io.InputStream in = ObservationCollector.class.getResourceAsStream("/assets/tropicalc/preevolutions.txt")) {
+                if (in != null) {
+                    for (String l : new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).split("\n")) {
+                        if (!l.isBlank()) lu.add(l.trim());
+                    }
+                }
+            } catch (Exception ignored) {
             }
-        });
+            PRE_EVOLUTIONS = liste = lu;
+        }
+        String id = espece.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "");
+        if (liste.contains(id)) return true;
+        try {
+            Species sp = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(id);
+            return sp != null && !sp.getEvolutions().isEmpty();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** Évoluroc supposé parce qu'il peut évoluer : affiché comme objet supposé. */
+    private static String evolurocSuppose(String espece) {
+        if (!estPreEvolution(espece) || objetExclu(espece, "Évoluroc")) return null;
+        RAISONS_PROBABLES.put(espece, "peut encore évoluer");
+        if (!"Évoluroc".equals(OBJETS_PROBABLES.put(espece, "Évoluroc"))) {
+            MessageDebugLogger.analyse("OBJET " + espece + " : Évoluroc supposé (peut encore évoluer)");
+        }
+        return "Évoluroc";
     }
 
     private static String objetSmogonProbable(String espece, SmogonDataLoader.SmogonPokemonData smogon) {
         // Pokémon qui peut encore évoluer : Évoluroc, sauf s'il est exclu ou
         // si Smogon donne autre chose de courant pour lui
-        if (estPreEvolution(espece) && !objetExclu(espece, "Évoluroc")
-                && (smogon == null || smogon.topItemsShowdownId().isEmpty()
-                    || "Évoluroc".equals(ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0))))) {
-            return "Évoluroc";
-        }
+        String evoluroc = evolurocSuppose(espece);
+        if (evoluroc != null) return evoluroc;
         if (smogon == null) return null;
         for (String id : smogon.topItemsShowdownId()) {
             String fr = ShowdownIdMapper.objet(id);
