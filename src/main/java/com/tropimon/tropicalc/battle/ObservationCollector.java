@@ -1226,6 +1226,7 @@ public final class ObservationCollector {
         copie.setPvActuels((int) Math.round(adversaireBase.getPourcentagePv() / 100.0 * copie.getPvMax()));
         copie.setStatut(adversaireBase.getStatut());
         copie.setObjet(objet);
+        copie.setCoupsRageFistSubis(getCoupsRageFistAdversaire(adversaireBase.getEspece()));
         return copie;
     }
 
@@ -1280,6 +1281,11 @@ public final class ObservationCollector {
         copie.setPvActuels(metamorph.getPvActuels());
         copie.setStatut(metamorph.getStatut());
         copie.setObjet(metamorph.getObjet());
+        // Poing de Colère : Morphing ne copie pas le compteur de coups subis,
+        // c'est celui de MON Métamorph qui compte (log du 19/10 : Métamorph
+        // en Colossinge, prévu 62-73 % avec le compteur du Colossinge adverse,
+        // réel 32 %)
+        copie.setCoupsRageFistSubis(getCoupsRageFistJoueur(metamorph.getEspece()));
         return copie;
     }
 
@@ -3179,6 +3185,14 @@ public final class ObservationCollector {
         ProfilAdversaire profil = PROFILS.get(espece);
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
         boolean objetRetire = OBJETS_RETIRES.contains(espece);
+        // Pré-évolution : sur Tropimon, l'Évoluroc est le seul objet possible.
+        // Tenu pour certain dès son entrée (Colossinge, logs du 19/10).
+        if (!objetRetire && !OBJETS_CONFIRMES.containsKey(espece) && estPreEvolution(espece)) {
+            confirmerObjet(espece, "Évoluroc", "pré-évolution, seul objet possible");
+            if ("Évoluroc".equals(OBJETS_CONFIRMES.get(espece))) {
+                MessageDebugLogger.analyse("OBJET " + espece + " : Évoluroc (pré-évolution, seul objet possible)");
+            }
+        }
         tenterConfirmerEvoluroc(espece, smogon);
 
         Pokemon.Builder b = Pokemon.builder(espece, adversaireBase.getNiveau(),
