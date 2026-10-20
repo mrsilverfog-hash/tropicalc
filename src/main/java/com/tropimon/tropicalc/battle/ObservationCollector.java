@@ -955,7 +955,8 @@ public final class ObservationCollector {
             }
             // Effets de vitesse que le calcul ne modélise pas : on élargit.
             Set<String> bruts = talentsBrutsPossibles(adversaire);
-            if (bruts.contains("unburden")) meilleur *= 2.0;            // Allège après objet consommé
+            // Délestage : x2 seulement s'il a perdu son objet depuis son entrée
+            if (bruts.contains("unburden") && delestageActifAdversaire(adversaire.getEspece())) meilleur *= 2.0;
             if (bruts.contains("protosynthesis") || bruts.contains("quarkdrive")) meilleur *= 1.5; // Énergie Booster
             if (bruts.contains("surgesurfer") && terrain == Field.TypeTerrain.ELECTRIQUE) meilleur *= 2.0;
             return meilleur;
@@ -1108,6 +1109,7 @@ public final class ObservationCollector {
     // l'objet ne compte pas (le Tinkaton qui vole un Bandeau Choix après un
     // Bluff, puis utilise Sabotage, n'avait pas "deux capacités sous Choix").
     private static void objetAdversaireRecu(String espece) {
+        if (espece != null && espece.equals(delestageAdversaire)) delestageAdversaire = null;
         OBJETS_RETIRES.remove(espece);
         OBJETS_CHOIX_EXCLUS.remove(espece);
         PREUVE_PAS_CHOIX.remove(espece);
@@ -3427,8 +3429,9 @@ public final class ObservationCollector {
         p.setPvActuels((int) Math.round(fractionPv * p.getPvMax()));
         p.setStatut(adversaireBase.getStatut());
         p.setCoupsRageFistSubis(getCoupsRageFistAdversaire(espece));
-        // Objet perdu en combat : Allège (Délestage) double sa Vitesse
-        p.setObjetPerdu(objetRetire);
+        // Délestage : Vitesse x2 s'il a perdu son objet DEPUIS SON ENTRÉE
+        // (l'effet s'arrête quand il sort, même si l'objet reste perdu)
+        p.setObjetPerdu(objetRetire && delestageActifAdversaire(espece));
 
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
@@ -4025,7 +4028,50 @@ public final class ObservationCollector {
     private static final Map<String, String> OBJETS_PERDUS_CONNUS = new HashMap<>();
 
     /** L'adversaire a perdu son objet (annoncé par le jeu). */
+    // --- Délestage (Unburden) ---
+    // Vitesse x2 dès que le porteur perd son objet sur le terrain (baie,
+    // Ceinture Focus, Herbe Blanche, Sabotage, vol...). L'effet s'arrête
+    // quand il sort : à son retour, objet toujours perdu mais plus de x2.
+    // Il s'arrête aussi s'il reçoit un objet. Espèce concernée par camp,
+    // null si aucun Délestage en cours.
+    private static String delestageAdversaire = null;
+    private static String delestageJoueur = null;
+
+    public static boolean delestageActifAdversaire(String espece) {
+        return espece != null && espece.equals(delestageAdversaire);
+    }
+
+    public static boolean delestageActifJoueur(String espece) {
+        return espece != null && espece.equals(delestageJoueur);
+    }
+
+    /** Entrée / sortie d'un Pokémon : fin du Délestage de ce camp. */
+    private static void suivreDelestage(String cle, Object[] args) {
+        if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            delestageJoueur = null;
+        } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
+            delestageAdversaire = null;
+        } else if (cle.startsWith("cobblemon.battle.dragged_out") && args.length > 0) {
+            Boolean adv = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (Boolean.TRUE.equals(adv)) delestageAdversaire = null;
+            else if (Boolean.FALSE.equals(adv)) delestageJoueur = null;
+        }
+    }
+
+    /** Mon Pokémon actif peut-il refaire pousser sa baie (Récolte, Ruminant) ? */
+    private static boolean joueurPeutRecupererBaie() {
+        try {
+            com.cobblemon.mod.common.pokemon.Pokemon complet = BattleStateTracker.getPokemonCompletJoueur();
+            if (complet == null) return false;
+            String t = complet.getAbility().getName().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z]", "");
+            return "harvest".equals(t) || "cudchew".equals(t);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static void marquerObjetAdversairePerdu(String espece, String detail) {
+        delestageAdversaire = espece;
         OBJETS_RETIRES.add(espece);
         OBJETS_CONFIRMES.remove(espece);
         OBJETS_CONFIRMES_PROACTIVEMENT.remove(espece);
@@ -4055,6 +4101,7 @@ public final class ObservationCollector {
         suivreTorche(cle, contenu.getArgs());
         suivreDureeMeteo(cle, contenu.getArgs());
         suivreMorphingEtRates(cle, contenu.getArgs());
+        suivreDelestage(cle, contenu.getArgs());
 
         if (cle.contains("quickclaw") || cle.contains("quickdraw") || cle.contains("custap")) {
             prioriteObjetCeTour = true;
@@ -4166,6 +4213,14 @@ public final class ObservationCollector {
         // perd l'objet. Pas de return : les cas particuliers suivent.
         if (cle.startsWith("cobblemon.battle.enditem.")) {
             Object[] argsFin = contenu.getArgs();
+            // Mon Pokémon perd son objet (Ceinture Focus, Herbe Blanche,
+            // Bouton Fuite, Sabotage...) : plus d'objet, Délestage actif
+            if (argsFin.length > 0 && Boolean.FALSE.equals(
+                    determinerAttaquant(MoveUseTracker.extraireProprietaire(argsFin[0])))) {
+                Pokemon moiFin = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (moiFin == null) moiFin = BattleStateTracker.getJoueurActif();
+                if (moiFin != null) marquerObjetJoueurDetruit(moiFin.getEspece());
+            }
             if (argsFin.length > 0 && Boolean.TRUE.equals(
                     determinerAttaquant(MoveUseTracker.extraireProprietaire(argsFin[0])))) {
                 Pokemon adv = BattleStateTracker.getAdversaireActif();
@@ -4270,6 +4325,7 @@ public final class ObservationCollector {
 
             if (Boolean.TRUE.equals(victimeEstAdversaire)) {
                 OBJETS_RETIRES.add(adv.getEspece());
+                delestageAdversaire = adv.getEspece();
             }
             if (Boolean.TRUE.equals(voleurEstAdversaire) && objetFr != null) {
                 objetAdversaireRecu(adv.getEspece());
@@ -4318,6 +4374,30 @@ public final class ObservationCollector {
             // Objet RECU en cours de combat (et non simplement révélé)
             boolean recu = suffixe.contains("trick") || suffixe.contains("switcheroo") || suffixe.contains("bestow");
             Boolean porteurAdverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            // Baie mangée (item.eat) : l'objet est CONSOMMÉ. Elle était notée
+            // « révélée », donc encore tenue (Baie Sitrus de Tropius), et
+            // Délestage ne s'activait jamais. Récolte / Ruminant peuvent la
+            // faire repousser : on garde alors l'ancien comportement.
+            if ("eat".equals(suffixe)) {
+                if (Boolean.TRUE.equals(porteurAdverse)) {
+                    Pokemon adv = BattleStateTracker.getAdversaireActif();
+                    if (adv != null) {
+                        Set<String> bruts = talentsBrutsPossibles(adv);
+                        if (!bruts.contains("harvest") && !bruts.contains("cudchew")) {
+                            marquerObjetAdversairePerdu(adv.getEspece(), "eat");
+                            if (objetFr != null) OBJETS_PERDUS_CONNUS.put(adv.getEspece(), objetFr);
+                            return;
+                        }
+                    }
+                } else if (Boolean.FALSE.equals(porteurAdverse)) {
+                    if (!joueurPeutRecupererBaie()) {
+                        Pokemon moi = BattleStateTracker.getJoueurActifDepuisEquipe();
+                        if (moi == null) moi = BattleStateTracker.getJoueurActif();
+                        if (moi != null) marquerObjetJoueurDetruit(moi.getEspece());
+                    }
+                    return;
+                }
+            }
             if (Boolean.TRUE.equals(porteurAdverse)) {
                 Pokemon adv = BattleStateTracker.getAdversaireActif();
                 if (adv == null || objetFr == null) return;
@@ -4482,6 +4562,7 @@ public final class ObservationCollector {
     /** Enregistre que ce membre de l'équipe n'a plus d'objet du tout. */
     private static void marquerObjetJoueurDetruit(String espece) {
         if (espece == null) return;
+        delestageJoueur = espece;
         OBJET_REEL_JOUEUR_CONNU.put(espece, AUCUN_OBJET);
         OBJET_STACK_JOUEUR.put(cleEspece(espece), ItemStack.EMPTY);
     }
@@ -4564,6 +4645,7 @@ public final class ObservationCollector {
     /** Enregistre le nouvel objet réel connu de ce membre de l'équipe. */
     private static void marquerObjetJoueurConnu(String espece, String objetFr) {
         if (espece != null && objetFr != null) OBJET_REEL_JOUEUR_CONNU.put(espece, objetFr);
+        if (espece != null && espece.equals(delestageJoueur)) delestageJoueur = null;
     }
 
     /**
@@ -4577,7 +4659,9 @@ public final class ObservationCollector {
         String connu = OBJET_REEL_JOUEUR_CONNU.get(p.getEspece());
         if (connu == null) return;
         p.setObjet(AUCUN_OBJET.equals(connu) ? null : connu);
-        if (AUCUN_OBJET.equals(connu)) p.setObjetPerdu(true);
+        // Délestage seulement pour le Pokémon sur le terrain qui l'a perdu
+        // depuis son entrée (pas pour un membre qui entrerait)
+        p.setObjetPerdu(AUCUN_OBJET.equals(connu) && delestageActifJoueur(p.getEspece()));
     }
 
     // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,
@@ -4852,6 +4936,8 @@ public final class ObservationCollector {
         finDeTourEnAttenteMs = 0;
         combatSauvageDetecte = false;
         OBJET_REEL_JOUEUR_CONNU.clear();
+        delestageAdversaire = null;
+        delestageJoueur = null;
         OBJET_STACK_JOUEUR.clear();
         COMPTEUR_REPOS.clear();
         COMPTEUR_REPOS_ADV.clear();

@@ -173,7 +173,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("analytic", "Analyste");
         TALENTS.put("imposter", "Imposteur");
         TALENTS.put("prankster", "Farceur");
-        TALENTS.put("unburden", "Allège");
+        TALENTS.put("unburden", "Délestage");
         TALENTS.put("surgesurfer", "Surfeur");
         TALENTS.put("rockhead", "Tête de Roc");
         TALENTS.put("sheerforce", "Sans Limite");

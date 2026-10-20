@@ -53,7 +53,8 @@ public class Pokemon {
     // Sert aux effets qui dépendent de l'équipe du porteur (Général Suprême) :
     // deviner le camp par l'espèce échoue en miroir et pour un Pokémon du banc.
     private boolean campAdverse = false;
-    // Objet perdu en combat (consommé, Sabotage...) : active Délestage (Allège)
+    // Objet perdu depuis son entrée sur le terrain (consommé, Sabotage...) :
+    // active Délestage. Remis à faux quand il sort.
     private boolean objetPerdu = false;
     public boolean isObjetPerdu() { return objetPerdu; }
     // Coéquipiers K.O. connus pour ce calcul (-1 : lus dans le combat)

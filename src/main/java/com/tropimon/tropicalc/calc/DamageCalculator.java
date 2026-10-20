@@ -754,9 +754,9 @@ public class DamageCalculator {
                 || ("Baigne Sable".equals(talent) && meteo == Field.Meteo.SABLE)
                 || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)
                 || ("Surfeur".equals(talent) && terrain == Field.TypeTerrain.ELECTRIQUE)
-                // Allège (Délestage) : x2 une fois son objet perdu (Herbe
+                // Délestage : x2 une fois son objet perdu (Herbe
                 // Blanche, baie, Sabotage...) ; Kicklee et Brutalibré en random
-                || ("Allège".equals(talent) && p.isObjetPerdu() && p.getObjet() == null)) {
+                || ("Délestage".equals(talent) && p.isObjetPerdu() && p.getObjet() == null)) {
             mods.add(8192);
         } else if (piedVeloce) {
             // Pied Véloce : +50 % sous un statut, et ignore le malus de paralysie
