@@ -2054,6 +2054,10 @@ public final class ObservationCollector {
                         .append(physique ? ", mon Atq " : ", mon AtqSpé ")
                         .append(cd.attaquant.getStatCalculee(physique ? Stat.ATTAQUE : Stat.ATTAQUE_SPE)).append(']');
                     boolean coupsFixes = !cd.multiCoups || DamageCalculator.nombreDeCoupsFixe(capacite, cd.attaquant);
+                    if (coupsFixes && (cd.impactPrescience || !PUISSANCE_NON_MODELISEE.contains(cd.idCoup))) {
+                        noterBilan("donné " + cd.especeAttaquant + " " + cd.idCoup + (cd.impactPrescience ? " (impact)" : "")
+                            + " -> " + cd.especeDefenseur + (cd.crit ? " critique" : ""), perte, r, cd.ko);
+                    }
                     if (!r.immunise && !cd.ko && coupsFixes) {
                         if (perte > r.pourcentageMax + 2) log.append(" | PLUS que prévu");
                         else if (perte < r.pourcentageMin - 2) log.append(" | MOINS que prévu");
@@ -2241,6 +2245,38 @@ public final class ObservationCollector {
             .append(statDef == Stat.DEFENSE ? "PV x Déf" : "PV x DéfSpé")
             .append(plus ? " au plus x" : " au moins x").append(String.format(java.util.Locale.ROOT, "%.2f", facteur))
             .append(net || mesures >= 2 ? ", appliqué" : ", à confirmer");
+        if (!plus) partagerPvEnPlus(cd, brut, capacite, perte, statDef, espece, log);
+    }
+
+    /**
+     * Plus résistant que prévu : si des EV en PV suffisent à l'expliquer (le
+     * set supposé en a moins de 252), ces PV comptent aussi contre l'autre
+     * catégorie d'attaque. On applique à l'autre défense la part due aux PV.
+     * Log du 13/10 : Dracolosse 25 % plus résistant au Pisto-Poing comme à la
+     * Prescience, sans que le mod relie les deux.
+     */
+    private static void partagerPvEnPlus(CoupDonne cd, Pokemon brut, com.tropimon.tropicalc.calc.Move capacite,
+                                         double perte, Stat statDef, String espece, StringBuilder log) {
+        int evPv = brut.getEv(Stat.PV);
+        if (evPv >= 252) return;
+        int pvEstimes = brut.getPvMax();
+        for (int ev = evPv + 4; ev <= 252; ev += 4) {
+            Pokemon h = brut.copieAvecEvNature(Map.of(Stat.PV, ev), null);
+            for (Stat st : Stat.values()) if (st != Stat.PV) h.setStage(st, cd.defenseurEstime.getStage(st));
+            DamageCalculator.Resultat r = DamageCalculator.calculer(
+                cd.attaquant, h, capacite, cd.etat, cd.etat.getEcransAdversaire(), cd.crit);
+            if (r.immunise) return;
+            if (perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) {
+                double facteurPv = (double) h.getPvMax() / pvEstimes;
+                if (facteurPv < 1.03) return;
+                Stat autre = statDef == Stat.DEFENSE ? Stat.DEFENSE_SPE : Stat.DEFENSE;
+                PLANCHERS_DEFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).merge(autre, facteurPv, Math::max);
+                log.append(" | PV probablement plus hauts (").append(ev).append(" EV) : x")
+                    .append(String.format(java.util.Locale.ROOT, "%.2f", facteurPv))
+                    .append(autre == Stat.DEFENSE ? " aussi en Déf" : " aussi en DéfSpé");
+                return;
+            }
+        }
     }
 
     /**
@@ -2718,8 +2754,41 @@ public final class ObservationCollector {
             .append(" stage ").append(physique ? cr.stageAtk : cr.stageAtkSpe)
             .append(", météo ").append(cr.etat.getMeteo()).append(", champ ").append(cr.etat.getTerrain()).append(']');
 
-        // --- Set moins (ou plus) offensif que l'estimation ---
+        if (!cr.crit && !cr.multiCoups && !capacite.isMultiCoups() && !PUISSANCE_NON_MODELISEE.contains(cr.idCoup)) {
+            noterBilan("reçu " + cr.especeAttaquant + " " + cr.idCoup + " -> " + cr.especeDefenseur, perte, prevu, cr.ko);
+        }
+
+        // --- Talent : un autre talent possible explique seul le coup ---
+        // (le set supposé prend le talent le plus joué ; Multiécaille, Peau
+        // Féérique, Adaptabilité... changent les dégâts du tout au tout)
+        boolean talentTrouve = false;
         if (!cr.crit && !cr.ko && !cr.multiCoups && !capacite.isMultiCoups() && !prevu.immunise
+                && !PUISSANCE_NON_MODELISEE.contains(cr.idCoup) && !TALENTS_CONFIRMES.containsKey(cr.especeAttaquant)) {
+            double marge = Math.max(1.5, prevu.pourcentageMax * 0.05);
+            if (perte > prevu.pourcentageMax + marge || perte < prevu.pourcentageMin - marge) {
+                List<String> explications = new ArrayList<>();
+                for (String id : talentsBrutsPossibles(cr.attaquant)) {
+                    String fr = ShowdownIdMapper.talent(id);
+                    if (fr == null || fr.equals(estime.getTalent())) continue;
+                    Pokemon h = estime.copieAvec(Map.of(), null, fr);
+                    DamageCalculator.Resultat r = DamageCalculator.calculer(
+                        h, cr.defenseur, capacite, cr.etat, cr.etat.getEcransJoueur(), false);
+                    if (!r.immunise && perte >= r.pourcentageMin - 1.0 && perte <= r.pourcentageMax + 1.0) explications.add(fr);
+                }
+                if (explications.size() == 1) {
+                    String esp = cr.especeAttaquant;
+                    if (!explications.get(0).equals(TALENTS_PROBABLES.put(esp, explications.get(0)))) {
+                        MessageDebugLogger.analyse("TALENT " + esp + " : " + explications.get(0)
+                            + " probable (seul talent qui explique ses dégâts)");
+                    }
+                    log.append(" | talent ").append(explications.get(0)).append(" probable (explique seul le coup)");
+                    talentTrouve = true;
+                }
+            }
+        }
+
+        // --- Set moins (ou plus) offensif que l'estimation ---
+        if (!talentTrouve && !cr.crit && !cr.ko && !cr.multiCoups && !capacite.isMultiCoups() && !prevu.immunise
                 && !PUISSANCE_NON_MODELISEE.contains(cr.idCoup)) {
             tenterPlafondOffensif(cr, estime, capacite, statAtk, perte, prevu, log);
             tenterPlancherOffensif(cr, estime, capacite, statAtk, perte, prevu, log);
@@ -4726,7 +4795,50 @@ public final class ObservationCollector {
         return lanceurPrescienceAdvBase == null ? null : construireAdversaireEstime(lanceurPrescienceAdvBase);
     }
 
+    // --- Bilan de précision du combat (écrit dans le journal à la fin) ---
+    // Chaque coup mesuré : dans la fourchette prévue ou non. Sert à voir où le
+    // mod se trompe encore et si une correction améliore vraiment les choses.
+    private static final class MesureBilan {
+        final String quoi; final double perte, min, max; final boolean ko;
+        MesureBilan(String quoi, double perte, double min, double max, boolean ko) {
+            this.quoi = quoi; this.perte = perte; this.min = min; this.max = max; this.ko = ko;
+        }
+        boolean dedans() {
+            // K.O. : la perte n'est qu'une borne basse, le prévu doit l'atteindre
+            return ko ? max >= perte - 1.5 : perte >= min - 1.5 && perte <= max + 1.5;
+        }
+    }
+    private static final List<MesureBilan> BILAN = new ArrayList<>();
+
+    private static void noterBilan(String quoi, double perte, DamageCalculator.Resultat r, boolean ko) {
+        if (r == null || r.immunise || Double.isNaN(perte)) return;
+        BILAN.add(new MesureBilan(quoi, perte, r.pourcentageMin, r.pourcentageMax, ko));
+    }
+
+    private static void ecrireBilan() {
+        if (BILAN.isEmpty()) return;
+        int dedans = 0;
+        List<String> ecarts = new ArrayList<>();
+        for (MesureBilan m : BILAN) {
+            if (m.dedans()) {
+                dedans++;
+            } else {
+                ecarts.add(m.quoi + " : " + pct(m.perte) + (m.ko ? " K.O." : "") + " pour " + pct(m.min) + " - " + pct(m.max)
+                    + (m.perte > m.max ? " (plus)" : " (moins)"));
+            }
+        }
+        MessageDebugLogger.analyse(String.format(java.util.Locale.ROOT,
+            "BILAN DU COMBAT : %d/%d coups dans la fourchette prévue (%.0f %%)", dedans, BILAN.size(),
+            100.0 * dedans / BILAN.size()));
+        for (String e : ecarts) MessageDebugLogger.analyse("BILAN écart : " + e);
+        BILAN.clear();
+    }
+
     public static void reinitialiser() {
+        try {
+            ecrireBilan();
+        } catch (Exception ignored) {
+        }
         lanceurPrescienceJoueur = null;
         lanceurPrescienceAdvBase = null;
         MessageDebugLogger.analyse("=============== NOUVEAU COMBAT ===============");
