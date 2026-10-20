@@ -88,6 +88,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("infiltrator", "Infiltration");
         TALENTS.put("stickyhold", "Glu");
         TALENTS.put("mindseye", "Œil Révélateur");
+        TALENTS.put("scrappy", "Querelleur");
         TALENTS.put("dragonsmaw", "Dent de Dragon");
         TALENTS.put("purifyingsalt", "Sel Purificateur");
         TALENTS.put("wellbakedbody", "Bien Cuit");
@@ -173,6 +174,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("imposter", "Imposteur");
         TALENTS.put("prankster", "Farceur");
         TALENTS.put("unburden", "Allège");
+        TALENTS.put("surgesurfer", "Surfeur");
         TALENTS.put("rockhead", "Tête de Roc");
         TALENTS.put("sheerforce", "Sans Limite");
         TALENTS.put("hugepower", "Coloforce");
@@ -228,6 +230,7 @@ public final class ShowdownIdMapper {
         OBJETS.put("wikiberry", "Baie Wiki");
         OBJETS.put("magoberry", "Baie Mago");
         OBJETS.put("airballoon", "Ballon");
+        OBJETS.put("ironball", "Balle Fer");
         OBJETS.put("muscleband", "Bandeau Muscle");
         OBJETS.put("wiseglasses", "Lunettes Sages");
         // Objets améliorant un type (x1.2), noms vérifiés sur Poképédia

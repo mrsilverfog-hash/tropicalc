@@ -370,6 +370,8 @@ public class DamageCalculator {
         base = base / 50 + 2;
 
         double meteo = terrain.multiplicateurMeteo(capacite.getType());
+        // Hydrovapeur : x1,5 au soleil au lieu d'être divisée par deux
+        if ("hydrosteam".equals(nomCapacite) && terrain.getMeteo() == Field.Meteo.SOLEIL) meteo = 1.5;
         if (meteo == 0.0) return Resultat.sansDegats();   // Feu sous pluie battante, Eau sous soleil intense
         if (meteo != 1.0) base = ModifierContext.arrondiJeu(base * (meteo > 1.0 ? 6144 : 2048) / 4096.0);
         if (critique) base = (long) Math.floor(base * 1.5);
@@ -537,6 +539,14 @@ public class DamageCalculator {
         if (nom == null) return puissance;
 
         switch (nom) {
+            case "solarbeam", "solarblade" -> {
+                // Lance-Soleil / Lame Solaire : puissance divisée par deux
+                // sous la pluie, le sable ou la neige
+                if (meteo == Field.Meteo.PLUIE || meteo == Field.Meteo.PLUIE_INTENSE
+                        || meteo == Field.Meteo.SABLE || meteo == Field.Meteo.NEIGE) {
+                    puissance = puissance / 2;
+                }
+            }
             case "boltbeak", "fishiousrend" -> {
                 // Prise de Bec / Branchicrok : double puissance (170) si
                 // l'attaquant agit avant la cible (comparaison de vitesse).
@@ -683,7 +693,7 @@ public class DamageCalculator {
             }
             case "lastrespects" -> {
                 // Hommage Posthume : 50 + 50 par coéquipier K.O. (dans l'équipe du lanceur)
-                int ko = attaquant.isCampAdverse()
+                int ko = attaquant.getAlliesKo() >= 0 ? attaquant.getAlliesKo() : attaquant.isCampAdverse()
                     ? com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoAdversaire()
                     : com.tropimon.tropicalc.battle.ObservationCollector.getNombreKoJoueur();
                 puissance = Math.min(300, 50 + 50 * Math.max(0, ko));
@@ -742,7 +752,11 @@ public class DamageCalculator {
         if (("Chlorophylle".equals(talent) && soleil)
                 || ("Glissade".equals(talent) && pluie)
                 || ("Baigne Sable".equals(talent) && meteo == Field.Meteo.SABLE)
-                || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)) {
+                || ("Chasse-Neige".equals(talent) && meteo == Field.Meteo.NEIGE)
+                || ("Surfeur".equals(talent) && terrain == Field.TypeTerrain.ELECTRIQUE)
+                // Allège (Délestage) : x2 une fois son objet perdu (Herbe
+                // Blanche, baie, Sabotage...) ; Kicklee et Brutalibré en random
+                || ("Allège".equals(talent) && p.isObjetPerdu() && p.getObjet() == null)) {
             mods.add(8192);
         } else if (piedVeloce) {
             // Pied Véloce : +50 % sous un statut, et ignore le malus de paralysie
@@ -751,6 +765,7 @@ public class DamageCalculator {
             mods.add(6144);
         }
         if ("Mouchoir Choix".equals(p.getObjet())) mods.add(6144);
+        if ("Balle Fer".equals(p.getObjet())) mods.add(2048);
 
         long m = 4096;
         for (int mod : mods) m = (m * mod + 2048) >> 12;
@@ -886,7 +901,8 @@ public class DamageCalculator {
         // Combat de son porteur touchent les Spectre de façon neutre (1.0x),
         // au lieu de l'immunité totale habituelle. Le reste du calcul (autre
         // type du défenseur) suit la table normale.
-        boolean oeilRevelateur = "Œil Révélateur".equals(attaquant.getTalent())
+        // Querelleur (Scrappy) : même effet sur les Spectre (Kangourex, Tauros)
+        boolean oeilRevelateur = ("Œil Révélateur".equals(attaquant.getTalent()) || "Querelleur".equals(attaquant.getTalent()))
             && (capacite.getType() == PokemonType.NORMAL || capacite.getType() == PokemonType.COMBAT);
         if (oeilRevelateur) {
             double eff1 = (t1 == PokemonType.SPECTRE) ? 1.0 : capacite.getType().efficaciteContre(t1);

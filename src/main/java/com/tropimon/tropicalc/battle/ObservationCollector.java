@@ -3427,6 +3427,8 @@ public final class ObservationCollector {
         p.setPvActuels((int) Math.round(fractionPv * p.getPvMax()));
         p.setStatut(adversaireBase.getStatut());
         p.setCoupsRageFistSubis(getCoupsRageFistAdversaire(espece));
+        // Objet perdu en combat : Allège (Délestage) double sa Vitesse
+        p.setObjetPerdu(objetRetire);
 
         for (Stat s : Stat.values()) {
             if (s != Stat.PV) {
@@ -4571,6 +4573,7 @@ public final class ObservationCollector {
         String connu = OBJET_REEL_JOUEUR_CONNU.get(p.getEspece());
         if (connu == null) return;
         p.setObjet(AUCUN_OBJET.equals(connu) ? null : connu);
+        if (AUCUN_OBJET.equals(connu)) p.setObjetPerdu(true);
     }
 
     // Snapshot des stages Attaque/Attaque Spé adverses au début du tour précédent,

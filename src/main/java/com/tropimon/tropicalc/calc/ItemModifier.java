@@ -69,7 +69,11 @@ public interface ItemModifier {
         m.put("Veste de Combat", new ItemModifier() {
             @Override
             public void appliquerCoteDefenseur(ModifierContext ctx) {
-                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE) {
+                // Choc Psy, Frappe Psy, Lame Ointe : spéciales mais frappent la
+                // Défense physique, la Veste ne joue pas
+                String id = ctx.capacite.getNom();
+                boolean defensePhysique = "psyshock".equals(id) || "psystrike".equals(id) || "secretsword".equals(id);
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE && !defensePhysique) {
                     ctx.defense(ModifierContext.ORDRE_OBJET, 6144);
                 }
             }

@@ -53,6 +53,14 @@ public class Pokemon {
     // Sert aux effets qui dépendent de l'équipe du porteur (Général Suprême) :
     // deviner le camp par l'espèce échoue en miroir et pour un Pokémon du banc.
     private boolean campAdverse = false;
+    // Objet perdu en combat (consommé, Sabotage...) : active Délestage (Allège)
+    private boolean objetPerdu = false;
+    public boolean isObjetPerdu() { return objetPerdu; }
+    // Coéquipiers K.O. connus pour ce calcul (-1 : lus dans le combat)
+    private int alliesKo = -1;
+    public int getAlliesKo() { return alliesKo; }
+    public void setAlliesKo(int n) { this.alliesKo = n; }
+    public void setObjetPerdu(boolean v) { this.objetPerdu = v; }
     public boolean isCampAdverse() { return campAdverse; }
     public void setCampAdverse(boolean v) { this.campAdverse = v; }
 
@@ -175,6 +183,8 @@ public class Pokemon {
         p.stages.putAll(stages);
         p.statut = statut;
         p.campAdverse = campAdverse;
+        p.objetPerdu = objetPerdu;
+        p.alliesKo = alliesKo;
         p.pvActuels = (int) Math.round(getPourcentagePv() / 100.0 * p.getPvMax());
         return p;
     }

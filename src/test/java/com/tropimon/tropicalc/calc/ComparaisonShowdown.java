@@ -65,6 +65,7 @@ public final class ComparaisonShowdown {
         Field.Ecrans ecrans = new Field.Ecrans();
         ecrans.setProtection(o.get("protection").getAsBoolean());
         ecrans.setMurLumiere(o.get("murLumiere").getAsBoolean());
+        if (o.has("voileAurore")) ecrans.setBrumeAurore(o.get("voileAurore").getAsBoolean());
         boolean critique = o.get("critique").getAsBoolean();
 
         if (o.has("matriceAttendue") && !o.get("matriceAttendue").isJsonNull()) {
@@ -163,6 +164,8 @@ public final class ComparaisonShowdown {
         Pokemon.Statut statut = STATUTS.get(p.get("statut").getAsString());
         if (statut != null) pokemon.setStatut(statut);
         pokemon.setPvActuels(p.get("pvActuels").getAsInt());
+        if (p.has("objetPerdu") && p.get("objetPerdu").getAsBoolean()) pokemon.setObjetPerdu(true);
+        if (p.has("alliesKo")) pokemon.setAlliesKo(p.get("alliesKo").getAsInt());
         return pokemon;
     }
 

@@ -35,6 +35,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -96,6 +98,8 @@
    "nature": "jolly",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -157,6 +161,8 @@
    "nature": "relaxed",
    "talent": "ironbarbs",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -218,6 +224,8 @@
    "nature": "jolly",
    "talent": "sandveil",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -279,6 +287,8 @@
    "nature": "jolly",
    "talent": "sandveil",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -340,6 +350,8 @@
    "nature": "modest",
    "talent": "flamebody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -401,6 +413,8 @@
    "nature": "adamant",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -462,6 +476,8 @@
    "nature": "timid",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -523,6 +539,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -584,6 +602,8 @@
    "nature": "timid",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -645,6 +665,8 @@
    "nature": "timid",
    "talent": "clearbody",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -705,6 +727,8 @@
    "nature": "jolly",
    "talent": "blaze",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -766,6 +790,8 @@
    "nature": "timid",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -827,6 +853,8 @@
    "nature": "timid",
    "talent": "goodasgold",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -888,6 +916,8 @@
    "nature": "timid",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -949,6 +979,8 @@
    "nature": "modest",
    "talent": "chlorophyll",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1009,6 +1041,8 @@
    "nature": "adamant",
    "talent": "swiftswim",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1070,6 +1104,8 @@
    "nature": "jolly",
    "talent": "sandrush",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1130,6 +1166,8 @@
    "nature": "jolly",
    "talent": "slushrush",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1191,6 +1229,8 @@
    "nature": "timid",
    "talent": "swiftswim",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1251,6 +1291,8 @@
    "nature": "jolly",
    "talent": "quickfeet",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1312,6 +1354,8 @@
    "nature": "timid",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1373,6 +1417,8 @@
    "nature": "timid",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1434,6 +1480,8 @@
    "nature": "jolly",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1495,6 +1543,8 @@
    "nature": "timid",
    "talent": "clearbody",
    "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1519,5 +1569,569 @@
   "champ": "AUCUN",
   "ventArriere": false,
   "vitesseAttendue": 319
+ },
+ {
+  "nom": "Allège objet perdu",
+  "pokemon": {
+   "espece": "hitmonlee",
+   "niveau": 100,
+   "types": [
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 120,
+    "def": 53,
+    "spa": 35,
+    "spd": 110,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "unburden",
+   "objet": null,
+   "objetPerdu": true,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 241,
+   "poidsKg": 49.8,
+   "statsShowdown": {
+    "hp": 241,
+    "atk": 276,
+    "def": 142,
+    "spa": 95,
+    "spd": 256,
+    "spe": 300
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 600
+ },
+ {
+  "nom": "Allège objet perdu + stage +1",
+  "pokemon": {
+   "espece": "hawlucha",
+   "niveau": 100,
+   "types": [
+    "fighting",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 78,
+    "atk": 92,
+    "def": 75,
+    "spa": 74,
+    "spd": 63,
+    "spe": 118
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "unburden",
+   "objet": null,
+   "objetPerdu": true,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 1
+   },
+   "statut": "",
+   "pvActuels": 297,
+   "poidsKg": 21.5,
+   "statsShowdown": {
+    "hp": 297,
+    "atk": 220,
+    "def": 186,
+    "spa": 165,
+    "spd": 162,
+    "spe": 368
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 1104
+ },
+ {
+  "nom": "Allège objet perdu + paralysie",
+  "pokemon": {
+   "espece": "sceptile",
+   "niveau": 100,
+   "types": [
+    "grass"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 85,
+    "def": 65,
+    "spa": 105,
+    "spd": 85,
+    "spe": 120
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "unburden",
+   "objet": null,
+   "objetPerdu": true,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 281,
+   "poidsKg": 52.2,
+   "statsShowdown": {
+    "hp": 281,
+    "atk": 185,
+    "def": 166,
+    "spa": 246,
+    "spd": 206,
+    "spe": 372
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 372
+ },
+ {
+  "nom": "Surfeur champ Électrifié",
+  "pokemon": {
+   "espece": "raichualola",
+   "niveau": 100,
+   "types": [
+    "electric",
+    "psychic"
+   ],
+   "statsBase": {
+    "hp": 60,
+    "atk": 85,
+    "def": 50,
+    "spa": 95,
+    "spd": 85,
+    "spe": 110
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "surgesurfer",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 261,
+   "poidsKg": 21,
+   "statsShowdown": {
+    "hp": 261,
+    "atk": 185,
+    "def": 136,
+    "spa": 226,
+    "spd": 206,
+    "spe": 350
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "ELECTRIQUE",
+  "ventArriere": false,
+  "vitesseAttendue": 700
+ },
+ {
+  "nom": "Balle Fer",
+  "pokemon": {
+   "espece": "snorlax",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 160,
+    "atk": 110,
+    "def": 65,
+    "spa": 65,
+    "spd": 110,
+    "spe": 30
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "careful",
+   "talent": "immunity",
+   "objet": "ironball",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 524,
+   "poidsKg": 460,
+   "statsShowdown": {
+    "hp": 524,
+    "atk": 256,
+    "def": 166,
+    "spa": 149,
+    "spd": 281,
+    "spe": 96
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 48
+ },
+ {
+  "nom": "Mouchoir + Vent Arrière + stage -1",
+  "pokemon": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "sandveil",
+   "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": -1
+   },
+   "statut": "",
+   "pvActuels": 357,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 357,
+    "atk": 359,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 333
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": true,
+  "vitesseAttendue": 666
+ },
+ {
+  "nom": "Chlorophylle + Mouchoir soleil",
+  "pokemon": {
+   "espece": "venusaur",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "poison"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 82,
+    "def": 83,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "timid",
+   "talent": "chlorophyll",
+   "objet": "choicescarf",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 301,
+   "poidsKg": 100,
+   "statsShowdown": {
+    "hp": 301,
+    "atk": 180,
+    "def": 202,
+    "spa": 236,
+    "spd": 236,
+    "spe": 284
+   }
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 852
+ },
+ {
+  "nom": "Stage +6",
+  "pokemon": {
+   "espece": "gyarados",
+   "niveau": 100,
+   "types": [
+    "water",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 125,
+    "def": 79,
+    "spa": 60,
+    "spd": 100,
+    "spe": 81
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "intimidate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 6
+   },
+   "statut": "",
+   "pvActuels": 331,
+   "poidsKg": 235,
+   "statsShowdown": {
+    "hp": 331,
+    "atk": 286,
+    "def": 194,
+    "spa": 140,
+    "spd": 236,
+    "spe": 287
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 1148
+ },
+ {
+  "nom": "Stage -6",
+  "pokemon": {
+   "espece": "gyarados",
+   "niveau": 100,
+   "types": [
+    "water",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 125,
+    "def": 79,
+    "spa": 60,
+    "spd": 100,
+    "spe": 81
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "intimidate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": -6
+   },
+   "statut": "",
+   "pvActuels": 331,
+   "poidsKg": 235,
+   "statsShowdown": {
+    "hp": 331,
+    "atk": 286,
+    "def": 194,
+    "spa": 140,
+    "spd": 236,
+    "spe": 287
+   }
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "ventArriere": false,
+  "vitesseAttendue": 71
  }
 ]

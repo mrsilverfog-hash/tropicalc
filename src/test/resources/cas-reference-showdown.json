@@ -35,6 +35,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -89,6 +91,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -119,6 +123,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -182,6 +187,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -236,6 +243,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -266,6 +275,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    496,
@@ -329,6 +339,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -383,6 +395,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -413,6 +427,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    51,
@@ -476,6 +491,8 @@
    "nature": "adamant",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -530,6 +547,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -560,6 +579,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -623,6 +643,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -677,6 +699,8 @@
    "nature": "calm",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -707,6 +731,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    53,
@@ -770,6 +795,8 @@
    "nature": "timid",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -824,6 +851,8 @@
    "nature": "serious",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -854,6 +883,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    126,
@@ -917,6 +947,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -971,6 +1003,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1001,6 +1035,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    140,
@@ -1064,6 +1099,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1118,6 +1155,8 @@
    "nature": "bold",
    "talent": "merciless",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1148,6 +1187,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -1211,6 +1251,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1265,6 +1307,8 @@
    "nature": "calm",
    "talent": "cursedbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1295,6 +1339,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    390,
@@ -1358,6 +1403,8 @@
    "nature": "adamant",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1412,6 +1459,8 @@
    "nature": "calm",
    "talent": "cursedbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1442,6 +1491,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -1501,6 +1551,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1555,6 +1607,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1585,6 +1639,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -1644,6 +1699,8 @@
    "nature": "modest",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1698,6 +1755,8 @@
    "nature": "calm",
    "talent": "merciless",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1728,6 +1787,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    144,
@@ -1791,6 +1851,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": "choiceband",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1845,6 +1907,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1875,6 +1939,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    744,
@@ -1938,6 +2003,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": "choicespecs",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -1992,6 +2059,8 @@
    "nature": "calm",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2022,6 +2091,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    237,
@@ -2085,6 +2155,8 @@
    "nature": "modest",
    "talent": "clearbody",
    "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2139,6 +2211,8 @@
    "nature": "calm",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2169,6 +2243,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    242,
@@ -2232,6 +2307,8 @@
    "nature": "adamant",
    "talent": "protosynthesis",
    "objet": "expertbelt",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2286,6 +2363,8 @@
    "nature": "impish",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2316,6 +2395,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    662,
@@ -2379,6 +2459,8 @@
    "nature": "adamant",
    "talent": "protosynthesis",
    "objet": "expertbelt",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2433,6 +2515,8 @@
    "nature": "impish",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2463,6 +2547,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    187,
@@ -2525,6 +2610,8 @@
    "nature": "adamant",
    "talent": "blaze",
    "objet": "charcoal",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2579,6 +2666,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2609,6 +2698,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    332,
@@ -2672,6 +2762,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": "mysticwater",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2726,6 +2818,8 @@
    "nature": "calm",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2756,6 +2850,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    264,
@@ -2819,6 +2914,8 @@
    "nature": "adamant",
    "talent": "quarkdrive",
    "objet": "muscleband",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2873,6 +2970,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -2903,6 +3002,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    109,
@@ -2966,6 +3066,8 @@
    "nature": "modest",
    "talent": "quarkdrive",
    "objet": "wiseglasses",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3020,6 +3122,8 @@
    "nature": "calm",
    "talent": "vesselofruin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3050,6 +3154,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    105,
@@ -3113,6 +3218,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3167,6 +3274,8 @@
    "nature": "calm",
    "talent": "quarkdrive",
    "objet": "assaultvest",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3197,6 +3306,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    88,
@@ -3260,6 +3370,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3313,6 +3425,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": "eviolite",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3343,6 +3457,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    73,
@@ -3406,6 +3521,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3460,6 +3577,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3490,6 +3609,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    390,
@@ -3553,6 +3673,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3607,6 +3729,8 @@
    "nature": "calm",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3637,6 +3761,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -3700,6 +3825,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3754,6 +3881,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3784,6 +3913,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    190,
@@ -3847,6 +3977,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3901,6 +4033,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -3931,6 +4065,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    128,
@@ -3994,6 +4129,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4048,6 +4185,8 @@
    "nature": "calm",
    "talent": "sandstream",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4078,6 +4217,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    162,
@@ -4141,6 +4281,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4195,6 +4337,8 @@
    "nature": "impish",
    "talent": "thermalexchange",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4225,6 +4369,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    93,
@@ -4287,6 +4432,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4341,6 +4488,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4371,6 +4520,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    314,
@@ -4434,6 +4584,8 @@
    "nature": "adamant",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4488,6 +4640,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4518,6 +4672,7 @@
   "champ": "ELECTRIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    402,
@@ -4581,6 +4736,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4635,6 +4792,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4665,6 +4824,7 @@
   "champ": "HERBU",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -4728,6 +4888,8 @@
    "nature": "adamant",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4782,6 +4944,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4812,6 +4976,7 @@
   "champ": "PSYCHIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    210,
@@ -4875,6 +5040,8 @@
    "nature": "modest",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4929,6 +5096,8 @@
    "nature": "calm",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -4959,6 +5128,7 @@
   "champ": "BRUMEUX",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    156,
@@ -5022,6 +5192,8 @@
    "nature": "adamant",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5076,6 +5248,8 @@
    "nature": "impish",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5106,6 +5280,7 @@
   "champ": "HERBU",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    112,
@@ -5169,6 +5344,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5223,6 +5400,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5253,6 +5432,7 @@
   "champ": "AUCUN",
   "protection": true,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -5316,6 +5496,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5370,6 +5552,8 @@
    "nature": "calm",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5400,6 +5584,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": true,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    53,
@@ -5463,6 +5648,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5517,6 +5704,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5547,6 +5736,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": true,
   "degatsAttendus": [
    160,
@@ -5610,6 +5800,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5664,6 +5856,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5694,6 +5888,7 @@
   "champ": "AUCUN",
   "protection": true,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -5757,6 +5952,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 2,
@@ -5811,6 +6008,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5841,6 +6040,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    219,
@@ -5904,6 +6104,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5958,6 +6160,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -5988,6 +6192,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    160,
@@ -6051,6 +6256,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6105,6 +6312,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6135,6 +6344,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -6198,6 +6408,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6252,6 +6464,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6282,6 +6496,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -6345,6 +6560,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": -1,
@@ -6399,6 +6616,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6429,6 +6648,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -6492,6 +6712,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6546,6 +6768,8 @@
    "nature": "impish",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6576,6 +6800,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -6638,6 +6863,8 @@
    "nature": "modest",
    "talent": "adaptability",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6692,6 +6919,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6722,6 +6951,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    147,
@@ -6785,6 +7015,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6839,6 +7071,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6869,6 +7103,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    40,
@@ -6932,6 +7167,8 @@
    "nature": "adamant",
    "talent": "hugepower",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -6986,6 +7223,8 @@
    "nature": "impish",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7016,6 +7255,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    266,
@@ -7079,6 +7319,8 @@
    "nature": "adamant",
    "talent": "guts",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7133,6 +7375,8 @@
    "nature": "impish",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7163,6 +7407,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    295,
@@ -7226,6 +7471,8 @@
    "nature": "adamant",
    "talent": "toughclaws",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7280,6 +7527,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7310,6 +7559,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    63,
@@ -7373,6 +7623,8 @@
    "nature": "adamant",
    "talent": "ironfist",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7427,6 +7679,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7457,6 +7711,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    236,
@@ -7520,6 +7775,8 @@
    "nature": "adamant",
    "talent": "strongjaw",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7574,6 +7831,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7604,6 +7863,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    330,
@@ -7667,6 +7927,8 @@
    "nature": "adamant",
    "talent": "sharpness",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7721,6 +7983,8 @@
    "nature": "impish",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7751,6 +8015,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    600,
@@ -7814,6 +8079,8 @@
    "nature": "adamant",
    "talent": "hustle",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7868,6 +8135,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -7898,6 +8167,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    114,
@@ -7961,6 +8231,8 @@
    "nature": "modest",
    "talent": "tintedlens",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8015,6 +8287,8 @@
    "nature": "calm",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8045,6 +8319,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    42,
@@ -8108,6 +8383,8 @@
    "nature": "adamant",
    "talent": "sandforce",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8162,6 +8439,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8192,6 +8471,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    67,
@@ -8254,6 +8534,8 @@
    "nature": "modest",
    "talent": "transistor",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8308,6 +8590,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8338,6 +8622,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    282,
@@ -8400,6 +8685,8 @@
    "nature": "modest",
    "talent": "dragonsmaw",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8454,6 +8741,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8484,6 +8773,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    117,
@@ -8546,6 +8836,8 @@
    "nature": "adamant",
    "talent": "rockypayload",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8600,6 +8892,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8630,6 +8924,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    156,
@@ -8693,6 +8988,8 @@
    "nature": "adamant",
    "talent": "steelworker",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8747,6 +9044,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8777,6 +9076,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    50,
@@ -8840,6 +9140,8 @@
    "nature": "adamant",
    "talent": "waterbubble",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8894,6 +9196,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -8924,6 +9228,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    142,
@@ -8986,6 +9291,8 @@
    "nature": "modest",
    "talent": "pixilate",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9040,6 +9347,8 @@
    "nature": "calm",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9070,6 +9379,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -9133,6 +9443,8 @@
    "nature": "adamant",
    "talent": "aerilate",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9187,6 +9499,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9217,6 +9531,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    318,
@@ -9279,6 +9594,8 @@
    "nature": "adamant",
    "talent": "blaze",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9333,6 +9650,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9363,6 +9682,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    416,
@@ -9426,6 +9746,8 @@
    "nature": "adamant",
    "talent": "reckless",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9480,6 +9802,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9510,6 +9834,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    290,
@@ -9572,6 +9897,8 @@
    "nature": "modest",
    "talent": "megalauncher",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9626,6 +9953,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9656,6 +9985,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    123,
@@ -9719,6 +10049,8 @@
    "nature": "modest",
    "talent": "punkrock",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9773,6 +10105,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9803,6 +10137,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    272,
@@ -9866,6 +10201,8 @@
    "nature": "adamant",
    "talent": "swordofruin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9920,6 +10257,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -9950,6 +10289,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    135,
@@ -10013,6 +10353,8 @@
    "nature": "modest",
    "talent": "beadsofruin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10067,6 +10409,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10097,6 +10441,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    159,
@@ -10160,6 +10505,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10214,6 +10561,8 @@
    "nature": "impish",
    "talent": "tabletsofruin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10244,6 +10593,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    48,
@@ -10307,6 +10657,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10361,6 +10713,8 @@
    "nature": "calm",
    "talent": "vesselofruin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10391,6 +10745,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    46,
@@ -10454,6 +10809,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10508,6 +10865,8 @@
    "nature": "impish",
    "talent": "multiscale",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10538,6 +10897,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    90,
@@ -10601,6 +10961,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10655,6 +11017,8 @@
    "nature": "impish",
    "talent": "filter",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10685,6 +11049,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    372,
@@ -10747,6 +11112,8 @@
    "nature": "adamant",
    "talent": "blaze",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10801,6 +11168,8 @@
    "nature": "impish",
    "talent": "thickfat",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10831,6 +11200,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    168,
@@ -10894,6 +11264,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10947,6 +11319,8 @@
    "nature": "impish",
    "talent": "furcoat",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -10977,6 +11351,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    88,
@@ -11040,6 +11415,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11094,6 +11471,8 @@
    "nature": "calm",
    "talent": "icescales",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11124,6 +11503,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    57,
@@ -11187,6 +11567,8 @@
    "nature": "adamant",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11240,6 +11622,8 @@
    "nature": "impish",
    "talent": "fluffy",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11270,6 +11654,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    23,
@@ -11333,6 +11718,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11387,6 +11774,8 @@
    "nature": "impish",
    "talent": "levitate",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11417,6 +11806,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -11476,6 +11866,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11530,6 +11922,8 @@
    "nature": "calm",
    "talent": "heatproof",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11560,6 +11954,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    104,
@@ -11623,6 +12018,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11677,6 +12074,8 @@
    "nature": "calm",
    "talent": "waterbubble",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11707,6 +12106,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    49,
@@ -11770,6 +12170,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11824,6 +12226,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11854,6 +12258,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -11917,6 +12322,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -11971,6 +12378,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12001,6 +12410,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    180,
@@ -12064,6 +12474,8 @@
    "nature": "adamant",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12118,6 +12530,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12148,6 +12562,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    180,
@@ -12211,6 +12626,8 @@
    "nature": "adamant",
    "talent": "guts",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12265,6 +12682,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12295,6 +12714,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -12358,6 +12778,8 @@
    "nature": "modest",
    "talent": "cursedbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12412,6 +12834,8 @@
    "nature": "calm",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12442,6 +12866,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    356,
@@ -12505,6 +12930,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12559,6 +12986,8 @@
    "nature": "calm",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12589,6 +13018,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    318,
@@ -12652,6 +13082,8 @@
    "nature": "modest",
    "talent": "regenerator",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12706,6 +13138,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12736,6 +13170,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    70,
@@ -12798,6 +13233,8 @@
    "nature": "adamant",
    "talent": "sheerforce",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12852,6 +13289,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12882,6 +13321,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    80,
@@ -12945,6 +13385,8 @@
    "nature": "adamant",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -12999,6 +13441,8 @@
    "nature": "impish",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13029,6 +13473,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    460,
@@ -13092,6 +13537,8 @@
    "nature": "brave",
    "talent": "ironbarbs",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13146,6 +13593,8 @@
    "nature": "impish",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13176,6 +13625,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    186,
@@ -13238,6 +13688,8 @@
    "nature": "modest",
    "talent": "transistor",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13292,6 +13744,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13322,6 +13776,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -13384,6 +13839,8 @@
    "nature": "modest",
    "talent": "blaze",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13438,6 +13895,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13468,6 +13927,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    380,
@@ -13530,6 +13990,8 @@
    "nature": "modest",
    "talent": "blaze",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13584,6 +14046,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13614,6 +14078,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    192,
@@ -13676,6 +14141,8 @@
    "nature": "modest",
    "talent": "synchronize",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13730,6 +14197,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13760,6 +14229,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    752,
@@ -13823,6 +14293,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13877,6 +14349,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -13907,6 +14381,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    50,
@@ -13970,6 +14445,8 @@
    "nature": "careful",
    "talent": "prankster",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14024,6 +14501,8 @@
    "nature": "adamant",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 1,
@@ -14054,6 +14533,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    273,
@@ -14116,6 +14596,8 @@
    "nature": "modest",
    "talent": "synchronize",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14169,6 +14651,8 @@
    "nature": "calm",
    "talent": "naturalcure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14199,6 +14683,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    610,
@@ -14262,6 +14747,8 @@
    "nature": "modest",
    "talent": "oblivious",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14316,6 +14803,8 @@
    "nature": "calm",
    "talent": "levitate",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14346,6 +14835,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    150,
@@ -14409,6 +14899,8 @@
    "nature": "modest",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14463,6 +14955,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14493,6 +14987,7 @@
   "champ": "ELECTRIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    146,
@@ -14556,6 +15051,8 @@
    "nature": "modest",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14610,6 +15107,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14640,6 +15139,7 @@
   "champ": "PSYCHIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    506,
@@ -14703,6 +15203,8 @@
    "nature": "adamant",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14757,6 +15259,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14787,6 +15291,7 @@
   "champ": "ELECTRIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    332,
@@ -14850,6 +15355,8 @@
    "nature": "adamant",
    "talent": "poisonpoint",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14904,6 +15411,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -14934,6 +15443,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    59,
@@ -14997,6 +15507,8 @@
    "nature": "adamant",
    "talent": "guts",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15051,6 +15563,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15081,6 +15595,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    46,
@@ -15144,6 +15659,8 @@
    "nature": "modest",
    "talent": "keeneye",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15198,6 +15715,8 @@
    "nature": "calm",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15228,6 +15747,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    300,
@@ -15291,6 +15811,8 @@
    "nature": "adamant",
    "talent": "orichalcumpulse",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15345,6 +15867,8 @@
    "nature": "impish",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15375,6 +15899,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    624,
@@ -15437,6 +15962,8 @@
    "nature": "calm",
    "talent": "naturalcure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15491,6 +16018,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15521,6 +16050,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    100,
@@ -15584,6 +16114,8 @@
    "nature": "adamant",
    "talent": "orichalcumpulse",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15638,6 +16170,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15668,6 +16202,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    412,
@@ -15731,6 +16266,8 @@
    "nature": "modest",
    "talent": "hadronengine",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15785,6 +16322,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15815,6 +16354,7 @@
   "champ": "ELECTRIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    680,
@@ -15878,6 +16418,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15932,6 +16474,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -15962,6 +16506,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -16025,6 +16570,8 @@
    "nature": "modest",
    "talent": "quarkdrive",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16079,6 +16626,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16109,6 +16658,7 @@
   "champ": "ELECTRIQUE",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -16172,6 +16722,8 @@
    "nature": "modest",
    "talent": "darkaura",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16226,6 +16778,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16256,6 +16810,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -16319,6 +16874,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16373,6 +16930,8 @@
    "nature": "calm",
    "talent": "dryskin",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16403,6 +16962,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    189,
@@ -16466,6 +17026,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16519,6 +17081,8 @@
    "nature": "calm",
    "talent": "purifyingsalt",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16549,6 +17113,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    57,
@@ -16612,6 +17177,8 @@
    "nature": "modest",
    "talent": "flashfire",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16665,6 +17232,8 @@
    "nature": "calm",
    "talent": "fluffy",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16695,6 +17264,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -16758,6 +17328,8 @@
    "nature": "modest",
    "talent": "sniper",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16812,6 +17384,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16842,6 +17416,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": true,
   "degatsAttendus": [
    288,
@@ -16905,6 +17480,8 @@
    "nature": "modest",
    "talent": "guts",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16959,6 +17536,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -16989,6 +17568,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    85,
@@ -17051,6 +17631,8 @@
    "nature": "adamant",
    "talent": "gorillatactics",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17105,6 +17687,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17135,6 +17719,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    169,
@@ -17198,6 +17783,8 @@
    "nature": "modest",
    "talent": "solarpower",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17252,6 +17839,8 @@
    "nature": "calm",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17282,6 +17871,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    632,
@@ -17344,6 +17934,8 @@
    "nature": "adamant",
    "talent": "toxicboost",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17398,6 +17990,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17428,6 +18022,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -17491,6 +18086,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17545,6 +18142,8 @@
    "nature": "impish",
    "talent": "marvelscale",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17575,6 +18174,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    120,
@@ -17638,6 +18238,8 @@
    "nature": "modest",
    "talent": "sheerforce",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17692,6 +18294,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17722,6 +18326,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    71,
@@ -17785,6 +18390,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 2,
@@ -17838,6 +18445,8 @@
    "nature": "impish",
    "talent": "unaware",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17868,6 +18477,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    103,
@@ -17931,6 +18541,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -17985,6 +18597,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18015,6 +18629,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    73,
@@ -18078,6 +18693,8 @@
    "nature": "adamant",
    "talent": "hustle",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18132,6 +18749,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18162,6 +18781,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    98,
@@ -18225,6 +18845,8 @@
    "nature": "adamant",
    "talent": "toughclaws",
    "objet": "choiceband",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18279,6 +18901,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18309,6 +18933,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    90,
@@ -18335,6 +18960,6656 @@
    "texte": "guaranteed 5HKO"
   },
   "description": "252+ Atk Choice Band Tough Claws Meowscarada Knock Off (97.5 BP) vs. 252 HP / 252+ Def Great Tusk: 90-107 (20.7 - 24.6%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Sans Limite + Orbe Vie (effet secondaire)",
+  "attaquant": {
+   "espece": "darmanitan",
+   "niveau": 100,
+   "types": [
+    "fire"
+   ],
+   "statsBase": {
+    "hp": 105,
+    "atk": 140,
+    "def": 55,
+    "spa": 30,
+    "spd": 55,
+    "spe": 95
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sheerforce",
+   "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 352,
+   "poidsKg": 92.9,
+   "statsShowdown": {
+    "hp": 352,
+    "atk": 416,
+    "def": 146,
+    "spa": 86,
+    "spd": 146,
+    "spe": 289
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "flareblitz",
+   "type": "fire",
+   "categorie": "Physical",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   533,
+   541,
+   546,
+   554,
+   562,
+   564,
+   572,
+   580,
+   585,
+   593,
+   595,
+   603,
+   611,
+   616,
+   624,
+   632
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
+  "description": "252+ Atk Life Orb Sheer Force Darmanitan Flare Blitz vs. 252 HP / 252+ Def Corviknight: 533-632 (133.2 - 158%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Sans Limite + Orbe Vie (Demi-Tour)",
+  "attaquant": {
+   "espece": "darmanitan",
+   "niveau": 100,
+   "types": [
+    "fire"
+   ],
+   "statsBase": {
+    "hp": 105,
+    "atk": 140,
+    "def": 55,
+    "spa": 30,
+    "spd": 55,
+    "spe": 95
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sheerforce",
+   "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 352,
+   "poidsKg": 92.9,
+   "statsShowdown": {
+    "hp": 352,
+    "atk": 416,
+    "def": 146,
+    "spa": 86,
+    "spd": 146,
+    "spe": 289
+   }
+  },
+  "defenseur": {
+   "espece": "alomomola",
+   "niveau": 100,
+   "types": [
+    "water"
+   ],
+   "statsBase": {
+    "hp": 165,
+    "atk": 75,
+    "def": 80,
+    "spa": 40,
+    "spd": 45,
+    "spe": 65
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "healer",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 534,
+   "poidsKg": 31.6,
+   "statsShowdown": {
+    "hp": 534,
+    "atk": 186,
+    "def": 284,
+    "spa": 104,
+    "spd": 127,
+    "spe": 166
+   }
+  },
+  "capacite": {
+   "id": "uturn",
+   "type": "bug",
+   "categorie": "Physical",
+   "puissance": 70
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   96,
+   97,
+   99,
+   100,
+   101,
+   103,
+   104,
+   104,
+   105,
+   107,
+   108,
+   109,
+   110,
+   112,
+   113,
+   114
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 5,
+   "chance": -1,
+   "texte": "possible 5HKO"
+  },
+  "description": "252+ Atk Life Orb Darmanitan U-turn vs. 252 HP / 252+ Def Alomomola: 96-114 (17.9 - 21.3%) -- possible 5HKO"
+ },
+ {
+  "nom": "Poing de Colère 2 coups subis",
+  "attaquant": {
+   "espece": "annihilape",
+   "niveau": 100,
+   "types": [
+    "fighting",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 110,
+    "atk": 115,
+    "def": 80,
+    "spa": 50,
+    "spd": 90,
+    "spe": 90
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "vitalspirit",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 362,
+   "poidsKg": 56,
+   "statsShowdown": {
+    "hp": 362,
+    "atk": 361,
+    "def": 196,
+    "spa": 122,
+    "spd": 216,
+    "spe": 279
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "ragefist",
+   "type": "ghost",
+   "categorie": "Physical",
+   "puissance": 50
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   58,
+   58,
+   60,
+   60,
+   60,
+   61,
+   61,
+   63,
+   63,
+   64,
+   64,
+   66,
+   66,
+   67,
+   67,
+   69
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ Atk Annihilape Rage Fist vs. 252 HP / 252+ Def Corviknight: 58-69 (14.5 - 17.2%) -- possible 6HKO"
+ },
+ {
+  "nom": "Poing de Colère 0 coup",
+  "attaquant": {
+   "espece": "primeape",
+   "niveau": 100,
+   "types": [
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 65,
+    "atk": 105,
+    "def": 60,
+    "spa": 60,
+    "spd": 70,
+    "spe": 95
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "vitalspirit",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 272,
+   "poidsKg": 32,
+   "statsShowdown": {
+    "hp": 272,
+    "atk": 339,
+    "def": 156,
+    "spa": 140,
+    "spd": 176,
+    "spe": 289
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "ragefist",
+   "type": "ghost",
+   "categorie": "Physical",
+   "puissance": 50
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   37,
+   37,
+   38,
+   38,
+   39,
+   39,
+   40,
+   40,
+   40,
+   41,
+   41,
+   42,
+   42,
+   43,
+   43,
+   44
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ Atk Primeape Rage Fist vs. 252 HP / 252+ Def Corviknight: 37-44 (9.2 - 11%)"
+ },
+ {
+  "nom": "Multiécaille PV entamés",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "multiscale",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 347,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 304,
+    "def": 317,
+    "spa": 212,
+    "spd": 237,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "stoneedge",
+   "type": "rock",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   180,
+   182,
+   184,
+   186,
+   188,
+   190,
+   192,
+   194,
+   196,
+   198,
+   200,
+   202,
+   204,
+   206,
+   208,
+   212
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Garchomp Stone Edge vs. 252 HP / 252+ Def Dragonite: 180-212 (46.6 - 54.9%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Sabotage sur Évoluroc",
+  "attaquant": {
+   "espece": "kingambit",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 135,
+    "def": 120,
+    "spa": 60,
+    "spd": 85,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "defiant",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 120,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 405,
+    "def": 276,
+    "spa": 140,
+    "spd": 206,
+    "spe": 199
+   }
+  },
+  "defenseur": {
+   "espece": "dusclops",
+   "niveau": 100,
+   "types": [
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 40,
+    "atk": 70,
+    "def": 130,
+    "spa": 60,
+    "spd": 130,
+    "spe": 25
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": "eviolite",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 284,
+   "poidsKg": 30.6,
+   "statsShowdown": {
+    "hp": 284,
+    "atk": 176,
+    "def": 394,
+    "spa": 140,
+    "spd": 297,
+    "spe": 86
+   }
+  },
+  "capacite": {
+   "id": "knockoff",
+   "type": "dark",
+   "categorie": "Physical",
+   "puissance": 65
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   144,
+   146,
+   146,
+   150,
+   150,
+   152,
+   152,
+   156,
+   158,
+   158,
+   162,
+   162,
+   164,
+   164,
+   168,
+   170
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Kingambit Knock Off (97.5 BP) vs. 252 HP / 252+ Def Eviolite Dusclops: 144-170 (50.7 - 59.8%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Évoluroc + Protection",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "porygon2",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 85,
+    "atk": 80,
+    "def": 90,
+    "spa": 105,
+    "spd": 95,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "trace",
+   "objet": "eviolite",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 374,
+   "poidsKg": 32.5,
+   "statsShowdown": {
+    "hp": 374,
+    "atk": 196,
+    "def": 306,
+    "spa": 221,
+    "spd": 227,
+    "spe": 156
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": true,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   46,
+   47,
+   48,
+   48,
+   48,
+   49,
+   50,
+   51,
+   51,
+   51,
+   52,
+   53,
+   53,
+   54,
+   54,
+   55
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
+  "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Eviolite Porygon2 through Reflect: 46-55 (12.2 - 14.7%) -- possible 7HKO"
+ },
+ {
+  "nom": "Évoluroc spéciale",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "chansey",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 250,
+    "atk": 5,
+    "def": 5,
+    "spa": 35,
+    "spd": 105,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "naturalcure",
+   "objet": "eviolite",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 704,
+   "poidsKg": 34.6,
+   "statsShowdown": {
+    "hp": 704,
+    "atk": 41,
+    "def": 47,
+    "spa": 106,
+    "spd": 339,
+    "spe": 136
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "matriceAttendue": null,
+  "ko": null,
+  "description": ""
+ },
+ {
+  "nom": "Choc Psy contre Veste",
+  "attaquant": {
+   "espece": "alakazam",
+   "niveau": 100,
+   "types": [
+    "psychic"
+   ],
+   "statsBase": {
+    "hp": 55,
+    "atk": 50,
+    "def": 45,
+    "spa": 135,
+    "spd": 95,
+    "spe": 120
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "synchronize",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 252,
+   "poidsKg": 48,
+   "statsShowdown": {
+    "hp": 252,
+    "atk": 122,
+    "def": 126,
+    "spa": 405,
+    "spd": 226,
+    "spe": 339
+   }
+  },
+  "defenseur": {
+   "espece": "irontreads",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 90,
+    "atk": 112,
+    "def": 120,
+    "spa": 72,
+    "spd": 70,
+    "spe": 106
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "quarkdrive",
+   "objet": "assaultvest",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 384,
+   "poidsKg": 240,
+   "statsShowdown": {
+    "hp": 384,
+    "atk": 234,
+    "def": 277,
+    "spa": 180,
+    "spd": 262,
+    "spe": 248
+   }
+  },
+  "capacite": {
+   "id": "psyshock",
+   "type": "psychic",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   63,
+   64,
+   65,
+   66,
+   66,
+   67,
+   68,
+   69,
+   69,
+   70,
+   71,
+   72,
+   72,
+   73,
+   74,
+   75
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ SpA Alakazam Psyshock vs. 252 HP / 4 Def Iron Treads: 63-75 (16.4 - 19.5%) -- possible 6HKO"
+ },
+ {
+  "nom": "Poltergeist sur objet",
+  "attaquant": {
+   "espece": "ceruledge",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 125,
+    "def": 80,
+    "spa": 60,
+    "spd": 100,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 292,
+   "poidsKg": 62,
+   "statsShowdown": {
+    "hp": 292,
+    "atk": 383,
+    "def": 196,
+    "spa": 140,
+    "spd": 236,
+    "spe": 269
+   }
+  },
+  "defenseur": {
+   "espece": "alomomola",
+   "niveau": 100,
+   "types": [
+    "water"
+   ],
+   "statsBase": {
+    "hp": 165,
+    "atk": 75,
+    "def": 80,
+    "spa": 40,
+    "spd": 45,
+    "spe": 65
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "healer",
+   "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 534,
+   "poidsKg": 31.6,
+   "statsShowdown": {
+    "hp": 534,
+    "atk": 186,
+    "def": 284,
+    "spa": 104,
+    "spd": 127,
+    "spe": 166
+   }
+  },
+  "capacite": {
+   "id": "poltergeist",
+   "type": "ghost",
+   "categorie": "Physical",
+   "puissance": 110
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   160,
+   162,
+   163,
+   165,
+   168,
+   169,
+   171,
+   172,
+   175,
+   177,
+   178,
+   180,
+   183,
+   184,
+   186,
+   189
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO after Leftovers recovery"
+  },
+  "description": "252+ Atk Ceruledge Poltergeist vs. 252 HP / 252+ Def Alomomola: 160-189 (29.9 - 35.3%) -- guaranteed 4HKO after Leftovers recovery"
+ },
+ {
+  "nom": "Lame Ointe",
+  "attaquant": {
+   "espece": "ceruledge",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 125,
+    "def": 80,
+    "spa": 60,
+    "spd": 100,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 292,
+   "poidsKg": 62,
+   "statsShowdown": {
+    "hp": 292,
+    "atk": 383,
+    "def": 196,
+    "spa": 140,
+    "spd": 236,
+    "spe": 269
+   }
+  },
+  "defenseur": {
+   "espece": "hydreigon",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "dragon"
+   ],
+   "statsBase": {
+    "hp": 92,
+    "atk": 105,
+    "def": 90,
+    "spa": 125,
+    "spd": 90,
+    "spe": 98
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "levitate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 388,
+   "poidsKg": 160,
+   "statsShowdown": {
+    "hp": 388,
+    "atk": 246,
+    "def": 306,
+    "spa": 257,
+    "spd": 217,
+    "spe": 232
+   }
+  },
+  "capacite": {
+   "id": "bitterblade",
+   "type": "fire",
+   "categorie": "Physical",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   60,
+   61,
+   62,
+   63,
+   63,
+   64,
+   65,
+   66,
+   66,
+   67,
+   68,
+   69,
+   69,
+   70,
+   71,
+   72
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ Atk Ceruledge Bitter Blade vs. 252 HP / 252+ Def Hydreigon: 60-72 (15.4 - 18.5%) -- possible 6HKO"
+ },
+ {
+  "nom": "Hydrovapeur soleil",
+  "attaquant": {
+   "espece": "volcanion",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 110,
+    "def": 120,
+    "spa": 130,
+    "spd": 90,
+    "spe": 70
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "waterabsorb",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 195,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 230,
+    "def": 276,
+    "spa": 394,
+    "spd": 216,
+    "spe": 239
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 189,
+    "def": 247,
+    "spa": 142,
+    "spd": 295,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "hydrosteam",
+   "type": "water",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   172,
+   174,
+   177,
+   178,
+   181,
+   183,
+   184,
+   187,
+   189,
+   190,
+   193,
+   195,
+   196,
+   199,
+   201,
+   204
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 0.0390625,
+   "texte": "3.9% chance to 2HKO"
+  },
+  "description": "252+ SpA Volcanion Hydro Steam vs. 252 HP / 252+ SpD Corviknight in Sun: 172-204 (43 - 51%) -- 3.9% chance to 2HKO"
+ },
+ {
+  "nom": "Lance-Soleil pluie",
+  "attaquant": {
+   "espece": "venusaur",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "poison"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 82,
+    "def": 83,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "overgrow",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 100,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 180,
+    "def": 202,
+    "spa": 328,
+    "spd": 236,
+    "spe": 259
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 189,
+    "def": 247,
+    "spa": 142,
+    "spd": 295,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "solarbeam",
+   "type": "grass",
+   "categorie": "Special",
+   "puissance": 120
+  },
+  "meteo": "PLUIE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   18,
+   18,
+   18,
+   19,
+   19,
+   19,
+   19,
+   19,
+   19,
+   20,
+   20,
+   20,
+   21,
+   21,
+   21,
+   21
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ SpA Venusaur Solar Beam (60 BP) vs. 252 HP / 252+ SpD Corviknight in Rain: 18-21 (4.5 - 5.2%)"
+ },
+ {
+  "nom": "Ball'Météo neige",
+  "attaquant": {
+   "espece": "abomasnow",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 90,
+    "atk": 92,
+    "def": 75,
+    "spa": 92,
+    "spd": 85,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "snowwarning",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 322,
+   "poidsKg": 135.5,
+   "statsShowdown": {
+    "hp": 322,
+    "atk": 198,
+    "def": 186,
+    "spa": 311,
+    "spd": 206,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "weatherball",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 50
+  },
+  "meteo": "NEIGE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   456,
+   460,
+   468,
+   472,
+   480,
+   484,
+   484,
+   492,
+   496,
+   504,
+   508,
+   516,
+   520,
+   528,
+   532,
+   540
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
+  "description": "252+ SpA Abomasnow Weather Ball (100 BP Ice) vs. 252 HP / 252+ SpD Garchomp in Snow: 456-540 (108.5 - 128.5%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Ball'Météo sable",
+  "attaquant": {
+   "espece": "tyranitar",
+   "niveau": 100,
+   "types": [
+    "rock",
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 134,
+    "def": 110,
+    "spa": 95,
+    "spd": 100,
+    "spe": 61
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "sandstream",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 202,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 273,
+    "def": 256,
+    "spa": 317,
+    "spd": 236,
+    "spe": 221
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 189,
+    "def": 247,
+    "spa": 142,
+    "spd": 295,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "weatherball",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 50
+  },
+  "meteo": "SABLE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   117,
+   118,
+   120,
+   120,
+   121,
+   123,
+   124,
+   126,
+   127,
+   129,
+   130,
+   132,
+   133,
+   135,
+   136,
+   138
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 0.05126953125,
+   "texte": "5.1% chance to 3HKO"
+  },
+  "description": "252+ SpA Tyranitar Weather Ball (100 BP Rock) vs. 252 HP / 252+ SpD Corviknight in Sand: 117-138 (29.2 - 34.5%) -- 5.1% chance to 3HKO"
+ },
+ {
+  "nom": "Façade paralysé",
+  "attaquant": {
+   "espece": "ursaluna",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 130,
+    "atk": 140,
+    "def": 105,
+    "spa": 45,
+    "spd": 80,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "guts",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "par",
+   "pvActuels": 402,
+   "poidsKg": 290,
+   "statsShowdown": {
+    "hp": 402,
+    "atk": 416,
+    "def": 246,
+    "spa": 113,
+    "spd": 196,
+    "spe": 199
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "facade",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 70
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   138,
+   140,
+   141,
+   143,
+   145,
+   147,
+   148,
+   150,
+   151,
+   153,
+   155,
+   156,
+   158,
+   159,
+   161,
+   163
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "252+ Atk Guts Ursaluna Facade (140 BP) vs. 252 HP / 252+ Def Corviknight: 138-163 (34.5 - 40.7%) -- guaranteed 3HKO"
+ },
+ {
+  "nom": "Acrobatie avec objet",
+  "attaquant": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "pressure",
+   "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 338,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 338,
+    "atk": 300,
+    "def": 246,
+    "spa": 127,
+    "spd": 206,
+    "spe": 233
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "protosynthesis",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 298,
+    "def": 397,
+    "spa": 127,
+    "spd": 143,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "acrobatics",
+   "type": "flying",
+   "categorie": "Physical",
+   "puissance": 55
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   90,
+   90,
+   92,
+   92,
+   96,
+   96,
+   96,
+   98,
+   98,
+   98,
+   102,
+   102,
+   102,
+   104,
+   104,
+   108
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
+  "description": "252+ Atk Corviknight Acrobatics (55 BP) vs. 252 HP / 252+ Def Great Tusk: 90-108 (20.7 - 24.8%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Contre sous 10 %",
+  "attaquant": {
+   "espece": "lucario",
+   "niveau": 100,
+   "types": [
+    "fighting",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 110,
+    "def": 70,
+    "spa": 115,
+    "spd": 70,
+    "spe": 90
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "steadfast",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 28,
+   "poidsKg": 54,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 350,
+    "def": 176,
+    "spa": 239,
+    "spd": 176,
+    "spe": 279
+   }
+  },
+  "defenseur": {
+   "espece": "kingambit",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 135,
+    "def": 120,
+    "spa": 60,
+    "spd": 85,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "defiant",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 404,
+   "poidsKg": 120,
+   "statsShowdown": {
+    "hp": 404,
+    "atk": 306,
+    "def": 372,
+    "spa": 140,
+    "spd": 207,
+    "spe": 136
+   }
+  },
+  "capacite": {
+   "id": "reversal",
+   "type": "fighting",
+   "categorie": "Physical",
+   "puissance": 0
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   612,
+   616,
+   624,
+   628,
+   636,
+   648,
+   652,
+   660,
+   664,
+   672,
+   684,
+   688,
+   696,
+   700,
+   708,
+   720
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
+  "description": "252+ Atk Lucario Reversal (150 BP) vs. 252 HP / 252+ Def Kingambit: 612-720 (151.4 - 178.2%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Fléau sous 30 %",
+  "attaquant": {
+   "espece": "gyarados",
+   "niveau": 100,
+   "types": [
+    "water",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 125,
+    "def": 79,
+    "spa": 60,
+    "spd": 100,
+    "spe": 81
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "intimidate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 99,
+   "poidsKg": 235,
+   "statsShowdown": {
+    "hp": 332,
+    "atk": 383,
+    "def": 194,
+    "spa": 140,
+    "spd": 236,
+    "spe": 261
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "flail",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 0
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   32,
+   33,
+   33,
+   33,
+   34,
+   34,
+   35,
+   35,
+   35,
+   36,
+   36,
+   36,
+   37,
+   37,
+   38,
+   38
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ Atk Gyarados Flail (80 BP) vs. 252 HP / 252+ Def Corviknight: 32-38 (8 - 9.5%)"
+ },
+ {
+  "nom": "Général Suprême 3 K.O.",
+  "attaquant": {
+   "espece": "kingambit",
+   "niveau": 100,
+   "types": [
+    "dark",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 135,
+    "def": 120,
+    "spa": 60,
+    "spd": 85,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "supremeoverlord",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": 3,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 120,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 405,
+    "def": 276,
+    "spa": 140,
+    "spd": 206,
+    "spe": 199
+   }
+  },
+  "defenseur": {
+   "espece": "greattusk",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 131,
+    "def": 131,
+    "spa": 53,
+    "spd": 53,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "protosynthesis",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 320,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 298,
+    "def": 397,
+    "spa": 127,
+    "spd": 143,
+    "spe": 210
+   }
+  },
+  "capacite": {
+   "id": "kowtowcleave",
+   "type": "dark",
+   "categorie": "Physical",
+   "puissance": 85
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   61,
+   62,
+   63,
+   63,
+   64,
+   65,
+   66,
+   66,
+   67,
+   68,
+   69,
+   69,
+   70,
+   71,
+   72,
+   72
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
+  "description": "252+ Atk Supreme Overlord 3 allies fainted Kingambit Kowtow Cleave vs. 252 HP / 252+ Def Great Tusk: 61-72 (14 - 16.5%) -- possible 7HKO"
+ },
+ {
+  "nom": "Hommage Posthume sans K.O.",
+  "attaquant": {
+   "espece": "houndstone",
+   "niveau": 100,
+   "types": [
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 72,
+    "atk": 101,
+    "def": 100,
+    "spa": 50,
+    "spd": 97,
+    "spe": 68
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandrush",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 286,
+   "poidsKg": 15,
+   "statsShowdown": {
+    "hp": 286,
+    "atk": 331,
+    "def": 236,
+    "spa": 122,
+    "spd": 230,
+    "spe": 235
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "lastrespects",
+   "type": "ghost",
+   "categorie": "Physical",
+   "puissance": 50
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   54,
+   54,
+   55,
+   55,
+   57,
+   57,
+   58,
+   58,
+   58,
+   60,
+   60,
+   61,
+   61,
+   63,
+   63,
+   64
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
+  "description": "252+ Atk Houndstone Last Respects vs. 252 HP / 252+ Def Corviknight: 54-64 (13.5 - 16%) -- possible 7HKO"
+ },
+ {
+  "nom": "Querelleur sur Spectre",
+  "attaquant": {
+   "espece": "kangaskhan",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 105,
+    "atk": 95,
+    "def": 80,
+    "spa": 40,
+    "spd": 80,
+    "spe": 90
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "scrappy",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 352,
+   "poidsKg": 80,
+   "statsShowdown": {
+    "hp": 352,
+    "atk": 317,
+    "def": 196,
+    "spa": 104,
+    "spd": 196,
+    "spe": 279
+   }
+  },
+  "defenseur": {
+   "espece": "gengar",
+   "niveau": 100,
+   "types": [
+    "ghost",
+    "poison"
+   ],
+   "statsBase": {
+    "hp": 60,
+    "atk": 65,
+    "def": 60,
+    "spa": 130,
+    "spd": 75,
+    "spe": 110
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "cursedbody",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 324,
+   "poidsKg": 40.5,
+   "statsShowdown": {
+    "hp": 324,
+    "atk": 166,
+    "def": 240,
+    "spa": 266,
+    "spd": 187,
+    "spe": 256
+   }
+  },
+  "capacite": {
+   "id": "doubleedge",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   171,
+   174,
+   175,
+   177,
+   180,
+   181,
+   183,
+   186,
+   187,
+   189,
+   192,
+   193,
+   195,
+   198,
+   199,
+   202
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Kangaskhan Double-Edge vs. 252 HP / 252+ Def Gengar: 171-202 (52.7 - 62.3%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Peau Électrique",
+  "attaquant": {
+   "espece": "golemalola",
+   "niveau": 100,
+   "types": [
+    "rock",
+    "electric"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 120,
+    "def": 130,
+    "spa": 55,
+    "spd": 65,
+    "spe": 45
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "galvanize",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 316,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 372,
+    "def": 296,
+    "spa": 131,
+    "spd": 166,
+    "spe": 189
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "doubleedge",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   338,
+   344,
+   348,
+   350,
+   356,
+   360,
+   362,
+   368,
+   372,
+   374,
+   380,
+   384,
+   386,
+   392,
+   396,
+   402
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 0.0625,
+   "texte": "6.3% chance to OHKO"
+  },
+  "description": "252+ Atk Galvanize Golem-Alola Double-Edge vs. 252 HP / 252+ Def Corviknight: 338-402 (84.5 - 100.5%) -- 6.3% chance to OHKO"
+ },
+ {
+  "nom": "Peau Gelée",
+  "attaquant": {
+   "espece": "aurorus",
+   "niveau": 100,
+   "types": [
+    "rock",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 123,
+    "atk": 77,
+    "def": 72,
+    "spa": 99,
+    "spd": 92,
+    "spe": 58
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "refrigerate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 388,
+   "poidsKg": 225,
+   "statsShowdown": {
+    "hp": 388,
+    "atk": 171,
+    "def": 180,
+    "spa": 326,
+    "spd": 220,
+    "spe": 215
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "hypervoice",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   516,
+   520,
+   528,
+   532,
+   540,
+   544,
+   552,
+   556,
+   564,
+   568,
+   576,
+   580,
+   588,
+   592,
+   600,
+   612
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
+  "description": "252+ SpA Refrigerate Aurorus Hyper Voice vs. 252 HP / 252+ SpD Garchomp: 516-612 (122.8 - 145.7%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Force Pure + Bandeau",
+  "attaquant": {
+   "espece": "azumarill",
+   "niveau": 100,
+   "types": [
+    "water",
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 50,
+    "def": 80,
+    "spa": 60,
+    "spd": 80,
+    "spe": 50
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "hugepower",
+   "objet": "choiceband",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 28.5,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 218,
+    "def": 196,
+    "spa": 140,
+    "spd": 196,
+    "spe": 199
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "aquajet",
+   "type": "water",
+   "categorie": "Physical",
+   "puissance": 40
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   84,
+   84,
+   85,
+   87,
+   87,
+   88,
+   90,
+   90,
+   91,
+   93,
+   93,
+   94,
+   96,
+   96,
+   97,
+   99
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 5,
+   "chance": 1,
+   "texte": "guaranteed 5HKO"
+  },
+  "description": "252+ Atk Choice Band Huge Power Azumarill Aqua Jet vs. 252 HP / 252+ Def Corviknight: 84-99 (21 - 24.7%) -- guaranteed 5HKO"
+ },
+ {
+  "nom": "Technicien + Orbe Vie",
+  "attaquant": {
+   "espece": "scizor",
+   "niveau": 100,
+   "types": [
+    "bug",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 130,
+    "def": 100,
+    "spa": 55,
+    "spd": 80,
+    "spe": 65
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "technician",
+   "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 282,
+   "poidsKg": 118,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 394,
+    "def": 236,
+    "spa": 131,
+    "spd": 196,
+    "spe": 229
+   }
+  },
+  "defenseur": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "clearbody",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 380,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 380,
+    "atk": 276,
+    "def": 273,
+    "spa": 212,
+    "spd": 187,
+    "spe": 320
+   }
+  },
+  "capacite": {
+   "id": "bulletpunch",
+   "type": "steel",
+   "categorie": "Physical",
+   "puissance": 40
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   121,
+   122,
+   125,
+   126,
+   126,
+   129,
+   130,
+   133,
+   133,
+   134,
+   136,
+   138,
+   138,
+   140,
+   142,
+   144
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 0.9306640625,
+   "texte": "93.1% chance to 3HKO"
+  },
+  "description": "252+ Atk Life Orb Technician Scizor Bullet Punch vs. 252 HP / 252+ Def Dragapult: 121-144 (31.8 - 37.8%) -- 93.1% chance to 3HKO"
+ },
+ {
+  "nom": "Toison Épaisse critique",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "persianalola",
+   "niveau": 100,
+   "types": [
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 65,
+    "atk": 60,
+    "def": 60,
+    "spa": 75,
+    "spd": 65,
+    "spe": 115
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "furcoat",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 334,
+   "poidsKg": 33,
+   "statsShowdown": {
+    "hp": 334,
+    "atk": 156,
+    "def": 240,
+    "spa": 167,
+    "spd": 167,
+    "spe": 266
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": true,
+  "degatsAttendus": [
+   133,
+   135,
+   136,
+   138,
+   139,
+   141,
+   142,
+   144,
+   145,
+   147,
+   148,
+   150,
+   151,
+   153,
+   154,
+   157
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Fur Coat Persian-Alola on a critical hit: 133-157 (39.8 - 47%) -- guaranteed 3HKO"
+ },
+ {
+  "nom": "Mur Lumière critique",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "dragonite",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spa": 100,
+    "spd": 100,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "innerfocus",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 273,
+    "def": 227,
+    "spa": 236,
+    "spd": 328,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "shadowball",
+   "type": "ghost",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": true,
+  "voileAurore": false,
+  "critique": true,
+  "degatsAttendus": [
+   160,
+   162,
+   163,
+   165,
+   168,
+   169,
+   171,
+   172,
+   175,
+   177,
+   178,
+   180,
+   183,
+   184,
+   186,
+   189
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "252+ SpA Gholdengo Shadow Ball vs. 252 HP / 252+ SpD Dragonite on a critical hit: 160-189 (41.4 - 48.9%) -- guaranteed 3HKO"
+ },
+ {
+  "nom": "Voile Aurore",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 216,
+    "def": 342,
+    "spa": 266,
+    "spd": 249,
+    "spe": 190
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": true,
+  "critique": false,
+  "degatsAttendus": [
+   248,
+   252,
+   254,
+   258,
+   260,
+   264,
+   266,
+   270,
+   272,
+   276,
+   278,
+   282,
+   284,
+   288,
+   290,
+   294
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran with an ally's Aurora Veil: 248-294 (64.2 - 76.1%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Isograisse glace",
+  "attaquant": {
+   "espece": "baxcalibur",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ice"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 145,
+    "def": 92,
+    "spa": 75,
+    "spd": 86,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "thermalexchange",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 372,
+   "poidsKg": 210,
+   "statsShowdown": {
+    "hp": 372,
+    "atk": 427,
+    "def": 220,
+    "spa": 167,
+    "spd": 208,
+    "spe": 273
+   }
+  },
+  "defenseur": {
+   "espece": "mamoswine",
+   "niveau": 100,
+   "types": [
+    "ice",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 110,
+    "atk": 130,
+    "def": 80,
+    "spa": 70,
+    "spd": 60,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "thickfat",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 424,
+   "poidsKg": 291,
+   "statsShowdown": {
+    "hp": 424,
+    "atk": 296,
+    "def": 284,
+    "spa": 158,
+    "spd": 157,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "iciclecrash",
+   "type": "ice",
+   "categorie": "Physical",
+   "puissance": 85
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   69,
+   70,
+   70,
+   72,
+   72,
+   73,
+   75,
+   75,
+   76,
+   76,
+   78,
+   78,
+   79,
+   79,
+   81,
+   82
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ Atk Baxcalibur Icicle Crash vs. 252 HP / 252+ Def Thick Fat Mamoswine: 69-82 (16.2 - 19.3%) -- possible 6HKO"
+ },
+ {
+  "nom": "Absorb'Eau",
+  "attaquant": {
+   "espece": "primarina",
+   "niveau": 100,
+   "types": [
+    "water",
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 74,
+    "def": 74,
+    "spa": 126,
+    "spd": 116,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "torrent",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 44,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 165,
+    "def": 184,
+    "spa": 386,
+    "spd": 268,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "vaporeon",
+   "niveau": 100,
+   "types": [
+    "water"
+   ],
+   "statsBase": {
+    "hp": 130,
+    "atk": 65,
+    "def": 60,
+    "spa": 110,
+    "spd": 95,
+    "spe": 65
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "waterabsorb",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 464,
+   "poidsKg": 29,
+   "statsShowdown": {
+    "hp": 464,
+    "atk": 149,
+    "def": 157,
+    "spa": 256,
+    "spd": 317,
+    "spe": 166
+   }
+  },
+  "capacite": {
+   "id": "surf",
+   "type": "water",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "matriceAttendue": null,
+  "ko": null,
+  "description": ""
+ },
+ {
+  "nom": "Torche immunité",
+  "attaquant": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 324,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 324,
+    "atk": 194,
+    "def": 248,
+    "spa": 394,
+    "spd": 248,
+    "spe": 253
+   }
+  },
+  "defenseur": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 194,
+    "def": 249,
+    "spa": 296,
+    "spd": 342,
+    "spe": 190
+   }
+  },
+  "capacite": {
+   "id": "flamethrower",
+   "type": "fire",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "matriceAttendue": null,
+  "ko": null,
+  "description": ""
+ },
+ {
+  "nom": "Paratonnerre",
+  "attaquant": {
+   "espece": "regieleki",
+   "niveau": 100,
+   "types": [
+    "electric"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 100,
+    "def": 50,
+    "spa": 100,
+    "spd": 50,
+    "spe": 200
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "transistor",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 145,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 212,
+    "def": 136,
+    "spa": 328,
+    "spd": 136,
+    "spe": 499
+   }
+  },
+  "defenseur": {
+   "espece": "rhyperior",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "rock"
+   ],
+   "statsBase": {
+    "hp": 115,
+    "atk": 140,
+    "def": 130,
+    "spa": 55,
+    "spd": 55,
+    "spe": 40
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "lightningrod",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 434,
+   "poidsKg": 282.8,
+   "statsShowdown": {
+    "hp": 434,
+    "atk": 284,
+    "def": 297,
+    "spa": 146,
+    "spd": 229,
+    "spe": 116
+   }
+  },
+  "capacite": {
+   "id": "thunderbolt",
+   "type": "electric",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "matriceAttendue": null,
+  "ko": null,
+  "description": ""
+ },
+ {
+  "nom": "Herbivore",
+  "attaquant": {
+   "espece": "meowscarada",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 76,
+    "atk": 110,
+    "def": 70,
+    "spa": 81,
+    "spd": 70,
+    "spe": 123
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "overgrow",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 294,
+   "poidsKg": 31.2,
+   "statsShowdown": {
+    "hp": 294,
+    "atk": 350,
+    "def": 176,
+    "spa": 178,
+    "spd": 176,
+    "spe": 345
+   }
+  },
+  "defenseur": {
+   "espece": "goodra",
+   "niveau": 100,
+   "types": [
+    "dragon"
+   ],
+   "statsBase": {
+    "hp": 90,
+    "atk": 100,
+    "def": 70,
+    "spa": 110,
+    "spd": 150,
+    "spe": 80
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "sapsipper",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 384,
+   "poidsKg": 150.5,
+   "statsShowdown": {
+    "hp": 384,
+    "atk": 236,
+    "def": 262,
+    "spa": 230,
+    "spd": 337,
+    "spe": 196
+   }
+  },
+  "capacite": {
+   "id": "flowertrick",
+   "type": "grass",
+   "categorie": "Physical",
+   "puissance": 70
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "matriceAttendue": null,
+  "ko": null,
+  "description": ""
+ },
+ {
+  "nom": "Fermeté pleins PV",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": "choiceband",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "magnezone",
+   "niveau": 100,
+   "types": [
+    "electric",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 70,
+    "def": 115,
+    "spa": 130,
+    "spd": 90,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "sturdy",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 344,
+   "poidsKg": 180,
+   "statsShowdown": {
+    "hp": 344,
+    "atk": 176,
+    "def": 361,
+    "spa": 266,
+    "spd": 217,
+    "spe": 156
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   708,
+   712,
+   720,
+   732,
+   736,
+   748,
+   756,
+   760,
+   772,
+   780,
+   792,
+   796,
+   804,
+   816,
+   820,
+   832
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 1,
+   "texte": "guaranteed OHKO"
+  },
+  "description": "252+ Atk Choice Band Garchomp Earthquake vs. 252 HP / 252+ Def Magnezone: 708-832 (205.8 - 241.8%) -- guaranteed OHKO"
+ },
+ {
+  "nom": "Ceinture Pro + Lentiteintée",
+  "attaquant": {
+   "espece": "yanmega",
+   "niveau": 100,
+   "types": [
+    "bug",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 86,
+    "atk": 76,
+    "def": 86,
+    "spa": 116,
+    "spd": 56,
+    "spe": 95
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "tintedlens",
+   "objet": "expertbelt",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 314,
+   "poidsKg": 51.5,
+   "statsShowdown": {
+    "hp": 314,
+    "atk": 169,
+    "def": 208,
+    "spa": 364,
+    "spd": 148,
+    "spe": 289
+   }
+  },
+  "defenseur": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 194,
+    "def": 249,
+    "spa": 296,
+    "spd": 342,
+    "spe": 190
+   }
+  },
+  "capacite": {
+   "id": "bugbuzz",
+   "type": "bug",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   50,
+   52,
+   52,
+   54,
+   54,
+   54,
+   54,
+   56,
+   56,
+   56,
+   56,
+   58,
+   58,
+   60,
+   60,
+   60
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 7,
+   "chance": -1,
+   "texte": "possible 7HKO"
+  },
+  "description": "252+ SpA Tinted Lens Yanmega Bug Buzz vs. 252 HP / 252+ SpD Heatran: 50-60 (12.9 - 15.5%) -- possible 7HKO"
+ },
+ {
+  "nom": "Orbe Vie + Adaptabilité",
+  "attaquant": {
+   "espece": "porygonz",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 85,
+    "atk": 80,
+    "def": 70,
+    "spa": 135,
+    "spd": 75,
+    "spe": 90
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "adaptability",
+   "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 312,
+   "poidsKg": 34,
+   "statsShowdown": {
+    "hp": 312,
+    "atk": 176,
+    "def": 176,
+    "spa": 405,
+    "spd": 186,
+    "spe": 279
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 189,
+    "def": 247,
+    "spa": 142,
+    "spd": 295,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "triattack",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   103,
+   104,
+   105,
+   107,
+   108,
+   109,
+   110,
+   112,
+   113,
+   114,
+   116,
+   117,
+   118,
+   120,
+   121,
+   122
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 4,
+   "chance": 1,
+   "texte": "guaranteed 4HKO"
+  },
+  "description": "252+ SpA Life Orb Adaptability Porygon-Z Tri Attack vs. 252 HP / 252+ SpD Corviknight: 103-122 (25.7 - 30.5%) -- guaranteed 4HKO"
+ },
+ {
+  "nom": "Lunettes Choix + Peau Féérique",
+  "attaquant": {
+   "espece": "sylveon",
+   "niveau": 100,
+   "types": [
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 65,
+    "def": 65,
+    "spa": 110,
+    "spd": 130,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "pixilate",
+   "objet": "choicespecs",
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 332,
+   "poidsKg": 23.5,
+   "statsShowdown": {
+    "hp": 332,
+    "atk": 149,
+    "def": 166,
+    "spa": 350,
+    "spd": 296,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "hypervoice",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   414,
+   420,
+   422,
+   428,
+   434,
+   438,
+   444,
+   446,
+   452,
+   458,
+   462,
+   468,
+   474,
+   476,
+   482,
+   488
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 0.9375,
+   "texte": "93.8% chance to OHKO"
+  },
+  "description": "252+ SpA Choice Specs Pixilate Sylveon Hyper Voice vs. 252 HP / 252+ SpD Garchomp: 414-488 (98.5 - 116.1%) -- 93.8% chance to OHKO"
+ },
+ {
+  "nom": "Hâte Chaude (Feu Ensorcelé) brûlé",
+  "attaquant": {
+   "espece": "ceruledge",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 75,
+    "atk": 125,
+    "def": 80,
+    "spa": 60,
+    "spd": 100,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 292,
+   "poidsKg": 62,
+   "statsShowdown": {
+    "hp": 292,
+    "atk": 383,
+    "def": 196,
+    "spa": 140,
+    "spd": 236,
+    "spe": 269
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "brn",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "bitterblade",
+   "type": "fire",
+   "categorie": "Physical",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   218,
+   222,
+   224,
+   228,
+   230,
+   234,
+   236,
+   240,
+   240,
+   242,
+   246,
+   248,
+   252,
+   254,
+   258,
+   260
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO after burn damage"
+  },
+  "description": "252+ Atk Ceruledge Bitter Blade vs. 252 HP / 252+ Def Corviknight: 218-260 (54.5 - 65%) -- guaranteed 2HKO after burn damage"
+ },
+ {
+  "nom": "Tête de Fer stage -2 attaquant",
+  "attaquant": {
+   "espece": "gholdengo",
+   "niveau": 100,
+   "types": [
+    "steel",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 87,
+    "atk": 60,
+    "def": 95,
+    "spa": 133,
+    "spd": 91,
+    "spe": 84
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "goodasgold",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": -2,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 316,
+   "poidsKg": 30,
+   "statsShowdown": {
+    "hp": 316,
+    "atk": 140,
+    "def": 226,
+    "spa": 401,
+    "spd": 218,
+    "spe": 267
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "makeitrain",
+   "type": "steel",
+   "categorie": "Special",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   88,
+   90,
+   90,
+   91,
+   93,
+   94,
+   94,
+   96,
+   97,
+   97,
+   99,
+   100,
+   100,
+   102,
+   103,
+   105
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 4,
+   "chance": 0.0000152587890625,
+   "texte": "0.1% chance to 4HKO"
+  },
+  "description": "-2 252+ SpA Gholdengo Make It Rain vs. 252 HP / 252+ SpD Garchomp: 88-105 (20.9 - 25%) -- 0.1% chance to 4HKO"
+ },
+ {
+  "nom": "Draco Météore -2",
+  "attaquant": {
+   "espece": "dragapult",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ghost"
+   ],
+   "statsBase": {
+    "hp": 88,
+    "atk": 120,
+    "def": 75,
+    "spa": 100,
+    "spd": 75,
+    "spe": 142
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "clearbody",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": -2,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 318,
+   "poidsKg": 50,
+   "statsShowdown": {
+    "hp": 318,
+    "atk": 248,
+    "def": 186,
+    "spa": 328,
+    "spd": 186,
+    "spe": 383
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "dracometeor",
+   "type": "dragon",
+   "categorie": "Special",
+   "puissance": 130
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   156,
+   158,
+   158,
+   162,
+   164,
+   164,
+   168,
+   170,
+   170,
+   174,
+   174,
+   176,
+   180,
+   180,
+   182,
+   186
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "-2 252+ SpA Dragapult Draco Meteor vs. 252 HP / 252+ SpD Garchomp: 156-186 (37.1 - 44.2%) -- guaranteed 3HKO"
+ },
+ {
+  "nom": "Niveau 85 contre niveau 90",
+  "attaquant": {
+   "espece": "hitmonlee",
+   "niveau": 88,
+   "types": [
+    "fighting"
+   ],
+   "statsBase": {
+    "hp": 50,
+    "atk": 120,
+    "def": 53,
+    "spa": 35,
+    "spd": 110,
+    "spe": 87
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "limber",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 214,
+   "poidsKg": 49.8,
+   "statsShowdown": {
+    "hp": 214,
+    "atk": 327,
+    "def": 125,
+    "spa": 83,
+    "spd": 225,
+    "spe": 240
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 88,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 353,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 353,
+    "atk": 185,
+    "def": 299,
+    "spa": 112,
+    "spd": 182,
+    "spe": 150
+   }
+  },
+  "capacite": {
+   "id": "highjumpkick",
+   "type": "fighting",
+   "categorie": "Physical",
+   "puissance": 130
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   135,
+   138,
+   139,
+   141,
+   142,
+   144,
+   145,
+   147,
+   148,
+   150,
+   151,
+   153,
+   154,
+   156,
+   157,
+   160
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "Lvl 88 252+ Atk Hitmonlee High Jump Kick vs. Lvl 88 252 HP / 252+ Def Corviknight: 135-160 (38.2 - 45.3%) -- guaranteed 3HKO"
+ },
+ {
+  "nom": "Prescience Galar",
+  "attaquant": {
+   "espece": "slowkinggalar",
+   "niveau": 100,
+   "types": [
+    "poison",
+    "psychic"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 65,
+    "def": 80,
+    "spa": 110,
+    "spd": 110,
+    "spe": 30
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "sassy",
+   "talent": "curiousmedicine",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 394,
+   "poidsKg": 79.5,
+   "statsShowdown": {
+    "hp": 394,
+    "atk": 166,
+    "def": 196,
+    "spa": 256,
+    "spd": 350,
+    "spe": 86
+   }
+  },
+  "defenseur": {
+   "espece": "flygon",
+   "niveau": 100,
+   "types": [
+    "ground",
+    "dragon"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 100,
+    "def": 80,
+    "spa": 80,
+    "spd": 80,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "jolly",
+   "talent": "levitate",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 302,
+   "poidsKg": 82,
+   "statsShowdown": {
+    "hp": 302,
+    "atk": 299,
+    "def": 196,
+    "spa": 176,
+    "spd": 196,
+    "spe": 328
+   }
+  },
+  "capacite": {
+   "id": "futuresight",
+   "type": "psychic",
+   "categorie": "Special",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   169,
+   171,
+   172,
+   175,
+   177,
+   178,
+   181,
+   183,
+   184,
+   187,
+   189,
+   190,
+   193,
+   195,
+   196,
+   199
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "0 SpA Slowking-Galar Future Sight vs. 4 HP / 0 SpD Flygon: 169-199 (55.9 - 65.8%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Bombe Beurk Galar STAB",
+  "attaquant": {
+   "espece": "slowkinggalar",
+   "niveau": 100,
+   "types": [
+    "poison",
+    "psychic"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 65,
+    "def": 80,
+    "spa": 110,
+    "spd": 110,
+    "spe": 30
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "sassy",
+   "talent": "curiousmedicine",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 394,
+   "poidsKg": 79.5,
+   "statsShowdown": {
+    "hp": 394,
+    "atk": 166,
+    "def": 196,
+    "spa": 256,
+    "spd": 350,
+    "spe": 86
+   }
+  },
+  "defenseur": {
+   "espece": "primarina",
+   "niveau": 100,
+   "types": [
+    "water",
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 80,
+    "atk": 74,
+    "def": 74,
+    "spa": 126,
+    "spd": 116,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "torrent",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 364,
+   "poidsKg": 44,
+   "statsShowdown": {
+    "hp": 364,
+    "atk": 165,
+    "def": 185,
+    "spa": 288,
+    "spd": 364,
+    "spe": 156
+   }
+  },
+  "capacite": {
+   "id": "sludgebomb",
+   "type": "poison",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "critique": false,
+  "degatsAttendus": [
+   138,
+   140,
+   140,
+   144,
+   144,
+   146,
+   150,
+   150,
+   152,
+   152,
+   156,
+   156,
+   158,
+   158,
+   162,
+   164
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 3,
+   "chance": 1,
+   "texte": "guaranteed 3HKO"
+  },
+  "description": "0 SpA Slowking-Galar Sludge Bomb vs. 252 HP / 252+ SpD Primarina: 138-164 (37.9 - 45%) -- guaranteed 3HKO"
  },
  {
   "nom": "Orbe Vie + Technicien",
@@ -18372,6 +25647,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18426,6 +25703,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18456,6 +25735,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    86,
@@ -18519,6 +25799,8 @@
    "nature": "adamant",
    "talent": "ironfist",
    "objet": "punchingglove",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18573,6 +25855,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18603,6 +25887,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    264,
@@ -18666,6 +25951,8 @@
    "nature": "modest",
    "talent": "analytic",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18720,6 +26007,8 @@
    "nature": "calm",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18750,6 +26039,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    162,
@@ -18813,6 +26103,8 @@
    "nature": "modest",
    "talent": "analytic",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18867,6 +26159,8 @@
    "nature": "calm",
    "talent": "regenerator",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -18897,6 +26191,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    40,
@@ -18960,6 +26255,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19014,6 +26311,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19044,6 +26343,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -19107,6 +26407,8 @@
    "nature": "adamant",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19161,6 +26463,8 @@
    "nature": "impish",
    "talent": "regenerator",
    "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19191,6 +26495,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    132,
@@ -19254,6 +26559,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19308,6 +26615,8 @@
    "nature": "calm",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19338,6 +26647,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    118,
@@ -19401,6 +26711,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19455,6 +26767,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19485,6 +26799,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -19548,6 +26863,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19602,6 +26919,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": "blacksludge",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19632,6 +26951,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -19695,6 +27015,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19749,6 +27071,8 @@
    "nature": "calm",
    "talent": "innerfocus",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19779,6 +27103,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    240,
@@ -19842,6 +27167,8 @@
    "nature": "modest",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19896,6 +27223,8 @@
    "nature": "calm",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -19926,6 +27255,7 @@
   "champ": "HERBU",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -19989,6 +27319,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20043,6 +27375,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20073,6 +27407,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -20136,6 +27471,8 @@
    "nature": "adamant",
    "talent": "defiant",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20190,6 +27527,8 @@
    "nature": "impish",
    "talent": "goodasgold",
    "objet": "leftovers",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20220,6 +27559,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -20283,6 +27623,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": "lifeorb",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20337,6 +27679,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20367,6 +27711,7 @@
   "champ": "AUCUN",
   "protection": true,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    70,
@@ -20429,6 +27774,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20483,6 +27830,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20513,6 +27862,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": [
    100,
@@ -20576,6 +27926,8 @@
    "nature": "adamant",
    "talent": "skilllink",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20630,6 +27982,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20660,6 +28014,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -20793,6 +28148,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20847,6 +28204,8 @@
    "nature": "impish",
    "talent": "protosynthesis",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -20877,6 +28236,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -20974,6 +28334,8 @@
    "nature": "adamant",
    "talent": "sandveil",
    "objet": "loadeddice",
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21028,6 +28390,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21058,6 +28422,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -21173,6 +28538,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21227,6 +28594,8 @@
    "nature": "impish",
    "talent": "sandveil",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21257,6 +28626,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -21353,6 +28723,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21407,6 +28779,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21437,6 +28811,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -21534,6 +28909,8 @@
    "nature": "adamant",
    "talent": "skilllink",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21588,6 +28965,8 @@
    "nature": "impish",
    "talent": "multiscale",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21618,6 +28997,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -21750,6 +29130,8 @@
    "nature": "adamant",
    "talent": "skilllink",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21803,6 +29185,8 @@
    "nature": "impish",
    "talent": "stamina",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -21833,6 +29217,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -21966,6 +29351,8 @@
    "nature": "adamant",
    "talent": "skilllink",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22020,6 +29407,8 @@
    "nature": "impish",
    "talent": "weakarmor",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22050,6 +29439,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -22182,6 +29572,8 @@
    "nature": "adamant",
    "talent": "unaware",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22235,6 +29627,8 @@
    "nature": "impish",
    "talent": "stamina",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22265,6 +29659,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -22362,6 +29757,8 @@
    "nature": "adamant",
    "talent": "unseenfist",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22416,6 +29813,8 @@
    "nature": "impish",
    "talent": "watercompaction",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22446,6 +29845,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -22543,6 +29943,8 @@
    "nature": "adamant",
    "talent": "clearbody",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22597,6 +29999,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22627,6 +30031,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -22705,6 +30110,8 @@
    "nature": "adamant",
    "talent": "technician",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22759,6 +30166,8 @@
    "nature": "impish",
    "talent": "pressure",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -22789,6 +30198,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -23012,6 +30422,8 @@
    "nature": "modest",
    "talent": "torrent",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -23066,6 +30478,8 @@
    "nature": "calm",
    "talent": "goodasgold",
    "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
    "boosts": {
     "hp": 0,
     "atk": 0,
@@ -23096,6 +30510,7 @@
   "champ": "AUCUN",
   "protection": false,
   "murLumiere": false,
+  "voileAurore": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
