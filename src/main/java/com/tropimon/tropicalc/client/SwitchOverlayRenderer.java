@@ -54,6 +54,8 @@ public final class SwitchOverlayRenderer {
         // Métamorph sorti transformé : ses PV d'équipe sont figés depuis la
         // transformation, on prend les derniers PV réels lus en combat
         int pvReels = ObservationCollector.getPvReelsApresTransformation(membre.getUuid());
+        // Hors Métamorph : getCurrentHealth() n'est pas tenu à jour en combat
+        if (pvReels < 0) pvReels = com.tropimon.tropicalc.battle.PvEquipe.pv(membre.getUuid());
         if ((pvReels >= 0 ? pvReels : membre.getCurrentHealth()) <= 0) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();

@@ -185,9 +185,12 @@ object BattleTracker {
         val speciesId   = p.species.resourceIdentifier.path
         val aspects     = try { p.aspects } catch (_: Exception) { emptySet() }
         val hpMax       = p.maxHealth
-        val hpCurrent   = p.currentHealth
-        val hpPercent   = if (hpMax > 0) hpCurrent.toFloat() / hpMax else 0f
-        val isFainted   = p.isFainted()
+        // currentHealth n'est pas tenu à jour en combat (Bétochef à 56 % au
+        // lieu de 317/317) : PV du serveur / du terrain d'abord
+        val pvReels     = try { com.tropimon.tropicalc.battle.PvEquipe.pv(p.uuid) } catch (_: Throwable) { -1 }
+        val hpCurrent   = if (pvReels >= 0) pvReels else p.currentHealth
+        val hpPercent   = if (hpMax > 0) (hpCurrent.toFloat() / hpMax).coerceIn(0f, 1f) else 0f
+        val isFainted   = if (pvReels >= 0) pvReels <= 0 else p.isFainted()
         val statusKey   = try { p.status?.status?.showdownName } catch (_: Exception) { null }
         val types       = try { p.types.map { it.displayName.string } } catch (_: Exception) { emptyList() }
         val moves       = try {

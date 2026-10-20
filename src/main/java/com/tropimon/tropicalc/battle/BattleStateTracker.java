@@ -405,7 +405,10 @@ public final class BattleStateTracker {
         }
 
         Pokemon pokemon = builder.build();
-        pokemon.setPvActuels(p.getCurrentHealth());
+        // getCurrentHealth() n'est pas tenu à jour en combat (Bétochef à
+        // 56 % au lieu de 317/317) : PV du serveur / du terrain d'abord
+        int pvReels = PvEquipe.pv(p.getUuid());
+        pokemon.setPvActuels(pvReels >= 0 ? pvReels : p.getCurrentHealth());
 
         if (p.getStatus() != null) {
             switch (p.getStatus().getStatus().getShowdownName()) {
