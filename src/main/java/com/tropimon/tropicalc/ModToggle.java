@@ -21,6 +21,13 @@ public final class ModToggle {
     private static boolean actif = true;
     private static KeyBinding touche;
     private static KeyBinding toucheAnnuler;
+    // TropiCalc double (touche 2 du pavé numérique) : HUD des combats doubles
+    private static boolean actifDouble = true;
+    private static KeyBinding toucheDouble;
+
+    public static boolean estDoubleActif() {
+        return actifDouble;
+    }
 
     /** Nom de la touche d'annulation tel que configuré par le joueur (F7 par défaut). */
     public static String nomToucheAnnuler() {
@@ -52,7 +59,21 @@ public final class ModToggle {
             "key.categories.tropicalc"
         ));
 
+        toucheDouble = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.tropicalc.double",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_2,
+            "key.categories.tropicalc"
+        ));
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (toucheDouble.wasPressed()) {
+                actifDouble = !actifDouble;
+                if (client.player != null) {
+                    client.player.sendMessage(Text.literal(actifDouble
+                        ? "§a[TropiCalc] Double activé" : "§c[TropiCalc] Double désactivé"), true);
+                }
+            }
             while (toucheAnnuler.wasPressed()) {
                 String msg = com.tropimon.tropicalc.battle.ObservationCollector.annulerConfirmationAdversaire();
                 if (client.player != null) {

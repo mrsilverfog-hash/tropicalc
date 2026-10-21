@@ -27,6 +27,10 @@ public class Field {
     private Meteo meteo = Meteo.AUCUNE;
     private TypeTerrain terrain = TypeTerrain.AUCUN;
     private boolean gravite = false;
+    // Combat double : écrans x2732/4096 au lieu de x0,5
+    private boolean combatDouble = false;
+    // Capacité de zone qui touche plusieurs cibles : x0,75 (3072/4096)
+    private boolean cibleMultiple = false;
 
     private final Ecrans ecransJoueur = new Ecrans();
     private final Ecrans ecransAdversaire = new Ecrans();
@@ -37,6 +41,10 @@ public class Field {
     public void setTerrain(TypeTerrain t) { this.terrain = t; }
     public boolean isGravite() { return gravite; }
     public void setGravite(boolean g) { this.gravite = g; }
+    public boolean isCombatDouble() { return combatDouble; }
+    public void setCombatDouble(boolean v) { this.combatDouble = v; }
+    public boolean isCibleMultiple() { return cibleMultiple; }
+    public void setCibleMultiple(boolean v) { this.cibleMultiple = v; }
     public Ecrans getEcransJoueur() { return ecransJoueur; }
     public Ecrans getEcransAdversaire() { return ecransAdversaire; }
 

@@ -84,6 +84,8 @@ public final class CalcOverlay implements HudRenderCallback {
         if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
         if (!BattleStateTracker.estEnCombat()) return;
         if (ObservationCollector.estCombatSauvage()) return;
+        // Combat double : c'est DoubleOverlay qui affiche (touche 2 du pavé)
+        if (BattleStateTracker.estCombatDouble()) return;
 
         Pokemon adversaireBase = BattleStateTracker.getAdversaireActif();
         com.cobblemon.mod.common.pokemon.Pokemon monComplet = BattleStateTracker.getPokemonCompletJoueurAffichage();

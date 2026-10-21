@@ -44,6 +44,15 @@ public final class MoveUseTracker {
 
         BoostTracker.traiterMessage(message);
         FieldTracker.traiterMessage(message);
+
+        // Combat double : seuls la météo, les champs, les écrans et les
+        // boosts par Pokémon sont suivis. Toutes les déductions (objet,
+        // talent, EV) supposent un seul adversaire en face et se
+        // tromperaient de Pokémon.
+        if (BattleStateTracker.estCombatDouble()) {
+            BoostsDouble.traiterMessage(message);
+            return;
+        }
         TypeTracker.traiterMessage(message);
         ObservationCollector.traiterMessageObjet(message);
 

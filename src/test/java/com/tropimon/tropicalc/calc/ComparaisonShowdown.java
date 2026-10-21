@@ -66,6 +66,8 @@ public final class ComparaisonShowdown {
         ecrans.setProtection(o.get("protection").getAsBoolean());
         ecrans.setMurLumiere(o.get("murLumiere").getAsBoolean());
         if (o.has("voileAurore")) ecrans.setBrumeAurore(o.get("voileAurore").getAsBoolean());
+        if (o.has("double")) terrain.setCombatDouble(o.get("double").getAsBoolean());
+        if (o.has("cibleMultiple")) terrain.setCibleMultiple(o.get("cibleMultiple").getAsBoolean());
         boolean critique = o.get("critique").getAsBoolean();
 
         if (o.has("matriceAttendue") && !o.get("matriceAttendue").isJsonNull()) {

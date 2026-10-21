@@ -3769,6 +3769,14 @@ public final class ObservationCollector {
         }
         verifierChangementDeCombat();
         etatVide = false;
+        // Combat double : pas d'analyse (elle suppose un seul adversaire)
+        if (BattleStateTracker.estCombatDouble()) {
+            try {
+                BoostsDouble.tick();
+            } catch (Exception ignored) {
+            }
+            return;
+        }
         if (finDeTourEnAttenteMs != 0 && System.currentTimeMillis() - finDeTourEnAttenteMs >= DELAI_PV_MS) {
             viderFinDeTourEnAttente();
         }
@@ -5012,6 +5020,7 @@ public final class ObservationCollector {
         PREUVES_EXCLUSION.clear();
         PV_METAMORPH.clear();
         PvEquipe.vider();
+        BoostsDouble.vider();
         TALENTS_PROBABLES.clear();
         PLAFONDS_DEFENSIFS.clear();
         PLANCHERS_DEFENSIFS.clear();

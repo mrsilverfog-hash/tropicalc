@@ -424,6 +424,143 @@ public final class BattleStateTracker {
         return pokemon;
     }
 
+    // ------------------------------------------------------------------
+    // Combat double
+    // ------------------------------------------------------------------
+
+    /** Un Pokémon sur le terrain en double : calcul, uuid, clé des messages (camp + nom affiché). */
+    public record ActifDouble(Pokemon pokemon, com.cobblemon.mod.common.pokemon.Pokemon complet,
+                              UUID uuid, String cle) {
+    }
+
+    /** Clé d'un Pokémon dans les messages : "J:" (moi) ou "A:" (adversaire) + nom affiché en minuscules. */
+    public static String cleDouble(boolean adverse, String nomAffiche) {
+        return (adverse ? "A:" : "J:") + (nomAffiche == null ? "" : nomAffiche.toLowerCase(java.util.Locale.ROOT).trim());
+    }
+
+    /** Vrai si un camp a au moins deux emplacements sur le terrain. */
+    public static boolean estCombatDouble() {
+        try {
+            ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+            if (battle == null) return false;
+            for (var side : battle.getSides()) {
+                int emplacements = 0;
+                for (ClientBattleActor acteur : side.getActors()) emplacements += acteur.getActivePokemon().size();
+                if (emplacements >= 2) return true;
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /** Mes Pokémon sur le terrain, dans l'ordre des emplacements (null = emplacement vide / K.O.). */
+    public static List<ActifDouble> getActifsJoueurDouble() {
+        List<ActifDouble> r = new java.util.ArrayList<>();
+        ClientBattleActor acteur = getActeurJoueur();
+        if (acteur == null) return r;
+        for (ActiveClientBattlePokemon actif : acteur.getActivePokemon()) {
+            ClientBattlePokemon cbp = actif.getBattlePokemon();
+            if (cbp == null) {
+                r.add(null);
+                continue;
+            }
+            com.cobblemon.mod.common.pokemon.Pokemon complet = null;
+            try {
+                for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
+                    if (p.getUuid().equals(cbp.getUuid())) {
+                        complet = p;
+                        break;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                Pokemon p = convertir(cbp, complet);
+                if (complet != null) {
+                    // Talent et objet de ma fiche (le combat ne les donne pas toujours)
+                    String talentFr = ShowdownIdMapper.talent(complet.getAbility().getName());
+                    if (talentFr != null && !talentFr.equals(p.getTalent())) {
+                        int pv = p.getPvActuels();
+                        p = p.copieAvec(java.util.Map.of(), null, talentFr);
+                        p.setPvActuels(pv);
+                    }
+                    if (!complet.heldItem().isEmpty()) {
+                        var itemId = Registries.ITEM.getId(complet.heldItem().getItem());
+                        String objetFr = itemId == null ? null : ShowdownIdMapper.objet(itemId.getPath());
+                        if (objetFr != null) p.setObjet(objetFr);
+                    }
+                }
+                r.add(new ActifDouble(p, complet, cbp.getUuid(), cleDouble(false, nomAffiche(cbp))));
+            } catch (Exception e) {
+                r.add(null);
+            }
+        }
+        return r;
+    }
+
+    /** Pokémon adverses sur le terrain (tous les dresseurs d'en face), null = emplacement vide. */
+    public static List<ActifDouble> getActifsAdversaireDouble() {
+        List<ActifDouble> r = new java.util.ArrayList<>();
+        ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+        ClientBattleActor acteurJoueur = getActeurJoueur();
+        if (battle == null || acteurJoueur == null) return r;
+        for (var side : battle.getSides()) {
+            if (side.getActors().contains(acteurJoueur)) continue;
+            for (ClientBattleActor acteur : side.getActors()) {
+                for (ActiveClientBattlePokemon actif : acteur.getActivePokemon()) {
+                    ClientBattlePokemon cbp = actif.getBattlePokemon();
+                    if (cbp == null) {
+                        r.add(null);
+                        continue;
+                    }
+                    try {
+                        Pokemon p = convertir(cbp);
+                        p.setCampAdverse(true);
+                        r.add(new ActifDouble(p, null, cbp.getUuid(), cleDouble(true, nomAffiche(cbp))));
+                    } catch (Exception e) {
+                        r.add(null);
+                    }
+                }
+            }
+        }
+        return r;
+    }
+
+    private static String nomAffiche(ClientBattlePokemon cbp) {
+        try {
+            return cbp.getDisplayName().getString();
+        } catch (Exception e) {
+            return cbp.getProperties().getSpecies();
+        }
+    }
+
+    /**
+     * UUID de mon Pokémon dont le jeu attend l'action (première requête sans
+     * réponse), null si aucune action n'est attendue. Par réflexion pour la
+     * réponse : un nom différent ne doit pas casser le mod.
+     */
+    public static UUID getUuidQuiChoisit() {
+        try {
+            ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+            if (battle == null) return null;
+            List<com.cobblemon.mod.common.client.battle.SingleActionRequest> requetes = battle.getPendingActionRequests();
+            if (requetes == null) return null;
+            for (com.cobblemon.mod.common.client.battle.SingleActionRequest r : requetes) {
+                Object reponse = null;
+                try {
+                    reponse = r.getClass().getMethod("getResponse").invoke(r);
+                } catch (Exception ignored) {
+                }
+                if (reponse != null) continue;
+                ActiveClientBattlePokemon concerne = r.getActivePokemon();
+                if (concerne == null || concerne.getBattlePokemon() == null) continue;
+                return concerne.getBattlePokemon().getUuid();
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
     private static int statBase(com.cobblemon.mod.common.pokemon.FormData forme, Stats stat) {
         Integer valeur = forme.getBaseStats().get(stat);
         return valeur != null ? valeur : 0;

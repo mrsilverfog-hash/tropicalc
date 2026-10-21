@@ -340,7 +340,8 @@ public class DamageCalculator {
         boolean infiltration = "Infiltration".equals(attaquant.getTalent());
         if (!critique && !infiltration && ecransDefenseur != null
                 && ecransDefenseur.multiplicateur(capacite.getCategorie()) < 1.0) {
-            ctx.degatsFinal(ModifierContext.ORDRE_ECRANS, 2048);
+            // En double, les écrans ne réduisent que d'un tiers (2732/4096)
+            ctx.degatsFinal(ModifierContext.ORDRE_ECRANS, terrain.isCombatDouble() ? 2732 : 2048);
         }
 
         int puissanceFinale = (int) Math.max(1,
@@ -368,6 +369,8 @@ public class DamageCalculator {
         int niveauTerme = (2 * attaquant.getNiveau()) / 5 + 2;
         long base = ((long) niveauTerme * puissanceFinale * statA) / Math.max(1, statD);
         base = base / 50 + 2;
+        // Capacité de zone sur plusieurs cibles (double) : x0,75, avant la météo
+        if (terrain.isCibleMultiple()) base = ModifierContext.arrondiJeu(base * 3072 / 4096.0);
 
         double meteo = terrain.multiplicateurMeteo(capacite.getType());
         // Hydrovapeur : x1,5 au soleil au lieu d'être divisée par deux

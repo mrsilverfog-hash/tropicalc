@@ -16,9 +16,10 @@ public class TropiCalcClient implements ClientModInitializer {
         SmogonDataLoader.charger();
         ModToggle.enregistrer();
         HudRenderCallback.EVENT.register(new CalcOverlay());
+        HudRenderCallback.EVENT.register(new com.tropimon.tropicalc.client.DoubleOverlay());
         com.tropimon.tropicalc.pvp.PvpOverlay.INSTANCE.register();
         com.tropimon.tropicalc.pvp.PvpDetector.INSTANCE.register();
-        LOGGER.info("TropiCalc chargé - moteur de calcul de dégâts (format Simple uniquement)");
+        LOGGER.info("TropiCalc chargé - moteur de calcul de dégâts (simple et double)");
         com.tropimon.tropicalc.calc.InferenceCoverageCheck.verifier();
     }
 }

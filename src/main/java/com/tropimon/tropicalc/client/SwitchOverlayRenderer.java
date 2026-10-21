@@ -40,6 +40,8 @@ public final class SwitchOverlayRenderer {
     public static void render(BattleSwitchPokemonSelection ecran, DrawContext context, int mouseX, int mouseY) {
         if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
         if (ObservationCollector.estCombatSauvage()) return;
+        // Combat double : ce survol suppose un seul adversaire en face
+        if (BattleStateTracker.estCombatDouble()) return;
         BattleSwitchPokemonSelection.SwitchTile survolee = null;
         for (BattleSwitchPokemonSelection.SwitchTile tile : ecran.getTiles()) {
             if (tile.isHovered(mouseX, mouseY)) {

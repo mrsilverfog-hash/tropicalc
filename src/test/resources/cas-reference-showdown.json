@@ -124,6 +124,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -276,6 +278,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    496,
@@ -428,6 +432,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    51,
@@ -580,6 +586,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -732,6 +740,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    53,
@@ -884,6 +894,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    126,
@@ -1036,6 +1048,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    140,
@@ -1188,6 +1202,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -1340,6 +1356,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    390,
@@ -1492,6 +1510,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -1640,6 +1660,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -1788,6 +1810,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    144,
@@ -1940,6 +1964,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    744,
@@ -2092,6 +2118,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    237,
@@ -2244,6 +2272,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    242,
@@ -2396,6 +2426,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    662,
@@ -2548,6 +2580,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    187,
@@ -2699,6 +2733,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    332,
@@ -2851,6 +2887,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    264,
@@ -3003,6 +3041,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    109,
@@ -3155,6 +3195,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    105,
@@ -3307,6 +3349,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    88,
@@ -3458,6 +3502,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    73,
@@ -3610,6 +3656,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    390,
@@ -3762,6 +3810,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -3914,6 +3964,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    190,
@@ -4066,6 +4118,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    128,
@@ -4218,6 +4272,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    162,
@@ -4370,6 +4426,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    93,
@@ -4521,6 +4579,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    314,
@@ -4673,6 +4733,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    402,
@@ -4825,6 +4887,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -4977,6 +5041,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    210,
@@ -5129,6 +5195,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    156,
@@ -5281,6 +5349,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    112,
@@ -5433,6 +5503,8 @@
   "protection": true,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -5585,6 +5657,8 @@
   "protection": false,
   "murLumiere": true,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    53,
@@ -5737,6 +5811,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    160,
@@ -5889,6 +5965,8 @@
   "protection": true,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -6041,6 +6119,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    219,
@@ -6193,6 +6273,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    160,
@@ -6345,6 +6427,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -6497,6 +6581,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -6649,6 +6735,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    744,
@@ -6801,6 +6889,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -6952,6 +7042,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    147,
@@ -7104,6 +7196,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    40,
@@ -7256,6 +7350,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    266,
@@ -7408,6 +7504,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    295,
@@ -7560,6 +7658,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    63,
@@ -7712,6 +7812,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    236,
@@ -7864,6 +7966,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    330,
@@ -8016,6 +8120,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    600,
@@ -8168,6 +8274,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    114,
@@ -8320,6 +8428,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    42,
@@ -8472,6 +8582,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    67,
@@ -8623,6 +8735,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    282,
@@ -8774,6 +8888,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    117,
@@ -8925,6 +9041,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    156,
@@ -9077,6 +9195,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    50,
@@ -9229,6 +9349,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    142,
@@ -9380,6 +9502,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -9532,6 +9656,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    318,
@@ -9683,6 +9809,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    416,
@@ -9835,6 +9963,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    290,
@@ -9986,6 +10116,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    123,
@@ -10138,6 +10270,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    272,
@@ -10290,6 +10424,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    135,
@@ -10442,6 +10578,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    159,
@@ -10594,6 +10732,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    48,
@@ -10746,6 +10886,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    46,
@@ -10898,6 +11040,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    90,
@@ -11050,6 +11194,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    372,
@@ -11201,6 +11347,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    168,
@@ -11352,6 +11500,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    88,
@@ -11504,6 +11654,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    57,
@@ -11655,6 +11807,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    23,
@@ -11807,6 +11961,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -11955,6 +12111,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    104,
@@ -12107,6 +12265,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    49,
@@ -12259,6 +12419,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -12411,6 +12573,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    180,
@@ -12563,6 +12727,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    180,
@@ -12715,6 +12881,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -12867,6 +13035,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    356,
@@ -13019,6 +13189,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    318,
@@ -13171,6 +13343,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    70,
@@ -13322,6 +13496,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    80,
@@ -13474,6 +13650,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    460,
@@ -13626,6 +13804,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    186,
@@ -13777,6 +13957,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    252,
@@ -13928,6 +14110,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    380,
@@ -14079,6 +14263,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    192,
@@ -14230,6 +14416,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    752,
@@ -14382,6 +14570,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    50,
@@ -14534,6 +14724,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    273,
@@ -14684,6 +14876,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    610,
@@ -14836,6 +15030,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    150,
@@ -14988,6 +15184,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    146,
@@ -15140,6 +15338,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    506,
@@ -15292,6 +15492,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    332,
@@ -15444,6 +15646,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    59,
@@ -15596,6 +15800,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    46,
@@ -15748,6 +15954,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    300,
@@ -15900,6 +16108,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    624,
@@ -16051,6 +16261,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    100,
@@ -16203,6 +16415,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    412,
@@ -16355,6 +16569,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    680,
@@ -16507,6 +16723,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -16659,6 +16877,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -16811,6 +17031,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -16963,6 +17185,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    189,
@@ -17114,6 +17338,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    57,
@@ -17265,6 +17491,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -17417,6 +17645,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    288,
@@ -17569,6 +17799,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    85,
@@ -17720,6 +17952,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    169,
@@ -17872,6 +18106,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    632,
@@ -18023,6 +18259,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -18175,6 +18413,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    120,
@@ -18327,6 +18567,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    71,
@@ -18478,6 +18720,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    103,
@@ -18630,6 +18874,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    73,
@@ -18782,6 +19028,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    98,
@@ -18934,6 +19182,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    90,
@@ -19085,6 +19335,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    533,
@@ -19235,6 +19487,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    96,
@@ -19387,6 +19641,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    58,
@@ -19538,6 +19794,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    37,
@@ -19690,6 +19948,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    180,
@@ -19841,6 +20101,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    144,
@@ -19992,6 +20254,8 @@
   "protection": true,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    46,
@@ -20143,6 +20407,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -20290,6 +20556,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    63,
@@ -20441,6 +20709,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    160,
@@ -20593,6 +20863,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    60,
@@ -20745,6 +21017,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    172,
@@ -20897,6 +21171,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    18,
@@ -21049,6 +21325,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    456,
@@ -21201,6 +21479,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    117,
@@ -21353,6 +21633,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -21505,6 +21787,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    90,
@@ -21657,6 +21941,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    612,
@@ -21809,6 +22095,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    32,
@@ -21961,6 +22249,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    61,
@@ -22112,6 +22402,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    54,
@@ -22263,6 +22555,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    171,
@@ -22415,6 +22709,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    338,
@@ -22567,6 +22863,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    516,
@@ -22719,6 +23017,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -22871,6 +23171,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    121,
@@ -23022,6 +23324,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    133,
@@ -23174,6 +23478,8 @@
   "protection": false,
   "murLumiere": true,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": true,
   "degatsAttendus": [
    160,
@@ -23326,6 +23632,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": true,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    248,
@@ -23478,6 +23786,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    69,
@@ -23629,6 +23939,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -23777,6 +24089,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -23924,6 +24238,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -24071,6 +24387,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    0,
@@ -24219,6 +24537,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    708,
@@ -24371,6 +24691,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    50,
@@ -24522,6 +24844,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    103,
@@ -24673,6 +24997,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    414,
@@ -24825,6 +25151,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    218,
@@ -24977,6 +25305,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    88,
@@ -25129,6 +25459,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    156,
@@ -25280,6 +25612,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    135,
@@ -25432,6 +25766,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    169,
@@ -25584,6 +25920,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    138,
@@ -25736,6 +26074,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    86,
@@ -25888,6 +26228,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    264,
@@ -26040,6 +26382,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    162,
@@ -26192,6 +26536,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    40,
@@ -26344,6 +26690,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    84,
@@ -26496,6 +26844,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    132,
@@ -26648,6 +26998,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    118,
@@ -26800,6 +27152,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -26952,6 +27306,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -27104,6 +27460,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    240,
@@ -27256,6 +27614,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    153,
@@ -27408,6 +27768,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    108,
@@ -27560,6 +27922,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    270,
@@ -27586,6 +27950,929 @@
    "texte": "guaranteed 2HKO"
   },
   "description": "252+ Atk Kingambit Knock Off (97.5 BP) vs. 252 HP / 252+ Def Gholdengo: 270-318 (71.4 - 84.1%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Double : Séisme zone",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 216,
+    "def": 342,
+    "spa": 266,
+    "spd": 249,
+    "spe": 190
+   }
+  },
+  "capacite": {
+   "id": "earthquake",
+   "type": "ground",
+   "categorie": "Physical",
+   "puissance": 100
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": true,
+  "critique": false,
+  "degatsAttendus": [
+   372,
+   372,
+   376,
+   384,
+   384,
+   388,
+   396,
+   400,
+   400,
+   408,
+   412,
+   420,
+   420,
+   424,
+   432,
+   436
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 0.6875,
+   "texte": "68.8% chance to OHKO"
+  },
+  "description": "252+ Atk Garchomp Earthquake vs. 252 HP / 252+ Def Heatran: 372-436 (96.3 - 112.9%) -- 68.8% chance to OHKO"
+ },
+ {
+  "nom": "Double : Éboulement zone",
+  "attaquant": {
+   "espece": "tyranitar",
+   "niveau": 100,
+   "types": [
+    "rock",
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 134,
+    "def": 110,
+    "spa": 95,
+    "spd": 100,
+    "spe": 61
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandstream",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 202,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 403,
+    "def": 256,
+    "spa": 203,
+    "spd": 236,
+    "spe": 221
+   }
+  },
+  "defenseur": {
+   "espece": "charizard",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 78,
+    "atk": 84,
+    "def": 78,
+    "spa": 109,
+    "spd": 85,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "blaze",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 360,
+   "poidsKg": 90.5,
+   "statsShowdown": {
+    "hp": 360,
+    "atk": 204,
+    "def": 280,
+    "spa": 228,
+    "spd": 207,
+    "spe": 236
+   }
+  },
+  "capacite": {
+   "id": "rockslide",
+   "type": "rock",
+   "categorie": "Physical",
+   "puissance": 75
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": true,
+  "critique": false,
+  "degatsAttendus": [
+   348,
+   352,
+   360,
+   360,
+   364,
+   372,
+   372,
+   376,
+   384,
+   384,
+   388,
+   396,
+   396,
+   400,
+   408,
+   412
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 1,
+   "chance": 0.875,
+   "texte": "87.5% chance to OHKO"
+  },
+  "description": "252+ Atk Tyranitar Rock Slide vs. 252 HP / 252+ Def Charizard: 348-412 (96.6 - 114.4%) -- 87.5% chance to OHKO"
+ },
+ {
+  "nom": "Double : Canicule soleil",
+  "attaquant": {
+   "espece": "charizard",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "flying"
+   ],
+   "statsBase": {
+    "hp": 78,
+    "atk": 84,
+    "def": 78,
+    "spa": 109,
+    "spd": 85,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "blaze",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 298,
+   "poidsKg": 90.5,
+   "statsShowdown": {
+    "hp": 298,
+    "atk": 183,
+    "def": 192,
+    "spa": 348,
+    "spd": 206,
+    "spe": 299
+   }
+  },
+  "defenseur": {
+   "espece": "amoonguss",
+   "niveau": 100,
+   "types": [
+    "grass",
+    "poison"
+   ],
+   "statsBase": {
+    "hp": 114,
+    "atk": 85,
+    "def": 70,
+    "spa": 85,
+    "spd": 80,
+    "spe": 30
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "effectspore",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 432,
+   "poidsKg": 10.5,
+   "statsShowdown": {
+    "hp": 432,
+    "atk": 185,
+    "def": 177,
+    "spa": 206,
+    "spd": 284,
+    "spe": 96
+   }
+  },
+  "capacite": {
+   "id": "heatwave",
+   "type": "fire",
+   "categorie": "Special",
+   "puissance": 95
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": true,
+  "critique": false,
+  "degatsAttendus": [
+   282,
+   284,
+   288,
+   290,
+   294,
+   296,
+   302,
+   306,
+   308,
+   312,
+   314,
+   318,
+   320,
+   324,
+   326,
+   332
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ SpA Charizard Heat Wave vs. 252 HP / 252+ SpD Amoonguss in Sun: 282-332 (65.2 - 76.8%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Double : Protection cible unique",
+  "attaquant": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 358,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 358,
+    "atk": 394,
+    "def": 226,
+    "spa": 176,
+    "spd": 206,
+    "spe": 303
+   }
+  },
+  "defenseur": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 386,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 386,
+    "atk": 216,
+    "def": 342,
+    "spa": 266,
+    "spd": 249,
+    "spe": 190
+   }
+  },
+  "capacite": {
+   "id": "dragonclaw",
+   "type": "dragon",
+   "categorie": "Physical",
+   "puissance": 80
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": true,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   33,
+   33,
+   34,
+   34,
+   35,
+   35,
+   35,
+   36,
+   36,
+   37,
+   37,
+   37,
+   38,
+   38,
+   39,
+   39
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ Atk Garchomp Dragon Claw vs. 252 HP / 252+ Def Heatran through Reflect: 33-39 (8.5 - 10.1%)"
+ },
+ {
+  "nom": "Double : Mur Lumière + zone",
+  "attaquant": {
+   "espece": "sylveon",
+   "niveau": 100,
+   "types": [
+    "fairy"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 65,
+    "def": 65,
+    "spa": 110,
+    "spd": 130,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "cutecharm",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 332,
+   "poidsKg": 23.5,
+   "statsShowdown": {
+    "hp": 332,
+    "atk": 149,
+    "def": 166,
+    "spa": 350,
+    "spd": 296,
+    "spe": 219
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 266,
+    "def": 227,
+    "spa": 196,
+    "spd": 295,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "hypervoice",
+   "type": "normal",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": true,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": true,
+  "critique": false,
+  "degatsAttendus": [
+   38,
+   39,
+   39,
+   39,
+   40,
+   41,
+   41,
+   41,
+   42,
+   42,
+   43,
+   43,
+   43,
+   44,
+   45,
+   45
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ SpA Sylveon Hyper Voice vs. 252 HP / 252+ SpD Garchomp through Light Screen: 38-45 (9 - 10.7%)"
+ },
+ {
+  "nom": "Double : cible unique",
+  "attaquant": {
+   "espece": "urshifurapidstrike",
+   "niveau": 100,
+   "types": [
+    "fighting",
+    "water"
+   ],
+   "statsBase": {
+    "hp": 100,
+    "atk": 130,
+    "def": 100,
+    "spa": 63,
+    "spd": 60,
+    "spe": 97
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "unseenfist",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 342,
+   "poidsKg": 105,
+   "statsShowdown": {
+    "hp": 342,
+    "atk": 394,
+    "def": 236,
+    "spa": 145,
+    "spd": 156,
+    "spe": 293
+   }
+  },
+  "defenseur": {
+   "espece": "incineroar",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "dark"
+   ],
+   "statsBase": {
+    "hp": 95,
+    "atk": 115,
+    "def": 90,
+    "spa": 80,
+    "spd": 90,
+    "spe": 60
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "blaze",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 394,
+   "poidsKg": 83,
+   "statsShowdown": {
+    "hp": 394,
+    "atk": 266,
+    "def": 306,
+    "spa": 176,
+    "spd": 217,
+    "spe": 156
+   }
+  },
+  "capacite": {
+   "id": "closecombat",
+   "type": "fighting",
+   "categorie": "Physical",
+   "puissance": 120
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": true,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   332,
+   336,
+   338,
+   344,
+   348,
+   350,
+   356,
+   360,
+   362,
+   368,
+   372,
+   374,
+   380,
+   384,
+   386,
+   392
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Urshifu-Rapid-Strike Close Combat vs. 252 HP / 252+ Def Incineroar: 332-392 (84.2 - 99.4%) -- guaranteed 2HKO"
  },
  {
   "nom": "Protection + Orbe Vie",
@@ -27712,6 +28999,8 @@
   "protection": true,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    70,
@@ -27863,6 +29152,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": [
    100,
@@ -28015,6 +29306,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -28237,6 +29530,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -28423,6 +29718,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -28627,6 +29924,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -28812,6 +30111,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -28998,6 +30299,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -29218,6 +30521,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -29440,6 +30745,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -29660,6 +30967,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -29846,6 +31155,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -30032,6 +31343,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -30199,6 +31512,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [
@@ -30511,6 +31826,8 @@
   "protection": false,
   "murLumiere": false,
   "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
   "critique": false,
   "degatsAttendus": null,
   "matriceAttendue": [

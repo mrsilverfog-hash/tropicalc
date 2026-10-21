@@ -232,6 +232,13 @@ const CAS = [
     ['KO Champ Herbu', ['Gholdengo', SPA], ['Great Tusk', SPEC_DEF], 'Shadow Ball', { field: { terrain: 'Grassy' } }],
     ['KO PV partiels', ['Garchomp', ATK], ['Great Tusk', { ...PHYS_DEF, curHP: 45 }], 'Earthquake'],
     ['KO Sabotage sur Restes', ['Kingambit', ATK], ['Gholdengo', { ...PHYS_DEF, item: 'Leftovers' }], 'Knock Off'],
+    // Combat double : capacités de zone x0,75, écrans x2732/4096
+    ['Double : Séisme zone', ['Garchomp', ATK], ['Heatran', PHYS_DEF], 'Earthquake', { field: { gameType: 'Doubles' } }],
+    ['Double : Éboulement zone', ['Tyranitar', ATK], ['Charizard', PHYS_DEF], 'Rock Slide', { field: { gameType: 'Doubles' } }],
+    ['Double : Canicule soleil', ['Charizard', SPA], ['Amoonguss', SPEC_DEF], 'Heat Wave', { field: { gameType: 'Doubles', weather: 'Sun' } }],
+    ['Double : Protection cible unique', ['Garchomp', ATK], ['Heatran', PHYS_DEF], 'Dragon Claw', { field: { gameType: 'Doubles', defenderSide: { isReflect: true } } }],
+    ['Double : Mur Lumière + zone', ['Sylveon', SPA], ['Garchomp', SPEC_DEF], 'Hyper Voice', { field: { gameType: 'Doubles', defenderSide: { isLightScreen: true } } }],
+    ['Double : cible unique', ['Urshifu-Rapid-Strike', ATK], ['Incineroar', PHYS_DEF], 'Close Combat', { field: { gameType: 'Doubles' } }],
     ['Protection + Orbe Vie', ['Garchomp', { ...ATK, item: 'Life Orb' }], ['Great Tusk', PHYS_DEF], 'Earthquake', { field: { defenderSide: { isReflect: true } } }],
     ['Ombre Nocturne', ['Dusclops', PHYS_DEF], ['Great Tusk', PHYS_DEF], 'Night Shade'],
 
@@ -320,6 +327,9 @@ for (const [nom, [espA, setA], [espD, setD], nomCapacite, options = {}] of CAS) 
         protection: !!ecrans.isReflect,
         murLumiere: !!ecrans.isLightScreen,
         voileAurore: !!ecrans.isAuroraVeil,
+        double: !!(options.field && options.field.gameType === 'Doubles'),
+        cibleMultiple: !!(options.field && options.field.gameType === 'Doubles')
+            && ['allAdjacent', 'allAdjacentFoes'].includes(donnees.target),
         critique: !!options.crit,
         degatsAttendus: multi ? null : degats.length === 1 ? Array(16).fill(degats[0]) : degats,
         // Multi-coups : dégâts de chaque coup ([coup][jet])
