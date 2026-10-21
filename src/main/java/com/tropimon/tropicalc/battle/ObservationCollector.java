@@ -3141,6 +3141,182 @@ public final class ObservationCollector {
         return VITESSES_MAX_OBSERVEES.getOrDefault(espece, Integer.MAX_VALUE);
     }
 
+    // ------------------------------------------------------------------
+    // Combat double : conclusions par espèce, appelées par InferenceDouble
+    // (qui sait quel Pokémon a fait quoi). Mêmes faits que le simple :
+    // l'estimation adverse (construireAdversaireEstime) les utilise telle quelle.
+    // ------------------------------------------------------------------
+
+    public static void confirmerObjetDouble(String espece, String objetFr, String raison) {
+        if (espece == null || objetFr == null) return;
+        OBJETS_RETIRES.remove(espece);
+        if (!objetFr.equals(OBJETS_CONFIRMES.get(espece))) {
+            confirmerObjet(espece, objetFr, raison);
+            MessageDebugLogger.analyse("DOUBLE OBJET " + espece + " : " + objetFr + " (" + raison + ")");
+        }
+    }
+
+    public static void objetPerduDouble(String espece, String detail) {
+        if (espece != null) marquerObjetAdversairePerdu(espece, detail);
+    }
+
+    public static void confirmerTalentDouble(String espece, String talentAnglais) {
+        if (espece == null || talentAnglais == null) return;
+        String talentFr = ShowdownIdMapper.talent(talentAnglais);
+        if (talentFr == null) return;
+        TALENTS_CONFIRMES.put(espece, talentFr);
+        if ("Épine de Fer".equals(talentFr) || "Peau Dure".equals(talentFr)) TALENTS_CHIP_CONFIRMES.add(espece);
+    }
+
+    /** Deux capacités différentes sans sortir : pas d'objet Choix. */
+    public static void exclureChoixDouble(String espece, String preuve) {
+        if (espece == null || OBJETS_CHOIX_EXCLUS.contains(espece)) return;
+        OBJETS_CHOIX_EXCLUS.add(espece);
+        PREUVE_PAS_CHOIX.put(espece, preuve);
+        String objet = OBJETS_CONFIRMES.get(espece);
+        MessageDebugLogger.analyse("DOUBLE OBJET " + espece + " : pas d'objet Choix (" + preuve + ")"
+            + (objet != null && objet.contains("Choix") ? " ; " + objet + " confirmé auparavant" : ""));
+    }
+
+    /**
+     * Ordre d'action en double entre un adversaire et un de mes Pokémon, même
+     * priorité : il a agi avant (sa vitesse >= la mienne, Mouchoir si aucune
+     * version sans objet n'y arrive) ou après (sa vitesse <= la mienne).
+     */
+    public static void observerVitesseDouble(Pokemon adversaire, String idAdv, int stageVitAdv, boolean tailwindAdv,
+                                             Pokemon joueur, String idJoueur, double vJoueur, boolean adversaireAvant) {
+        String debut = "DOUBLE VITESSE " + adversaire.getEspece() + " " + idAdv + " / moi " + joueur.getEspece()
+            + " " + idJoueur + " (" + (int) vJoueur + ") | " + (adversaireAvant ? "il a agi avant" : "j'ai agi avant") + " | ";
+        if (!prioritesEgales(idJoueur, idAdv)) {
+            MessageDebugLogger.analyse(debut + "priorités différentes : ignoré");
+            return;
+        }
+        if (prioriteModifiee(idAdv, talentsBrutsPossibles(adversaire)) || prioriteModifiee(idJoueur, talentBrutJoueur(joueur))) {
+            MessageDebugLogger.analyse(debut + "priorité donnée par un talent ou un champ : ignoré");
+            return;
+        }
+        if (vJoueur <= 0) return;
+        int ancienStage = stageVitAdvTourEcoule;
+        boolean ancienVent = tailwindAdvTourEcoule;
+        Pokemon.Statut ancienStatut = statutAdvTourEcoule;
+        Field.Meteo ancienneMeteo = meteoTourEcoule;
+        Field.TypeTerrain ancienTerrain = terrainTourEcoule;
+        Field etat = FieldTracker.construireField();
+        stageVitAdvTourEcoule = stageVitAdv;
+        tailwindAdvTourEcoule = tailwindAdv;
+        statutAdvTourEcoule = adversaire.getStatut();
+        meteoTourEcoule = etat.getMeteo();
+        terrainTourEcoule = etat.getTerrain();
+        try {
+            if (adversaireAvant) {
+                MessageDebugLogger.analyse(debut + "=> sa vitesse >= " + (int) vJoueur);
+                conclureAdversairePlusRapide(adversaire, vJoueur);
+            } else {
+                Set<String> bruts = talentsBrutsPossibles(adversaire);
+                if (stageVitAdv < 0 || adversaire.getStatut() == Pokemon.Statut.PARALYSIE
+                        || bruts.contains("stall") || bruts.contains("myceliummight")) {
+                    MessageDebugLogger.analyse(debut + "vitesse réduite ou talent lent : pas de plafond");
+                    return;
+                }
+                VITESSES_MAX_OBSERVEES.merge(adversaire.getEspece(), (int) vJoueur, Math::min);
+                MessageDebugLogger.analyse(debut + "=> sa vitesse <= " + (int) vJoueur);
+            }
+        } finally {
+            stageVitAdvTourEcoule = ancienStage;
+            tailwindAdvTourEcoule = ancienVent;
+            statutAdvTourEcoule = ancienStatut;
+            meteoTourEcoule = ancienneMeteo;
+            terrainTourEcoule = ancienTerrain;
+        }
+    }
+
+    /**
+     * Coup reçu en double, perte mesurée sur mes PV (serveur) : prévu contre
+     * réel, puis Bandeau / Lunettes Choix si aucune version sans objet
+     * n'atteint la perte. etat porte déjà le x0,75 de zone et le double.
+     */
+    public static String analyserCoupRecuDouble(Pokemon attaquantBase, Pokemon estime, Pokemon defenseur,
+                                                String idCoup, Field etat, double perte, boolean ko) {
+        StringBuilder log = new StringBuilder();
+        MoveTemplate template = Moves.INSTANCE.getByName(idCoup);
+        if (template == null) return "capacité inconnue";
+        com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(template);
+        if (capacite == null) return "capacité non convertie";
+        boolean physique = capacite.getCategorie() == com.tropimon.tropicalc.calc.Move.Categorie.PHYSIQUE;
+        if (!physique && capacite.getCategorie() != com.tropimon.tropicalc.calc.Move.Categorie.SPECIALE) {
+            return "capacité de statut";
+        }
+        Stat statAtk = physique ? Stat.ATTAQUE : Stat.ATTAQUE_SPE;
+        int stageAtk = estime.getStage(Stat.ATTAQUE);
+        int stageAtkSpe = estime.getStage(Stat.ATTAQUE_SPE);
+        DamageCalculator.Resultat prevu = DamageCalculator.calculer(estime, defenseur, capacite, etat, etat.getEcransJoueur(), false);
+        log.append("perte ").append(ko ? ">= " : "").append(pct(perte))
+            .append(" | prévu ").append(prevu.immunise ? "immunisé" : pct(prevu.pourcentageMin) + " - " + pct(prevu.pourcentageMax))
+            .append(" [objet ").append(estime.getObjet()).append(", talent ").append(estime.getTalent())
+            .append(", ").append(physique ? "Atq " : "AtqSpé ").append(estime.getStatCalculee(statAtk))
+            .append(" stage ").append(physique ? stageAtk : stageAtkSpe)
+            .append(etat.isCibleMultiple() ? ", zone x0,75" : "").append(']');
+
+        String espece = attaquantBase.getEspece();
+        if (OBJETS_CONFIRMES.containsKey(espece)) return log.append(" | objet déjà confirmé : ").append(OBJETS_CONFIRMES.get(espece)).toString();
+        if (OBJETS_RETIRES.contains(espece)) return log.append(" | objet retiré").toString();
+        if (OBJETS_CHOIX_EXCLUS.contains(espece)) return log.append(" | Choix déjà exclu").toString();
+        if (PUISSANCE_NON_MODELISEE.contains(idCoup)) return log.append(" | puissance non modélisée").toString();
+        if (capacite.isMultiCoups()) return log.append(" | multi-coups").toString();
+        if (perte < 3.0) return log.append(" | perte trop faible").toString();
+
+        Set<String> bruts = talentsBrutsPossibles(attaquantBase);
+        if (seuilAutreQueChoix(bruts, capacite, physique, attaquantBase.getPourcentagePv()) < 0) {
+            return log.append(" | talent possible indiscernable d'un Choix ").append(bruts).toString();
+        }
+        double seuil = Math.max(seuilTalents(bruts), seuilObjets(espece, capacite, physique, defenseur));
+
+        Set<String> talents = new HashSet<>();
+        String talentConfirme = TALENTS_CONFIRMES.get(espece);
+        if (talentConfirme != null) {
+            talents.add(talentConfirme);
+        } else {
+            Set<String> reels = getTalentsReelsEspece(attaquantBase);
+            if (reels != null) talents.addAll(reels);
+            if (estime.getTalent() != null) talents.add(estime.getTalent());
+        }
+        if (talents.isEmpty()) talents.add(StatHypothesis.AUCUN);
+
+        double max = 0;
+        for (String talent : talents) {
+            Pokemon h = com.tropimon.tropicalc.calc.SetInferenceEngine.construirePokemonHypothetique(
+                estime, statAtk, 252, com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BOOSTEE,
+                StatHypothesis.AUCUN, talent);
+            for (Stat st : Stat.values()) {
+                if (st != Stat.PV) h.setStage(st, 0);
+            }
+            h.setStage(Stat.ATTAQUE, stageAtk);
+            h.setStage(Stat.ATTAQUE_SPE, stageAtkSpe);
+            if (attaquantBase.getStatut() != null) h.setStatut(attaquantBase.getStatut());
+            DamageCalculator.Resultat r = DamageCalculator.calculer(h, defenseur, capacite, etat, etat.getEcransJoueur(), false);
+            if (r.immunise) return log.append(" | immunisé selon le calcul").toString();
+            max = Math.max(max, r.pourcentageMax);
+        }
+        double plancher = max * seuil * 1.03 + 1.0;
+        double plafond = max * 1.5 * 1.03 + 1.0;
+        log.append(" | max sans objet ").append(pct(max)).append(" seuil x").append(seuil)
+            .append(" -> zone Choix ").append(pct(plancher)).append(" - ").append(pct(plafond));
+        if (max < 3.0) return log.append(" | coup trop faible").toString();
+        if (perte > plancher && perte <= plafond) {
+            String objet = physique ? "Bandeau Choix" : "Lunettes Choix";
+            String nomCapacite;
+            try {
+                nomCapacite = template.getDisplayName().getString();
+            } catch (Exception e) {
+                nomCapacite = idCoup;
+            }
+            confirmerObjet(espece, objet, nomCapacite + " : " + (ko ? ">= " : "") + Math.round(perte)
+                + " % > " + Math.round(max) + " % max sans objet" + (ko ? " (K.O.)" : "") + " (double)");
+            return log.append(" | => ").append(objet).append(" CONFIRMÉ").toString();
+        }
+        return log.append(perte > plafond ? " | au-dessus d'un Choix : autre cause" : " | explicable sans Choix").toString();
+    }
+
     private static void enregistrerObservation(boolean adversaireEtaitAttaquant, double perte,
                                                 Pokemon adversaire, Pokemon joueur,
                                                 MoveUseTracker.CoupDetecte coup) {
@@ -3773,6 +3949,14 @@ public final class ObservationCollector {
         if (BattleStateTracker.estCombatDouble()) {
             try {
                 BoostsDouble.tick();
+            } catch (Exception ignored) {
+            }
+            try {
+                PvEquipe.tick();
+            } catch (Throwable ignored) {
+            }
+            try {
+                InferenceDouble.tick();
             } catch (Exception ignored) {
             }
             return;
@@ -5021,6 +5205,7 @@ public final class ObservationCollector {
         PV_METAMORPH.clear();
         PvEquipe.vider();
         BoostsDouble.vider();
+        InferenceDouble.vider();
         TALENTS_PROBABLES.clear();
         PLAFONDS_DEFENSIFS.clear();
         PLANCHERS_DEFENSIFS.clear();

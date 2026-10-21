@@ -18,12 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,28 +52,6 @@ public final class DoubleOverlay implements HudRenderCallback {
     private static final int BORDURE_ACTIVE = 0xFFE8B84B;
     private static final int BORDURE_INACTIVE = 0xFF444444;
     private static final int FOND = 0xC0101010;
-
-    /** id Showdown -> "foes" (tous les adversaires) ou "all" (allié compris). */
-    private static Map<String, String> zone = null;
-
-    private static Map<String, String> zone() {
-        if (zone != null) return zone;
-        zone = new HashMap<>();
-        try (InputStream in = DoubleOverlay.class.getResourceAsStream("/assets/tropicalc/capacites-zone.txt")) {
-            if (in != null) {
-                BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-                String ligne;
-                while ((ligne = r.readLine()) != null) {
-                    ligne = ligne.trim();
-                    if (ligne.isEmpty() || ligne.startsWith("#")) continue;
-                    String[] p = ligne.split(" ");
-                    if (p.length == 2) zone.put(p[0], p[1]);
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        return zone;
-    }
 
     /** Un morceau de texte coloré. */
     private record Morceau(String texte, int couleur) {
@@ -178,7 +151,7 @@ public final class DoubleOverlay implements HudRenderCallback {
                 Pokemon adv = adverses.get(k);
                 entete[k + 1] = adv == null ? new Morceau("—", COULEUR_GRIS)
                     : new Morceau(nomsAdverses.get(k) + String.format(" %.0f%%", adv.getPourcentagePv())
-                        + texteBoostsCourt(adv), COULEUR_ADV);
+                        + texteBoostsCourt(adv) + texteObjetConfirme(adv), COULEUR_ADV);
             }
             entete[3] = new Morceau("", COULEUR_TEXTE);
             rangees.add(new Rangee(entete));
@@ -188,7 +161,7 @@ public final class DoubleOverlay implements HudRenderCallback {
                 com.tropimon.tropicalc.calc.Move capacite = convertirCapacite(coup);
                 if (capacite == null || capacite.estCapaciteDeStatut()) continue;
                 String id = coup.getName();
-                String typeZone = zone().get(id);
+                String typeZone = com.tropimon.tropicalc.battle.InferenceDouble.typeZone(id);
                 boolean allieTouche = "all".equals(typeZone) && allie != null;
                 int cibles = typeZone == null ? 1 : adversesVivants + (allieTouche ? 1 : 0);
                 boolean multiple = cibles >= 2;
@@ -304,9 +277,11 @@ public final class DoubleOverlay implements HudRenderCallback {
         }
         for (Pokemon p : adverses) {
             if (p == null) continue;
-            v.add(new Vit(CalcOverlay.nomEspece(p.getEspece()),
-                (int) DamageCalculator.vitesseEnCombat(p, field.getMeteo(), field.getTerrain(), FieldTracker.isTailwindAdversaire()),
-                true));
+            int vit = (int) DamageCalculator.vitesseEnCombat(p, field.getMeteo(), field.getTerrain(), FieldTracker.isTailwindAdversaire());
+            // Ordres d'action observés dans ce combat : plancher et plafond
+            vit = Math.max(vit, ObservationCollector.getVitesseMinObservee(p.getEspece()));
+            vit = Math.min(vit, ObservationCollector.getVitesseMaxObservee(p.getEspece()));
+            v.add(new Vit(CalcOverlay.nomEspece(p.getEspece()), vit, true));
         }
         boolean distorsion = FieldTracker.isDistorsion();
         v.sort((a, b) -> distorsion ? Integer.compare(a.vitesse(), b.vitesse()) : Integer.compare(b.vitesse(), a.vitesse()));
@@ -348,6 +323,12 @@ public final class DoubleOverlay implements HudRenderCallback {
         if (d != 0) sb.append(" Déf").append(d > 0 ? "+" : "").append(d);
         if (ds != 0) sb.append(" DéfSpé").append(ds > 0 ? "+" : "").append(ds);
         return sb.toString();
+    }
+
+    /** " [Mouchoir Choix]" quand l'objet est confirmé (vitesse, dégâts, message du jeu). */
+    private static String texteObjetConfirme(Pokemon p) {
+        String o = ObservationCollector.getObjetConfirme(p.getEspece());
+        return o == null ? "" : " [" + o + "]";
     }
 
     private static int attenuer(int couleur) {

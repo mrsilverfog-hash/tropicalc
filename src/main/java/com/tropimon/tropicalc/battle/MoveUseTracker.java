@@ -51,6 +51,7 @@ public final class MoveUseTracker {
         // tromperaient de Pokémon.
         if (BattleStateTracker.estCombatDouble()) {
             BoostsDouble.traiterMessage(message);
+            InferenceDouble.traiterMessage(message);
             return;
         }
         TypeTracker.traiterMessage(message);
