@@ -29,7 +29,8 @@ public final class MoveFlags {
         "razorshell", "sacredsword", "aerialace", "slash", "cut",
         "stoneaxe", "ceaselessedge", "kowtowcleave", "populationbomb",
         "behemothblade", "razorleaf", "solarblade", "xscissor",
-        "aircutter", "furycutter");
+        "aircutter", "furycutter", "aquacutter", "bitterblade", "mightycleave",
+        "psyblade", "secretsword", "tachyoncutter");
 
     public static boolean estTranchant(String showdownId) {
         return showdownId != null && TRANCHANT.contains(showdownId);

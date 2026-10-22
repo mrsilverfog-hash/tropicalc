@@ -326,8 +326,32 @@ public final class SmogonDataLoader {
         "kingambit", List.of("suckerpunch", "kowtowcleave", "ironhead", "uturn")
     );
 
+    // Forme vue en combat (Samurott de Hisui...) : espèce -> id Showdown de
+    // la forme ("samurott" -> "samurotthisui"). Sans ça, le set, le talent et
+    // les capacités étaient ceux de la forme de base (Torrent au lieu de
+    // Tranchant : Lame Ointe prévue à 15 % pour 25 % réels, logs du 22/10).
+    private static final Map<String, String> FORMES = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void noterForme(String espece, String formeShowdownId) {
+        if (espece == null || formeShowdownId == null) return;
+        FORMES.put(normaliser(espece), normaliser(formeShowdownId));
+    }
+
+    public static void oublierFormes() {
+        FORMES.clear();
+    }
+
     public static SmogonPokemonData getDonnees(String especeShowdownId) {
         String id = normaliser(especeShowdownId);
+        String forme = FORMES.get(id);
+        if (forme != null && !forme.equals(id)) {
+            SmogonPokemonData f = getDonneesId(forme);
+            if (f != null) return f;
+        }
+        return getDonneesId(id);
+    }
+
+    private static SmogonPokemonData getDonneesId(String id) {
         SmogonPokemonData base = null;
         if (charge) base = DONNEES.get(id);
         if (base == null && chargeUbers) base = DONNEES_UBERS.get(id);

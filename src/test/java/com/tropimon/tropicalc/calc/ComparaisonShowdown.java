@@ -166,7 +166,10 @@ public final class ComparaisonShowdown {
         Pokemon.Statut statut = STATUTS.get(p.get("statut").getAsString());
         if (statut != null) pokemon.setStatut(statut);
         pokemon.setPvActuels(p.get("pvActuels").getAsInt());
-        if (p.has("objetPerdu") && p.get("objetPerdu").getAsBoolean()) pokemon.setObjetPerdu(true);
+        if (p.has("objetPerdu") && p.get("objetPerdu").getAsBoolean()) {
+            pokemon.setObjetPerdu(true);
+            pokemon.setDepartLentActif(true);   // abilityOn de Showdown : talent actif
+        }
         if (p.has("alliesKo")) pokemon.setAlliesKo(p.get("alliesKo").getAsInt());
         return pokemon;
     }

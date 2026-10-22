@@ -232,6 +232,7 @@ const CAS = [
     ['KO Champ Herbu', ['Gholdengo', SPA], ['Great Tusk', SPEC_DEF], 'Shadow Ball', { field: { terrain: 'Grassy' } }],
     ['KO PV partiels', ['Garchomp', ATK], ['Great Tusk', { ...PHYS_DEF, curHP: 45 }], 'Earthquake'],
     ['KO Sabotage sur Restes', ['Kingambit', ATK], ['Gholdengo', { ...PHYS_DEF, item: 'Leftovers' }], 'Knock Off'],
+    ['Départ Lent actif', ['Regigigas', { nature: 'Adamant', evs: { atk: 252 }, ability: 'Slow Start', abilityOn: true }], ['Garchomp', PHYS_DEF], 'Body Slam'],
     // Combat double : capacités de zone x0,75, écrans x2732/4096
     ['Double : Séisme zone', ['Garchomp', ATK], ['Heatran', PHYS_DEF], 'Earthquake', { field: { gameType: 'Doubles' } }],
     ['Double : Éboulement zone', ['Tyranitar', ATK], ['Charizard', PHYS_DEF], 'Rock Slide', { field: { gameType: 'Doubles' } }],
@@ -380,6 +381,7 @@ const CAS_VITESSE = [
     ['Moteur Quark Vitesse', 'Iron Bundle', { nature: 'Timid', evs: { spe: 252, spa: 252 } }, { terrain: 'Electric' }],
     ['Proto-Synthèse hors Vitesse', 'Great Tusk', { nature: 'Jolly', evs: { atk: 252, spe: 252 } }, { weather: 'Sun' }],
     ['Niveau 50 Mouchoir', 'Dragapult', { ...RAPIDE, item: 'Choice Scarf' }, { niveau: 50 }],
+    ['Départ Lent vitesse', 'Regigigas', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Slow Start', abilityOn: true }],
     ['Allège objet perdu', 'Hitmonlee', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Unburden', abilityOn: true }],
     ['Allège objet perdu + stage +1', 'Hawlucha', { nature: 'Jolly', evs: { spe: 252 }, ability: 'Unburden', abilityOn: true, boosts: { spe: 1 } }],
     ['Allège objet perdu + paralysie', 'Sceptile', { nature: 'Timid', evs: { spe: 252 }, ability: 'Unburden', abilityOn: true, status: 'par' }],

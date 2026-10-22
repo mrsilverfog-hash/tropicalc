@@ -14,6 +14,7 @@ import com.tropimon.tropicalc.calc.Pokemon;
 import com.tropimon.tropicalc.calc.PokemonType;
 import com.tropimon.tropicalc.calc.ShowdownIdMapper;
 import com.tropimon.tropicalc.calc.Stat;
+import com.tropimon.tropicalc.calc.SmogonDataLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.registry.Registries;
 
@@ -265,6 +266,7 @@ public final class BattleStateTracker {
         PokemonProperties props = cbp.getProperties();
 
         var forme = espece.getForm(cbp.getState().getCurrentAspects());
+        noterForme(props.getSpecies(), forme);
         PokemonType type1 = ShowdownIdMapper.type(forme.getPrimaryType().getName());
         PokemonType type2 = forme.getSecondaryType() != null
             ? ShowdownIdMapper.type(forme.getSecondaryType().getName()) : null;
@@ -364,6 +366,7 @@ public final class BattleStateTracker {
         Species espece = p.getSpecies();
 
         var forme = espece.getForm(p.getAspects());
+        noterForme(espece.showdownId(), forme);
         PokemonType type1 = ShowdownIdMapper.type(forme.getPrimaryType().getName());
         PokemonType type2 = forme.getSecondaryType() != null
             ? ShowdownIdMapper.type(forme.getSecondaryType().getName()) : null;
@@ -559,6 +562,49 @@ public final class BattleStateTracker {
         } catch (Throwable ignored) {
         }
         return null;
+    }
+
+    // Forme régionale / alternative vue en combat, par espèce : son talent et
+    // son set Smogon ne sont pas ceux de la forme de base.
+    private static final java.util.Map<String, com.cobblemon.mod.common.pokemon.FormData> FORMES =
+        new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static void noterForme(String espece, com.cobblemon.mod.common.pokemon.FormData forme) {
+        try {
+            if (espece == null || forme == null) return;
+            String nom = forme.getName();
+            if (nom == null || nom.equalsIgnoreCase("normal") || nom.isBlank()) {
+                FORMES.remove(espece);
+                return;
+            }
+            FORMES.put(espece, forme);
+            SmogonDataLoader.noterForme(espece, espece + nom);
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void oublierFormes() {
+        FORMES.clear();
+        SmogonDataLoader.oublierFormes();
+    }
+
+    /** Noms (anglais) des talents possibles de cette espèce, forme vue en combat comprise ; null si inconnue. */
+    public static List<String> talentsPossibles(String espece) {
+        if (espece == null) return null;
+        List<String> r = new java.util.ArrayList<>();
+        try {
+            com.cobblemon.mod.common.pokemon.FormData f = FORMES.get(espece);
+            if (f != null) {
+                for (var a : f.getAbilities()) r.add(a.getTemplate().getName());
+                if (!r.isEmpty()) return r;
+            }
+            Species s = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(espece);
+            if (s == null) return null;
+            for (var a : s.getAbilities()) r.add(a.getTemplate().getName());
+        } catch (Exception e) {
+            return null;
+        }
+        return r;
     }
 
     private static int statBase(com.cobblemon.mod.common.pokemon.FormData forme, Stats stat) {

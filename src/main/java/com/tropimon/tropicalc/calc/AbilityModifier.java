@@ -404,6 +404,15 @@ public interface AbilityModifier {
                 }
             }
         };
+        // Départ Lent : Attaque divisée par deux les 5 premiers tours
+        m.put("Départ Lent", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE && ctx.attaquant.isDepartLentActif()) {
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 2048);
+                }
+            }
+        });
         m.put("Coloforce", doubleAttaque);
         m.put("Force Pure", doubleAttaque);
 

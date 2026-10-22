@@ -70,6 +70,8 @@ public final class SwitchOverlayRenderer {
         // encore montrer un objet déjà détruit (Ballon, Sabotage) ou pas
         // encore mis à jour après un vol via Pickpocket.
         ObservationCollector.appliquerObjetReelJoueur(candidat);
+        // Départ Lent : actif dès son entrée
+        if ("Départ Lent".equals(candidat.getTalent())) candidat.setDepartLentActif(true);
 
         Pokemon adversaire = ObservationCollector.adversaireAffiche(adversaireBase);
 

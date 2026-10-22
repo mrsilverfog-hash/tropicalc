@@ -102,6 +102,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("prismarmor", "Prisme-Armure");
         TALENTS.put("quickfeet", "Pied Véloce");
         TALENTS.put("sharpness", "Tranchant");
+        TALENTS.put("slowstart", "Départ Lent");
         TALENTS.put("eartheater", "Absorbe-Terre");
         TALENTS.put("iceface", "Tête de Gel");
         TALENTS.put("waterbubble", "Aquabulle");

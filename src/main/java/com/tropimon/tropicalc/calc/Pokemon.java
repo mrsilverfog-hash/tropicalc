@@ -62,6 +62,11 @@ public class Pokemon {
     public int getAlliesKo() { return alliesKo; }
     public void setAlliesKo(int n) { this.alliesKo = n; }
     public void setObjetPerdu(boolean v) { this.objetPerdu = v; }
+
+    // Départ Lent (Regigigas) en cours : Attaque et Vitesse divisées par deux
+    private boolean departLentActif = false;
+    public boolean isDepartLentActif() { return departLentActif; }
+    public void setDepartLentActif(boolean v) { this.departLentActif = v; }
     public boolean isCampAdverse() { return campAdverse; }
     public void setCampAdverse(boolean v) { this.campAdverse = v; }
 
@@ -185,6 +190,7 @@ public class Pokemon {
         p.statut = statut;
         p.campAdverse = campAdverse;
         p.objetPerdu = objetPerdu;
+        p.departLentActif = departLentActif;
         p.alliesKo = alliesKo;
         p.pvActuels = (int) Math.round(getPourcentagePv() / 100.0 * p.getPvMax());
         return p;

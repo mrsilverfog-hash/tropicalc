@@ -27952,6 +27952,159 @@
   "description": "252+ Atk Kingambit Knock Off (97.5 BP) vs. 252 HP / 252+ Def Gholdengo: 270-318 (71.4 - 84.1%) -- guaranteed 2HKO"
  },
  {
+  "nom": "Départ Lent actif",
+  "attaquant": {
+   "espece": "regigigas",
+   "niveau": 100,
+   "types": [
+    "normal"
+   ],
+   "statsBase": {
+    "hp": 110,
+    "atk": 160,
+    "def": 110,
+    "spa": 80,
+    "spd": 110,
+    "spe": 100
+   },
+   "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "slowstart",
+   "objet": null,
+   "objetPerdu": true,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 361,
+   "poidsKg": 420,
+   "statsShowdown": {
+    "hp": 361,
+    "atk": 460,
+    "def": 256,
+    "spa": 176,
+    "spd": 256,
+    "spe": 236
+   }
+  },
+  "defenseur": {
+   "espece": "garchomp",
+   "niveau": 100,
+   "types": [
+    "dragon",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 108,
+    "atk": 130,
+    "def": 95,
+    "spa": 80,
+    "spd": 85,
+    "spe": 102
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "sandveil",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 420,
+   "poidsKg": 95,
+   "statsShowdown": {
+    "hp": 420,
+    "atk": 296,
+    "def": 317,
+    "spa": 176,
+    "spd": 207,
+    "spe": 240
+   }
+  },
+  "capacite": {
+   "id": "bodyslam",
+   "type": "normal",
+   "categorie": "Physical",
+   "puissance": 85
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   67,
+   67,
+   69,
+   69,
+   70,
+   70,
+   72,
+   72,
+   73,
+   73,
+   75,
+   75,
+   76,
+   76,
+   78,
+   79
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 6,
+   "chance": -1,
+   "texte": "possible 6HKO"
+  },
+  "description": "252+ Atk Slow Start Regigigas Body Slam vs. 252 HP / 252+ Def Garchomp: 67-79 (15.9 - 18.8%) -- possible 6HKO"
+ },
+ {
   "nom": "Double : Séisme zone",
   "attaquant": {
    "espece": "garchomp",

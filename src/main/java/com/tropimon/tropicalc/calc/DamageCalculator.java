@@ -769,6 +769,7 @@ public class DamageCalculator {
         }
         if ("Mouchoir Choix".equals(p.getObjet())) mods.add(6144);
         if ("Balle Fer".equals(p.getObjet())) mods.add(2048);
+        if ("Départ Lent".equals(talent) && p.isDepartLentActif()) mods.add(2048);
 
         long m = 4096;
         for (int mod : mods) m = (m * mod + 2048) >> 12;
