@@ -308,9 +308,16 @@ public final class FieldTracker {
         }
 
         // Terrains
-        if (cle.contains("electricterrain") || cle.contains("grassyterrain")
-                || cle.contains("psychicterrain") || cle.contains("mistyterrain")) {
-            boolean finTerrain = cle.endsWith(".end");
+        // Seulement fieldstart / fieldend. Avant, toute clé contenant le nom du
+        // champ comptait : « heal.grassyterrain » (soin de fin de tour) le
+        // relançait pour 5 tours à CHAQUE tour, « activate.mistyterrain » aussi,
+        // et « fieldend.X » (qui ne finit pas par .end) le reposait au lieu de
+        // l'enlever : le champ restait affiché longtemps après sa disparition.
+        boolean debutChamp = cle.startsWith("cobblemon.battle.fieldstart.");
+        boolean finChamp = cle.startsWith("cobblemon.battle.fieldend.");
+        if ((debutChamp || finChamp) && (cle.contains("electricterrain") || cle.contains("grassyterrain")
+                || cle.contains("psychicterrain") || cle.contains("mistyterrain"))) {
+            boolean finTerrain = finChamp;
             if (cle.contains("electricterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.ELECTRIQUE;
             else if (cle.contains("grassyterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.HERBU;
             else if (cle.contains("psychicterrain")) terrainActif = finTerrain ? Field.TypeTerrain.AUCUN : Field.TypeTerrain.PSYCHIQUE;
@@ -452,6 +459,12 @@ public final class FieldTracker {
             // deux tours (talent à l'entrée) voit passer 5 messages de tour
             // avant sa fin : l'ancien compte (5, -1 par message, conclusion à 0)
             // concluait donc au Champ'Duit sur TOUS les champs normaux.
+            // Filet de sécurité : aucun champ ne dure plus de 8 tours (Champ'Duit)
+            if (toursDepuisDebutTerrain > 9) {
+                terrainActif = Field.TypeTerrain.AUCUN;
+                toursTerrainRestants = 0;
+                return;
+            }
             if (toursDepuisDebutTerrain >= 6 && dureeTerrainInitiale < 8 && !correctionChampDuitAppliquee) {
                 correctionChampDuitAppliquee = true;
                 toursTerrainRestants = Math.max(1, 8 - toursDepuisDebutTerrain);
