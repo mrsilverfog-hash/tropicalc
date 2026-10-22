@@ -39,6 +39,9 @@ public final class ObservationCollector {
 
     private static final Map<String, ProfilAdversaire> PROFILS = new HashMap<>();
     private static final Map<String, LinkedHashSet<String>> COUPS_ADVERSAIRE = new HashMap<>();
+    // Jeu de capacités COMPLET connu (copié par mon Métamorph) : plus de
+    // capacités Smogon supposées pour cette espèce
+    private static final Set<String> COUPS_ADVERSAIRE_COMPLETS = new HashSet<>();
 
     /**
      * Vrai dès qu'un Pokémon SAUVAGE (sans propriétaire) est détecté dans le
@@ -3882,6 +3885,7 @@ public final class ObservationCollector {
      * dépasserait 4.
      */
     private static void ajouterCapaciteAdversaire(String espece, String capaciteId, boolean estObservationReelle) {
+        if (COUPS_ADVERSAIRE_COMPLETS.contains(espece)) return;   // jeu complet déjà connu
         LinkedHashSet<String> ensemble = COUPS_ADVERSAIRE.computeIfAbsent(espece, k -> new LinkedHashSet<>());
         if (ensemble.contains(capaciteId)) return;
         if (ensemble.size() >= 4) {
@@ -3889,6 +3893,34 @@ public final class ObservationCollector {
             ensemble.remove(ensemble.iterator().next());
         }
         ensemble.add(capaciteId);
+    }
+
+    /**
+     * Morphing copie les 4 capacités de la cible : son jeu complet, connu pour
+     * de bon. Gardé quand Métamorph sort (avant : oublié au changement de
+     * Pokémon, on revenait aux capacités Smogon supposées).
+     */
+    private static void retenirCapacitesCopiees(List<String> ids) {
+        try {
+            Pokemon cible = cibleMorphingJoueur;
+            if (cible == null || ids == null || ids.isEmpty()) return;
+            String espece = cible.getEspece();
+            if (espece == null || estTransforme(true, espece)) return;   // la cible était elle-même transformée
+            LinkedHashSet<String> ensemble = new LinkedHashSet<>();
+            for (String id : ids) {
+                if (id != null && !id.isEmpty() && !"struggle".equals(id)) ensemble.add(id);
+            }
+            if (ensemble.isEmpty()) return;
+            COUPS_ADVERSAIRE.put(espece, ensemble);
+            COUPS_ADVERSAIRE_COMPLETS.add(espece);
+            MessageDebugLogger.analyse("MORPHING capacités de " + espece + " retenues (jeu complet) : " + ensemble);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** Vrai si toutes les capacités de cette espèce sont connues (copiées par Morphing). */
+    public static boolean coupsAdversaireComplets(String espece) {
+        return espece != null && COUPS_ADVERSAIRE_COMPLETS.contains(espece);
     }
 
     public static List<MoveTemplate> getCoupsAdversaireReveles(String espece) {
@@ -3992,6 +4024,7 @@ public final class ObservationCollector {
                 if (ids != null && !ids.isEmpty() && !ids.contains("transform") && !ids.equals(capacitesMorphing)) {
                     capacitesMorphing = new ArrayList<>(ids);
                     MessageDebugLogger.analyse("MORPHING capacités copiées : " + ids);
+                    retenirCapacitesCopiees(ids);
                 }
             }
         } catch (Exception ignored) {
@@ -5231,6 +5264,7 @@ public final class ObservationCollector {
         prescienceCible = null;
         PROFILS.clear();
         COUPS_ADVERSAIRE.clear();
+        COUPS_ADVERSAIRE_COMPLETS.clear();
         PP_UTILISES.clear();
         OBJETS_CONFIRMES.clear();
         TALENTS_CHIP_CONFIRMES.clear();

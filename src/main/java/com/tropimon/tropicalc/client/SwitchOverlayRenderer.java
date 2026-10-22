@@ -198,7 +198,8 @@ public final class SwitchOverlayRenderer {
         for (MoveTemplate t : coupsReveles) reveleIds.add(t.getName());
 
         List<MoveTemplate> coupsAdv = new ArrayList<>(coupsReveles);
-        if (smogon != null) {
+        // Jeu complet copié par mon Métamorph : rien à supposer
+        if (smogon != null && !ObservationCollector.coupsAdversaireComplets(especeAdv)) {
             for (String moveId : smogon.topMovesShowdownId()) {
                 if (!reveleIds.contains(moveId)) {
                     MoveTemplate t = Moves.INSTANCE.getByName(moveId);
