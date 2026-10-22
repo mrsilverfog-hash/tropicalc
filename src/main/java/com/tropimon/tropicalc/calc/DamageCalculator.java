@@ -1011,9 +1011,12 @@ public class DamageCalculator {
         // type réel normalement (STAB seulement si le type de la capacité
         // correspond vraiment, comme pour n'importe quel autre Pokémon).
         String talent = attaquant.getTalent();
-        boolean proteen = "Protéen".equals(talent) || "Libéro".equals(talent)
-            || (!attaquant.isTypesModifies()
-                && ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN.contains(attaquant.getEspece()));
+        // Une fois son type changé (déjà déclenché ce séjour), plus de STAB
+        // automatique, même talent connu : Amphinobi resté Eau après Surf, son
+        // Vibrobscur n'avait plus de bonus de type (logs du 22/10).
+        boolean proteen = !attaquant.isTypesModifies()
+            && ("Protéen".equals(talent) || "Libéro".equals(talent)
+                || ESPECES_PROTEEN_LIBERO_QUASI_CERTAIN.contains(attaquant.getEspece()));
 
         boolean typeOriginal = attaquant.possedeType(typeCapacite) || proteen;
 

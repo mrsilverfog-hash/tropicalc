@@ -1669,6 +1669,10 @@ public final class ObservationCollector {
             for (Stat st : Stat.values()) {
                 if (st != Stat.PV) att.setStage(st, BoostTracker.getStageJoueur(st));
             }
+            try {
+                TypeTracker.appliquer(att, def);
+            } catch (Exception ignored) {
+            }
             CoupDonne cd = new CoupDonne();
             cd.idCoup = idCoup;
             cd.morphing = joueurTransforme() || estTransforme(true, def.getEspece());
@@ -2384,6 +2388,13 @@ public final class ObservationCollector {
         }
         defenseur.setStatut(defCombat.getStatut());
 
+        // Types changés en combat (Protéen / Libéro une seule fois par entrée en
+        // 9G, Détrempage...) : Amphinobi resté Eau après Surf, Vibrobscur sans
+        // bonus de type et Psyko « immunisé » prévu sur lui (logs du 22/10)
+        try {
+            TypeTracker.appliquer(defenseur, attaquant);
+        } catch (Exception ignored) {
+        }
         // Tous ses boosts du moment, pas seulement Atq / AtqSpé : Force Ajoutée
         // compte chaque boost (Bronzong +3/+3 après Plénitude, prévu avec
         // +3 AtqSpé seulement : 56-66 % pour 86 % réels, 22/10), Big Splash
@@ -5262,7 +5273,15 @@ public final class ObservationCollector {
         if (BILAN.isEmpty()) return;
         int dedans = 0;
         List<String> ecarts = new ArrayList<>();
+        // Par espèce adverse (celle dont le set est estimé) pour le bilan cumulé
+        Map<String, int[]> parEspece = new HashMap<>();
         for (MesureBilan m : BILAN) {
+            String esp = especeAdverseDuBilan(m.quoi);
+            if (esp != null) {
+                int[] c = parEspece.computeIfAbsent(esp, k -> new int[2]);
+                c[0]++;
+                if (m.dedans()) c[1]++;
+            }
             if (m.dedans()) {
                 dedans++;
             } else {
@@ -5274,7 +5293,19 @@ public final class ObservationCollector {
             "BILAN DU COMBAT : %d/%d coups dans la fourchette prévue (%.0f %%)", dedans, BILAN.size(),
             100.0 * dedans / BILAN.size()));
         for (String e : ecarts) MessageDebugLogger.analyse("BILAN écart : " + e);
+        BilanCumule.noter(parEspece, BILAN.size(), dedans);
         BILAN.clear();
+    }
+
+    /** "reçu X coup -> moi" : X ; "donné moi coup -> X" : X. */
+    private static String especeAdverseDuBilan(String quoi) {
+        try {
+            if (quoi.startsWith("reçu ")) return quoi.split(" ")[1];
+            int i = quoi.indexOf("-> ");
+            if (quoi.startsWith("donné ") && i >= 0) return quoi.substring(i + 3).split(" ")[0];
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     public static void reinitialiser() {
