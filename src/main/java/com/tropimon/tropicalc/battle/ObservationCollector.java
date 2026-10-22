@@ -2054,6 +2054,12 @@ public final class ObservationCollector {
                     }
                     perte = cd.pvAvant - adv.getPourcentagePv() + cd.correctionPv;
                 }
+                if (perte < -0.5) {
+                    // Ses PV ont MONTÉ : un soin s'est glissé dans la mesure (Vœu
+                    // reçu en entrant : Eau Bouillante sur Samurott « -70 % », 22/10)
+                    MessageDebugLogger.analyse(log.append("PV en hausse (soin pendant la mesure) : ignoré").toString());
+                    return;
+                }
                 MoveTemplate t = Moves.INSTANCE.getByName(cd.idCoup);
                 com.tropimon.tropicalc.calc.Move capacite = t == null ? null : convertirCapacite(t);
                 log.append("PV avant ").append(pct(cd.pvAvant)).append(" | perte ").append(pct(perte));
@@ -2571,7 +2577,11 @@ public final class ObservationCollector {
     private static void tenterPlafondOffensif(CoupRecu cr, Pokemon estime,
             com.tropimon.tropicalc.calc.Move capacite, Stat statAtk, double perte,
             DamageCalculator.Resultat prevu, StringBuilder log) {
-        if (prevu.pourcentageMin < 6.0 || perte >= prevu.pourcentageMin * 0.9 - 1.0) return;
+        // Mes PV sont exacts : un coup sous le jet minimum de plus de 3 % est
+        // un vrai écart. L'ancien seuil (-10 % -1 point) laissait passer les
+        // petits coups répétés (Demi-Tour d'Félinferno à 9 % pour 10,1-12 %
+        // prévus, quatre fois de suite, logs du 22/10).
+        if (prevu.pourcentageMin < 6.0 || perte >= prevu.pourcentageMin * 0.97 - 0.5) return;
         String espece = cr.especeAttaquant;
         // Stat de l'estimation SANS plafond déjà appliqué (base commune à
         // toutes les mesures)
@@ -2764,6 +2774,7 @@ public final class ObservationCollector {
             if (actif == null || !memeEspece(actif.getEspece(), cr.especeDefenseur)) return "Pokémon touché introuvable";
             perte = cr.pvAvant - actif.getPourcentagePv() + cr.correctionPv;
         }
+        if (perte < -0.5) return "PV en hausse (soin pendant la mesure) : ignoré";
         log.append("PV avant ").append(pct(cr.pvAvant)).append(" | perte ").append(pct(perte));
         if (cr.correctionPv != 0) log.append(" (corrigée de ").append(pct(cr.correctionPv)).append(")");
         if (cr.ko) log.append(" K.O. (borne basse)");
