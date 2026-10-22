@@ -1798,6 +1798,20 @@ public final class ObservationCollector {
                     break;
                 }
             }
+            // Effets annoncés après le coup (Restes, Vampigraine, poison...) :
+            // chacun doit avoir laissé sa propre valeur stable, sinon la valeur
+            // « juste après le coup » est déjà celle d'après ces effets (Pomme
+            // Acide sur Bronzong mesurée 11,6 % au lieu de ~5 %, Restes et
+            // Vampigraine compris, logs du 22/10).
+            int effetsApres = 0;
+            for (long e : effets) if (e > instantMs && e <= instantMs + 6000) effetsApres++;
+            if (effetsApres > 0) {
+                int changementsApres = 0;
+                for (PvStable p : histo) {
+                    if (memeEspece(p.espece, especeVisee) && p.t > instantMs && p.t <= instantMs + 8000) changementsApres++;
+                }
+                if (changementsApres < 1 + effetsApres) return null;
+            }
             java.util.List<Double> valeurs = new java.util.ArrayList<>();
             if (!Double.isNaN(v0)) valeurs.add(v0);
             valeurs.addAll(suite);
@@ -2363,6 +2377,13 @@ public final class ObservationCollector {
         }
         defenseur.setStatut(defCombat.getStatut());
 
+        // Tous ses boosts du moment, pas seulement Atq / AtqSpé : Force Ajoutée
+        // compte chaque boost (Bronzong +3/+3 après Plénitude, prévu avec
+        // +3 AtqSpé seulement : 56-66 % pour 86 % réels, 22/10), Big Splash
+        // la Défense.
+        for (Stat st : Stat.values()) {
+            if (st != Stat.PV) attaquant.setStage(st, BoostTracker.getStageAdversaire(st));
+        }
         CoupRecu cr = new CoupRecu();
         cr.idCoup = idCoup;
         cr.morphing = joueurTransforme() || estTransforme(true, attaquant.getEspece());
@@ -2530,7 +2551,7 @@ public final class ObservationCollector {
                 int stat = h.getStatCalculee(statAtk);
                 if (stat <= meilleure) continue;   // déjà mieux trouvé
                 for (Stat st : Stat.values()) {
-                    if (st != Stat.PV) h.setStage(st, 0);
+                    if (st != Stat.PV) h.setStage(st, estime.getStage(st));   // Def (Big Splash), tous les boosts (Force Ajoutée)
                 }
                 h.setStage(Stat.ATTAQUE, cr.stageAtk);
                 h.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
@@ -2675,7 +2696,7 @@ public final class ObservationCollector {
                 int stat = h.getStatCalculee(statAtk);
                 if (stat >= moindre) continue;
                 for (Stat st : Stat.values()) {
-                    if (st != Stat.PV) h.setStage(st, 0);
+                    if (st != Stat.PV) h.setStage(st, estime.getStage(st));   // Def (Big Splash), tous les boosts (Force Ajoutée)
                 }
                 h.setStage(Stat.ATTAQUE, cr.stageAtk);
                 h.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
@@ -2870,7 +2891,7 @@ public final class ObservationCollector {
                 estime, statAtk, 252, com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BOOSTEE,
                 StatHypothesis.AUCUN, talent);
             for (Stat st : Stat.values()) {
-                if (st != Stat.PV) h.setStage(st, 0);
+                if (st != Stat.PV) h.setStage(st, estime.getStage(st));   // Def (Big Splash), tous les boosts (Force Ajoutée)
             }
             h.setStage(Stat.ATTAQUE, cr.stageAtk);
             h.setStage(Stat.ATTAQUE_SPE, cr.stageAtkSpe);
@@ -3320,7 +3341,7 @@ public final class ObservationCollector {
                 estime, statAtk, 252, com.tropimon.tropicalc.calc.SetInferenceEngine.NatureBoost.BOOSTEE,
                 StatHypothesis.AUCUN, talent);
             for (Stat st : Stat.values()) {
-                if (st != Stat.PV) h.setStage(st, 0);
+                if (st != Stat.PV) h.setStage(st, estime.getStage(st));   // Def (Big Splash), tous les boosts (Force Ajoutée)
             }
             h.setStage(Stat.ATTAQUE, stageAtk);
             h.setStage(Stat.ATTAQUE_SPE, stageAtkSpe);

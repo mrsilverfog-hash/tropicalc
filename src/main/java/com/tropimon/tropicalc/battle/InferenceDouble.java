@@ -132,6 +132,17 @@ public final class InferenceDouble {
                     break;
                 }
             }
+            // Chaque effet annoncé après le coup doit avoir sa propre valeur stable
+            int effetsApres = 0;
+            for (long e : effets) if (e > t && e <= t + 6000) effetsApres++;
+            if (effetsApres > 0) {
+                int changementsApres = 0;
+                for (long[] p : histo) if (p[0] > t && p[0] <= t + 8000) changementsApres++;
+                if (changementsApres < 1 + effetsApres) {
+                    // Peut-être pas encore appliqués : on attend, puis on abandonne
+                    return System.currentTimeMillis() - t < 8500 ? null : new int[]{-2, -2};
+                }
+            }
             List<Integer> valeurs = new ArrayList<>();
             if (v0 >= 0) valeurs.add(v0);
             valeurs.addAll(suite);
