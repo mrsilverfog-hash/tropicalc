@@ -117,6 +117,62 @@ public final class FieldTracker {
     private static boolean stickyWebJoueur = false;
     private static boolean stickyWebAdversaire = false;
 
+    // ------------------------------------------------------------------
+    // Durées pour le HUD (points des tours restants)
+    // ------------------------------------------------------------------
+
+    /**
+     * Durée d'un effet en tours. Posé par une capacité, il compte le tour en
+     * cours (Mur Lumière au tour T : actif T..T+4) ; posé entre deux tours
+     * (talent à l'entrée), le message de tour suivant ne le décompte pas.
+     * S'il dure au-delà de 5 tours sans message de fin, c'est un objet qui
+     * le prolonge (Roche, Lumargile, Champ'Duit) : il passe à 8.
+     */
+    public static final class Duree {
+        private int total = 0;          // 0 = inactif
+        private int tours = 0;          // messages de tour (ou fins de tour de météo) depuis le début
+        private boolean parCoup = true;
+
+        void demarrer(int t, boolean coup) { total = t; tours = 0; parCoup = coup; }
+        void arreter() { total = 0; tours = 0; }
+        void tour() {
+            if (total <= 0) return;
+            tours++;
+            if (bruts() <= 0 && total < 8) total = 8;
+        }
+        private int bruts() { return total - tours + (parCoup ? 0 : 1); }
+        public boolean actif() { return total > 0; }
+        /** Tours restants, tour en cours compris (au moins 1 tant qu'il est actif). */
+        public int restants() { return total <= 0 ? 0 : Math.max(1, Math.min(total, bruts())); }
+        public int total() { return total; }
+        void copierDe(Duree d) { total = d.total; tours = d.tours; parCoup = d.parCoup; }
+    }
+
+    private static final Duree D_METEO = new Duree();
+    private static final Duree D_TERRAIN = new Duree();
+    private static final Duree D_DISTORSION = new Duree();
+    private static final Duree D_VENT_JOUEUR = new Duree(), D_VENT_ADV = new Duree();
+    private static final Duree D_PROTECTION_JOUEUR = new Duree(), D_PROTECTION_ADV = new Duree();
+    private static final Duree D_MUR_JOUEUR = new Duree(), D_MUR_ADV = new Duree();
+    private static final Duree D_VOILE_JOUEUR = new Duree(), D_VOILE_ADV = new Duree();
+
+    public static Duree dureeMeteo() { return D_METEO; }
+    public static Duree dureeTerrainActif() { return D_TERRAIN; }
+    public static Duree dureeDistorsion() { return D_DISTORSION; }
+    public static Duree dureeVentArriere(boolean joueur) { return joueur ? D_VENT_JOUEUR : D_VENT_ADV; }
+    public static Duree dureeProtection(boolean joueur) { return joueur ? D_PROTECTION_JOUEUR : D_PROTECTION_ADV; }
+    public static Duree dureeMurLumiere(boolean joueur) { return joueur ? D_MUR_JOUEUR : D_MUR_ADV; }
+    public static Duree dureeVoileAurore(boolean joueur) { return joueur ? D_VOILE_JOUEUR : D_VOILE_ADV; }
+
+    public static boolean isStealthRockAdversaire() { return stealthRockAdversaire; }
+    public static int getSpikesAdversaire() { return spikesAdversaire; }
+    public static int getToxicSpikesAdversaire() { return toxicSpikesAdversaire; }
+    public static boolean isStickyWebAdversaire() { return stickyWebAdversaire; }
+
+    // Le message précédent était-il une capacité (effet posé pendant le tour)
+    // ou une entrée / un talent / un début de tour (posé entre deux tours) ?
+    private static boolean dernierMessageCoup = false;
+
     public static void traiterMessage(Text message) {
         if (message == null) return;
         // Prescience sans cible (Pokémon K.O. sur la position visée) : le
@@ -139,14 +195,23 @@ public final class FieldTracker {
         TranslatableTextContent contenu = (TranslatableTextContent) message.getContent();
         String cle = contenu.getKey();
         if (cle == null) return;
+        boolean poseParCoup = dernierMessageCoup;
+        if (cle.equals("cobblemon.battle.used_move") || cle.equals("cobblemon.battle.used_move_on")) {
+            dernierMessageCoup = true;
+        } else if (cle.equals("cobblemon.battle.turn") || cle.startsWith("cobblemon.battle.switch.")
+                || cle.startsWith("cobblemon.battle.ability.") || cle.startsWith("cobblemon.battle.dragged_out")) {
+            dernierMessageCoup = false;
+        }
 
         // Distorsion (Trick Room)
         if (cle.equals("cobblemon.battle.fieldstart.trickroom")) {
             distorsion = true;
+            D_DISTORSION.demarrer(5, poseParCoup);
             return;
         }
         if (cle.equals("cobblemon.battle.fieldend.trickroom")) {
             distorsion = false;
+            D_DISTORSION.arreter();
             return;
         }
 
@@ -161,6 +226,7 @@ public final class FieldTracker {
             if ("end".equals(action)) {
                 meteoActive = Field.Meteo.AUCUNE;
                 toursMeteoRestants = 0;
+                D_METEO.arreter();
             } else if ("start".equals(action) || "upkeep".equals(action)) {
                 Field.Meteo nouvelle = switch (type) {
                     case "raindance" -> Field.Meteo.PLUIE;
@@ -179,6 +245,11 @@ public final class FieldTracker {
                 if ("start".equals(action) && nouvelle != meteoActive) {
                     toursMeteoRestants = rocheAllongeMeteo(nouvelle) ? 8 : 5;
                 }
+                // Points du HUD : chaque « upkeep » est une fin de tour avec la
+                // météo (4 pour 5 tours, 7 pour 8 avec la roche)
+                if ("start".equals(action)) D_METEO.demarrer(rocheAllongeMeteo(nouvelle) ? 8 : 5, true);
+                else if (!D_METEO.actif()) D_METEO.demarrer(5, true);   // déjà là à notre arrivée
+                else D_METEO.tour();
                 meteoActive = nouvelle;
             }
             return;
@@ -199,14 +270,17 @@ public final class FieldTracker {
                 case "reflect" -> {
                     if (allie) { reflectJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { reflectAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
+                    majDuree(allie ? D_PROTECTION_JOUEUR : D_PROTECTION_ADV, debut, dureeEcran(), poseParCoup);
                 }
                 case "lightscreen" -> {
                     if (allie) { lightScreenJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { lightScreenAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
+                    majDuree(allie ? D_MUR_JOUEUR : D_MUR_ADV, debut, dureeEcran(), poseParCoup);
                 }
                 case "auroraveil" -> {
                     if (allie) { auroraVeilJoueur = debut; if (debut) toursEcransJoueurRestants = dureeEcran(); }
                     else { auroraVeilAdversaire = debut; if (debut) { toursEcransAdversaireRestants = dureeEcran(); capturerPoseurEcran(); } }
+                    majDuree(allie ? D_VOILE_JOUEUR : D_VOILE_ADV, debut, dureeEcran(), poseParCoup);
                 }
                 case "tailwind" -> {
                     // Vent Arrière : x2 vitesse pour tout le camp, 4 tours. Même
@@ -222,6 +296,7 @@ public final class FieldTracker {
                         tailwindAdversaire = debut;
                         toursTailwindAdversaireRestants = debut ? 4 : 0;
                     }
+                    majDuree(allie ? D_VENT_JOUEUR : D_VENT_ADV, debut, 4, poseParCoup);
                 }
                 case "stealthrock" -> {
                     if (allie) stealthRockJoueur = debut; else stealthRockAdversaire = debut;
@@ -325,7 +400,9 @@ public final class FieldTracker {
 
             if (finTerrain) {
                 toursTerrainRestants = 0;
+                D_TERRAIN.arreter();
             } else {
+                D_TERRAIN.demarrer(dureeTerrain(), poseParCoup);
                 toursTerrainRestants = dureeTerrain();
                 dureeTerrainInitiale = toursTerrainRestants;
                 toursDepuisDebutTerrain = 0;
@@ -333,6 +410,11 @@ public final class FieldTracker {
                 capturerPoseurTerrain(argsTerrain.length > 0 ? argsTerrain[0] : null);
             }
         }
+    }
+
+    private static void majDuree(Duree d, boolean debut, int total, boolean parCoup) {
+        if (debut) d.demarrer(total, parCoup);
+        else d.arreter();
     }
 
     public static Field construireField() {
@@ -425,6 +507,16 @@ public final class FieldTracker {
     }
 
     public static void nouveauTour() {
+        D_TERRAIN.tour();
+        D_DISTORSION.tour();
+        D_VENT_JOUEUR.tour();
+        D_VENT_ADV.tour();
+        D_PROTECTION_JOUEUR.tour();
+        D_PROTECTION_ADV.tour();
+        D_MUR_JOUEUR.tour();
+        D_MUR_ADV.tour();
+        D_VOILE_JOUEUR.tour();
+        D_VOILE_ADV.tour();
         if (toursMeteoRestants > 0) toursMeteoRestants--;
         if (futureSightJoueurTours > 0) futureSightJoueurTours--;
         if (futureSightAdversaireTours > 0) futureSightAdversaireTours--;
@@ -474,6 +566,11 @@ public final class FieldTracker {
     }
 
     public static void reinitialiser() {
+        for (Duree d : new Duree[]{D_METEO, D_TERRAIN, D_DISTORSION, D_VENT_JOUEUR, D_VENT_ADV,
+                D_PROTECTION_JOUEUR, D_PROTECTION_ADV, D_MUR_JOUEUR, D_MUR_ADV, D_VOILE_JOUEUR, D_VOILE_ADV}) {
+            d.arreter();
+        }
+        dernierMessageCoup = false;
         meteoActive = Field.Meteo.AUCUNE;
         terrainActif = Field.TypeTerrain.AUCUN;
         distorsion = false;
@@ -541,5 +638,16 @@ public final class FieldTracker {
         // l'échange - mieux vaut arrêter d'en déduire Lumargile que de
         // continuer avec une attribution devenue fausse.
         poseurEcranAdversaire = null;
+        echanger(D_VENT_JOUEUR, D_VENT_ADV);
+        echanger(D_PROTECTION_JOUEUR, D_PROTECTION_ADV);
+        echanger(D_MUR_JOUEUR, D_MUR_ADV);
+        echanger(D_VOILE_JOUEUR, D_VOILE_ADV);
+    }
+
+    private static void echanger(Duree a, Duree b) {
+        Duree t = new Duree();
+        t.copierDe(a);
+        a.copierDe(b);
+        b.copierDe(t);
     }
 }

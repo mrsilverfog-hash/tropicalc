@@ -201,12 +201,23 @@ public final class DoubleOverlay implements HudRenderCallback {
         for (Morceau m : ordre) largeurOrdre += tr.getWidth(m.texte());
         int largeur = Math.max(Math.max(largeurTableau, largeurTitres), Math.max(largeurOrdre, tr.getWidth("TropiCalc Double")));
 
-        int hauteurTotale = 2 * hauteurLigne + 4;
+        // Bloc Terrain / Toi / Adv, comme en simple (construit à y = 0, décalé au dessin)
+        Pokemon refMoi = null, refAdv = null;
+        for (Pokemon p : mesPokemon) if (p != null && refMoi == null) refMoi = p;
+        for (Pokemon p : adverses) if (p != null && refAdv == null) refAdv = p;
+        if (refMoi == null) refMoi = refAdv;
+        if (refAdv == null) refAdv = refMoi;
+        BlocTerrain blocTerrain = refMoi == null ? null
+            : BlocTerrain.construire(tr, field, refMoi, refAdv, x, 0, Math.min(290, client.getWindow().getScaledWidth() - x - 12));
+        int hBloc = blocTerrain == null || blocTerrain.hauteur == 0 ? 0 : blocTerrain.hauteur + 3;
+        if (hBloc > 0) largeur = Math.max(largeur, blocTerrain.largeur());
+
+        int hauteurTotale = 2 * hauteurLigne + 4 + hBloc;
         for (List<Rangee> t : tableaux) hauteurTotale += (t.size() + 1) * hauteurLigne + 12;
         int y = Math.max(4, Math.min(120, client.getWindow().getScaledHeight() - hauteurTotale - 4));
 
         // En-tête général
-        int hEntete = 2 * hauteurLigne + 4;
+        int hEntete = 2 * hauteurLigne + 4 + hBloc;
         context.fill(x - 4, y - 4, x + largeur + 4, y - 4 + hEntete, FOND);
         bordure(context, x - 4, y - 4, largeur + 8, hEntete, BORDURE_INACTIVE);
         context.drawText(tr, "TropiCalc Double", x, y, COULEUR_TITRE, true);
@@ -216,7 +227,12 @@ public final class DoubleOverlay implements HudRenderCallback {
             context.drawText(tr, m.texte(), xo, y, m.couleur(), true);
             xo += tr.getWidth(m.texte());
         }
-        y += hauteurLigne + 6;
+        y += hauteurLigne;
+        if (hBloc > 0) {
+            blocTerrain.dessiner(context, y + 1);
+            y += hBloc;
+        }
+        y += 6;
 
         for (int i = 0; i < tableaux.size(); i++) {
             List<Rangee> t = tableaux.get(i);

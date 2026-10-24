@@ -52,6 +52,11 @@ public final class MoveUseTracker {
         if (BattleStateTracker.estCombatDouble()) {
             BoostsDouble.traiterMessage(message);
             InferenceDouble.traiterMessage(message);
+            // Décompte des tours (écrans, Vent Arrière, champ, Distorsion) :
+            // en simple il passe par ObservationCollector, coupé en double
+            if (message.getContent() instanceof TranslatableTextContent tc && CLE_NOUVEAU_TOUR.equals(tc.getKey())) {
+                FieldTracker.nouveauTour();
+            }
             return;
         }
         TypeTracker.traiterMessage(message);

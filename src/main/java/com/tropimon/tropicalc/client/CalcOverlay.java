@@ -38,9 +38,13 @@ public final class CalcOverlay implements HudRenderCallback {
 
     private record LigneTexte(String texte, int x, int y, int couleur) {}
     private record LigneIcone(int type, int x, int y) {}   // voir TEXTURES_ICONES pour la liste des types
+    private record LigneRect(int x, int y, int w, int h, int couleur) {}
+    private record LigneTexture(net.minecraft.util.Identifier id, int x, int y, int taille) {}
 
     private final List<LigneTexte> lignesAffichage = new ArrayList<>();
     private final List<LigneIcone> iconesAffichage = new ArrayList<>();
+    private final List<LigneRect> rectsAffichage = new ArrayList<>();
+    private final List<LigneTexture> texturesAffichage = new ArrayList<>();
 
     /** "dort encore 2 tours, agit au tour 15" / "se réveille et agit ce tour (tour 15)". */
     private static String texteRepos(int tours) {
@@ -100,6 +104,8 @@ public final class CalcOverlay implements HudRenderCallback {
 
         lignesAffichage.clear();
         iconesAffichage.clear();
+        rectsAffichage.clear();
+        texturesAffichage.clear();
 
         joueur.setCoupsRageFistSubis(ObservationCollector.getCoupsRageFistJoueur(joueur.getEspece()));
 
@@ -220,6 +226,17 @@ public final class CalcOverlay implements HudRenderCallback {
         dessinerTexte(titre, x, y, COULEUR_TITRE);
         y += hauteurLigne + 2;
 
+        // --- Terrain / Toi / Adv : pastilles colorées, tours restants en carrés ---
+        // En haut : ces effets changent tous les nombres affichés en dessous.
+        BlocTerrain blocTerrain = BlocTerrain.construire(client.textRenderer, field, joueur, adversaire,
+            x, y + 1, Math.min(290, client.getWindow().getScaledWidth() - x - 12));
+        if (blocTerrain.hauteur > 0) {
+            for (BlocTerrain.Rect rr : blocTerrain.rects) rectsAffichage.add(new LigneRect(rr.x(), rr.y(), rr.w(), rr.h(), rr.couleur()));
+            for (BlocTerrain.Icone ic : blocTerrain.icones) texturesAffichage.add(new LigneTexture(ic.id(), ic.x(), ic.y(), 9));
+            for (BlocTerrain.Texte tx : blocTerrain.textes) dessinerTexte(tx.texte(), tx.x(), tx.y(), tx.couleur());
+            y += blocTerrain.hauteur + 3;
+        }
+
         // Boosts actifs des deux camps, pour vérifier visuellement que le
         // mod utilise bien le même stage que ce qui est réellement en jeu.
         String boostsJoueur = formatBoosts(joueur);
@@ -326,7 +343,7 @@ public final class CalcOverlay implements HudRenderCallback {
         boolean egalite = vitJoueur == vitAdversaire;
         String fleche = morphingIncertain ? "?" : egalite ? "=" : (joueurPremier ? ">" : "<");
         int couleurVitesse = morphingIncertain || egalite ? COULEUR_TEXTE : (joueurPremier ? COULEUR_REVELE : COULEUR_KO);
-        String suffixe = distorsion ? " [Distorsion]" : "";
+        String suffixe = "";   // Distorsion : pastille dans le bloc Terrain
         String texteVitesse = String.format("Vitesse : %d%s %s %d%s", vitJoueur, plageMorphing, fleche, vitAdversaire, suffixe);
         dessinerTexte(texteVitesse, x, y, couleurVitesse);
 
@@ -658,117 +675,6 @@ public final class CalcOverlay implements HudRenderCallback {
             y += hauteurLigne;
         }
 
-        // --- Météo : une ligne avec icône selon le type actif, et son effet ---
-        if (field.getMeteo() != com.tropimon.tropicalc.calc.Field.Meteo.AUCUNE
-                && FieldTracker.getToursMeteoRestants() > 0) {
-            int typeIconeMeteo = switch (field.getMeteo()) {
-                case SOLEIL, SOLEIL_INTENSE -> 2;
-                case PLUIE, PLUIE_INTENSE -> 3;
-                case SABLE -> 4;
-                case NEIGE -> 5;
-                default -> -1;
-            };
-            if (typeIconeMeteo >= 0) dessinerIcone(typeIconeMeteo, x, y);
-
-            String nomMeteo = switch (field.getMeteo()) {
-                case SOLEIL -> "Soleil";
-                case SOLEIL_INTENSE -> "Soleil Intense";
-                case PLUIE -> "Pluie";
-                case PLUIE_INTENSE -> "Pluie Battante";
-                case SABLE -> "Tempête de Sable";
-                case NEIGE -> "Tempête de Neige";
-                default -> "Météo";
-            };
-            String effetMeteo = switch (field.getMeteo()) {
-                case SOLEIL, SOLEIL_INTENSE -> "+50% Feu / -50% Eau";
-                case PLUIE, PLUIE_INTENSE -> "+50% Eau / -50% Feu";
-                case SABLE -> {
-                    boolean quelquUnRoche = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE)
-                        || adversaire.possedeType(com.tropimon.tropicalc.calc.PokemonType.ROCHE);
-                    String base = "1/16 hp/t (Roche/Sol/Acier immunisés)";
-                    yield quelquUnRoche ? base + ", +50% DéfSpé Roche" : base;
-                }
-                case NEIGE -> {
-                    boolean quelquUnGlace = joueur.possedeType(com.tropimon.tropicalc.calc.PokemonType.GLACE)
-                        || adversaire.possedeType(com.tropimon.tropicalc.calc.PokemonType.GLACE);
-                    yield quelquUnGlace ? "+50% Déf Glace" : "0% (aucun Glace)";
-                }
-                default -> "";
-            };
-            dessinerTexte(String.format("%s (~%dt) (%s)", nomMeteo, FieldTracker.getToursMeteoRestants(), effetMeteo),
-                x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-
-        // --- Terrain : une ligne avec icône selon le type actif, et son effet ---
-        if (field.getTerrain() != com.tropimon.tropicalc.calc.Field.TypeTerrain.AUCUN
-                && FieldTracker.getToursTerrainRestants() > 0) {
-            int typeIconeTerrain = switch (field.getTerrain()) {
-                case ELECTRIQUE -> 7;
-                case HERBU -> 8;
-                case PSYCHIQUE -> 9;
-                case BRUMEUX -> 10;
-                default -> -1;
-            };
-            if (typeIconeTerrain >= 0) dessinerIcone(typeIconeTerrain, x, y);
-
-            String nomTerrain = switch (field.getTerrain()) {
-                case ELECTRIQUE -> "Champ Électrique";
-                case HERBU -> "Champ Herbu";
-                case PSYCHIQUE -> "Champ Psychique";
-                case BRUMEUX -> "Champ Brumeux";
-                default -> "Terrain";
-            };
-            String effet = switch (field.getTerrain()) {
-                case ELECTRIQUE -> "anti-sommeil (sol)";
-                case HERBU -> {
-                    // Ne soigne que les Pokémon au sol (pas Vol/Lévitation/Ballon) -
-                    // vérifié sur Poképédia, précision importante pour ne pas
-                    // afficher un soin qui ne s'appliquera pas réellement.
-                    boolean quelquUnEnProfite = DamageCalculator.estAuSol(joueur) || DamageCalculator.estAuSol(adversaire);
-                    yield quelquUnEnProfite ? "+6% hp/t (sol)" : "0% (aucun au sol)";
-                }
-                case PSYCHIQUE -> "anti-priorité (sol)";
-                case BRUMEUX -> "anti-statut (sol)";
-                default -> "";
-            };
-            dessinerTexte(String.format("%s (~%dt) (%s)", nomTerrain, FieldTracker.getToursTerrainRestants(), effet),
-                x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-
-        // --- Murs : une ligne dédiée par camp, petite icône à gauche ---
-        if (FieldTracker.adversaireAUnEcran() && FieldTracker.getToursEcransAdversaireRestants() > 0) {
-            StringBuilder noms = new StringBuilder();
-            if (FieldTracker.adversaireAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
-            if (FieldTracker.adversaireAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
-            if (FieldTracker.adversaireAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            dessinerIconeMur(x, y);
-            dessinerTexte(String.format("%s adv : ~%dt", noms, FieldTracker.getToursEcransAdversaireRestants()), x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-        if (FieldTracker.joueurAUnEcran() && FieldTracker.getToursEcransJoueurRestants() > 0) {
-            StringBuilder noms = new StringBuilder();
-            if (FieldTracker.joueurAReflet()) noms.append(noms.length() > 0 ? "+Protection" : "Protection");
-            if (FieldTracker.joueurAMurLumiere()) noms.append(noms.length() > 0 ? "+Mur Lumière" : "Mur Lumière");
-            if (FieldTracker.joueurAVoileAurore()) noms.append(noms.length() > 0 ? "+Voile Aurore" : "Voile Aurore");
-            dessinerIconeMur(x, y);
-            dessinerTexte(String.format("%s toi : ~%dt", noms, FieldTracker.getToursEcransJoueurRestants()), x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-
-        // --- Clone : une ligne dédiée par camp, petite icône à gauche ---
-        if (FieldTracker.joueurAUnClone()) {
-            dessinerIconeClone(x, y);
-            dessinerTexte("Clone toi", x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-        if (FieldTracker.adversaireAUnClone()) {
-            dessinerIconeClone(x, y);
-            dessinerTexte("Clone adv", x + 13, y, COULEUR_TEXTE);
-            y += hauteurLigne;
-        }
-
         // --- Section 3 : set estimé ---
         if (smogon != null && !smogon.topSpreads().isEmpty()) {
             y += 4;
@@ -883,18 +789,26 @@ public final class CalcOverlay implements HudRenderCallback {
             int droite = (ic.x() - x) + 10;   // icônes affichées à 10px
             largeurContenu = Math.max(largeurContenu, droite);
         }
+        for (LigneRect rr : rectsAffichage) largeurContenu = Math.max(largeurContenu, (rr.x() - x) + rr.w());
         int largeurCadre = largeurContenu + 8;
         int hauteurCadre = (y + 4) - yDebutCadre;
 
         context.fill(xDebutCadre, yDebutCadre, xDebutCadre + largeurCadre, yDebutCadre + hauteurCadre, 0xC0101010);
         drawBorder(context, xDebutCadre, yDebutCadre, largeurCadre, hauteurCadre, 0xFFE8B84B);
 
-        // Dessin réel, par-dessus le cadre qui vient d'être posé
+        // Dessin réel, par-dessus le cadre qui vient d'être posé : pastilles
+        // (fonds et carrés), leurs icônes, puis le texte
+        for (LigneRect rr : rectsAffichage) {
+            context.fill(rr.x(), rr.y(), rr.x() + rr.w(), rr.y() + rr.h(), rr.couleur());
+        }
+        for (LigneTexture lt : texturesAffichage) {
+            context.drawTexture(lt.id(), lt.x(), lt.y(), lt.taille(), lt.taille(), 0, 0, 16, 16, 16, 16);
+        }
         for (LigneTexte l : lignesAffichage) {
             context.drawText(client.textRenderer, Text.literal(l.texte()), l.x(), l.y(), l.couleur(), true);
         }
         for (LigneIcone ic : iconesAffichage) {
-            context.drawTexture(TEXTURES_ICONES[ic.type()], ic.x(), ic.y(), 0, 0, 10, 10, 16, 16);
+            context.drawTexture(TEXTURES_ICONES[ic.type()], ic.x(), ic.y(), 10, 10, 0, 0, 16, 16, 16, 16);
         }
     }
 
@@ -954,6 +868,18 @@ public final class CalcOverlay implements HudRenderCallback {
         }
         iconesAffichage.clear();
         iconesAffichage.addAll(icones);
+        List<LigneRect> rects = new ArrayList<>();
+        for (LigneRect rr : rectsAffichage) {
+            rects.add(new LigneRect(rr.x(), rr.y() + decalage.applyAsInt(rr.y() + 1), rr.w(), rr.h(), rr.couleur()));
+        }
+        rectsAffichage.clear();
+        rectsAffichage.addAll(rects);
+        List<LigneTexture> textures = new ArrayList<>();
+        for (LigneTexture lt : texturesAffichage) {
+            textures.add(new LigneTexture(lt.id(), lt.x(), lt.y() + decalage.applyAsInt(lt.y()), lt.taille()));
+        }
+        texturesAffichage.clear();
+        texturesAffichage.addAll(textures);
         int total = 0;
         for (int v : extras.values()) total += v * hauteurLigne;
         return total;
