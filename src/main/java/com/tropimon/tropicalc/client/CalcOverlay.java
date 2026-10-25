@@ -226,16 +226,6 @@ public final class CalcOverlay implements HudRenderCallback {
         dessinerTexte(titre, x, y, COULEUR_TITRE);
         y += hauteurLigne + 2;
 
-        // --- Terrain / Toi / Adv : pastilles colorées, tours restants en carrés ---
-        // En haut : ces effets changent tous les nombres affichés en dessous.
-        BlocTerrain blocTerrain = BlocTerrain.construire(client.textRenderer, field, joueur, adversaire,
-            x, y + 1, Math.min(290, client.getWindow().getScaledWidth() - x - 12));
-        if (blocTerrain.hauteur > 0) {
-            for (BlocTerrain.Rect rr : blocTerrain.rects) rectsAffichage.add(new LigneRect(rr.x(), rr.y(), rr.w(), rr.h(), rr.couleur()));
-            for (BlocTerrain.Icone ic : blocTerrain.icones) texturesAffichage.add(new LigneTexture(ic.id(), ic.x(), ic.y(), 9));
-            for (BlocTerrain.Texte tx : blocTerrain.textes) dessinerTexte(tx.texte(), tx.x(), tx.y(), tx.couleur());
-            y += blocTerrain.hauteur + 3;
-        }
 
         // Boosts actifs des deux camps, pour vérifier visuellement que le
         // mod utilise bien le même stage que ce qui est réellement en jeu.
@@ -369,6 +359,18 @@ public final class CalcOverlay implements HudRenderCallback {
             dessinerTexte(texteMouchoir, x + largeurVitesse, y, COULEUR_MOUCHOIR);
         }
         y += hauteurLigne;
+
+        // --- Terrain / Toi / Adv : pastilles colorées, tours restants en carrés ---
+        // Juste sous la vitesse : pièges, écrans et météo sont à voir avant de
+        // choisir (Pics Toxik pas vus avant d'envoyer Mamanbo, 25/10).
+        BlocTerrain blocTerrain = BlocTerrain.construire(client.textRenderer, field, joueur, adversaire,
+            x, y + 1, Math.min(290, client.getWindow().getScaledWidth() - x - 12));
+        if (blocTerrain.hauteur > 0) {
+            for (BlocTerrain.Rect rr : blocTerrain.rects) rectsAffichage.add(new LigneRect(rr.x(), rr.y(), rr.w(), rr.h(), rr.couleur()));
+            for (BlocTerrain.Icone ic : blocTerrain.icones) texturesAffichage.add(new LigneTexture(ic.id(), ic.x(), ic.y(), 9));
+            for (BlocTerrain.Texte tx : blocTerrain.textes) dessinerTexte(tx.texte(), tx.x(), tx.y(), tx.couleur());
+            y += blocTerrain.hauteur + 3;
+        }
 
         // Recul par contact : Casque Brut (~17%) + Épine de Fer / Peau Dure (12.5%)
         boolean objetAdvSur = ObservationCollector.estObjetConfirme(adversaireBase.getEspece());
