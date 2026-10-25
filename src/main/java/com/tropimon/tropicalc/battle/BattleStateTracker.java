@@ -235,6 +235,15 @@ public final class BattleStateTracker {
         return convertirPokemonComplet(p);
     }
 
+    /** Combat en cours où je ne suis pas un des dresseurs (je le regarde). */
+    public static boolean estSpectateur() {
+        try {
+            return CobblemonClient.INSTANCE.getBattle() != null && getActeurJoueur() == null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static ClientBattleActor getActeurJoueur() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         if (battle == null) return null;

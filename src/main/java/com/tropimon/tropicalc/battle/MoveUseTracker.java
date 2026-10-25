@@ -42,6 +42,10 @@ public final class MoveUseTracker {
         // par observation en jeu - actuellement une hypothèse non vérifiée.
         MessageDebugLogger.log(message);
 
+        // Combat regardé en spectateur : les deux camps passaient pour
+        // « l'adversaire » et nourrissaient les déductions (logs du 25/10)
+        if (BattleStateTracker.estSpectateur()) return;
+
         BoostTracker.traiterMessage(message);
         FieldTracker.traiterMessage(message);
 
@@ -92,12 +96,14 @@ public final class MoveUseTracker {
             }
         }
 
-        if ("cobblemon.battle.switch.self".equals(cle)) {
+        if (cle.startsWith("cobblemon.battle.switch.self")) {
             BoostTracker.reinitialiserJoueur();
             TypeTracker.reinitialiserJoueur();
             return;
         }
-        if ("cobblemon.battle.switch.other".equals(cle)) {
+        // startsWith : « switch.other.nickname » pour un Pokémon surnommé
+        // (presque tous en classé) ne remettait pas ses boosts à zéro
+        if (cle.startsWith("cobblemon.battle.switch.other")) {
             BoostTracker.reinitialiserAdversaire();
             TypeTracker.reinitialiserAdversaire();
             return;

@@ -195,6 +195,11 @@ public final class FieldTracker {
         TranslatableTextContent contenu = (TranslatableTextContent) message.getContent();
         String cle = contenu.getKey();
         if (cle == null) return;
+        // Change-Côté utilisé au message précédent : échange sauf s'il a échoué
+        if (echangeEnAttente) {
+            echangeEnAttente = false;
+            if (!cle.equals("cobblemon.battle.fail") && !cle.equals("cobblemon.battle.missed")) echangerCotes();
+        }
         boolean poseParCoup = dernierMessageCoup;
         if (cle.equals("cobblemon.battle.used_move") || cle.equals("cobblemon.battle.used_move_on")) {
             dernierMessageCoup = true;
@@ -621,6 +626,14 @@ public final class FieldTracker {
      * Vent Arrière est échangé aussi (suivi par camp avec sa durée restante).
      * Brume n'est jamais suivie, usage très rare en compétitif - limite assumée.
      */
+    // Change-Côté : l'échange attend le message suivant, qui peut être un échec
+    // (« fail » : rien à échanger, log du 25/10)
+    private static boolean echangeEnAttente = false;
+
+    public static void echangerCotesSiReussi() {
+        echangeEnAttente = true;
+    }
+
     public static void echangerCotes() {
         boolean tmpB;
         tmpB = reflectJoueur; reflectJoueur = reflectAdversaire; reflectAdversaire = tmpB;

@@ -493,7 +493,7 @@ public final class ObservationCollector {
         // Change-Côté : effet symétrique, peu importe qui la joue - un seul
         // appel suffit, peu importe le camp.
         if ("courtchange".equals(coup.showdownId())) {
-            FieldTracker.echangerCotes();
+            FieldTracker.echangerCotesSiReussi();
         }
 
         Boolean estAdversaire = determinerAttaquant(coup.proprietaire());
