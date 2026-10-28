@@ -39,6 +39,7 @@ public final class SwitchOverlayRenderer {
 
     public static void render(BattleSwitchPokemonSelection ecran, DrawContext context, int mouseX, int mouseY) {
         if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
+        if (Boolean.TRUE.equals(BattleStateTracker.estFormatRandom())) return;
         if (ObservationCollector.estCombatSauvage()) return;
         // Combat double : ce survol suppose un seul adversaire en face
         if (BattleStateTracker.estCombatDouble()) return;

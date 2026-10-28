@@ -87,6 +87,12 @@ public final class CalcOverlay implements HudRenderCallback {
 
         if (!com.tropimon.tropicalc.ModToggle.estActif()) return;
         if (!BattleStateTracker.estEnCombat()) return;
+        // Mauvais mod pour ce format : un avertissement au lieu de calculs faux
+        if (Boolean.TRUE.equals(BattleStateTracker.estFormatRandom())) {
+            context.drawTextWithShadow(net.minecraft.client.MinecraftClient.getInstance().textRenderer,
+                net.minecraft.text.Text.literal("TropiCalc : combat random détecté, active RandomPvp"), 4, 4, 0xFFFFAA55);
+            return;
+        }
         if (ObservationCollector.estCombatSauvage()) return;
         // Combat double : c'est DoubleOverlay qui affiche (touche 2 du pavé)
         if (BattleStateTracker.estCombatDouble()) return;

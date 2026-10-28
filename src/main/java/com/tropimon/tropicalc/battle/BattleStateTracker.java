@@ -244,6 +244,57 @@ public final class BattleStateTracker {
         }
     }
 
+    /** Format du combat en cours (ou du dernier) : vrai random, faux classé, null inconnu. */
+    private static Boolean formatRandom = null;
+    private static Object combatFormatDetecte = null;
+
+    /**
+     * Random ou classé, d'après les niveaux de MON équipe : en random chaque
+     * Pokémon a son niveau (78 à 98), en classé toute l'équipe est au même
+     * niveau. Gardé après la fin du combat pour le bilan.
+     */
+    public static Boolean estFormatRandom() {
+        return formatRandom;
+    }
+
+    /** Une fois par combat, dès que mon équipe est connue. */
+    public static void detecterFormat() {
+        ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
+        if (battle == null || battle == combatFormatDetecte) return;
+        ClientBattleActor acteur = getActeurJoueur();
+        if (acteur == null) return;
+        try {
+            java.util.Set<Integer> niveaux = new java.util.TreeSet<>();
+            int n = 0;
+            for (com.cobblemon.mod.common.pokemon.Pokemon p : acteur.getPokemon()) {
+                niveaux.add(p.getLevel());
+                n++;
+            }
+            if (n == 0) return;
+            combatFormatDetecte = battle;
+            // Seulement contre un autre joueur : sauvage ou dresseur PNJ
+            // (niveaux variés aussi) ne doivent rien changer
+            boolean contreJoueur = false;
+            var reseau = MinecraftClient.getInstance().getNetworkHandler();
+            for (var side : battle.getSides()) {
+                for (ClientBattleActor autre : side.getActors()) {
+                    if (autre == acteur || autre.getUuid() == null) continue;
+                    if (reseau != null && reseau.getPlayerListEntry(autre.getUuid()) != null) contreJoueur = true;
+                }
+            }
+            if (!contreJoueur) {
+                formatRandom = null;
+                MessageDebugLogger.analyse("FORMAT : pas contre un joueur, non déterminé");
+                return;
+            }
+            if (niveaux.size() > 1) formatRandom = Boolean.TRUE;
+            else formatRandom = n >= 3 ? Boolean.FALSE : null;
+            MessageDebugLogger.analyse("FORMAT : " + (formatRandom == null ? "inconnu"
+                : formatRandom ? "random" : "classé") + " (niveaux de mon équipe " + niveaux + ")");
+        } catch (Exception ignored) {
+        }
+    }
+
     private static ClientBattleActor getActeurJoueur() {
         ClientBattle battle = CobblemonClient.INSTANCE.getBattle();
         if (battle == null) return null;
