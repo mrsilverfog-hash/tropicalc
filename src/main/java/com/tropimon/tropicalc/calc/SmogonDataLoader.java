@@ -89,6 +89,48 @@ public final class SmogonDataLoader {
     }
     private static volatile boolean chargeUbers = false;
 
+    // --- Combat double : sets VGC (niveau 50) puis Doubles OU ---
+    // Les sets de simple ne collent pas au double (Bekipan de simple tout en
+    // Défense : AtqSpé 115 au lieu de ~147, Ball'Météo et Vent Violent
+    // prévus 30 % trop bas, logs du 28/10).
+    private static final Map<String, SmogonPokemonData> DONNEES_VGC = new HashMap<>();
+    private static final Map<String, SmogonPokemonData> DONNEES_DOUBLES_OU = new HashMap<>();
+    private static volatile boolean chargeVgc = false, chargeDoublesOu = false;
+    private static volatile boolean modeDouble = false;
+
+    /** Appelé à chaque image : vrai pendant un combat double. */
+    public static void setModeDouble(boolean v) {
+        modeDouble = v;
+    }
+
+    /**
+     * Fichiers VGC des mois récents (le nom change à chaque règlement :
+     * gen9vgc2024regg, gen9vgc2026regf...), trouvés dans la liste du dossier.
+     */
+    private static String[] urlsVgc() {
+        List<String> urls = new ArrayList<>();
+        java.time.YearMonth maintenant = java.time.YearMonth.now(java.time.ZoneOffset.UTC);
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("gen9vgc[0-9a-z]+-0\\.json");
+        for (int i = 1; i <= 3 && urls.isEmpty(); i++) {
+            java.time.YearMonth mois = maintenant.minusMonths(i);
+            String dossier = String.format("https://www.smogon.com/stats/%04d-%02d/chaos/", mois.getYear(), mois.getMonthValue());
+            try {
+                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
+                HttpRequest req = HttpRequest.newBuilder().uri(URI.create(dossier)).timeout(Duration.ofSeconds(30))
+                    .header("User-Agent", "TropiCalc/1.0 Cobblemon-Fabric-Mod").GET().build();
+                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                if (resp.statusCode() != 200) continue;
+                java.util.TreeSet<String> noms = new java.util.TreeSet<>(java.util.Comparator.reverseOrder());
+                java.util.regex.Matcher m = p.matcher(resp.body());
+                while (m.find()) noms.add(m.group());
+                for (String n : noms) urls.add(dossier + n);
+            } catch (Exception e) {
+                TropiCalcClient.LOGGER.warn("[TropiCalc] Liste VGC indisponible ({}) : {}", dossier, e.getMessage());
+            }
+        }
+        return urls.toArray(new String[0]);
+    }
+
     /**
      * URLs calculées dynamiquement sur les mois RÉCENTS, jamais codées en dur.
      * Une liste de dates fixes périme d'elle-même chaque mois — c'était le cas
@@ -128,6 +170,8 @@ public final class SmogonDataLoader {
             boolean succesPrincipal = essayerCharger(URLS_ESSAI, DONNEES);
             charge = succesPrincipal;
             chargeUbers = essayerCharger(URLS_ESSAI_UBERS, DONNEES_UBERS);
+            chargeVgc = essayerCharger(urlsVgc(), DONNEES_VGC);
+            chargeDoublesOu = essayerCharger(construireUrlsEssai("gen9doublesou"), DONNEES_DOUBLES_OU);
             if (!succesPrincipal) {
                 erreur = true;
                 TropiCalcClient.LOGGER.warn("[TropiCalc] Impossible de charger les sets Smogon.");
@@ -352,6 +396,11 @@ public final class SmogonDataLoader {
     }
 
     private static SmogonPokemonData getDonneesId(String id) {
+        if (modeDouble) {
+            SmogonPokemonData d = chargeVgc ? DONNEES_VGC.get(id) : null;
+            if (d == null && chargeDoublesOu) d = DONNEES_DOUBLES_OU.get(id);
+            if (d != null && !d.topSpreads().isEmpty()) return d;
+        }
         SmogonPokemonData base = null;
         if (charge) base = DONNEES.get(id);
         if (base == null && chargeUbers) base = DONNEES_UBERS.get(id);

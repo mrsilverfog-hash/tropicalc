@@ -4062,6 +4062,11 @@ public final class ObservationCollector {
         }
         verifierChangementDeCombat();
         etatVide = false;
+        // Sets Smogon de double (VGC / Doubles OU) pendant un combat double
+        try {
+            com.tropimon.tropicalc.calc.SmogonDataLoader.setModeDouble(BattleStateTracker.estCombatDouble());
+        } catch (Exception ignored) {
+        }
         // Combat double : pas d'analyse (elle suppose un seul adversaire)
         if (BattleStateTracker.estCombatDouble()) {
             try {
