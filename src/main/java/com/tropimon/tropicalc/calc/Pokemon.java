@@ -67,6 +67,14 @@ public class Pokemon {
     private boolean departLentActif = false;
     public boolean isDepartLentActif() { return departLentActif; }
     public void setDepartLentActif(boolean v) { this.departLentActif = v; }
+    /**
+     * Télécharge pas encore déclenché (Pokémon qui va entrer, aperçu de
+     * switch). Sur le terrain, le boost annoncé par le jeu est déjà dans les
+     * stages : le recompter doublait le boost (Porygon2 sur Cizayox, 28/10).
+     */
+    private boolean telechargeAVenir = false;
+    public boolean isTelechargeAVenir() { return telechargeAVenir; }
+    public void setTelechargeAVenir(boolean v) { this.telechargeAVenir = v; }
     public boolean isCampAdverse() { return campAdverse; }
     public void setCampAdverse(boolean v) { this.campAdverse = v; }
 
@@ -191,6 +199,7 @@ public class Pokemon {
         p.campAdverse = campAdverse;
         p.objetPerdu = objetPerdu;
         p.departLentActif = departLentActif;
+        p.telechargeAVenir = telechargeAVenir;
         p.alliesKo = alliesKo;
         p.pvActuels = (int) Math.round(getPourcentagePv() / 100.0 * p.getPvMax());
         return p;

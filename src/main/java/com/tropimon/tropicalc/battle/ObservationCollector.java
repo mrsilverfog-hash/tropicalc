@@ -2031,7 +2031,7 @@ public final class ObservationCollector {
                 log.append("coup bloqué (Abri, raté, sans effet ou échoué)");
             } else if (cd.morphing) {
                 log.append("Morphing au moment du coup : pas de mesure");
-            } else if (cd.clone && !cd.impactPrescience) {
+            } else if (cd.clone) {
                 log.append("touché sur son Clone");
             } else if (mesureParPvStables(cd) == null && cd.pvAvantDouteux) {
                 log.append("mesure invalide (effet sur ses PV juste avant le coup, pas encore appliqué)");
@@ -5219,6 +5219,9 @@ public final class ObservationCollector {
             cd.defenseurEstime = cible;
             cd.especeDefenseur = base.getEspece();
             cd.pvAvant = prescienceAvant;
+            // Prescience ne passe pas le Clone (end.futuresight puis
+            // end.substitute : Gromago 0 % pour 24-28 % prévus, 28/10)
+            cd.clone = FieldTracker.adversaireAUnClone();
             cd.etat = terrain;
             noterInstantDuCoup(cd);
             coupPrescience = cd;

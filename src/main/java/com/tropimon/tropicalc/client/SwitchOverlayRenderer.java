@@ -73,6 +73,7 @@ public final class SwitchOverlayRenderer {
         ObservationCollector.appliquerObjetReelJoueur(candidat);
         // Départ Lent : actif dès son entrée
         if ("Départ Lent".equals(candidat.getTalent())) candidat.setDepartLentActif(true);
+        if ("Télécharge".equals(candidat.getTalent())) candidat.setTelechargeAVenir(true);
 
         Pokemon adversaire = ObservationCollector.adversaireAffiche(adversaireBase);
 

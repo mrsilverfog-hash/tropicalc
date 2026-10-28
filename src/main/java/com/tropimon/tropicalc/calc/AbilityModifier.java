@@ -185,6 +185,8 @@ public interface AbilityModifier {
         m.put("Télécharge", new AbilityModifier() {
             @Override
             public void appliquerCoteAttaquant(ModifierContext ctx) {
+                // Déjà sur le terrain : le boost réel est dans les stages
+                if (!ctx.attaquant.isTelechargeAVenir()) return;
                 int defAdverse = ctx.defenseur.getStatCalculee(Stat.DEFENSE);
                 int defSpeAdverse = ctx.defenseur.getStatCalculee(Stat.DEFENSE_SPE);
                 boolean boostAtk = defAdverse < defSpeAdverse;
