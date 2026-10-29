@@ -1075,6 +1075,7 @@ public final class ObservationCollector {
         Field etat;
         boolean clone;
         boolean crit, multiCoups, ko, invalide;
+        boolean agiOuBlesseApres;   // le touché a agi ou pris un dégât annexe après le coup : un K.O. ensuite n'est pas celui du coup
         boolean bloque;             // Abri, raté, immunité ou échec : aucun dégât à mesurer
         boolean tressailli;          // cant.flinch sur le Pokémon touché après le coup
         boolean joueurBloqueAvant;   // je n'ai pas pu agir AVANT son coup (sommeil, paralysie, recharge...)
@@ -1099,6 +1100,7 @@ public final class ObservationCollector {
         double pvAvant;
         Field etat;
         boolean crit, multiCoups, ko, invalide;
+        boolean agiOuBlesseApres;   // le touché a agi ou pris un dégât annexe après le coup : un K.O. ensuite n'est pas celui du coup
         double correctionPv = 0;
         boolean impactPrescience;   // impact de ma Prescience (fin de tour), pas un coup du tour
         boolean clone;              // son Clone a pris le coup : ses PV n'ont pas bougé
@@ -1631,12 +1633,17 @@ public final class ObservationCollector {
             cr.bloque = true;
         }
 
+        if (surDefenseur && (cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.used_move"))) {
+            cr.agiOuBlesseApres = true;
+        }
         if (cle.equals("cobblemon.battle.crit")) {
             if (dernierCoupEstAdverse) cr.crit = true;
         } else if (cle.equals("cobblemon.battle.hit_count")) {
             if (dernierCoupEstAdverse) cr.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
-            if (surDefenseur) cr.ko = true;
+            // Brasegali tombé sur son propre recul + Orbe Vie après avoir
+            // survécu au Pisto-Poing : pas un K.O. du coup (29/10)
+            if (surDefenseur && !cr.agiOuBlesseApres) cr.ko = true;
         } else if (cle.equals("cobblemon.battle.cant.flinch")) {
             if (surDefenseur) cr.tressailli = true;
         } else if (cle.equals("cobblemon.battle.heal.wish")) {
@@ -1991,13 +1998,16 @@ public final class ObservationCollector {
                     && surLui))) {
             cd.bloque = true;
         }
+        if (surLui && (cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.used_move"))) {
+            cd.agiOuBlesseApres = true;
+        }
         if (cle.equals("cobblemon.battle.crit")) {
             // Prescience : frappe en fin de tour, plus aucune capacité après
             if (cd.impactPrescience || !dernierCoupEstAdverse) cd.crit = true;
         } else if (cle.equals("cobblemon.battle.hit_count")) {
             if (!cd.impactPrescience && !dernierCoupEstAdverse) cd.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
-            if (surLui) cd.ko = true;
+            if (surLui && !cd.agiOuBlesseApres) cd.ko = true;
         } else if (cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire")) {
             // Une Prescience lancée deux tours plus tôt frappe le même tour
             if (surLui && !cd.impactPrescience) figerOuInvalider(cd);
@@ -3728,6 +3738,7 @@ public final class ObservationCollector {
         p.setStatut(adversaireBase.getStatut());
         p.setCoupsRageFistSubis(getCoupsRageFistAdversaire(espece));
         p.setDepartLentActif(departLentActif(true, espece));
+        p.setDonFloralActif(donFloralActif(true, espece));
         // Délestage : Vitesse x2 s'il a perdu son objet DEPUIS SON ENTRÉE
         // (l'effet s'arrête quand il sort, même si l'objet reste perdu)
         p.setObjetPerdu(objetRetire && delestageActifAdversaire(espece));
@@ -4427,6 +4438,36 @@ public final class ObservationCollector {
     // Regigigas était prévu au double (logs random du 22/10).
     private static final Set<String> DEPART_LENT = new HashSet<>();
 
+    // --- Don Floral : forme Ensoleillée de Ceriflor, annoncée par le jeu ---
+    private static final Set<String> DON_FLORAL = new HashSet<>();
+
+    private static void suivreDonFloral(String cle, Object[] args) {
+        if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            DON_FLORAL.removeIf(k -> k.startsWith("moi:"));
+        } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")) {
+            DON_FLORAL.removeIf(k -> k.startsWith("adv:"));
+        } else if (cle.startsWith("cobblemon.battle.formechange") && args.length > 0) {
+            Boolean adverse = determinerAttaquant(MoveUseTracker.extraireProprietaire(args[0]));
+            if (adverse == null) return;
+            String espece = especeOuActif(args[0]);
+            if (espece == null) return;
+            String k = (adverse ? "adv:" : "moi:") + espece;
+            if (cle.endsWith(".end")) {
+                DON_FLORAL.remove(k);
+                return;
+            }
+            for (int i = 1; i < args.length; i++) {
+                Object a = args[i];
+                String t = a instanceof net.minecraft.text.Text tx ? tx.getString() : String.valueOf(a);
+                if (t != null && t.toLowerCase(java.util.Locale.ROOT).contains("sunshine")) DON_FLORAL.add(k);
+            }
+        }
+    }
+
+    public static boolean donFloralActif(boolean adverse, String espece) {
+        return espece != null && DON_FLORAL.contains((adverse ? "adv:" : "moi:") + espece);
+    }
+
     private static void suivreDepartLent(String cle, Object[] args) {
         if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
             DEPART_LENT.removeIf(k -> k.startsWith("moi:"));
@@ -4503,6 +4544,7 @@ public final class ObservationCollector {
         suivreDureeMeteo(cle, contenu.getArgs());
         suivreMorphingEtRates(cle, contenu.getArgs());
         suivreDepartLent(cle, contenu.getArgs());
+        suivreDonFloral(cle, contenu.getArgs());
         suivreCharge(cle, contenu.getArgs());
         suivreDelestage(cle, contenu.getArgs());
 
@@ -5069,6 +5111,7 @@ public final class ObservationCollector {
     public static void appliquerObjetReelJoueur(Pokemon p) {
         if (p == null) return;
         p.setDepartLentActif(departLentActif(false, p.getEspece()));
+        p.setDonFloralActif(donFloralActif(false, p.getEspece()));
         String connu = OBJET_REEL_JOUEUR_CONNU.get(p.getEspece());
         if (connu == null) return;
         p.setObjet(AUCUN_OBJET.equals(connu) ? null : connu);
@@ -5452,6 +5495,7 @@ public final class ObservationCollector {
         PV_METAMORPH.clear();
         PvEquipe.vider();
         DEPART_LENT.clear();
+        DON_FLORAL.clear();
         chargeAdversaire = false;
         BattleStateTracker.oublierFormes();
         BoostsDouble.vider();

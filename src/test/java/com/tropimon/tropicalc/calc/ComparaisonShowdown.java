@@ -170,6 +170,7 @@ public final class ComparaisonShowdown {
             pokemon.setObjetPerdu(true);
             pokemon.setDepartLentActif(true);   // abilityOn de Showdown : talent actif
         }
+        if ("Don Floral".equals(pokemon.getTalent())) pokemon.setDonFloralActif(true);
         if (p.has("alliesKo")) pokemon.setAlliesKo(p.get("alliesKo").getAsInt());
         return pokemon;
     }

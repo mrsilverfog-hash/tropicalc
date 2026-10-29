@@ -74,6 +74,8 @@ public final class SwitchOverlayRenderer {
         // Départ Lent : actif dès son entrée
         if ("Départ Lent".equals(candidat.getTalent())) candidat.setDepartLentActif(true);
         if ("Télécharge".equals(candidat.getTalent())) candidat.setTelechargeAVenir(true);
+        // Ceriflor qui entre au soleil prend sa forme Ensoleillée
+        if ("Don Floral".equals(candidat.getTalent())) candidat.setDonFloralActif(true);
 
         Pokemon adversaire = ObservationCollector.adversaireAffiche(adversaireBase);
 

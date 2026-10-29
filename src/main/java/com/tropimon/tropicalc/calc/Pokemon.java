@@ -73,6 +73,10 @@ public class Pokemon {
      * stages : le recompter doublait le boost (Porygon2 sur Cizayox, 28/10).
      */
     private boolean telechargeAVenir = false;
+    /** Ceriflor en forme Ensoleillée : Don Floral actif (annoncé par le jeu). */
+    private boolean donFloralActif = false;
+    public boolean isDonFloralActif() { return donFloralActif; }
+    public void setDonFloralActif(boolean v) { this.donFloralActif = v; }
     public boolean isTelechargeAVenir() { return telechargeAVenir; }
     public void setTelechargeAVenir(boolean v) { this.telechargeAVenir = v; }
     public boolean isCampAdverse() { return campAdverse; }
@@ -200,6 +204,7 @@ public class Pokemon {
         p.objetPerdu = objetPerdu;
         p.departLentActif = departLentActif;
         p.telechargeAVenir = telechargeAVenir;
+        p.donFloralActif = donFloralActif;
         p.alliesKo = alliesKo;
         p.pvActuels = (int) Math.round(getPourcentagePv() / 100.0 * p.getPvMax());
         return p;
