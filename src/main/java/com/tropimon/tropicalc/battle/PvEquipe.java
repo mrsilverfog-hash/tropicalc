@@ -142,6 +142,17 @@ public final class PvEquipe {
     }
 
     /**
+     * % de PV donné par la dernière requête du serveur reçue AVANT cet
+     * instant, -1 si aucune.
+     */
+    public static double pctRequeteAvant(UUID id, long instant) {
+        if (id == null) return -1;
+        Valeur v = DEPUIS_REQUETE.get(id);
+        if (v == null || v.instant() >= instant || v.pvMax() <= 0) return -1;
+        return 100.0 * v.pv() / v.pvMax();
+    }
+
+    /**
      * PV réels de ce membre de mon équipe, -1 si on n'en sait pas plus que
      * Pokemon.getCurrentHealth().
      */

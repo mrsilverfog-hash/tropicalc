@@ -908,15 +908,23 @@ public final class CalcOverlay implements HudRenderCallback {
      * cet objet — sinon null. Ne mute pas durablement le Pokémon (objet
      * restauré après le calcul).
      */
+    /** Espèce (id Showdown) -> objet à toujours proposer entre parenthèses. */
+    private static final java.util.Map<String, String> OBJET_HYPOTHESE_FORCE = java.util.Map.of(
+        "lokix", "Bandeau Choix");
+
     private static String ligneHypotheseObjet(Pokemon adversaire, Pokemon joueur,
                                                com.tropimon.tropicalc.calc.Move capacite, Field field,
                                                String espece, SmogonDataLoader.SmogonPokemonData smogon,
                                                boolean estPhysique) {
-        if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return null;
-        if (smogon.topItemUsageFraction() < 0.5) return null;
         if (ObservationCollector.estObjetConfirme(espece)) return null;   // déjà un fait connu
-
-        String objetProbable = com.tropimon.tropicalc.calc.ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+        // Objet imposé sur Tropimon quelles que soient les stats Smogon
+        // (Gambex : presque tous en Bandeau Choix, demandé le 29/10)
+        String objetProbable = OBJET_HYPOTHESE_FORCE.get(espece == null ? "" : espece.toLowerCase(java.util.Locale.ROOT));
+        if (objetProbable == null) {
+            if (smogon == null || smogon.topItemsShowdownId().isEmpty()) return null;
+            if (smogon.topItemUsageFraction() < 0.5) return null;
+            objetProbable = com.tropimon.tropicalc.calc.ShowdownIdMapper.objet(smogon.topItemsShowdownId().get(0));
+        }
         if (objetProbable == null) return null;
         boolean estOrbeVie = "Orbe Vie".equals(objetProbable);
         boolean estBandeau = "Bandeau Choix".equals(objetProbable);

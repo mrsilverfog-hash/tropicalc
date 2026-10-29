@@ -2044,7 +2044,10 @@ public final class ObservationCollector {
                 if (parPvStables) {
                     cd.pvAvant = stables[0];
                     cd.correctionPv = 0;
-                    if (stables[1] <= 0.05) {
+                    // K.O. annoncé par le jeu : la barre qui descend en
+                    // animation peut sembler stable avant 0 (Arctozolt
+                    // 1,0 % -> 0,7 % lu, "perte 0,3 %" puis fainted, 29/10)
+                    if (stables[1] <= 0.05 || cd.ko) {
                         cd.ko = true;
                         perte = stables[0];
                     } else {
@@ -2427,7 +2430,13 @@ public final class ObservationCollector {
         cr.instantMs = System.currentTimeMillis();
         cr.pvStableAuCoup = SUIVI_PV_MOI.stableA(cr.especeDefenseur, cr.pvAvant);
         cr.pvAvantDouteux = cr.instantMs - SUIVI_PV_MOI.dernierEffetMs < 2500;
-        cr.entreeRecente = cr.instantMs - entreeJoueurMs < 4000;
+        // Barre encore à 100 % juste après mon entrée alors que le serveur
+        // le donnait blessé avant le switch : barre pas à jour. Si la barre
+        // montre déjà ses vrais PV (Roigada 92 % après switch), on mesure.
+        if (cr.instantMs - entreeJoueurMs < 4000 && cr.pvAvant >= 99.95) {
+            double avant = PvEquipe.pctRequeteAvant(BattleStateTracker.getUuidJoueurActif(), entreeJoueurMs);
+            cr.entreeRecente = avant >= 0 && avant < 99.5;
+        }
         cr.etat = FieldTracker.construireField();
         cr.clone = FieldTracker.joueurAUnClone();
         cr.joueurBloqueAvant = joueurBloqueCeTour;
@@ -2790,7 +2799,7 @@ public final class ObservationCollector {
             // Ma barre juste après son coup, avant Restes, recul ou autre effet
             cr.pvAvant = stables[0];
             cr.correctionPv = 0;
-            cr.ko = stables[1] <= 0.05;
+            cr.ko = cr.ko || stables[1] <= 0.05;   // fainted annoncé : K.O. même si la barre animée n'est pas à 0
             perte = cr.ko ? stables[0] : stables[0] - stables[1];
         } else if (cr.ko) {
             perte = cr.pvAvant;
