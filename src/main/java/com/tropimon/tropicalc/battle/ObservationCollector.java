@@ -1034,7 +1034,18 @@ public final class ObservationCollector {
         // Dégâts selon les PV ou les dégâts reçus : rien à comparer
         // (Effort de Lovdisc "80 % pour 0 %" dans le bilan, 29/10)
         "endeavor", "counter", "mirrorcoat", "metalburst", "comeuppance", "superfang",
-        "ruination", "naturesmadness", "psywave", "guardianofalola", "bide");
+        "ruination", "naturesmadness", "psywave", "guardianofalola", "bide",
+        // Capacités Z : puissance tirée de la capacité d'origine, inconnue
+        // (Cauchemar Éternel de Lanssorien : 71,6 % pour 0,3-1,2 % prévus, 29/10)
+        "breakneckblitz", "alloutpummeling", "supersonicskystrike", "aciddownpour",
+        "tectonicrage", "continentalcrush", "savagespinout", "neverendingnightmare",
+        "corkscrewcrash", "infernooverdrive", "hydrovortex", "bloomdoom", "gigavolthavoc",
+        "shatteredpsyche", "subzeroslammer", "devastatingdrake", "blackholeeclipse",
+        "twinkletackle", "catastropika", "sinisterarrowraid", "maliciousmoonsault",
+        "oceanicoperetta", "soulstealing7starstrike", "stokedsparksurfer", "pulverizingpancake",
+        "extremeevoboost", "genesissupernova", "10000000voltthunderbolt", "lightthatburnsthesky",
+        "searingsunrazesmash", "menacingmoonrazemaelstrom", "letssnuggleforever",
+        "splinteredstormshards", "clangoroussoulblaze");
 
     // ---------------------------------------------------------------------
     // Bandeau Choix / Lunettes Choix : coup reçu trop fort.
@@ -4635,6 +4646,15 @@ public final class ObservationCollector {
                         }
                     }
                 }
+            }
+        } else if (cle.equals("cobblemon.battle.zpower") && contenu.getArgs().length > 0
+                && Boolean.TRUE.equals(determinerAttaquant(MoveUseTracker.extraireProprietaire(contenu.getArgs()[0])))) {
+            // Puissance Z : il tient forcément un Cristal Z (ni Choix, ni Orbe Vie...)
+            Pokemon adv = BattleStateTracker.getAdversaireActif();
+            if (adv != null) {
+                OBJETS_RETIRES.remove(adv.getEspece());
+                confirmerObjet(adv.getEspece(), "Cristal Z", "puissance Z annoncée par le jeu");
+                MessageDebugLogger.analyse("OBJET " + adv.getEspece() + " : Cristal Z (" + cle + ")");
             }
         } else if (mentionneBallon(cle, contenu.getArgs())) {
             // Le jeu annonce le Ballon à l'entrée du porteur ("X flotte grâce
