@@ -416,6 +416,8 @@ public final class CalcOverlay implements HudRenderCallback {
             String nom = ca.nom();
             String ligne;
             int couleur = COULEUR_TEXTE;
+            String texteReste = null;
+            int couleurReste = COULEUR_REVELE;
             if (r.immunise) {
                 ligne = nom + " : immunisé";
             } else {
@@ -464,8 +466,21 @@ public final class CalcOverlay implements HudRenderCallback {
                 }
                 if (r.koGaranti) couleur = COULEUR_KO;
                 else if (r.koPossible) couleur = 0xFFAA00;
+                int[] reste = pvApresReculEtOrbe(joueur, adversaire, capacite, r);
+                if (reste != null) {
+                    double pvMax = Math.max(1, joueur.getPvMax());
+                    long bas = Math.round(100.0 * reste[0] / pvMax);
+                    long haut = Math.round(100.0 * reste[1] / pvMax);
+                    texteReste = reste[1] <= 0 ? " (R = K.O.)"
+                        : bas == haut ? String.format(" (R = %d%%)", haut)
+                        : String.format(" (R = %d-%d%%)", bas, haut);
+                    if (reste[0] <= 0) couleurReste = COULEUR_KO;
+                }
             }
             dessinerTexte(ligne, x, y, couleur);
+            if (texteReste != null) {
+                dessinerTexte(texteReste, x + client.textRenderer.getWidth(ligne), y, couleurReste);
+            }
             y += hauteurLigne;
         }
 
@@ -911,6 +926,45 @@ public final class CalcOverlay implements HudRenderCallback {
     /** Espèce (id Showdown) -> objet à toujours proposer entre parenthèses. */
     private static final java.util.Map<String, String> OBJET_HYPOTHESE_FORCE = java.util.Map.of(
         "lokix", "Bandeau Choix");
+
+    /**
+     * Mes PV restants après le recul de la capacité et l'Orbe Vie, {min, max}
+     * en PV (min avec le plus gros jet). Null si ni recul ni Orbe Vie.
+     * Recul = dégâts réellement infligés (plafonnés à ses PV) x fraction,
+     * arrondi comme Showdown ; Orbe Vie = 1/10 de mes PV max.
+     * Tête de Roc annule le recul, Garde Magik les deux.
+     */
+    private static int[] pvApresReculEtOrbe(Pokemon joueur, Pokemon adversaire,
+                                            com.tropimon.tropicalc.calc.Move capacite,
+                                            DamageCalculator.Resultat r) {
+        if (r == null || r.immunise || r.degatsMax <= 0) return null;
+        String talent = joueur.getTalent();
+        if ("Garde Magik".equals(talent)) return null;
+        String id = capacite.getNom() == null ? "" : capacite.getNom();
+        int num = 0, den = 1;
+        switch (id) {
+            case "bravebird", "flareblitz", "woodhammer", "volttackle", "wavecrash", "doubleedge" -> { num = 1; den = 3; }
+            case "takedown", "submission", "wildcharge", "headcharge" -> { num = 1; den = 4; }
+            case "headsmash", "lightofruin" -> { num = 1; den = 2; }
+            default -> { }
+        }
+        if ("Tête de Roc".equals(talent)) num = 0;
+        // Coûts fixes en PV (pas du recul : Tête de Roc n'y change rien)
+        int pvMax = joueur.getPvMax();
+        int fixe = switch (id) {
+            case "mindblown", "steelbeam", "chloroblast" -> (pvMax + 1) / 2;
+            default -> 0;
+        };
+        int orbe = "Orbe Vie".equals(joueur.getObjet()) ? Math.max(1, pvMax / 10) : 0;
+        if (num == 0 && fixe == 0 && orbe == 0) return null;
+        int pvAdv = adversaire.getPvActuels() > 0 ? adversaire.getPvActuels() : adversaire.getPvMax();
+        int infligeMin = Math.min(r.degatsMin, pvAdv);
+        int infligeMax = Math.min(r.degatsMax, pvAdv);
+        int reculMin = num == 0 ? 0 : Math.max(1, (int) Math.round((double) infligeMin * num / den));
+        int reculMax = num == 0 ? 0 : Math.max(1, (int) Math.round((double) infligeMax * num / den));
+        int pv = joueur.getPvActuels();
+        return new int[]{Math.max(0, pv - reculMax - fixe - orbe), Math.max(0, pv - reculMin - fixe - orbe)};
+    }
 
     private static String ligneHypotheseObjet(Pokemon adversaire, Pokemon joueur,
                                                com.tropimon.tropicalc.calc.Move capacite, Field field,
