@@ -70,6 +70,7 @@ public final class ShowdownIdMapper {
         TALENTS.put("megalauncher", "Méga Blaster");
         TALENTS.put("gorillatactics", "Entêtement");
         TALENTS.put("solarpower", "Force Soleil");
+        TALENTS.put("flowergift", "Don Floral");
         TALENTS.put("sniper", "Sniper");
         TALENTS.put("aerilate", "Peau Céleste");
         TALENTS.put("pixilate", "Peau Féérique");

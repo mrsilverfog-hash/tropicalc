@@ -18136,6 +18136,312 @@
   "description": "252+ SpA Solar Power Houndoom Fire Blast vs. 252 HP / 252+ SpD Corviknight in Sun: 632-746 (158 - 186.5%) -- guaranteed OHKO"
  },
  {
+  "nom": "Don Floral attaquant",
+  "attaquant": {
+   "espece": "cherrim",
+   "niveau": 100,
+   "types": [
+    "grass"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 60,
+    "def": 70,
+    "spa": 87,
+    "spd": 78,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "flowergift",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 282,
+   "poidsKg": 9.3,
+   "statsShowdown": {
+    "hp": 282,
+    "atk": 240,
+    "def": 176,
+    "spa": 189,
+    "spd": 192,
+    "spe": 269
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "playrough",
+   "type": "fairy",
+   "categorie": "Physical",
+   "puissance": 90
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   34,
+   35,
+   35,
+   36,
+   36,
+   36,
+   37,
+   37,
+   38,
+   38,
+   38,
+   39,
+   39,
+   40,
+   40,
+   41
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ Atk Flower Gift Cherrim Play Rough vs. 252 HP / 252+ Def Corviknight in Sun: 34-41 (8.5 - 10.2%)"
+ },
+ {
+  "nom": "Don Floral défenseur",
+  "attaquant": {
+   "espece": "heatran",
+   "niveau": 100,
+   "types": [
+    "fire",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 91,
+    "atk": 90,
+    "def": 106,
+    "spa": 130,
+    "spd": 106,
+    "spe": 77
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "flashfire",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 324,
+   "poidsKg": 430,
+   "statsShowdown": {
+    "hp": 324,
+    "atk": 194,
+    "def": 248,
+    "spa": 394,
+    "spd": 248,
+    "spe": 253
+   }
+  },
+  "defenseur": {
+   "espece": "cherrim",
+   "niveau": 100,
+   "types": [
+    "grass"
+   ],
+   "statsBase": {
+    "hp": 70,
+    "atk": 60,
+    "def": 70,
+    "spa": 87,
+    "spd": 78,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "flowergift",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 344,
+   "poidsKg": 9.3,
+   "statsShowdown": {
+    "hp": 344,
+    "atk": 140,
+    "def": 177,
+    "spa": 210,
+    "spd": 280,
+    "spe": 206
+   }
+  },
+  "capacite": {
+   "id": "earthpower",
+   "type": "ground",
+   "categorie": "Special",
+   "puissance": 90
+  },
+  "meteo": "SOLEIL",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   30,
+   30,
+   31,
+   31,
+   32,
+   32,
+   32,
+   33,
+   33,
+   33,
+   34,
+   34,
+   34,
+   35,
+   35,
+   36
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ SpA Heatran Earth Power vs. 252 HP / 252+ SpD Flower Gift Cherrim in Sun: 30-36 (8.7 - 10.4%)"
+ },
+ {
   "nom": "Rage Poison",
   "attaquant": {
    "espece": "zangoose",

@@ -1030,7 +1030,11 @@ public final class ObservationCollector {
         "naturalgift", "present", "magnitude", "spitup", "foulplay", "photongeyser",
         "terablast", "shellsidearm", "ragingbull", "futuresight", "doomdesire", "bodypress",
         "electroball", "hiddenpower", "terrainpulse", "tripleaxel", "triplekick", "populationbomb",
-        "ficklebeam");
+        "ficklebeam",
+        // Dégâts selon les PV ou les dégâts reçus : rien à comparer
+        // (Effort de Lovdisc "80 % pour 0 %" dans le bilan, 29/10)
+        "endeavor", "counter", "mirrorcoat", "metalburst", "comeuppance", "superfang",
+        "ruination", "naturesmadness", "psywave", "guardianofalola", "bide");
 
     // ---------------------------------------------------------------------
     // Bandeau Choix / Lunettes Choix : coup reçu trop fort.

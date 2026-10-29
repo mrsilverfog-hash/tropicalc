@@ -166,6 +166,8 @@ const CAS = [
     ['Cran sur spéciale', ['Heracross', { ...SPA, ability: 'Guts', status: 'par' }], ['Corviknight', SPEC_DEF], 'Focus Blast'],
     ['Entêtement', ['Darmanitan-Galar', { ...ATK, ability: 'Gorilla Tactics' }], ['Corviknight', PHYS_DEF], 'Icicle Crash'],
     ['Force Soleil', ['Houndoom', { ...SPA, ability: 'Solar Power' }], ['Corviknight', SPEC_DEF], 'Fire Blast', { field: { weather: 'Sun' } }],
+    ['Don Floral attaquant', ['Cherrim', { ...ATK, ability: 'Flower Gift' }], ['Corviknight', PHYS_DEF], 'Play Rough', { field: { weather: 'Sun' } }],
+    ['Don Floral défenseur', ['Heatran', SPA], ['Cherrim', { ...SPEC_DEF, ability: 'Flower Gift' }], 'Earth Power', { field: { weather: 'Sun' } }],
     ['Rage Poison', ['Zangoose', { ...ATK, ability: 'Toxic Boost', status: 'psn' }], ['Corviknight', PHYS_DEF], 'Close Combat'],
     ['Écaille Spéciale', ['Garchomp', ATK], ['Dragonite', { ...PHYS_DEF, ability: 'Marvel Scale', status: 'par' }], 'Stone Edge'],
     ['Sans Limite', ['Landorus', { ...SPA, ability: 'Sheer Force' }], ['Great Tusk', SPEC_DEF], 'Sludge Wave'],

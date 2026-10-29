@@ -266,6 +266,28 @@ public interface AbilityModifier {
             }
         });
 
+        // Don Floral (Ceriflor) : Attaque et Défense Spéciale x1,5 au soleil
+        // (Ceriflor au soleil : Câlinerie 13,7 % pour 9-10 % prévus, 29/10)
+        m.put("Don Floral", new AbilityModifier() {
+            @Override
+            public void appliquerCoteAttaquant(ModifierContext ctx) {
+                Field.Meteo me = ctx.terrain.getMeteo();
+                if (ctx.capacite.getCategorie() == Move.Categorie.PHYSIQUE
+                        && (me == Field.Meteo.SOLEIL || me == Field.Meteo.SOLEIL_INTENSE)) {
+                    ctx.attaque(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
+                }
+            }
+
+            @Override
+            public void appliquerCoteDefenseur(ModifierContext ctx) {
+                Field.Meteo me = ctx.terrain.getMeteo();
+                if (ctx.capacite.getCategorie() == Move.Categorie.SPECIALE
+                        && (me == Field.Meteo.SOLEIL || me == Field.Meteo.SOLEIL_INTENSE)) {
+                    ctx.defense(ModifierContext.ORDRE_TALENT_ATTAQUANT, 6144);
+                }
+            }
+        });
+
         // Sniper : un coup critique fait x2.25 au lieu de x1.5.
         m.put("Sniper", new AbilityModifier() {
             @Override
