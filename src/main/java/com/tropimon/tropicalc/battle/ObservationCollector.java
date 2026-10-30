@@ -532,6 +532,7 @@ public final class ObservationCollector {
             coupVerrouAdversaire = coup.showdownId();
             Pokemon adversaire = BattleStateTracker.getAdversaireActif();
             if (adversaire != null) {
+                verifierNouveauSet(adversaire.getEspece(), coup.showdownId());
                 ajouterCapaciteAdversaire(adversaire.getEspece(), coup.showdownId(), true);
 
                 // Comptage des PP : Pression (talent du joueur) ajoute 1 PP,
@@ -3591,6 +3592,7 @@ public final class ObservationCollector {
                 }
             }
             if (scout.chipTalent) TALENTS_CHIP_CONFIRMES.add(espece);
+            appliquerStatsScoutees(espece, scout);
         }
 
         String objetConfirme = OBJETS_CONFIRMES.get(espece);
@@ -4985,6 +4987,102 @@ public final class ObservationCollector {
     private static String coupVerrouAdversaire = null;   // dernier coup depuis son entrée
     private static int compteurAbrisAdversaire = 0;      // Abris consécutifs
     private static final Set<String> ESPECES_SCOUT_FUSIONNEES = new HashSet<>();
+    /** Capacités vraiment vues ce combat (pas celles reprises du scouting). */
+    private static final Map<String, Set<String>> CAPACITES_VUES_CE_COMBAT = new HashMap<>();
+    /** Espèces dont le set mémorisé a été oublié ce combat : on réécrit, on ne fusionne pas. */
+    private static final Set<String> SETS_OUBLIES = new HashSet<>();
+
+    private static Map<Stat, Double> enStats(Map<String, Double> m) {
+        Map<Stat, Double> r = new HashMap<>();
+        if (m == null) return r;
+        for (Map.Entry<String, Double> e : m.entrySet()) {
+            try {
+                if (e.getValue() != null) r.put(Stat.valueOf(e.getKey()), e.getValue());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return r;
+    }
+
+    private static Map<String, Double> enNoms(Map<Stat, Double> m) {
+        if (m == null || m.isEmpty()) return null;
+        Map<String, Double> r = new HashMap<>();
+        for (Map.Entry<Stat, Double> e : m.entrySet()) r.put(e.getKey().name(), e.getValue());
+        return r;
+    }
+
+    /**
+     * Stats apprises contre ce joueur dans les combats passés : reprises comme
+     * déjà établies (même set, mêmes EV). Celles mesurées ce combat priment.
+     */
+    private static void appliquerStatsScoutees(String espece, ScoutingStore.Faits scout) {
+        StringBuilder log = new StringBuilder();
+        Map<Stat, Double> d1 = enStats(scout.defPlafonds), d2 = enStats(scout.defPlanchers);
+        if (!d1.isEmpty() || !d2.isEmpty()) {
+            d1.forEach((st, v) -> PLAFONDS_DEFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).putIfAbsent(st, v));
+            d2.forEach((st, v) -> PLANCHERS_DEFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).putIfAbsent(st, v));
+            DEFENSIFS_ACTIFS.add(espece);
+            log.append(" défense");
+        }
+        Map<Stat, Double> o1 = enStats(scout.offPlafonds), o2 = enStats(scout.offPlanchers);
+        if (!o1.isEmpty()) {
+            o1.forEach((st, v) -> PLAFONDS_OFFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).putIfAbsent(st, v));
+            PLAFONDS_ACTIFS.add(espece);
+            log.append(" attaque (plafond)");
+        }
+        if (!o2.isEmpty()) {
+            o2.forEach((st, v) -> PLANCHERS_OFFENSIFS.computeIfAbsent(espece, k -> new HashMap<>()).putIfAbsent(st, v));
+            PLANCHERS_ACTIFS.add(espece);
+            log.append(" attaque (plancher)");
+        }
+        if (scout.vitMin != null) {
+            VITESSES_MIN_OBSERVEES.merge(espece, scout.vitMin, Math::max);
+            log.append(" vitesse >= ").append(scout.vitMin);
+        }
+        if (scout.vitMax != null) {
+            VITESSES_MAX_OBSERVEES.merge(espece, scout.vitMax, Math::min);
+            log.append(" vitesse <= ").append(scout.vitMax);
+        }
+        if (log.length() > 0) {
+            MessageDebugLogger.analyse("SCOUT " + espece + " (" + nomAdversaireCourant + ") : stats des combats passés reprises :" + log);
+        }
+    }
+
+    /**
+     * Une capacité jamais vue dans son set mémorisé complet (4 capacités) :
+     * il a changé de set. On oublie tout ce qu'on savait de ce Pokémon chez
+     * ce joueur (stats, objet, capacités) et on réapprend depuis zéro.
+     * Avec moins de 4 capacités connues, une nouvelle n'est qu'un complément.
+     */
+    private static void verifierNouveauSet(String espece, String capaciteId) {
+        if (espece == null || capaciteId == null || nomAdversaireCourant == null) return;
+        CAPACITES_VUES_CE_COMBAT.computeIfAbsent(espece, k -> new HashSet<>()).add(capaciteId);
+        if (SETS_OUBLIES.contains(espece) || "struggle".equals(capaciteId)) return;
+        if (ScoutingStore.estCapaciteZ(capaciteId)) return;   // capacité Z : pas une capacité du set
+        ScoutingStore.Faits scout = ScoutingStore.get(nomAdversaireCourant, espece);
+        if (scout == null || scout.capacites.size() < 4 || scout.capacites.contains(capaciteId)) return;
+        SETS_OUBLIES.add(espece);
+        ScoutingStore.oublier(nomAdversaireCourant, espece);
+        // Ce qui venait du scouting ce combat : retiré (mesures de ce combat perdues aussi, réapprises)
+        PLAFONDS_DEFENSIFS.remove(espece);
+        PLANCHERS_DEFENSIFS.remove(espece);
+        MESURES_DEFENSIVES.remove(espece);
+        DEFENSIFS_ACTIFS.remove(espece);
+        PLAFONDS_OFFENSIFS.remove(espece);
+        PLANCHERS_OFFENSIFS.remove(espece);
+        MESURES_PLAFOND.remove(espece);
+        MESURES_PLANCHER.remove(espece);
+        PLAFONDS_ACTIFS.remove(espece);
+        PLANCHERS_ACTIFS.remove(espece);
+        VITESSES_MIN_OBSERVEES.remove(espece);
+        VITESSES_MAX_OBSERVEES.remove(espece);
+        LinkedHashSet<String> coups = COUPS_ADVERSAIRE.get(espece);
+        Set<String> vues = CAPACITES_VUES_CE_COMBAT.get(espece);
+        if (coups != null) coups.removeIf(c -> !vues.contains(c));
+        COUPS_ADVERSAIRE_COMPLETS.remove(espece);
+        MessageDebugLogger.analyse("SCOUT " + espece + " (" + nomAdversaireCourant + ") : nouvelle capacité "
+            + capaciteId + " hors de son set connu " + scout.capacites + " -> set oublié, on réapprend");
+    }
     private static final Set<String> COUPS_PROTECTION = Set.of(
         "protect", "detect", "banefulbunker", "spikyshield", "silktrap",
         "burningbulwark", "kingsshield", "obstruct", "maxguard");
@@ -5471,7 +5569,21 @@ public final class ObservationCollector {
             especes.addAll(TALENTS_CONFIRMES.keySet());
             especes.addAll(TALENTS_CHIP_CONFIRMES);
             especes.addAll(COUPS_ADVERSAIRE.keySet());
+            especes.addAll(DEFENSIFS_ACTIFS);
+            especes.addAll(PLAFONDS_ACTIFS);
+            especes.addAll(PLANCHERS_ACTIFS);
+            especes.addAll(VITESSES_MIN_OBSERVEES.keySet());
+            especes.addAll(VITESSES_MAX_OBSERVEES.keySet());
             for (String esp : especes) {
+                if (SETS_OUBLIES.contains(esp)) ScoutingStore.oublier(nomAdversaireCourant, esp);
+                Integer vMax = VITESSES_MAX_OBSERVEES.get(esp);
+                ScoutingStore.enregistrerStats(nomAdversaireCourant, esp,
+                    DEFENSIFS_ACTIFS.contains(esp) ? enNoms(PLAFONDS_DEFENSIFS.get(esp)) : null,
+                    DEFENSIFS_ACTIFS.contains(esp) ? enNoms(PLANCHERS_DEFENSIFS.get(esp)) : null,
+                    PLAFONDS_ACTIFS.contains(esp) ? enNoms(PLAFONDS_OFFENSIFS.get(esp)) : null,
+                    PLANCHERS_ACTIFS.contains(esp) ? enNoms(PLANCHERS_OFFENSIFS.get(esp)) : null,
+                    VITESSES_MIN_OBSERVEES.get(esp),
+                    vMax != null && vMax < Integer.MAX_VALUE ? vMax : null);
                 ScoutingStore.enregistrer(nomAdversaireCourant, esp,
                     OBJETS_CONFIRMES.get(esp) != null ? OBJETS_CONFIRMES.get(esp) : OBJETS_PERDUS_CONNUS.get(esp),
                     TALENTS_CONFIRMES.get(esp),
@@ -5483,6 +5595,8 @@ public final class ObservationCollector {
         coupVerrouAdversaire = null;
         compteurAbrisAdversaire = 0;
         ESPECES_SCOUT_FUSIONNEES.clear();
+        CAPACITES_VUES_CE_COMBAT.clear();
+        SETS_OUBLIES.clear();
         ADVERSAIRES_VUS.clear();
         FACTEURS.clear();
         OBJETS_PERDUS_CONNUS.clear();

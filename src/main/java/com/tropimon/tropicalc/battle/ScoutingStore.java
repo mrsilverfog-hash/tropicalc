@@ -26,6 +26,11 @@ public final class ScoutingStore {
         public String talent;         // talent confirmé (ex: Soin Poison)
         public boolean chipTalent;    // Épine de Fer / Peau Dure observé
         public Set<String> capacites = new LinkedHashSet<>();
+        // Stats apprises en combat (facteurs par rapport à l'estimation
+        // Smogon, clé = nom de Stat) et vitesses observées. Effacées si une
+        // capacité hors du set connu apparaît (nouveau set).
+        public Map<String, Double> defPlafonds, defPlanchers, offPlafonds, offPlanchers;
+        public Integer vitMin, vitMax;
     }
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -101,6 +106,10 @@ public final class ScoutingStore {
     );
 
     private ScoutingStore() {
+    }
+
+    public static boolean estCapaciteZ(String id) {
+        return id != null && CAPACITES_Z.contains(id);
     }
 
     private static Path fichier() {
@@ -202,6 +211,49 @@ public final class ScoutingStore {
         if (joueur == null || espece == null) return null;
         Map<String, Faits> parEspece = charger().get(joueur.toLowerCase());
         return parEspece == null ? null : parEspece.get(espece);
+    }
+
+    /** Oublie tout ce qu'on sait de ce Pokémon chez ce joueur (nouveau set). */
+    public static synchronized void oublier(String joueur, String espece) {
+        if (joueur == null || espece == null) return;
+        Map<String, Faits> parEspece = charger().get(joueur.toLowerCase());
+        if (parEspece != null && parEspece.remove(espece) != null) sauvegarder();
+    }
+
+    /**
+     * Stats apprises pendant un combat : les nouvelles valeurs remplacent les
+     * anciennes stat par stat (le combat le plus récent a raison) ; vitesses :
+     * plancher le plus haut et plafond le plus bas, sauf contradiction (on
+     * garde alors celles de ce combat).
+     */
+    public static synchronized void enregistrerStats(String joueur, String espece,
+                                                     Map<String, Double> defPlafonds, Map<String, Double> defPlanchers,
+                                                     Map<String, Double> offPlafonds, Map<String, Double> offPlanchers,
+                                                     Integer vitMin, Integer vitMax) {
+        if (joueur == null || espece == null) return;
+        Faits f = charger()
+            .computeIfAbsent(joueur.toLowerCase(), k -> new HashMap<>())
+            .computeIfAbsent(espece, k -> new Faits());
+        f.defPlafonds = fusionner(f.defPlafonds, defPlafonds);
+        f.defPlanchers = fusionner(f.defPlanchers, defPlanchers);
+        f.offPlafonds = fusionner(f.offPlafonds, offPlafonds);
+        f.offPlanchers = fusionner(f.offPlanchers, offPlanchers);
+        Integer min = vitMin == null ? f.vitMin : f.vitMin == null ? vitMin : Integer.valueOf(Math.max(f.vitMin, vitMin));
+        Integer max = vitMax == null ? f.vitMax : f.vitMax == null ? vitMax : Integer.valueOf(Math.min(f.vitMax, vitMax));
+        if (min != null && max != null && min > max) {
+            min = vitMin;
+            max = vitMax;
+        }
+        f.vitMin = min;
+        f.vitMax = max;
+        sauvegarder();
+    }
+
+    private static Map<String, Double> fusionner(Map<String, Double> ancien, Map<String, Double> nouveau) {
+        if (nouveau == null || nouveau.isEmpty()) return ancien;
+        Map<String, Double> r = ancien == null ? new HashMap<>() : new HashMap<>(ancien);
+        r.putAll(nouveau);
+        return r;
     }
 
     /** Fusionne les faits observés pendant un combat (null = pas de nouvelle info). */
