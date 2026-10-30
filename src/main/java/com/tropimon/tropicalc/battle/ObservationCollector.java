@@ -4961,6 +4961,33 @@ public final class ObservationCollector {
     // Talents confirmés par observation (ex: Soin Poison vu en action)
     private static final Map<String, String> TALENTS_CONFIRMES = new HashMap<>();
 
+    /**
+     * Talent adverse affiché quand on le connaît : annoncé par le jeu,
+     * vu contre ce joueur aux combats passés, ou seul possible pour
+     * l'espèce (forme comprise). Null sinon.
+     */
+    public static String getTalentConnuTexte(String espece) {
+        if (espece == null) return null;
+        String confirme = TALENTS_CONFIRMES.get(espece);
+        if (confirme != null) return "Talent : " + confirme + " ✓";
+        if (nomAdversaireCourant != null) {
+            ScoutingStore.Faits f = ScoutingStore.get(nomAdversaireCourant, espece);
+            if (f != null && f.talent != null && !("Imposteur".equals(f.talent) && !"ditto".equals(espece))) {
+                return "Talent : " + f.talent + " (vu aux combats passés)";
+            }
+        }
+        try {
+            java.util.List<String> possibles = BattleStateTracker.talentsPossibles(espece);
+            if (possibles != null && possibles.size() == 1) {
+                String fr = com.tropimon.tropicalc.calc.ShowdownIdMapper.talent(
+                    possibles.get(0).toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", ""));
+                if (fr != null) return "Talent : " + fr + " (seul possible)";
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
     public static String getTalentConfirme(String espece) {
         return TALENTS_CONFIRMES.get(espece);
     }

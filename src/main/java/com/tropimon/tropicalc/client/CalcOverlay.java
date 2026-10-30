@@ -735,6 +735,13 @@ public final class CalcOverlay implements HudRenderCallback {
                 y += hauteurLigne;
             }
 
+            // Talent : seulement quand on le connaît
+            String talentConnu = ObservationCollector.getTalentConnuTexte(especeAdv);
+            if (talentConnu != null) {
+                dessinerTexte(talentConnu, x, y, talentConnu.endsWith("✓") ? COULEUR_REVELE : COULEUR_TEXTE);
+                y += hauteurLigne;
+            }
+
             // Objet : uniquement affiché quand on SAIT (jamais une supposition).
             // Casque Brut / Restes : détectés par le motif de chip/soin.
             // Mouchoir Choix : il agit avant alors que sa vitesse max sans objet
