@@ -36,6 +36,7 @@ object PvpOverlay {
 
     // ── Battle lifecycle ───────────────────────────────────────────────────────
     private var wasInBattle = false
+    private var dernierCombat: Any? = null
 
     // ── Drag state ─────────────────────────────────────────────────────────────
     private enum class Panel { NONE, PLAYER, OPPONENT }
@@ -72,15 +73,26 @@ object PvpOverlay {
     // ──────────────────────────────────────────────────────────────────────────
 
     private fun render(context: DrawContext) {
-        if (!com.tropimon.tropicalc.ModToggle.estActif()) return
-        if (!ModConfig.pvpOverlayEnabled) return
-
+        // Remise à zéro AVANT le test d'activation : si le combat finit (ou
+        // qu'un autre commence) pendant que ce mod est désactivé, l'équipe
+        // adverse du combat précédent restait affichée au retour (random,
+        // puis simple, puis random : 01/11).
         val inBattle = BattleHelper.isInBattle()
         if (wasInBattle && !inBattle) {
             PvpDetector.clearTeam()
             BattleTracker.clearState()
         }
         wasInBattle = inBattle
+        val combat = try { com.cobblemon.mod.common.client.CobblemonClient.battle } catch (_: Exception) { null }
+        if (combat != null && combat !== dernierCombat) {
+            // Nouveau combat : on oublie les adversaires vus au précédent
+            // (l'équipe lue sur l'écran de sélection, elle, est gardée)
+            BattleTracker.clearState()
+        }
+        dernierCombat = combat
+
+        if (!com.tropimon.tropicalc.ModToggle.estActif()) return
+        if (!ModConfig.pvpOverlayEnabled) return
         if (!inBattle || !PvpDetector.pvpSessionActive) return
 
         // Sync battle state every frame
