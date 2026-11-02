@@ -1645,6 +1645,9 @@ public final class ObservationCollector {
             // Brasegali tombé sur son propre recul + Orbe Vie après avoir
             // survécu au Pisto-Poing : pas un K.O. du coup (29/10)
             if (surDefenseur && !cr.agiOuBlesseApres) cr.ko = true;
+        } else if (surDefenseur && !cr.agiOuBlesseApres && (cle.contains("focussash") || cle.contains("focusband")
+                || (cle.contains("sturdy") && !cle.startsWith("cobblemon.battle.ability.generic")))) {
+            cr.ko = true;   // tenu à 1 PV : le coup valait au moins tous mes PV
         } else if (cle.equals("cobblemon.battle.cant.flinch")) {
             if (surDefenseur) cr.tressailli = true;
         } else if (cle.equals("cobblemon.battle.heal.wish")) {
@@ -2009,6 +2012,12 @@ public final class ObservationCollector {
             if (!cd.impactPrescience && !dernierCoupEstAdverse) cd.multiCoups = true;
         } else if (cle.equals("cobblemon.battle.fainted")) {
             if (surLui && !cd.agiOuBlesseApres) cd.ko = true;
+        } else if (surLui && !cd.agiOuBlesseApres && (cle.contains("focussash") || cle.contains("focusband")
+                || (cle.contains("sturdy") && !cle.startsWith("cobblemon.battle.ability.generic")))) {
+            // Tient à 1 PV grâce à la Ceinture Focus / Fermeté : le coup
+            // valait au moins tous ses PV (Close Combat sur Lougaroc
+            // « 99,6 % pour 256 % prévus », 02/11)
+            cd.ko = true;
         } else if (cle.startsWith("cobblemon.battle.end.futuresight") || cle.startsWith("cobblemon.battle.end.doomdesire")) {
             // Une Prescience lancée deux tours plus tôt frappe le même tour
             if (surLui && !cd.impactPrescience) figerOuInvalider(cd);
@@ -2059,7 +2068,10 @@ public final class ObservationCollector {
                 log.append("Morphing au moment du coup : pas de mesure");
             } else if (cd.clone) {
                 log.append("touché sur son Clone");
-            } else if (mesureParPvStables(cd) == null && cd.pvAvantDouteux) {
+            } else if (cd.pvAvantDouteux) {
+                // Dégât juste avant mon coup (Casque Brut, recul, Orbe Vie de
+                // son attaque) : même la relecture stable mélange les deux
+                // (Demi-Tour sur Cizayox « 16,8 % » dont 16,7 % de Casque Brut, 02/11)
                 log.append("mesure invalide (effet sur ses PV juste avant le coup, pas encore appliqué)");
             } else if (mesureParPvStables(cd) == null && cd.invalide) {
                 log.append("mesure invalide (soin, dégât annexe ou switch après le coup)");
@@ -2798,7 +2810,7 @@ public final class ObservationCollector {
         // 34,8 %, et le Séisme suivant mesuré avec les dégâts d'Avalanche)
         if (cr.entreeRecente) return "mesure invalide (je venais d'entrer, PV pas encore à jour)";
         double[] stables = mesureParPvStables(cr);
-        if (stables == null && cr.pvAvantDouteux) {
+        if (cr.pvAvantDouteux) {
             return "mesure invalide (effet sur mes PV juste avant le coup, pas encore appliqué)";
         }
         if (stables == null && cr.invalide) return "mesure invalide (soin, dégât annexe, switch ou capacité coûtant des PV après le coup)";
