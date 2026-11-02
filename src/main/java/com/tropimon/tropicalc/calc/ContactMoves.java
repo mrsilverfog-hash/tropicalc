@@ -79,6 +79,7 @@ public final class ContactMoves {
     );
 
     public static boolean estContact(String showdownId) {
-        return showdownId != null && CONTACT.contains(showdownId);
+        // Données Showdown (DrapeauxCapacites) ; l'ancienne liste en oubliait une centaine
+        return showdownId != null && DrapeauxCapacites.CONTACT.contains(showdownId);
     }
 }

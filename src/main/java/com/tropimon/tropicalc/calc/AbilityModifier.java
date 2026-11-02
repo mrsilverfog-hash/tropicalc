@@ -19,14 +19,14 @@ public interface AbilityModifier {
     // null et lance une NullPointerException des qu'un defenseur porte
     // Pare-Balles ou Anti-Bruit - en plein rendu du HUD, donc crash du client.
     // Capacités à flag "ball/bomb" les plus jouées en compétitif (Pare-Balles)
-    static final java.util.Set<String> CAPACITES_BALLE = java.util.Set.of(
+    static final java.util.Set<String> CAPACITES_BALLE = union(DrapeauxCapacites.BALLE,
         "shadowball", "sludgebomb", "aurasphere", "focusblast", "energyball",
         "electroball", "gyroball", "weatherball", "mudbomb", "octazooka",
         "eggbomb", "rockwrecker", "acidspray", "pyroball", "mistball",
         "pollenpuff", "beakblast", "barrage", "bulletseed", "rockblast");
 
     // Capacités à flag "son" les plus jouées en compétitif (Anti-Bruit)
-    static final java.util.Set<String> CAPACITES_SON = java.util.Set.of(
+    static final java.util.Set<String> CAPACITES_SON = union(DrapeauxCapacites.SON,
         "boomburst", "hypervoice", "bugbuzz", "roar", "screech",
         "sing", "supersonic", "growl", "snarl", "uproar",
         "eeriespell", "clangoroussoul", "disarmingvoice", "sparklingaria",
@@ -35,14 +35,19 @@ public interface AbilityModifier {
         "alluringvoice", "psychicnoise", "clangingscales", "snore", "nobleroar", "howl", "healbell");
 
     // Capacités "pulsation / aura" (Méga Blaster)
-    static final java.util.Set<String> CAPACITES_PULSATION = java.util.Set.of(
-        "aurasphere", "darkpulse", "dragonpulse", "waterpulse", "originpulse", "terrainpulse", "healpulse");
+    static final java.util.Set<String> CAPACITES_PULSATION = union(DrapeauxCapacites.PULSATION, "healpulse");
 
     // Capacités à contrecoup ou à chute (Téméraire)
-    static final java.util.Set<String> CAPACITES_RECUL = java.util.Set.of(
-        "bravebird", "doubleedge", "flareblitz", "headsmash", "volttackle", "woodhammer", "wildcharge",
-        "headlongrush", "wavecrash", "takedown", "submission", "headcharge", "lightofruin",
-        "highjumpkick", "jumpkick", "axekick", "supercellslam", "chloroblast");
+    // Téméraire : recul ou chute (comme Showdown : move.recoil || move.hasCrashDamage)
+    static final java.util.Set<String> CAPACITES_RECUL = union(
+        union(DrapeauxCapacites.CHUTE), DrapeauxCapacites.RECUL.keySet().toArray(new String[0]));
+
+    /** Données Showdown complétées des capacités de statut (absentes de ces données). */
+    private static java.util.Set<String> union(java.util.Set<String> base, String... autres) {
+        java.util.Set<String> r = new java.util.HashSet<>(base);
+        java.util.Collections.addAll(r, autres);
+        return java.util.Collections.unmodifiableSet(r);
+    }
 
     Map<String, AbilityModifier> REGISTRE = construireRegistre();
 

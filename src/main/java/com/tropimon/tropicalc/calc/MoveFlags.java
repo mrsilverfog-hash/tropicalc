@@ -33,15 +33,15 @@ public final class MoveFlags {
         "psyblade", "secretsword", "tachyoncutter");
 
     public static boolean estTranchant(String showdownId) {
-        return showdownId != null && TRANCHANT.contains(showdownId);
+        return showdownId != null && DrapeauxCapacites.TRANCHANT.contains(showdownId);
     }
 
     public static boolean estPoing(String showdownId) {
-        return showdownId != null && POING.contains(showdownId);
+        return showdownId != null && DrapeauxCapacites.POING.contains(showdownId);
     }
 
     public static boolean estMorsure(String showdownId) {
-        return showdownId != null && MORSURE.contains(showdownId);
+        return showdownId != null && DrapeauxCapacites.MORSURE.contains(showdownId);
     }
 
     // Capacités à recul propre (blessent leur utilisateur) les plus jouées -
@@ -52,6 +52,7 @@ public final class MoveFlags {
         "headcharge", "highjumpkick", "jumpkick", "steelbeam", "chloroblast");
 
     public static boolean aRecul(String showdownId) {
-        return showdownId != null && RECUL.contains(showdownId);
+        return showdownId != null && (DrapeauxCapacites.RECUL.containsKey(showdownId)
+            || DrapeauxCapacites.CHUTE.contains(showdownId) || DrapeauxCapacites.RECUL_PV_MAX.contains(showdownId));
     }
 }

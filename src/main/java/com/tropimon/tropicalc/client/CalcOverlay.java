@@ -948,20 +948,14 @@ public final class CalcOverlay implements HudRenderCallback {
         String talent = joueur.getTalent();
         if ("Garde Magik".equals(talent)) return null;
         String id = capacite.getNom() == null ? "" : capacite.getNom();
-        int num = 0, den = 1;
-        switch (id) {
-            case "bravebird", "flareblitz", "woodhammer", "volttackle", "wavecrash", "doubleedge" -> { num = 1; den = 3; }
-            case "takedown", "submission", "wildcharge", "headcharge" -> { num = 1; den = 4; }
-            case "headsmash", "lightofruin" -> { num = 1; den = 2; }
-            default -> { }
-        }
+        // Fractions de recul des données Showdown (Rapace 33/100, Fracass'Tête 1/2...)
+        int[] fraction = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL.get(id);
+        int num = fraction == null ? 0 : fraction[0];
+        int den = fraction == null ? 1 : fraction[1];
         if ("Tête de Roc".equals(talent)) num = 0;
         // Coûts fixes en PV (pas du recul : Tête de Roc n'y change rien)
         int pvMax = joueur.getPvMax();
-        int fixe = switch (id) {
-            case "mindblown", "steelbeam", "chloroblast" -> (pvMax + 1) / 2;
-            default -> 0;
-        };
+        int fixe = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL_PV_MAX.contains(id) ? (pvMax + 1) / 2 : 0;
         int orbe = "Orbe Vie".equals(joueur.getObjet()) ? Math.max(1, pvMax / 10) : 0;
         if (num == 0 && fixe == 0 && orbe == 0) return null;
         int pvAdv = adversaire.getPvActuels() > 0 ? adversaire.getPvActuels() : adversaire.getPvMax();

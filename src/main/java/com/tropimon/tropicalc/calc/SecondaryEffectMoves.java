@@ -44,6 +44,6 @@ public final class SecondaryEffectMoves {
     );
 
     public static boolean aEffetSecondaire(String showdownId) {
-        return showdownId != null && EFFET_SECONDAIRE.contains(showdownId);
+        return showdownId != null && DrapeauxCapacites.EFFET_SECONDAIRE.contains(showdownId);
     }
 }
