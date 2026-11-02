@@ -648,7 +648,7 @@ public final class BattleStateTracker {
 
     /**
      * Vrai si l'espèce (forme vue en combat, pré-évolutions comprises) ne peut
-     * apprendre cette capacité QUE par œuf ou tuteur : pas implantés sur
+     * apprendre cette capacité QUE par œuf, tuteur ou ancienne génération (legacy) : pas implantés sur
      * Tropimon, donc impossible en combat. Une capacité aussi apprise par
      * niveau, CT, évolution ou changement de forme reste possible. Faux si la
      * capacité est absente des données (dans le doute, on garde).
@@ -671,14 +671,17 @@ public final class BattleStateTracker {
                 Object ls = appelerSansErreur(f, "getMoves");
                 if (ls != null) {
                     for (String getter : new String[]{"getLevelUpMoves", "getTmMoves", "getEvolutionMoves",
-                            "getFormChangeMoves", "getLegacyMoves", "getSpecialMoves"}) {
+                            "getFormChangeMoves", "getSpecialMoves"}) {
                         if (contientCapacite(appelerSansErreur(ls, getter), moveId)) {
                             ailleurs = true;
                             break;
                         }
                     }
+                    // « legacy » : apprise dans une ancienne génération seulement
+                    // (Ébullition de Prédastérie) - pas obtenable non plus
                     if (contientCapacite(appelerSansErreur(ls, "getEggMoves"), moveId)
-                            || contientCapacite(appelerSansErreur(ls, "getTutorMoves"), moveId)) {
+                            || contientCapacite(appelerSansErreur(ls, "getTutorMoves"), moveId)
+                            || contientCapacite(appelerSansErreur(ls, "getLegacyMoves"), moveId)) {
                         oeufTuteur = true;
                     }
                 }
