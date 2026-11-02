@@ -38,12 +38,12 @@ function javaSet(nom, ids) {
     cur += t;
   }
   lignes.push(cur.replace(/,$/, ''));
-  return `    static final Set<String> ${nom} = Set.of(\n${lignes.join('\n')}\n    );\n`;
+  return `    public static final Set<String> ${nom} = Set.of(\n${lignes.join('\n')}\n    );\n`;
 }
 function javaMap(nom, entrees, valeur) {
   const lignes = entrees.sort((a, b) => a[0].localeCompare(b[0]))
     .map(e => `        Map.entry("${e[0]}", ${valeur(e)})`);
-  return `    static final Map<String, ${nom === 'RECUL' ? 'int[]' : 'Integer'}> ${nom} = Map.ofEntries(\n${lignes.join(',\n')}\n    );\n`;
+  return `    public static final Map<String, ${nom === 'RECUL' ? 'int[]' : 'Integer'}> ${nom} = Map.ofEntries(\n${lignes.join(',\n')}\n    );\n`;
 }
 
 for (const mod of ['tropicalc', 'randompvp']) {

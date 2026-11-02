@@ -14,7 +14,7 @@ public final class DrapeauxCapacites {
     private DrapeauxCapacites() {
     }
 
-    static final Set<String> CONTACT = Set.of(
+    public static final Set<String> CONTACT = Set.of(
         "accelerock", "acrobatics", "aerialace", "anchorshot", "aquajet", "aquastep", "aquatail",
         "armthrust", "assurance", "astonish", "avalanche", "axekick", "behemothbash",
         "behemothblade", "bide", "bind", "bite", "bitterblade", "blazekick", "bodypress",
@@ -60,19 +60,19 @@ public final class DrapeauxCapacites {
         "wingattack", "woodhammer", "wrap", "wringout", "xscissor", "zenheadbutt", "zingzap"
     );
 
-    static final Set<String> POING = Set.of(
+    public static final Set<String> POING = Set.of(
         "bulletpunch", "cometpunch", "dizzypunch", "doubleironbash", "drainpunch", "dynamicpunch",
         "firepunch", "focuspunch", "hammerarm", "headlongrush", "icehammer", "icepunch", "jetpunch",
         "machpunch", "megapunch", "meteormash", "plasmafists", "poweruppunch", "ragefist",
         "shadowpunch", "skyuppercut", "surgingstrikes", "thunderpunch", "wickedblow"
     );
 
-    static final Set<String> MORSURE = Set.of(
+    public static final Set<String> MORSURE = Set.of(
         "bite", "crunch", "firefang", "fishiousrend", "hyperfang", "icefang", "jawlock",
         "poisonfang", "psychicfangs", "thunderfang"
     );
 
-    static final Set<String> SON = Set.of(
+    public static final Set<String> SON = Set.of(
         "alluringvoice", "boomburst", "bugbuzz", "chatter", "clangingscales", "clangoroussoul",
         "clangoroussoulblaze", "confide", "disarmingvoice", "echoedvoice", "eeriespell",
         "grasswhistle", "growl", "healbell", "howl", "hypervoice", "metalsound", "nobleroar",
@@ -80,7 +80,7 @@ public final class DrapeauxCapacites {
         "screech", "sing", "snarl", "snore", "sparklingaria", "supersonic", "torchsong", "uproar"
     );
 
-    static final Set<String> TRANCHANT = Set.of(
+    public static final Set<String> TRANCHANT = Set.of(
         "aerialace", "aircutter", "airslash", "aquacutter", "behemothblade", "bitterblade",
         "ceaselessedge", "crosspoison", "cut", "furycutter", "kowtowcleave", "leafblade",
         "mightycleave", "nightslash", "populationbomb", "psyblade", "psychocut", "razorleaf",
@@ -88,25 +88,25 @@ public final class DrapeauxCapacites {
         "tachyoncutter", "xscissor"
     );
 
-    static final Set<String> PULSATION = Set.of(
+    public static final Set<String> PULSATION = Set.of(
         "aurasphere", "darkpulse", "dragonpulse", "healpulse", "orderup", "originpulse",
         "terrainpulse", "waterpulse"
     );
 
-    static final Set<String> BALLE = Set.of(
+    public static final Set<String> BALLE = Set.of(
         "acidspray", "aurasphere", "barrage", "beakblast", "bulletseed", "eggbomb", "electroball",
         "energyball", "focusblast", "gyroball", "iceball", "magnetbomb", "mistball", "mudbomb",
         "octazooka", "pollenpuff", "pyroball", "rockblast", "rockwrecker", "searingshot",
         "seedbomb", "shadowball", "sludgebomb", "syrupbomb", "weatherball", "zapcannon"
     );
 
-    static final Set<String> VENT = Set.of(
+    public static final Set<String> VENT = Set.of(
         "aeroblast", "aircutter", "bleakwindstorm", "blizzard", "fairywind", "gust", "heatwave",
         "hurricane", "icywind", "petalblizzard", "sandsearstorm", "sandstorm", "springtidestorm",
         "tailwind", "twister", "whirlwind", "wildboltstorm"
     );
 
-    static final Set<String> EFFET_SECONDAIRE = Set.of(
+    public static final Set<String> EFFET_SECONDAIRE = Set.of(
         "acid", "acidspray", "airslash", "alluringvoice", "anchorshot", "ancientpower", "appleacid",
         "aquastep", "astonish", "aurawheel", "aurorabeam", "axekick", "barbbarrage", "bite",
         "bittermalice", "blazekick", "blazingtorque", "bleakwindstorm", "blizzard", "blueflare",
@@ -142,16 +142,16 @@ public final class DrapeauxCapacites {
         "wickedtorque", "wildboltstorm", "zapcannon", "zenheadbutt", "zingzap"
     );
 
-    static final Set<String> CHUTE = Set.of(
+    public static final Set<String> CHUTE = Set.of(
         "axekick", "highjumpkick", "jumpkick", "supercellslam"
     );
 
-    static final Set<String> RECUL_PV_MAX = Set.of(
+    public static final Set<String> RECUL_PV_MAX = Set.of(
         "chloroblast", "mindblown", "steelbeam"
     );
 
     /** Recul : fraction des dégâts infligés {numérateur, dénominateur}. */
-    static final Map<String, int[]> RECUL = Map.ofEntries(
+    public static final Map<String, int[]> RECUL = Map.ofEntries(
         Map.entry("bravebird", new int[]{33, 100}),
         Map.entry("doubleedge", new int[]{33, 100}),
         Map.entry("flareblitz", new int[]{33, 100}),
@@ -167,7 +167,7 @@ public final class DrapeauxCapacites {
     );
 
     /** Priorité non nulle (les capacités de statut absentes des données en sont exclues). */
-    static final Map<String, Integer> PRIORITE = Map.ofEntries(
+    public static final Map<String, Integer> PRIORITE = Map.ofEntries(
         Map.entry("accelerock", 1),
         Map.entry("allyswitch", 2),
         Map.entry("aquajet", 1),
