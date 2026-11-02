@@ -643,6 +643,78 @@ public final class BattleStateTracker {
         }
     }
 
+    // --- Capacités apprises seulement par œuf ou tuteur (absentes de Tropimon) ---
+    private static final java.util.Map<String, Boolean> CACHE_OEUF_TUTEUR = new java.util.HashMap<>();
+
+    /**
+     * Vrai si l'espèce (forme vue en combat, pré-évolutions comprises) ne peut
+     * apprendre cette capacité QUE par œuf ou tuteur : pas implantés sur
+     * Tropimon, donc impossible en combat. Une capacité aussi apprise par
+     * niveau, CT, évolution ou changement de forme reste possible. Faux si la
+     * capacité est absente des données (dans le doute, on garde).
+     */
+    public static boolean seulementOeufOuTuteur(String espece, String moveId) {
+        if (espece == null || moveId == null) return false;
+        com.cobblemon.mod.common.pokemon.FormData forme = FORMES.get(espece);
+        String cle = espece + "|" + (forme != null ? forme.getName() : "") + "|" + moveId;
+        Boolean connu = CACHE_OEUF_TUTEUR.get(cle);
+        if (connu != null) return connu;
+        boolean resultat = false;
+        try {
+            Object f = forme;
+            if (f == null) {
+                Species s = com.cobblemon.mod.common.api.pokemon.PokemonSpecies.INSTANCE.getByName(espece);
+                if (s != null) f = s.getStandardForm();
+            }
+            boolean ailleurs = false, oeufTuteur = false;
+            for (int i = 0; f != null && i < 4 && !ailleurs; i++) {
+                Object ls = appelerSansErreur(f, "getMoves");
+                if (ls != null) {
+                    for (String getter : new String[]{"getLevelUpMoves", "getTmMoves", "getEvolutionMoves",
+                            "getFormChangeMoves", "getLegacyMoves", "getSpecialMoves"}) {
+                        if (contientCapacite(appelerSansErreur(ls, getter), moveId)) {
+                            ailleurs = true;
+                            break;
+                        }
+                    }
+                    if (contientCapacite(appelerSansErreur(ls, "getEggMoves"), moveId)
+                            || contientCapacite(appelerSansErreur(ls, "getTutorMoves"), moveId)) {
+                        oeufTuteur = true;
+                    }
+                }
+                Object pre = appelerSansErreur(f, "getPreEvolution");
+                f = pre == null ? null : appelerSansErreur(pre, "getForm");
+            }
+            resultat = oeufTuteur && !ailleurs;
+        } catch (Throwable ignored) {
+        }
+        CACHE_OEUF_TUTEUR.put(cle, resultat);
+        return resultat;
+    }
+
+    private static Object appelerSansErreur(Object o, String methode) {
+        try {
+            return o.getClass().getMethod(methode).invoke(o);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    /** Collection ou Map (niveau -> liste) de MoveTemplate contenant moveId. */
+    private static boolean contientCapacite(Object donnees, String moveId) {
+        if (donnees == null) return false;
+        if (donnees instanceof java.util.Map<?, ?> m) {
+            for (Object v : m.values()) if (contientCapacite(v, moveId)) return true;
+            return false;
+        }
+        if (donnees instanceof Iterable<?> it) {
+            for (Object o : it) {
+                if (o instanceof com.cobblemon.mod.common.api.moves.MoveTemplate t && moveId.equals(t.getName())) return true;
+            }
+        }
+        return false;
+    }
+
     public static void oublierFormes() {
         FORMES.clear();
         SmogonDataLoader.oublierFormes();

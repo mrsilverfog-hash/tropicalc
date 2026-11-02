@@ -207,6 +207,7 @@ public final class SwitchOverlayRenderer {
         // Jeu complet copié par mon Métamorph : rien à supposer
         if (smogon != null && !ObservationCollector.coupsAdversaireComplets(especeAdv)) {
             for (String moveId : smogon.topMovesShowdownId()) {
+                if (BattleStateTracker.seulementOeufOuTuteur(especeAdv, moveId)) continue;   // pas sur Tropimon
                 if (!reveleIds.contains(moveId)) {
                     MoveTemplate t = Moves.INSTANCE.getByName(moveId);
                     if (t != null) coupsAdv.add(t);

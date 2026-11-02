@@ -509,6 +509,8 @@ public final class CalcOverlay implements HudRenderCallback {
         // Jeu complet copié par mon Métamorph : rien à supposer
         if (smogon != null && !ObservationCollector.coupsAdversaireComplets(especeAdv)) {
             for (String moveId : smogon.topMovesShowdownId()) {
+                // Apprise seulement par œuf / tuteur : pas sur Tropimon
+                if (BattleStateTracker.seulementOeufOuTuteur(especeAdv, moveId)) continue;
                 if (!reveleIds.contains(moveId)) {
                     MoveTemplate t = Moves.INSTANCE.getByName(moveId);
                     if (t != null) aAfficher.add(t);
@@ -1112,7 +1114,11 @@ public final class CalcOverlay implements HudRenderCallback {
         for (MoveTemplate t : ObservationCollector.getCoupsAdversaireReveles(espece)) ids.add(t.getName());
         if (ObservationCollector.coupsAdversaireComplets(espece)) return new ArrayList<>(ids);
         SmogonDataLoader.SmogonPokemonData smogon = SmogonDataLoader.getDonnees(espece);
-        if (smogon != null) ids.addAll(smogon.topMovesShowdownId());
+        if (smogon != null) {
+            for (String id : smogon.topMovesShowdownId()) {
+                if (!BattleStateTracker.seulementOeufOuTuteur(espece, id)) ids.add(id);
+            }
+        }
         List<String> r = new ArrayList<>(ids);
         return r.size() > 6 ? r.subList(0, 6) : r;
     }
