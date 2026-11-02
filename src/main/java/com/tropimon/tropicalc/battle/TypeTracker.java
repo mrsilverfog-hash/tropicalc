@@ -34,6 +34,26 @@ public final class TypeTracker {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        // Atterrissage : perd le type Vol jusqu'à la fin du tour (Corvaillus
+        // plus rapide que le Tonnerre adverse, ne prend que du neutre, 02/11)
+        if ("cobblemon.battle.turn".equals(cle)) {
+            atterrissageJoueur = false;
+            atterrissageAdversaire = false;
+            return;
+        }
+        if ("cobblemon.battle.singleturn.roost".equals(cle)) {
+            Boolean camp = campDuMessage(contenu.getArgs());
+            if (Boolean.TRUE.equals(camp)) atterrissageJoueur = true;
+            else if (Boolean.FALSE.equals(camp)) atterrissageAdversaire = true;
+            return;
+        }
+        if (cle.startsWith("cobblemon.battle.switch.self") || cle.startsWith("cobblemon.battle.withdraw.self")) {
+            atterrissageJoueur = false;
+        } else if (cle.startsWith("cobblemon.battle.switch.other") || cle.startsWith("cobblemon.battle.withdraw.other")
+                || cle.startsWith("cobblemon.battle.dragged_out")) {
+            atterrissageAdversaire = false;
+        }
+
         boolean typechange = "cobblemon.battle.start.typechange".equals(cle);
         boolean typeadd = "cobblemon.battle.start.typeadd".equals(cle);
         if (!typechange && !typeadd) return;
@@ -120,6 +140,31 @@ public final class TypeTracker {
         }
     }
 
+    private static boolean atterrissageJoueur = false;
+    private static boolean atterrissageAdversaire = false;
+
+    /** Vrai : mon Pokémon, faux : l'adversaire, null : inconnu. */
+    private static Boolean campDuMessage(Object[] args) {
+        if (args.length == 0) return null;
+        String proprio = MoveUseTracker.extraireProprietaire(args[0]);
+        Boolean adverse = ObservationCollector.determinerAttaquant(proprio);
+        return adverse == null ? null : !adverse;
+    }
+
+    /** Retire le type Vol pour ce tour (Vol pur : devient Normal). */
+    private static void sansVol(com.tropimon.tropicalc.calc.Pokemon p) {
+        PokemonType t1 = p.getType1(), t2 = p.getType2();
+        if (t1 != PokemonType.VOL && t2 != PokemonType.VOL) return;
+        if (t1 == PokemonType.VOL) {
+            t1 = t2;
+            t2 = null;
+        } else {
+            t2 = null;
+        }
+        if (t1 == null) t1 = PokemonType.NORMAL;
+        p.setTypesOverride(t1, t2);
+    }
+
     /** Applique les overrides si toujours valides (mêmes Pokémon actifs), sinon reset. */
     public static void appliquer(com.tropimon.tropicalc.calc.Pokemon joueur,
                                   com.tropimon.tropicalc.calc.Pokemon adversaire) {
@@ -137,6 +182,8 @@ public final class TypeTracker {
                 reinitialiserAdversaire();
             }
         }
+        if (atterrissageJoueur && joueur != null) sansVol(joueur);
+        if (atterrissageAdversaire && adversaire != null) sansVol(adversaire);
     }
 
     private static String especeActiveJoueur() {
@@ -166,5 +213,7 @@ public final class TypeTracker {
     public static void reinitialiser() {
         reinitialiserJoueur();
         reinitialiserAdversaire();
+        atterrissageJoueur = false;
+        atterrissageAdversaire = false;
     }
 }
