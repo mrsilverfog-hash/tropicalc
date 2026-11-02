@@ -18442,6 +18442,313 @@
   "description": "252+ SpA Heatran Earth Power vs. 252 HP / 252+ SpD Flower Gift Cherrim in Sun: 30-36 (8.7 - 10.4%)"
  },
  {
+  "nom": "Sans Limite Poing de Feu",
+  "attaquant": {
+   "espece": "darmanitan",
+   "niveau": 100,
+   "types": [
+    "fire"
+   ],
+   "statsBase": {
+    "hp": 105,
+    "atk": 140,
+    "def": 55,
+    "spa": 30,
+    "spd": 55,
+    "spe": 95
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "adamant",
+   "talent": "sheerforce",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 352,
+   "poidsKg": 92.9,
+   "statsShowdown": {
+    "hp": 352,
+    "atk": 416,
+    "def": 146,
+    "spa": 86,
+    "spd": 146,
+    "spe": 289
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 4,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "impish",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 210,
+    "def": 339,
+    "spa": 127,
+    "spd": 207,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "firepunch",
+   "type": "fire",
+   "categorie": "Physical",
+   "puissance": 75
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   260,
+   264,
+   266,
+   270,
+   272,
+   276,
+   278,
+   282,
+   284,
+   288,
+   290,
+   294,
+   296,
+   300,
+   302,
+   308
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 2,
+   "chance": 1,
+   "texte": "guaranteed 2HKO"
+  },
+  "description": "252+ Atk Sheer Force Darmanitan Fire Punch vs. 252 HP / 252+ Def Corviknight: 260-308 (65 - 77%) -- guaranteed 2HKO"
+ },
+ {
+  "nom": "Sans Limite Tempête Verte (sans effet)",
+  "attaquant": {
+   "espece": "nidoking",
+   "niveau": 100,
+   "types": [
+    "poison",
+    "ground"
+   ],
+   "statsBase": {
+    "hp": 81,
+    "atk": 102,
+    "def": 77,
+    "spa": 85,
+    "spd": 75,
+    "spe": 85
+   },
+   "evs": {
+    "hp": 4,
+    "atk": 0,
+    "def": 0,
+    "spa": 252,
+    "spd": 0,
+    "spe": 252
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "modest",
+   "talent": "sheerforce",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 304,
+   "poidsKg": 62,
+   "statsShowdown": {
+    "hp": 304,
+    "atk": 216,
+    "def": 190,
+    "spa": 295,
+    "spd": 186,
+    "spe": 269
+   }
+  },
+  "defenseur": {
+   "espece": "corviknight",
+   "niveau": 100,
+   "types": [
+    "flying",
+    "steel"
+   ],
+   "statsBase": {
+    "hp": 98,
+    "atk": 87,
+    "def": 105,
+    "spa": 53,
+    "spd": 85,
+    "spe": 67
+   },
+   "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 4,
+    "spa": 0,
+    "spd": 252,
+    "spe": 0
+   },
+   "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+   },
+   "nature": "calm",
+   "talent": "pressure",
+   "objet": null,
+   "objetPerdu": false,
+   "alliesKo": -1,
+   "boosts": {
+    "hp": 0,
+    "atk": 0,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 0
+   },
+   "statut": "",
+   "pvActuels": 400,
+   "poidsKg": 75,
+   "statsShowdown": {
+    "hp": 400,
+    "atk": 189,
+    "def": 247,
+    "spa": 142,
+    "spd": 295,
+    "spe": 170
+   }
+  },
+  "capacite": {
+   "id": "leafstorm",
+   "type": "grass",
+   "categorie": "Special",
+   "puissance": 130
+  },
+  "meteo": "AUCUNE",
+  "champ": "AUCUN",
+  "protection": false,
+  "murLumiere": false,
+  "voileAurore": false,
+  "double": false,
+  "cibleMultiple": false,
+  "critique": false,
+  "degatsAttendus": [
+   23,
+   23,
+   24,
+   24,
+   24,
+   24,
+   25,
+   25,
+   25,
+   26,
+   26,
+   26,
+   26,
+   27,
+   27,
+   27
+  ],
+  "matriceAttendue": null,
+  "ko": {
+   "n": 0,
+   "chance": 0,
+   "texte": ""
+  },
+  "description": "252+ SpA Nidoking Leaf Storm vs. 252 HP / 252+ SpD Corviknight: 23-27 (5.7 - 6.7%)"
+ },
+ {
   "nom": "Rage Poison",
   "attaquant": {
    "espece": "zangoose",

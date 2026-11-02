@@ -168,6 +168,8 @@ const CAS = [
     ['Force Soleil', ['Houndoom', { ...SPA, ability: 'Solar Power' }], ['Corviknight', SPEC_DEF], 'Fire Blast', { field: { weather: 'Sun' } }],
     ['Don Floral attaquant', ['Cherrim', { ...ATK, ability: 'Flower Gift' }], ['Corviknight', PHYS_DEF], 'Play Rough', { field: { weather: 'Sun' } }],
     ['Don Floral défenseur', ['Heatran', SPA], ['Cherrim', { ...SPEC_DEF, ability: 'Flower Gift' }], 'Earth Power', { field: { weather: 'Sun' } }],
+    ['Sans Limite Poing de Feu', ['Darmanitan', { ...ATK, ability: 'Sheer Force' }], ['Corviknight', PHYS_DEF], 'Fire Punch'],
+    ['Sans Limite Tempête Verte (sans effet)', ['Nidoking', { ...SPA, ability: 'Sheer Force' }], ['Corviknight', SPEC_DEF], 'Leaf Storm'],
     ['Rage Poison', ['Zangoose', { ...ATK, ability: 'Toxic Boost', status: 'psn' }], ['Corviknight', PHYS_DEF], 'Close Combat'],
     ['Écaille Spéciale', ['Garchomp', ATK], ['Dragonite', { ...PHYS_DEF, ability: 'Marvel Scale', status: 'par' }], 'Stone Edge'],
     ['Sans Limite', ['Landorus', { ...SPA, ability: 'Sheer Force' }], ['Great Tusk', SPEC_DEF], 'Sludge Wave'],

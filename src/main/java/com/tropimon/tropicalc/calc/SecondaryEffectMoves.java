@@ -13,25 +13,34 @@ public final class SecondaryEffectMoves {
     private SecondaryEffectMoves() {
     }
 
+    // Capacités à effet secondaire (statut, recul de stat adverse, peur, boost du lanceur
+    // en effet secondaire) : celles que Sans Limite booste. Liste refaite le 02/11
+    // (Poing de Feu de Darumacho oublié : x1,3 manquant).
     private static final Set<String> EFFET_SECONDAIRE = Set.of(
-        // Brûlure / statut
-        "flamethrower", "fireblast", "lavaplume", "scald", "sludgebomb",
-        "sludgewave", "thunderbolt", "thunder", "discharge", "icebeam",
-        "blizzard", "airslash", "crunch", "ironhead", "rockslide",
-        "dragonbreath", "twister", "boltstrike", "fusionbolt",
-        "fusionflare", "steameruption", "muddywater", "moonblast",
-        "dazzlinggleam", "acidspray", "flareblitz", "wildcharge",
-        "headbutt", "stomp", "extrasensory", "shadowball", "bugbuzz",
-        // Poison
-        "poisonjab", "gunkshot", "poisonfang", "sludge",
-        // Paralysie
-        "bodyslam", "lick", 
-        // Flinch
-         "zenheadbutt", "darkpulse", "waterfall",
-         "iciclecrash", 
-        // Baisse de stat adverse
-        "nightdaze", "bulldoze", "mysticalfire", "psychic", 
-        "energyball", "focusblast", "leafstorm", "mistball", "lusterpurge"
+        "firepunch", "flamethrower", "fireblast", "lavaplume", "flamewheel", "ember", "flareblitz",
+        "firefang", "heatwave", "blazekick", "sacredfire", "searingshot", "steameruption",
+        "mysticalfire", "fierydance", "flamecharge", "blueflare", "pyroball", "burningjealousy",
+        "torchsong", "infernalparade", "scald", "waterfall", "muddywater", "bubblebeam", "bubble",
+        "waterpulse", "octazooka", "aquastep", "chillingwater", "liquidation", "razorshell",
+        "sparklingaria", "thunderbolt", "thunder", "discharge", "thunderpunch", "thunderfang",
+        "zapcannon", "nuzzle", "boltstrike", "volttackle", "electroweb", "spark", "thunderouskick",
+        "zingzap", "icebeam", "blizzard", "icepunch", "icefang", "freezedry", "iciclecrash",
+        "powdersnow", "icywind", "glaciate", "freezingglare", "mountaingale", "sludgebomb",
+        "sludgewave", "poisonjab", "gunkshot", "sludge", "poisonfang", "crosspoison", "acidspray",
+        "poisontail", "smog", "barbbarrage", "direclaw", "earthpower", "mudslap", "mudbomb",
+        "bulldoze", "scorchingsands", "mudshot", "sandsearstorm", "airslash", "hurricane",
+        "skyattack", "bleakwindstorm", "psychic", "psybeam", "extrasensory", "zenheadbutt",
+        "lusterpurge", "mistball", "psychicnoise", "esperwing", "mysticalpower", "bugbuzz",
+        "signalbeam", "strugglebug", "lunge", "pounce", "silverwind", "skittersmack", "rockslide",
+        "ancientpower", "rocktomb", "shadowball", "ominouswind", "astonish", "spiritshackle",
+        "bittermalice", "shadowbone", "dragonbreath", "twister", "dragonrush", "breakingswipe",
+        "crunch", "darkpulse", "bite", "nightdaze", "snarl", "throatchop", "fierywrath", "ironhead",
+        "flashcannon", "irontail", "meteormash", "steelwing", "mirrorshot", "anchorshot",
+        "moonblast", "playrough", "spiritbreak", "strangesteam", "springtidestorm", "focusblast",
+        "dynamicpunch", "lowsweep", "rocksmash", "triplearrows", "axekick", "forcepalm",
+        "upperhand", "poweruppunch", "bodyslam", "headbutt", "stomp", "fakeout", "hyperfang",
+        "triattack", "steamroller", "lick", "energyball", "seedflare", "needlearm", "leaftornado",
+        "appleacid", "gravapple", "trailblaze", "syrupbomb"
     );
 
     public static boolean aEffetSecondaire(String showdownId) {

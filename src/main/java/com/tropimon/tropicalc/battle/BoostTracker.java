@@ -48,6 +48,32 @@ public final class BoostTracker {
         String cle = contenu.getKey();
         if (cle == null) return;
 
+        // Cognobidon / Colérique : Attaque mise directement à +6
+        // (setboost.bellydrum, Darumacho adverse non pris en compte, 02/11)
+        if (cle.startsWith("cobblemon.battle.setboost.")) {
+            Boolean joueurSet = null;
+            for (Object arg : contenu.getArgs()) {
+                String proprio = MoveUseTracker.extraireProprietaire(arg);
+                Boolean adverse = ObservationCollector.determinerAttaquant(proprio);
+                if (adverse != null) {
+                    joueurSet = !adverse;
+                    break;
+                }
+            }
+            if (joueurSet == null) return;
+            if (joueurSet) {
+                STAGES_JOUEUR.put(Stat.ATTAQUE, 6);
+                var actif = BattleStateTracker.getJoueurActifDepuisEquipe();
+                if (actif == null) actif = BattleStateTracker.getJoueurActif();
+                if (actif != null) especeJoueurStages = actif.getEspece();
+            } else {
+                STAGES_ADVERSAIRE.put(Stat.ATTAQUE, 6);
+                var actif = BattleStateTracker.getAdversaireActif();
+                if (actif != null) especeAdversaireStages = actif.getEspece();
+            }
+            return;
+        }
+
         int delta;
         if (cle.startsWith("cobblemon.battle.boost.slight")) delta = 1;
         else if (cle.startsWith("cobblemon.battle.boost.sharp")) delta = 2;

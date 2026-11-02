@@ -42,6 +42,24 @@ public final class BoostsDouble {
             vider();
             return;
         }
+        if (cle.startsWith("cobblemon.battle.setboost.")) {
+            // Cognobidon / Colérique : Attaque à +6
+            for (Object arg : contenu.getArgs()) {
+                if (!(arg instanceof Text t) || !(t.getContent() instanceof TranslatableTextContent sc)) continue;
+                if (!"cobblemon.battle.owned_pokemon".equals(sc.getKey())) continue;
+                Object[] a = sc.getArgs();
+                if (a.length >= 2 && a[0] instanceof String dresseur) {
+                    Boolean adverse = ObservationCollector.determinerAttaquant(dresseur);
+                    String nom = a[1] instanceof Text tx ? tx.getString() : String.valueOf(a[1]);
+                    if (adverse != null) {
+                        String k = BattleStateTracker.cleDouble(adverse, nom);
+                        STAGES.computeIfAbsent(k, x -> new EnumMap<>(Stat.class)).put(Stat.ATTAQUE, 6);
+                        MAJ.put(k, System.currentTimeMillis());
+                    }
+                }
+            }
+            return;
+        }
         int delta;
         if (cle.startsWith("cobblemon.battle.boost.slight")) delta = 1;
         else if (cle.startsWith("cobblemon.battle.boost.sharp")) delta = 2;

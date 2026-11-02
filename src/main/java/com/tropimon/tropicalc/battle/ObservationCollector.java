@@ -1637,6 +1637,7 @@ public final class ObservationCollector {
         if (surDefenseur && (cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.used_move"))) {
             cr.agiOuBlesseApres = true;
         }
+        if (surDefenseur && dernierCoupEstAdverse && talentQuiAbsorbe(cle, args)) cr.bloque = true;
         if (cle.equals("cobblemon.battle.crit")) {
             if (dernierCoupEstAdverse) cr.crit = true;
         } else if (cle.equals("cobblemon.battle.hit_count")) {
@@ -1992,6 +1993,24 @@ public final class ObservationCollector {
         return SUIVI_PV_MOI.mesure(cr.instantMs, cr.especeDefenseur, 0);
     }
 
+    // Talents qui annulent le coup (immunité annoncée par le jeu après lui) :
+    // Ouragan sur Tengalice Chevauchevent noté « 0 % pour 134-158 % » (02/11)
+    private static final Set<String> TALENTS_ABSORBANTS = Set.of(
+        "windrider", "sapsipper", "stormdrain", "lightningrod", "voltabsorb", "waterabsorb",
+        "flashfire", "motordrive", "dryskin", "eartheater", "wellbakedbody", "bulletproof",
+        "soundproof", "goodasgold", "wonderguard", "levitate", "telepathy");
+
+    private static boolean talentQuiAbsorbe(String cle, Object[] args) {
+        if (!cle.startsWith("cobblemon.battle.ability.") && !cle.startsWith("cobblemon.battle.immune")) return false;
+        for (int i = 1; i < args.length; i++) {
+            Object a = args[i];
+            String t = a instanceof net.minecraft.text.Text tx ? tx.getString() : String.valueOf(a);
+            if (t == null) continue;
+            if (TALENTS_ABSORBANTS.contains(t.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z]", ""))) return true;
+        }
+        return false;
+    }
+
     private static void suivreUnCoupDonne(CoupDonne cd, String cle, Object[] args) {
         if (cd == null) return;
         boolean surLui = args.length > 0
@@ -2005,6 +2024,7 @@ public final class ObservationCollector {
         if (surLui && (cle.startsWith("cobblemon.battle.damage.") || cle.startsWith("cobblemon.battle.used_move"))) {
             cd.agiOuBlesseApres = true;
         }
+        if (surLui && !cd.impactPrescience && talentQuiAbsorbe(cle, args)) cd.bloque = true;
         if (cle.equals("cobblemon.battle.crit")) {
             // Prescience : frappe en fin de tour, plus aucune capacité après
             if (cd.impactPrescience || !dernierCoupEstAdverse) cd.crit = true;
