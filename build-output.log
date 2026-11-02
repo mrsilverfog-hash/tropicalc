@@ -1,0 +1,58 @@
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.11.1!
+
+Here are the highlights of this release:
+ - Parallel load and store for Configuration Cache
+ - Java compilation errors at the end of the build output
+ - Consolidated report for warnings and deprecations
+
+For more details see https://docs.gradle.org/8.11.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :
+Fabric Loom: 1.9.2
+:remapping 52 mods from modImplementation (java-api)
+
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources
+> Task :processIncludeJars
+> Task :remapSourcesJar SKIPPED
+> Task :processTestResources
+> Task :validateAccessWidener NO-SOURCE
+> Task :compileKotlin
+
+> Task :compileJava
+/home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/client/CalcOverlay.java:952: error: RECUL is not public in DrapeauxCapacites; cannot be accessed from outside package
+        int[] fraction = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL.get(id);
+                                                                      ^
+/home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/client/CalcOverlay.java:958: error: RECUL_PV_MAX is not public in DrapeauxCapacites; cannot be accessed from outside package
+        int fixe = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL_PV_MAX.contains(id) ? (pvMax + 1) / 2 : 0;
+                                                                ^
+2 errors
+
+> Task :compileJava FAILED
+[Incubating] Problems report is available at: file:///home/runner/work/tropicalc/tropicalc/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  /home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/client/CalcOverlay.java:952: error: RECUL is not public in DrapeauxCapacites; cannot be accessed from outside package
+          int[] fraction = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL.get(id);
+                                                                        ^
+  /home/runner/work/tropicalc/tropicalc/src/main/java/com/tropimon/tropicalc/client/CalcOverlay.java:958: error: RECUL_PV_MAX is not public in DrapeauxCapacites; cannot be accessed from outside package
+          int fixe = com.tropimon.tropicalc.calc.DrapeauxCapacites.RECUL_PV_MAX.contains(id) ? (pvMax + 1) / 2 : 0;
+                                                                  ^
+  2 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights.
+
+BUILD FAILED in 2m
+5 actionable tasks: 5 executed
