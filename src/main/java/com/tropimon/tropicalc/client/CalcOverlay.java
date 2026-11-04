@@ -35,6 +35,7 @@ public final class CalcOverlay implements HudRenderCallback {
     private static final int COULEUR_DANGER = 0xFF8800;
     private static final int COULEUR_REVELE = 0x55FF55;
     private static final int COULEUR_GRIS = 0xAAAAAA;
+    private static final int COULEUR_CLONE = 0xFFD8A8FF;   // violet clair : effet du Clone
 
     private record LigneTexte(String texte, int x, int y, int couleur) {}
     private record LigneIcone(int type, int x, int y) {}   // voir TEXTURES_ICONES pour la liste des types
@@ -388,7 +389,17 @@ public final class CalcOverlay implements HudRenderCallback {
 
         for (CapaciteAffichee ca : mesCapacites) {
             com.tropimon.tropicalc.calc.Move capacite = ca.capacite();
-            if (capacite == null || capacite.estCapaciteDeStatut()) continue;
+            if (capacite == null) continue;
+            boolean cloneEnFace = FieldTracker.adversaireAUnClone();
+            if (capacite.estCapaciteDeStatut()) {
+                // Statut visant l'adversaire : échoue contre son Clone
+                if (cloneEnFace && statutBloqueParClone(joueur, capacite.getNom())) {
+                    dessinerTexte(ca.nom(), x, y, COULEUR_GRIS);
+                    dessinerTexte(" (échoue : clone)", x + client.textRenderer.getWidth(ca.nom()), y, COULEUR_CLONE);
+                    y += hauteurLigne;
+                }
+                continue;
+            }
 
             // Fulgurayon : +1 Attaque Spéciale GARANTI dès son lancement -
             // même traitement que côté adversaire, appliqué directement au
@@ -418,6 +429,7 @@ public final class CalcOverlay implements HudRenderCallback {
             int couleur = COULEUR_TEXTE;
             String texteReste = null;
             int couleurReste = COULEUR_REVELE;
+            String texteCloneMoi = cloneEnFace ? texteClone(joueur, adversaire, capacite, r) : null;
             if (r.immunise) {
                 ligne = nom + " : immunisé";
             } else {
@@ -478,9 +490,12 @@ public final class CalcOverlay implements HudRenderCallback {
                 }
             }
             dessinerTexte(ligne, x, y, couleur);
+            int xSuite = x + client.textRenderer.getWidth(ligne);
             if (texteReste != null) {
-                dessinerTexte(texteReste, x + client.textRenderer.getWidth(ligne), y, couleurReste);
+                dessinerTexte(texteReste, xSuite, y, couleurReste);
+                xSuite += client.textRenderer.getWidth(texteReste);
             }
+            if (texteCloneMoi != null) dessinerTexte(texteCloneMoi, xSuite, y, COULEUR_CLONE);
             y += hauteurLigne;
         }
 
@@ -552,6 +567,8 @@ public final class CalcOverlay implements HudRenderCallback {
                 String nom = template.getDisplayName().getString();
                 String ligne;
                 int couleur = estRevele ? COULEUR_REVELE : COULEUR_TEXTE;
+                // Mon Clone : effet de son attaque dessus (violet, à droite)
+                String suffixeClone = null;
 
                 // PP restants (max compétitif = base x1.6 avec PP Max)
                 String suffixePp = "";
@@ -563,6 +580,9 @@ public final class CalcOverlay implements HudRenderCallback {
 
                 if (capaciteAdv == null || capaciteAdv.estCapaciteDeStatut()) {
                     ligne = (estRevele ? "✓ " : "") + nom + " : statut" + suffixePp;
+                    if (FieldTracker.joueurAUnClone() && statutBloqueParClone(adversaire, template.getName())) {
+                        suffixeClone = " (échoue : clone)";
+                    }
                 } else {
                     // Fulgurayon : +1 Attaque Spéciale GARANTI dès son lancement
                     // (tour de charge, ou immédiatement sous la pluie) - pas
@@ -591,6 +611,7 @@ public final class CalcOverlay implements HudRenderCallback {
                         }
                         if (r.koGaranti) couleur = COULEUR_KO;
                         else if (r.koPossible && !estRevele) couleur = 0xFFAA00;
+                        if (FieldTracker.joueurAUnClone()) suffixeClone = texteClone(adversaire, joueur, capaciteAdv, r);
 
                         // Prise de Bec / Branchicrok : double puissance si
                         // l'adversaire attaque avant moi. Affiche les DEUX
@@ -630,12 +651,17 @@ public final class CalcOverlay implements HudRenderCallback {
                             dessinerTexte(ligne, x, y, couleur);
                             int largeurLigne = client.textRenderer.getWidth(ligne);
                             dessinerTexte(ligneHypo, x + largeurLigne, y, COULEUR_MOUCHOIR);
+                            if (suffixeClone != null) {
+                                dessinerTexte(suffixeClone, x + largeurLigne + client.textRenderer.getWidth(ligneHypo),
+                                    y, COULEUR_CLONE);
+                            }
                             y += hauteurLigne;
                             continue;
                         }
                     }
                 }
                 dessinerTexte(ligne, x, y, couleur);
+                if (suffixeClone != null) dessinerTexte(suffixeClone, x + client.textRenderer.getWidth(ligne), y, COULEUR_CLONE);
                 y += hauteurLigne;
             }
         }
@@ -967,6 +993,56 @@ public final class CalcOverlay implements HudRenderCallback {
         int reculMax = num == 0 ? 0 : Math.max(1, (int) Math.round((double) infligeMax * num / den));
         int pv = joueur.getPvActuels();
         return new int[]{Math.max(0, pv - reculMax - fixe - orbe), Math.max(0, pv - reculMin - fixe - orbe)};
+    }
+
+    // --- Clone (Substitute) ---
+    // Attaques de statut sonores ou qui passent quand même (Hurlement...)
+    private static final java.util.Set<String> STATUT_TRAVERSE_CLONE = java.util.Set.of(
+        "roar", "whirlwind", "sing", "growl", "screech", "perishsong", "partingshot", "nobleroar",
+        "metalsound", "supersonic", "grasswhistle", "confide", "healbell", "snarl", "eeriespell");
+    // Cibles d'une attaque qui vise l'adversaire (données Cobblemon / Showdown)
+    private static final java.util.Set<String> CIBLES_ADVERSAIRE = java.util.Set.of(
+        "normal", "any", "adjacentfoe", "alladjacentfoes", "alladjacent", "randomnormal");
+
+    /** Sonore ou attaquant avec Infiltration : passe à travers le Clone. */
+    private static boolean traverseClone(Pokemon attaquant, String id) {
+        return "Infiltration".equals(attaquant.getTalent())
+            || (id != null && (com.tropimon.tropicalc.calc.DrapeauxCapacites.SON.contains(id) || STATUT_TRAVERSE_CLONE.contains(id)));
+    }
+
+    /** Attaque de statut visant l'adversaire, bloquée par son Clone. */
+    private static boolean statutBloqueParClone(Pokemon attaquant, String id) {
+        if (id == null || traverseClone(attaquant, id)) return false;
+        try {
+            MoveTemplate t = Moves.INSTANCE.getByName(id);
+            if (t == null) return false;
+            Object cible = t.getClass().getMethod("getTarget").invoke(t);
+            if (cible == null) return false;
+            String c = cible.toString().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z]", "");
+            return CIBLES_ADVERSAIRE.contains(c);
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /**
+     * « (casse le clone) », « (casse le clone : 44 % de chance) »,
+     * « (clone tient : 60-71 % du clone) » ou « (traverse le clone) ».
+     * Le Clone a 1/4 des PV max du défenseur.
+     */
+    private static String texteClone(Pokemon attaquant, Pokemon defenseur,
+                                     com.tropimon.tropicalc.calc.Move capacite, DamageCalculator.Resultat r) {
+        if (r == null || r.immunise || r.degatsParRoll == null || r.degatsParRoll.length == 0) return null;
+        if (traverseClone(attaquant, capacite.getNom())) return " (traverse le clone)";
+        int pvClone = Math.max(1, defenseur.getPvMax() / 4);
+        int casse = 0;
+        for (int d : r.degatsParRoll) if (d >= pvClone) casse++;
+        if (casse == r.degatsParRoll.length) return " (casse le clone)";
+        if (casse == 0) {
+            return String.format(" (clone tient : %d-%d %% du clone)",
+                Math.round(100.0 * r.degatsMin / pvClone), Math.round(100.0 * r.degatsMax / pvClone));
+        }
+        return String.format(" (casse le clone : %d %% de chance)", Math.round(100.0 * casse / r.degatsParRoll.length));
     }
 
     private static String ligneHypotheseObjet(Pokemon adversaire, Pokemon joueur,
